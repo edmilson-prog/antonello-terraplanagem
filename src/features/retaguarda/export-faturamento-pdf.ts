@@ -36,10 +36,10 @@ export function exportarFaturamentoPdf() {
   doc.rect(0, 6, largura, 70, "F");
 
   doc.setTextColor(...CONCRETO);
-  doc.setFont("times", "bold");
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
   doc.text("Antonello Terraplanagem", margemX, 36);
-  doc.setFont("times", "normal");
+  doc.setFont("helvetica", "normal");
   doc.setFontSize(11);
   doc.text("Relatório de Faturamento", margemX, 56);
 
@@ -63,7 +63,7 @@ export function exportarFaturamentoPdf() {
   const totalHoras = faturamentoMensal.reduce((s, m) => s + m.horas_faturadas, 0);
   const ticketMedio = totalValor / totalHoras;
 
-  doc.setFont("times", "bold");
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
   doc.text("Resumo do período (últimos 6 meses)", margemX, y);
   y += 16;
@@ -79,11 +79,11 @@ export function exportarFaturamentoPdf() {
     doc.setDrawColor(214, 205, 188);
     doc.setFillColor(...CONCRETO);
     doc.roundedRect(x, y, cardLarg, 56, 6, 6, "FD");
-    doc.setFont("times", "normal");
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(...TINTA_SUAVE);
     doc.text(c.rotulo.toUpperCase(), x + 12, y + 18);
-    doc.setFont("times", "bold");
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
     doc.setTextColor(...TINTA);
     doc.text(c.valor, x + 12, y + 40);
@@ -103,7 +103,7 @@ export function exportarFaturamentoPdf() {
     theme: "grid",
     headStyles: { fillColor: ASFALTO, textColor: CONCRETO, fontStyle: "bold" },
     footStyles: { fillColor: AMARELO, textColor: ASFALTO, fontStyle: "bold" },
-    styles: { font: "times", fontSize: 10, cellPadding: 6 },
+    styles: { font: "helvetica", fontSize: 10, cellPadding: 6 },
     margin: { left: margemX, right: margemX },
   });
 
@@ -118,10 +118,10 @@ export function exportarFaturamentoPdf() {
     ]),
     theme: "grid",
     headStyles: { fillColor: ASFALTO, textColor: CONCRETO, fontStyle: "bold" },
-    styles: { font: "times", fontSize: 10, cellPadding: 6 },
+    styles: { font: "helvetica", fontSize: 10, cellPadding: 6 },
     margin: { left: margemX, right: margemX },
     didDrawPage: (data) => {
-      doc.setFont("times", "bold");
+      doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
       doc.setTextColor(...TINTA);
       doc.text("Faturamento por equipamento", margemX, data.settings.startY - 8);
@@ -135,10 +135,10 @@ export function exportarFaturamentoPdf() {
     body: faturamentoPorCliente.map((c) => [c.cliente_nome, brl.format(c.valor)]),
     theme: "grid",
     headStyles: { fillColor: ASFALTO, textColor: CONCRETO, fontStyle: "bold" },
-    styles: { font: "times", fontSize: 10, cellPadding: 6 },
+    styles: { font: "helvetica", fontSize: 10, cellPadding: 6 },
     margin: { left: margemX, right: margemX },
     didDrawPage: (data) => {
-      doc.setFont("times", "bold");
+      doc.setFont("helvetica", "bold");
       doc.setFontSize(13);
       doc.setTextColor(...TINTA);
       doc.text("Faturamento por cliente", margemX, data.settings.startY - 8);
@@ -151,7 +151,7 @@ export function exportarFaturamentoPdf() {
     doc.setPage(p);
     const alt = doc.internal.pageSize.getHeight();
     faixaCanteiro(doc, alt - 12);
-    doc.setFont("times", "normal");
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(...TINTA_SUAVE);
     doc.text(
