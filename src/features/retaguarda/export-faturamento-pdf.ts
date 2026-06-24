@@ -13,26 +13,14 @@ const CONCRETO: [number, number, number] = [244, 239, 230];
 const TINTA: [number, number, number] = [27, 25, 18];
 const TINTA_SUAVE: [number, number, number] = [90, 85, 74];
 
-function faixaCanteiro(doc: jsPDF, y: number) {
+function faixaCanteiro(doc: jsPDF, y: number, altura = 6) {
   const largura = doc.internal.pageSize.getWidth();
-  const altura = 6;
-  const passo = 10;
-  for (let x = -altura; x < largura; x += passo) {
-    doc.setFillColor(...AMARELO);
-    doc.triangle(x, y, x + passo / 2, y, x, y + altura, "F");
-    doc.setFillColor(...ASFALTO);
-    doc.triangle(x + passo / 2, y, x + passo, y, x + passo / 2, y + altura, "F");
-    doc.setFillColor(...AMARELO);
-    doc.triangle(x + passo, y, x + passo, y + altura, x + passo / 2, y + altura, "F");
-    doc.setFillColor(...ASFALTO);
-    doc.triangle(x, y + altura, x + passo / 2, y + altura, x, y, "F");
-  }
-  // simplificação: cobrir com um retângulo amarelo e asfalto alternado
   doc.setFillColor(...AMARELO);
   doc.rect(0, y, largura, altura, "F");
-  for (let x = -altura; x < largura + altura; x += 8) {
-    doc.setFillColor(...ASFALTO);
-    doc.triangle(x, y, x + 4, y, x + 4, y + altura, "F");
+  doc.setFillColor(...ASFALTO);
+  const passo = 14;
+  for (let x = 0; x < largura; x += passo) {
+    doc.rect(x, y, passo / 2, altura, "F");
   }
 }
 
