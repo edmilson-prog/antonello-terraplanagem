@@ -57,13 +57,13 @@ function MinhasOrdensPage() {
 
   const setBusca = (valor: string) =>
     navigate({
-      search: (prev) => ({ ...prev, q: valor }),
+      search: (prev: OrdensSearch) => ({ ...prev, q: valor }),
       replace: true,
     });
 
   const setStatus = (novo: FiltroId) =>
     navigate({
-      search: (prev) => ({ ...prev, status: novo }),
+      search: (prev: OrdensSearch) => ({ ...prev, status: novo }),
       replace: true,
     });
 
