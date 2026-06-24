@@ -150,6 +150,6 @@ export function LoginPage() {
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
