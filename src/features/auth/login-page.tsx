@@ -55,7 +55,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
+    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <div className="w-full max-w-md overflow-hidden rounded-xl border bg-card shadow-lg">
         <HazardStripe />
 
@@ -65,7 +65,7 @@ export function LoginPage() {
               <HardHat className="h-6 w-6" />
             </div>
             <h1 className="font-display text-2xl font-bold text-card-foreground">
-              Antonello Terraplanagem
+              Antonello Terraplanagem — Gestão de Obras
             </h1>
             <p className="text-sm text-muted-foreground">
               Plataforma de gestão — entre com seu perfil
@@ -150,6 +150,6 @@ export function LoginPage() {
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

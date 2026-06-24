@@ -52,6 +52,9 @@ export function OperadorShell() {
 
       <main className="flex-1 pb-24">
         <div className="mx-auto w-full max-w-md px-4 py-5">
+          <h1 className="sr-only">
+            Antonello Terraplanagem · Painel do Operador — {titulo}
+          </h1>
           <Outlet />
         </div>
       </main>
