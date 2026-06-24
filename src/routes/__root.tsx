@@ -11,7 +11,6 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -85,13 +84,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Plataforma de gestão da Antonello Terraplanagem — controle de equipamentos, ordens de serviço e faturamento.",
       },
       { name: "author", content: "Antonello Terraplanagem" },
-      { property: "og:title", content: "Antonello Terraplanagem" },
+      { property: "og:title", content: "Antonello Terraplanagem · Plataforma de Gestão" },
       {
         property: "og:description",
         content: "Gestão de obras de terraplanagem: equipamentos, ordens e faturamento.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:title", content: "Antonello Terraplanagem · Plataforma de Gestão" },
+      { name: "description", content: "Project Planning Hub helps teams plan and manage project implementations." },
+      { property: "og:description", content: "Project Planning Hub helps teams plan and manage project implementations." },
+      { name: "twitter:description", content: "Project Planning Hub helps teams plan and manage project implementations." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ae1ac7dd-3637-44fb-a10e-807cb561e784/id-preview-3ff2f665--49ae62e6-4214-45ea-8c30-7d1e957d3fd1.lovable.app-1782305254203.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ae1ac7dd-3637-44fb-a10e-807cb561e784/id-preview-3ff2f665--49ae62e6-4214-45ea-8c30-7d1e957d3fd1.lovable.app-1782305254203.png" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -130,7 +135,6 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-      <Toaster richColors position="top-center" />
     </QueryClientProvider>
   );
 }
