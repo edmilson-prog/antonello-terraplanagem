@@ -16,7 +16,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
-import { Route as AppOrdensRouteImport } from './routes/app.ordens'
 import { Route as AppApontamentoRouteImport } from './routes/app.apontamento'
 import { Route as AdminOrdensRouteImport } from './routes/admin.ordens'
 import { Route as AdminOperadoresRouteImport } from './routes/admin.operadores'
@@ -61,11 +60,6 @@ const AppPerfilRoute = AppPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AppRoute,
 } as any)
-const AppOrdensRoute = AppOrdensRouteImport.update({
-  id: '/ordens',
-  path: '/ordens',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppApontamentoRoute = AppApontamentoRouteImport.update({
   id: '/apontamento',
   path: '/apontamento',
@@ -97,14 +91,14 @@ const AdminClientesRoute = AdminClientesRouteImport.update({
   getParentRoute: () => AdminRoute,
 } as any)
 const AppOrdensIndexRoute = AppOrdensIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppOrdensRoute,
+  id: '/ordens/',
+  path: '/ordens/',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppOrdensOrdemIdRoute = AppOrdensOrdemIdRouteImport.update({
-  id: '/$ordemId',
-  path: '/$ordemId',
-  getParentRoute: () => AppOrdensRoute,
+  id: '/ordens/$ordemId',
+  path: '/ordens/$ordemId',
+  getParentRoute: () => AppRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -118,7 +112,6 @@ export interface FileRoutesByFullPath {
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/ordens': typeof AdminOrdensRoute
   '/app/apontamento': typeof AppApontamentoRoute
-  '/app/ordens': typeof AppOrdensRouteWithChildren
   '/app/perfil': typeof AppPerfilRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
@@ -152,7 +145,6 @@ export interface FileRoutesById {
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/ordens': typeof AdminOrdensRoute
   '/app/apontamento': typeof AppApontamentoRoute
-  '/app/ordens': typeof AppOrdensRouteWithChildren
   '/app/perfil': typeof AppPerfilRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
@@ -172,7 +164,6 @@ export interface FileRouteTypes {
     | '/admin/operadores'
     | '/admin/ordens'
     | '/app/apontamento'
-    | '/app/ordens'
     | '/app/perfil'
     | '/admin/'
     | '/app/'
@@ -205,7 +196,6 @@ export interface FileRouteTypes {
     | '/admin/operadores'
     | '/admin/ordens'
     | '/app/apontamento'
-    | '/app/ordens'
     | '/app/perfil'
     | '/admin/'
     | '/app/'
@@ -271,13 +261,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPerfilRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/ordens': {
-      id: '/app/ordens'
-      path: '/ordens'
-      fullPath: '/app/ordens'
-      preLoaderRoute: typeof AppOrdensRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/apontamento': {
       id: '/app/apontamento'
       path: '/apontamento'
@@ -322,17 +305,17 @@ declare module '@tanstack/react-router' {
     }
     '/app/ordens/': {
       id: '/app/ordens/'
-      path: '/'
+      path: '/ordens'
       fullPath: '/app/ordens/'
       preLoaderRoute: typeof AppOrdensIndexRouteImport
-      parentRoute: typeof AppOrdensRoute
+      parentRoute: typeof AppRoute
     }
     '/app/ordens/$ordemId': {
       id: '/app/ordens/$ordemId'
-      path: '/$ordemId'
+      path: '/ordens/$ordemId'
       fullPath: '/app/ordens/$ordemId'
       preLoaderRoute: typeof AppOrdensOrdemIdRouteImport
-      parentRoute: typeof AppOrdensRoute
+      parentRoute: typeof AppRoute
     }
   }
 }
@@ -357,32 +340,20 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
-interface AppOrdensRouteChildren {
+interface AppRouteChildren {
+  AppApontamentoRoute: typeof AppApontamentoRoute
+  AppPerfilRoute: typeof AppPerfilRoute
+  AppIndexRoute: typeof AppIndexRoute
   AppOrdensOrdemIdRoute: typeof AppOrdensOrdemIdRoute
   AppOrdensIndexRoute: typeof AppOrdensIndexRoute
 }
 
-const AppOrdensRouteChildren: AppOrdensRouteChildren = {
-  AppOrdensOrdemIdRoute: AppOrdensOrdemIdRoute,
-  AppOrdensIndexRoute: AppOrdensIndexRoute,
-}
-
-const AppOrdensRouteWithChildren = AppOrdensRoute._addFileChildren(
-  AppOrdensRouteChildren,
-)
-
-interface AppRouteChildren {
-  AppApontamentoRoute: typeof AppApontamentoRoute
-  AppOrdensRoute: typeof AppOrdensRouteWithChildren
-  AppPerfilRoute: typeof AppPerfilRoute
-  AppIndexRoute: typeof AppIndexRoute
-}
-
 const AppRouteChildren: AppRouteChildren = {
   AppApontamentoRoute: AppApontamentoRoute,
-  AppOrdensRoute: AppOrdensRouteWithChildren,
   AppPerfilRoute: AppPerfilRoute,
   AppIndexRoute: AppIndexRoute,
+  AppOrdensOrdemIdRoute: AppOrdensOrdemIdRoute,
+  AppOrdensIndexRoute: AppOrdensIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
