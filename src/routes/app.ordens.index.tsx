@@ -1,19 +1,36 @@
-import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, Search, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/shared/components/empty-state";
 import { StatusOrdemBadge } from "@/features/operador/status-ordem-badge";
-import { ordensOperador } from "@/mocks/ordens-operador";
+import { useOrdens } from "@/features/operador/ordens-store";
 import type { OrdemStatus } from "@/shared/types";
 import { cn } from "@/lib/utils";
 
+type FiltroId = "todas" | OrdemStatus;
+
+const FILTROS_VALIDOS: FiltroId[] = ["todas", "aberta", "em_andamento", "concluida"];
+
+interface OrdensSearch {
+  q: string;
+  status: FiltroId;
+}
+
 export const Route = createFileRoute("/app/ordens/")({
+  validateSearch: (raw: Record<string, unknown>): OrdensSearch => {
+    const q = typeof raw.q === "string" ? raw.q : "";
+    const status =
+      typeof raw.status === "string" && FILTROS_VALIDOS.includes(raw.status as FiltroId)
+        ? (raw.status as FiltroId)
+        : "todas";
+    return { q, status };
+  },
   head: () => ({ meta: [{ title: "Minhas OS · Antonello" }] }),
   component: MinhasOrdensPage,
 });
 
-const filtros: { id: "todas" | OrdemStatus; label: string }[] = [
+const filtros: { id: FiltroId; label: string }[] = [
   { id: "todas", label: "Todas" },
   { id: "aberta", label: "Abertas" },
   { id: "em_andamento", label: "Em andamento" },
@@ -21,13 +38,14 @@ const filtros: { id: "todas" | OrdemStatus; label: string }[] = [
 ];
 
 function MinhasOrdensPage() {
-  const [filtro, setFiltro] = useState<(typeof filtros)[number]["id"]>("todas");
-  const [busca, setBusca] = useState("");
+  const { q, status } = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const todas = useOrdens();
 
   const ordens = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
-    return ordensOperador.filter((o) => {
-      if (filtro !== "todas" && o.status !== filtro) return false;
+    const termo = q.trim().toLowerCase();
+    return todas.filter((o) => {
+      if (status !== "todas" && o.status !== status) return false;
       if (!termo) return true;
       return (
         o.numero.toLowerCase().includes(termo) ||
@@ -35,14 +53,26 @@ function MinhasOrdensPage() {
         o.obra.toLowerCase().includes(termo)
       );
     });
-  }, [filtro, busca]);
+  }, [status, q, todas]);
+
+  const setBusca = (valor: string) =>
+    navigate({
+      search: (prev: OrdensSearch) => ({ ...prev, q: valor }),
+      replace: true,
+    });
+
+  const setStatus = (novo: FiltroId) =>
+    navigate({
+      search: (prev: OrdensSearch) => ({ ...prev, status: novo }),
+      replace: true,
+    });
 
   return (
     <div className="space-y-4">
       <div className="relative">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          value={busca}
+          value={q}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Buscar por número, cliente ou obra"
           className="h-11 pl-9"
@@ -52,12 +82,12 @@ function MinhasOrdensPage() {
       <div className="-mx-4 overflow-x-auto px-4">
         <div className="flex gap-2">
           {filtros.map((f) => {
-            const ativo = filtro === f.id;
+            const ativo = status === f.id;
             return (
               <button
                 key={f.id}
                 type="button"
-                onClick={() => setFiltro(f.id)}
+                onClick={() => setStatus(f.id)}
                 className={cn(
                   "rounded-full border px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors",
                   ativo
