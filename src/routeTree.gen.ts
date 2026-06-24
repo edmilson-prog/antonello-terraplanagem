@@ -9,38 +9,218 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AppPerfilRouteImport } from './routes/app.perfil'
+import { Route as AppOrdensRouteImport } from './routes/app.ordens'
+import { Route as AppApontamentoRouteImport } from './routes/app.apontamento'
+import { Route as AdminOrdensRouteImport } from './routes/admin.ordens'
+import { Route as AdminOperadoresRouteImport } from './routes/admin.operadores'
+import { Route as AdminFaturamentoRouteImport } from './routes/admin.faturamento'
+import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
+import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AppPerfilRoute = AppPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrdensRoute = AppOrdensRouteImport.update({
+  id: '/ordens',
+  path: '/ordens',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppApontamentoRoute = AppApontamentoRouteImport.update({
+  id: '/apontamento',
+  path: '/apontamento',
+  getParentRoute: () => AppRoute,
+} as any)
+const AdminOrdensRoute = AdminOrdensRouteImport.update({
+  id: '/ordens',
+  path: '/ordens',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOperadoresRoute = AdminOperadoresRouteImport.update({
+  id: '/operadores',
+  path: '/operadores',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFaturamentoRoute = AdminFaturamentoRouteImport.update({
+  id: '/faturamento',
+  path: '/faturamento',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEquipamentosRoute = AdminEquipamentosRouteImport.update({
+  id: '/equipamentos',
+  path: '/equipamentos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminClientesRoute = AdminClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/admin/clientes': typeof AdminClientesRoute
+  '/admin/equipamentos': typeof AdminEquipamentosRoute
+  '/admin/faturamento': typeof AdminFaturamentoRoute
+  '/admin/operadores': typeof AdminOperadoresRoute
+  '/admin/ordens': typeof AdminOrdensRoute
+  '/app/apontamento': typeof AppApontamentoRoute
+  '/app/ordens': typeof AppOrdensRoute
+  '/app/perfil': typeof AppPerfilRoute
+  '/admin/': typeof AdminIndexRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/admin/clientes': typeof AdminClientesRoute
+  '/admin/equipamentos': typeof AdminEquipamentosRoute
+  '/admin/faturamento': typeof AdminFaturamentoRoute
+  '/admin/operadores': typeof AdminOperadoresRoute
+  '/admin/ordens': typeof AdminOrdensRoute
+  '/app/apontamento': typeof AppApontamentoRoute
+  '/app/ordens': typeof AppOrdensRoute
+  '/app/perfil': typeof AppPerfilRoute
+  '/admin': typeof AdminIndexRoute
+  '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/admin/clientes': typeof AdminClientesRoute
+  '/admin/equipamentos': typeof AdminEquipamentosRoute
+  '/admin/faturamento': typeof AdminFaturamentoRoute
+  '/admin/operadores': typeof AdminOperadoresRoute
+  '/admin/ordens': typeof AdminOrdensRoute
+  '/app/apontamento': typeof AppApontamentoRoute
+  '/app/ordens': typeof AppOrdensRoute
+  '/app/perfil': typeof AppPerfilRoute
+  '/admin/': typeof AdminIndexRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/login'
+    | '/admin/clientes'
+    | '/admin/equipamentos'
+    | '/admin/faturamento'
+    | '/admin/operadores'
+    | '/admin/ordens'
+    | '/app/apontamento'
+    | '/app/ordens'
+    | '/app/perfil'
+    | '/admin/'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/admin/clientes'
+    | '/admin/equipamentos'
+    | '/admin/faturamento'
+    | '/admin/operadores'
+    | '/admin/ordens'
+    | '/app/apontamento'
+    | '/app/ordens'
+    | '/app/perfil'
+    | '/admin'
+    | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/app'
+    | '/login'
+    | '/admin/clientes'
+    | '/admin/equipamentos'
+    | '/admin/faturamento'
+    | '/admin/operadores'
+    | '/admin/ordens'
+    | '/app/apontamento'
+    | '/app/ordens'
+    | '/app/perfil'
+    | '/admin/'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +228,120 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/app/perfil': {
+      id: '/app/perfil'
+      path: '/perfil'
+      fullPath: '/app/perfil'
+      preLoaderRoute: typeof AppPerfilRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/ordens': {
+      id: '/app/ordens'
+      path: '/ordens'
+      fullPath: '/app/ordens'
+      preLoaderRoute: typeof AppOrdensRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/apontamento': {
+      id: '/app/apontamento'
+      path: '/apontamento'
+      fullPath: '/app/apontamento'
+      preLoaderRoute: typeof AppApontamentoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/admin/ordens': {
+      id: '/admin/ordens'
+      path: '/ordens'
+      fullPath: '/admin/ordens'
+      preLoaderRoute: typeof AdminOrdensRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/operadores': {
+      id: '/admin/operadores'
+      path: '/operadores'
+      fullPath: '/admin/operadores'
+      preLoaderRoute: typeof AdminOperadoresRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/faturamento': {
+      id: '/admin/faturamento'
+      path: '/faturamento'
+      fullPath: '/admin/faturamento'
+      preLoaderRoute: typeof AdminFaturamentoRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/equipamentos': {
+      id: '/admin/equipamentos'
+      path: '/equipamentos'
+      fullPath: '/admin/equipamentos'
+      preLoaderRoute: typeof AdminEquipamentosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/clientes': {
+      id: '/admin/clientes'
+      path: '/clientes'
+      fullPath: '/admin/clientes'
+      preLoaderRoute: typeof AdminClientesRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminClientesRoute: typeof AdminClientesRoute
+  AdminEquipamentosRoute: typeof AdminEquipamentosRoute
+  AdminFaturamentoRoute: typeof AdminFaturamentoRoute
+  AdminOperadoresRoute: typeof AdminOperadoresRoute
+  AdminOrdensRoute: typeof AdminOrdensRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminClientesRoute: AdminClientesRoute,
+  AdminEquipamentosRoute: AdminEquipamentosRoute,
+  AdminFaturamentoRoute: AdminFaturamentoRoute,
+  AdminOperadoresRoute: AdminOperadoresRoute,
+  AdminOrdensRoute: AdminOrdensRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface AppRouteChildren {
+  AppApontamentoRoute: typeof AppApontamentoRoute
+  AppOrdensRoute: typeof AppOrdensRoute
+  AppPerfilRoute: typeof AppPerfilRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppApontamentoRoute: AppApontamentoRoute,
+  AppOrdensRoute: AppOrdensRoute,
+  AppPerfilRoute: AppPerfilRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
