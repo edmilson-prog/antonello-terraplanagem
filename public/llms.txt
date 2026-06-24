@@ -1,0 +1,22 @@
+# Antonello Terraplanagem
+
+> Plataforma de gestão da Antonello Terraplanagem — controle de obras de
+> terraplanagem, equipamentos pesados, ordens de serviço e faturamento por
+> hora de máquina. Atende construtoras, incorporadoras e prefeituras no
+> Paraná.
+
+A Antonello Terraplanagem opera escavadeiras, tratores de esteira,
+carregadeiras e caminhões basculantes em obras de loteamento, pavimentação,
+fundação e movimentação de terra. A plataforma é usada por três perfis:
+operadores em campo (app mobile com horímetro e ordens de serviço),
+recepção (cadastros, programação e faturamento) e proprietário (visão
+financeira consolidada).
+
+## Pages
+
+- [Página inicial](/): redireciona para o acesso da plataforma.
+- [Entrar na plataforma](/login): tela de acesso da equipe Antonello.
+
+## Guias
+
+- [Terraplanagem ou Terraplenagem: qual o termo correto?](/blog/terraplanagem-ou-terraplenagem): diferença entre os dois termos e qual usar em contratos, propostas e obras.
