@@ -1,4 +1,5 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { useState } from "react";
+import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import {
   ArrowLeft,
   Building2,
@@ -7,21 +8,37 @@ import {
   Calendar,
   Gauge,
   StickyNote,
+  Play,
+  CheckCircle2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { StatusOrdemBadge } from "@/features/operador/status-ordem-badge";
-import { ordensOperador } from "@/mocks/ordens-operador";
-import type { OrdemServicoOperador } from "@/shared/types";
+import {
+  finalizarOrdem,
+  iniciarTurno,
+  obterOrdem,
+  useOrdem,
+} from "@/features/operador/ordens-store";
 
 export const Route = createFileRoute("/app/ordens/$ordemId")({
   loader: ({ params }) => {
-    const ordem = ordensOperador.find((o) => o.id === params.ordemId);
-    if (!ordem) throw notFound();
-    return { ordem };
+    if (!obterOrdem(params.ordemId)) throw notFound();
+    return null;
   },
-  head: ({ loaderData }) => ({
-    meta: [{ title: `${loaderData?.ordem.numero ?? "OS"} · Antonello` }],
+  head: ({ params }) => ({
+    meta: [{ title: `${obterOrdem(params.ordemId)?.numero ?? "OS"} · Antonello` }],
   }),
   component: OrdemDetalhePage,
   notFoundComponent: OrdemNaoEncontrada,
@@ -40,13 +57,53 @@ function formatarDataHora(iso: string | null) {
 }
 
 function OrdemDetalhePage() {
-  const { ordem } = Route.useLoaderData();
-  const acao = proximaAcao(ordem);
+  const { ordemId } = Route.useParams();
+  const router = useRouter();
+  const ordem = useOrdem(ordemId);
+  const [dialogoIniciar, setDialogoIniciar] = useState(false);
+  const [dialogoFinalizar, setDialogoFinalizar] = useState(false);
+  const [horimetroInicio, setHorimetroInicio] = useState("");
+  const [horimetroFim, setHorimetroFim] = useState("");
+
+  if (!ordem) return <OrdemNaoEncontrada />;
 
   const horasTrabalhadas =
     ordem.horimetro_inicio != null && ordem.horimetro_fim != null
       ? ordem.horimetro_fim - ordem.horimetro_inicio
       : null;
+
+  const confirmarInicio = () => {
+    const valor = Number(horimetroInicio);
+    if (!Number.isFinite(valor) || valor < 0) {
+      toast.error("Informe o horímetro inicial.");
+      return;
+    }
+    iniciarTurno(ordem.id);
+    // Reaplica o horímetro informado, pois iniciarTurno usa o existente.
+    const o = obterOrdem(ordem.id);
+    if (o) o.horimetro_inicio = valor;
+    toast.success("Turno iniciado.", { description: `Horímetro: ${valor} h` });
+    setDialogoIniciar(false);
+    setHorimetroInicio("");
+    router.invalidate();
+  };
+
+  const confirmarFim = () => {
+    const valor = Number(horimetroFim);
+    if (!Number.isFinite(valor) || valor < 0) {
+      toast.error("Informe o horímetro final.");
+      return;
+    }
+    if (ordem.horimetro_inicio != null && valor < ordem.horimetro_inicio) {
+      toast.error("Horímetro final menor que o inicial.");
+      return;
+    }
+    finalizarOrdem(ordem.id, valor);
+    toast.success("OS finalizada.");
+    setDialogoFinalizar(false);
+    setHorimetroFim("");
+    router.invalidate();
+  };
 
   return (
     <div className="space-y-5">
@@ -126,14 +183,100 @@ function OrdemDetalhePage() {
 
       {/*
         REGRA RÍGIDA: o app do operador NUNCA exibe preço, valor por hora,
-        total a faturar ou qualquer outro dado financeiro. Botões abaixo
-        apenas representam a próxima ação operacional (placeholder).
+        total a faturar ou qualquer outro dado financeiro.
       */}
-      {acao ? (
-        <Button size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary-hover">
-          {acao}
+      {ordem.status === "aberta" ? (
+        <Button
+          size="lg"
+          onClick={() => {
+            setHorimetroInicio(String(ordem.horimetro_inicio ?? ""));
+            setDialogoIniciar(true);
+          }}
+          className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
+        >
+          <Play className="h-4 w-4" />
+          Iniciar turno
         </Button>
       ) : null}
+
+      {ordem.status === "em_andamento" ? (
+        <Button
+          size="lg"
+          onClick={() => {
+            setHorimetroFim(
+              String(ordem.horimetro_fim ?? (ordem.horimetro_inicio ?? 0) + 8),
+            );
+            setDialogoFinalizar(true);
+          }}
+          className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
+        >
+          <CheckCircle2 className="h-4 w-4" />
+          Finalizar OS
+        </Button>
+      ) : null}
+
+      <Dialog open={dialogoIniciar} onOpenChange={setDialogoIniciar}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Iniciar turno</DialogTitle>
+            <DialogDescription>
+              Confirme o horímetro do equipamento no início do turno.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="horimetro-inicio">Horímetro inicial (h)</Label>
+            <Input
+              id="horimetro-inicio"
+              type="number"
+              inputMode="numeric"
+              value={horimetroInicio}
+              onChange={(e) => setHorimetroInicio(e.target.value)}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogoIniciar(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={confirmarInicio} className="bg-primary text-primary-foreground hover:bg-primary-hover">
+              Confirmar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={dialogoFinalizar} onOpenChange={setDialogoFinalizar}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Finalizar OS</DialogTitle>
+            <DialogDescription>
+              Informe o horímetro do equipamento ao encerrar o turno.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="horimetro-fim">Horímetro final (h)</Label>
+            <Input
+              id="horimetro-fim"
+              type="number"
+              inputMode="numeric"
+              value={horimetroFim}
+              onChange={(e) => setHorimetroFim(e.target.value)}
+            />
+            {ordem.horimetro_inicio != null ? (
+              <p className="text-xs text-muted-foreground">
+                Horímetro inicial: {ordem.horimetro_inicio} h
+              </p>
+            ) : null}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogoFinalizar(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={confirmarFim} className="bg-primary text-primary-foreground hover:bg-primary-hover">
+              Confirmar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -174,12 +317,6 @@ function CampoHorimetro({ rotulo, valor }: { rotulo: string; valor: number | nul
       </div>
     </div>
   );
-}
-
-function proximaAcao(o: OrdemServicoOperador): string | null {
-  if (o.status === "aberta") return "Iniciar turno";
-  if (o.status === "em_andamento") return "Finalizar OS";
-  return null;
 }
 
 function OrdemNaoEncontrada() {
