@@ -24,16 +24,16 @@ const itens: NavItem[] = [
   { to: "/app/perfil", label: "Perfil", icone: User },
 ];
 
-const titulos: Record<string, string> = {
-  "/app": "Início",
-  "/app/apontamento": "Apontamento",
-  "/app/ordens": "Minhas OS",
-  "/app/perfil": "Perfil",
-};
+const titulos: { prefixo: string; titulo: string }[] = [
+  { prefixo: "/app/apontamento", titulo: "Apontamento" },
+  { prefixo: "/app/ordens", titulo: "Minhas OS" },
+  { prefixo: "/app/perfil", titulo: "Perfil" },
+  { prefixo: "/app", titulo: "Início" },
+];
 
 export function OperadorShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const titulo = titulos[pathname] ?? "Antonello";
+  const titulo = titulos.find((t) => pathname.startsWith(t.prefixo))?.titulo ?? "Antonello";
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
