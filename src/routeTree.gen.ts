@@ -16,6 +16,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as BlogTerraplanagemOuTerraplenagemRouteImport } from './routes/blog.terraplanagem-ou-terraplenagem'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
 import { Route as AppApontamentoRouteImport } from './routes/app.apontamento'
 import { Route as AdminOrdensRouteImport } from './routes/admin.ordens'
@@ -61,6 +62,12 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const BlogTerraplanagemOuTerraplenagemRoute =
+  BlogTerraplanagemOuTerraplenagemRouteImport.update({
+    id: '/blog/terraplanagem-ou-terraplenagem',
+    path: '/blog/terraplanagem-ou-terraplenagem',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AppPerfilRoute = AppPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
@@ -120,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/admin/ordens': typeof AdminOrdensRoute
   '/app/apontamento': typeof AppApontamentoRoute
   '/app/perfil': typeof AppPerfilRoute
+  '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
@@ -136,6 +144,7 @@ export interface FileRoutesByTo {
   '/admin/ordens': typeof AdminOrdensRoute
   '/app/apontamento': typeof AppApontamentoRoute
   '/app/perfil': typeof AppPerfilRoute
+  '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
@@ -155,6 +164,7 @@ export interface FileRoutesById {
   '/admin/ordens': typeof AdminOrdensRoute
   '/app/apontamento': typeof AppApontamentoRoute
   '/app/perfil': typeof AppPerfilRoute
+  '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
     | '/admin/ordens'
     | '/app/apontamento'
     | '/app/perfil'
+    | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
     | '/app/'
     | '/app/ordens/$ordemId'
@@ -191,6 +202,7 @@ export interface FileRouteTypes {
     | '/admin/ordens'
     | '/app/apontamento'
     | '/app/perfil'
+    | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin'
     | '/app'
     | '/app/ordens/$ordemId'
@@ -209,6 +221,7 @@ export interface FileRouteTypes {
     | '/admin/ordens'
     | '/app/apontamento'
     | '/app/perfil'
+    | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
     | '/app/'
     | '/app/ordens/$ordemId'
@@ -221,6 +234,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  BlogTerraplanagemOuTerraplenagemRoute: typeof BlogTerraplanagemOuTerraplenagemRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -273,6 +287,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/blog/terraplanagem-ou-terraplenagem': {
+      id: '/blog/terraplanagem-ou-terraplenagem'
+      path: '/blog/terraplanagem-ou-terraplenagem'
+      fullPath: '/blog/terraplanagem-ou-terraplenagem'
+      preLoaderRoute: typeof BlogTerraplanagemOuTerraplenagemRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/app/perfil': {
       id: '/app/perfil'
@@ -384,6 +405,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  BlogTerraplanagemOuTerraplenagemRoute: BlogTerraplanagemOuTerraplenagemRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
