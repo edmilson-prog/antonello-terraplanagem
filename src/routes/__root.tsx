@@ -81,22 +81,35 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Plataforma de gestão da Antonello Terraplanagem — controle de equipamentos, ordens de serviço e faturamento.",
+          "Plataforma de gestão da Antonello Terraplanagem — controle de equipamentos pesados, ordens de serviço e faturamento por hora de máquina.",
       },
       { name: "author", content: "Antonello Terraplanagem" },
+      { property: "og:site_name", content: "Antonello Terraplanagem" },
+      { property: "og:type", content: "website" },
       { property: "og:title", content: "Antonello Terraplanagem · Plataforma de Gestão" },
       {
         property: "og:description",
-        content: "Gestão de obras de terraplanagem: equipamentos, ordens e faturamento.",
+        content:
+          "Gestão de obras de terraplanagem: equipamentos, ordens de serviço e faturamento.",
       },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
+      { property: "og:url", content: "https://antonello-terraplanagem.lovable.app/" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Antonello Terraplanagem · Plataforma de Gestão" },
-      { name: "description", content: "Project Planning Hub helps teams plan and manage project implementations." },
-      { property: "og:description", content: "Project Planning Hub helps teams plan and manage project implementations." },
-      { name: "twitter:description", content: "Project Planning Hub helps teams plan and manage project implementations." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ae1ac7dd-3637-44fb-a10e-807cb561e784/id-preview-3ff2f665--49ae62e6-4214-45ea-8c30-7d1e957d3fd1.lovable.app-1782305254203.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ae1ac7dd-3637-44fb-a10e-807cb561e784/id-preview-3ff2f665--49ae62e6-4214-45ea-8c30-7d1e957d3fd1.lovable.app-1782305254203.png" },
+      {
+        name: "twitter:description",
+        content:
+          "Gestão de obras de terraplanagem: equipamentos, ordens de serviço e faturamento.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ae1ac7dd-3637-44fb-a10e-807cb561e784/id-preview-3ff2f665--49ae62e6-4214-45ea-8c30-7d1e957d3fd1.lovable.app-1782305254203.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ae1ac7dd-3637-44fb-a10e-807cb561e784/id-preview-3ff2f665--49ae62e6-4214-45ea-8c30-7d1e957d3fd1.lovable.app-1782305254203.png",
+      },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -106,6 +119,29 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
       },
       { rel: "stylesheet", href: appCss },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Antonello Terraplanagem",
+          url: "https://antonello-terraplanagem.lovable.app/",
+          description:
+            "Serviços de terraplanagem com equipamentos pesados — escavadeiras, tratores de esteira, carregadeiras e caminhões basculantes.",
+          areaServed: "BR-PR",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Antonello Terraplanagem",
+          url: "https://antonello-terraplanagem.lovable.app/",
+        }),
+      },
     ],
   }),
   shellComponent: RootShell,
