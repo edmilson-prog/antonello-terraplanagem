@@ -16,13 +16,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
-import { Route as AppOrdensRouteImport } from './routes/app.ordens'
 import { Route as AppApontamentoRouteImport } from './routes/app.apontamento'
 import { Route as AdminOrdensRouteImport } from './routes/admin.ordens'
 import { Route as AdminOperadoresRouteImport } from './routes/admin.operadores'
 import { Route as AdminFaturamentoRouteImport } from './routes/admin.faturamento'
 import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
 import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
+import { Route as AppOrdensIndexRouteImport } from './routes/app.ordens.index'
+import { Route as AppOrdensOrdemIdRouteImport } from './routes/app.ordens.$ordemId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -59,11 +60,6 @@ const AppPerfilRoute = AppPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AppRoute,
 } as any)
-const AppOrdensRoute = AppOrdensRouteImport.update({
-  id: '/ordens',
-  path: '/ordens',
-  getParentRoute: () => AppRoute,
-} as any)
 const AppApontamentoRoute = AppApontamentoRouteImport.update({
   id: '/apontamento',
   path: '/apontamento',
@@ -94,6 +90,16 @@ const AdminClientesRoute = AdminClientesRouteImport.update({
   path: '/clientes',
   getParentRoute: () => AdminRoute,
 } as any)
+const AppOrdensIndexRoute = AppOrdensIndexRouteImport.update({
+  id: '/ordens/',
+  path: '/ordens/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrdensOrdemIdRoute = AppOrdensOrdemIdRouteImport.update({
+  id: '/ordens/$ordemId',
+  path: '/ordens/$ordemId',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -106,10 +112,11 @@ export interface FileRoutesByFullPath {
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/ordens': typeof AdminOrdensRoute
   '/app/apontamento': typeof AppApontamentoRoute
-  '/app/ordens': typeof AppOrdensRoute
   '/app/perfil': typeof AppPerfilRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
+  '/app/ordens/': typeof AppOrdensIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -120,10 +127,11 @@ export interface FileRoutesByTo {
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/ordens': typeof AdminOrdensRoute
   '/app/apontamento': typeof AppApontamentoRoute
-  '/app/ordens': typeof AppOrdensRoute
   '/app/perfil': typeof AppPerfilRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
+  '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
+  '/app/ordens': typeof AppOrdensIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -137,10 +145,11 @@ export interface FileRoutesById {
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/ordens': typeof AdminOrdensRoute
   '/app/apontamento': typeof AppApontamentoRoute
-  '/app/ordens': typeof AppOrdensRoute
   '/app/perfil': typeof AppPerfilRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
+  '/app/ordens/': typeof AppOrdensIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -155,10 +164,11 @@ export interface FileRouteTypes {
     | '/admin/operadores'
     | '/admin/ordens'
     | '/app/apontamento'
-    | '/app/ordens'
     | '/app/perfil'
     | '/admin/'
     | '/app/'
+    | '/app/ordens/$ordemId'
+    | '/app/ordens/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -169,10 +179,11 @@ export interface FileRouteTypes {
     | '/admin/operadores'
     | '/admin/ordens'
     | '/app/apontamento'
-    | '/app/ordens'
     | '/app/perfil'
     | '/admin'
     | '/app'
+    | '/app/ordens/$ordemId'
+    | '/app/ordens'
   id:
     | '__root__'
     | '/'
@@ -185,10 +196,11 @@ export interface FileRouteTypes {
     | '/admin/operadores'
     | '/admin/ordens'
     | '/app/apontamento'
-    | '/app/ordens'
     | '/app/perfil'
     | '/admin/'
     | '/app/'
+    | '/app/ordens/$ordemId'
+    | '/app/ordens/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -249,13 +261,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPerfilRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/ordens': {
-      id: '/app/ordens'
-      path: '/ordens'
-      fullPath: '/app/ordens'
-      preLoaderRoute: typeof AppOrdensRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/app/apontamento': {
       id: '/app/apontamento'
       path: '/apontamento'
@@ -298,6 +303,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClientesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/app/ordens/': {
+      id: '/app/ordens/'
+      path: '/ordens'
+      fullPath: '/app/ordens/'
+      preLoaderRoute: typeof AppOrdensIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/ordens/$ordemId': {
+      id: '/app/ordens/$ordemId'
+      path: '/ordens/$ordemId'
+      fullPath: '/app/ordens/$ordemId'
+      preLoaderRoute: typeof AppOrdensOrdemIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -323,16 +342,18 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppRouteChildren {
   AppApontamentoRoute: typeof AppApontamentoRoute
-  AppOrdensRoute: typeof AppOrdensRoute
   AppPerfilRoute: typeof AppPerfilRoute
   AppIndexRoute: typeof AppIndexRoute
+  AppOrdensOrdemIdRoute: typeof AppOrdensOrdemIdRoute
+  AppOrdensIndexRoute: typeof AppOrdensIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppApontamentoRoute: AppApontamentoRoute,
-  AppOrdensRoute: AppOrdensRoute,
   AppPerfilRoute: AppPerfilRoute,
   AppIndexRoute: AppIndexRoute,
+  AppOrdensOrdemIdRoute: AppOrdensOrdemIdRoute,
+  AppOrdensIndexRoute: AppOrdensIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
