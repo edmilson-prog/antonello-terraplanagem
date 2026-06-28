@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Antonello Terraplanagem — Mapa de Funcionalidades</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* --- primitivos --- */
+    --asphalt:#16140F;
+    --asphalt-2:#211D15;
+    --asphalt-3:#2C2719;
+    --machine:#FFB300;       /* amarelo-máquina (hi-vis) */
+    --machine-deep:#E09600;
+    --earth:#A2622F;         /* terra escavada / ocre */
+    --earth-soft:#C07B43;
+    --steel:#717A82;         /* aço */
+    --steel-soft:#9AA1A8;
+    --concrete:#E8E2D5;      /* concreto / fundo claro */
+    --concrete-2:#F4EFE6;    /* superfície clara elevada */
+    --line:#D6CDBC;
+    --ink:#1B1912;
+    --ink-soft:#5A554A;
+    --ink-faint:#8C8678;
+
+    /* --- semânticos --- */
+    --bg:var(--concrete);
+    --surface:var(--concrete-2);
+    --accent:var(--machine);
+    --wave1:var(--machine);
+    --wave2:var(--earth);
+    --wave3:var(--steel);
+
+    --font-display:'Archivo',system-ui,sans-serif;
+    --font-body:'IBM Plex Sans',system-ui,sans-serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+
+    --wrap:1180px;
+    --gut:clamp(20px,5vw,64px);
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--font-body);font-size:16px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  h1,h2,h3,h4{font-family:var(--font-display);margin:0;line-height:1.04;letter-spacing:-.02em}
+  p{margin:0}
+  a{color:inherit}
+  .wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:var(--gut)}
+
+  /* faixa de sinalização — assinatura de canteiro */
+  .hazard{
+    height:10px;width:100%;
+    background:repeating-linear-gradient(-45deg,#1B1912 0 14px,var(--machine) 14px 28px);
+  }
+
+  .mono{font-family:var(--font-mono)}
+  .eyebrow{
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.22em;
+    text-transform:uppercase;font-weight:500;
+  }
+
+  /* ===================== HERO ===================== */
+  .hero{background:var(--asphalt);color:#F1ECE0;position:relative;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:0;opacity:.5;
+    background-image:repeating-linear-gradient(90deg,transparent 0 78px,rgba(255,255,255,.04) 78px 79px);
+    pointer-events:none;
+  }
+  .hero-inner{position:relative;padding-block:clamp(54px,9vw,104px)}
+  .hero .eyebrow{color:var(--machine)}
+  .kicker-row{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:baseline;margin-bottom:34px}
+  .kicker-row .sep{color:#6f685a}
+  .kicker-row .muted{color:#9b9486}
+  .hero h1{
+    font-size:clamp(44px,8.5vw,104px);font-weight:900;letter-spacing:-.035em;
+    text-transform:uppercase;
+  }
+  .hero h1 .line2{display:block;color:var(--machine)}
+  .hero-sub{
+    margin-top:30px;max-width:60ch;font-size:clamp(17px,2.1vw,21px);
+    color:#D9D2C4;line-height:1.55;
+  }
+  .hero-sub b{color:#fff;font-weight:600}
+  .stats{display:flex;flex-wrap:wrap;gap:14px;margin-top:44px}
+  .stat{
+    border:1px solid #3a3425;border-radius:12px;padding:16px 22px;background:rgba(255,255,255,.015);
+    min-width:150px;
+  }
+  .stat .n{font-family:var(--font-display);font-weight:800;font-size:30px;color:#fff;letter-spacing:-.02em}
+  .stat .n b{color:var(--machine)}
+  .stat .l{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:#9b9486;margin-top:4px}
+
+  /* ===================== ONDAS ===================== */
+  .band{padding-block:clamp(56px,8vw,92px)}
+  .sec-head{max-width:64ch;margin-bottom:clamp(34px,5vw,52px)}
+  .sec-head .eyebrow{color:var(--earth)}
+  .sec-head h2{font-size:clamp(30px,4.6vw,46px);font-weight:800;margin-top:14px}
+  .sec-head p{margin-top:18px;color:var(--ink-soft);font-size:17px;max-width:58ch}
+
+  .waves{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .wave-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:16px;
+    padding:30px 28px 32px;position:relative;display:flex;flex-direction:column;
+  }
+  .wave-card::before{content:"";position:absolute;left:0;top:22px;bottom:22px;width:5px;border-radius:4px}
+  .wave-card.w1::before{background:var(--wave1)}
+  .wave-card.w2::before{background:var(--wave2)}
+  .wave-card.w3::before{background:var(--wave3)}
+  .wave-no{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;color:var(--ink-faint);text-transform:uppercase}
+  .wave-card h3{font-size:27px;font-weight:800;margin:10px 0 4px;letter-spacing:-.02em}
+  .wave-tag{font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:.04em;margin-bottom:16px}
+  .wave-card.w1 .wave-tag{color:var(--machine-deep)}
+  .wave-card.w2 .wave-tag{color:var(--earth)}
+  .wave-card.w3 .wave-tag{color:var(--steel)}
+  .wave-goal{font-size:15.5px;color:var(--ink);font-weight:500;margin-bottom:14px;line-height:1.5}
+  .wave-desc{font-size:14.5px;color:var(--ink-soft);line-height:1.58}
+
+  /* ===================== ÍNDICE ===================== */
+  .index-band{background:var(--asphalt);color:#ECE6DA;padding-block:clamp(48px,6vw,72px)}
+  .index-band .eyebrow{color:var(--machine)}
+  .index-band h2{color:#fff;font-size:clamp(26px,3.6vw,38px);font-weight:800;margin-top:12px}
+  .index-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:34px;background:#33301f;border:1px solid #33301f;border-radius:14px;overflow:hidden}
+  .idx{
+    background:var(--asphalt);padding:20px 22px;text-decoration:none;display:flex;gap:16px;align-items:baseline;
+    transition:background .18s;
+  }
+  .idx:hover,.idx:focus-visible{background:var(--asphalt-3);outline:none}
+  .idx .no{font-family:var(--font-mono);font-size:13px;color:var(--machine);font-weight:600;min-width:24px}
+  .idx .nm{font-family:var(--font-display);font-weight:600;font-size:16px;color:#F1ECE0;letter-spacing:-.01em}
+
+  /* ===================== FILTRO ===================== */
+  .filter{
+    position:sticky;top:0;z-index:40;background:rgba(232,226,213,.92);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  }
+  .filter-inner{display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding-block:13px}
+  .filter .lab{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{
+    font-family:var(--font-mono);font-size:12.5px;font-weight:500;letter-spacing:.02em;
+    border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);
+    padding:7px 14px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+    transition:all .16s;
+  }
+  .chip .dot{width:9px;height:9px;border-radius:50%;background:var(--ink-faint)}
+  .chip[data-filter="1"] .dot{background:var(--wave1)}
+  .chip[data-filter="2"] .dot{background:var(--wave2)}
+  .chip[data-filter="3"] .dot{background:var(--wave3)}
+  .chip:hover{border-color:var(--ink-faint)}
+  .chip.is-active{background:var(--ink);color:#F4EFE6;border-color:var(--ink)}
+  .chip.is-active .dot{box-shadow:0 0 0 2px rgba(244,239,230,.25)}
+
+  /* ===================== MÓDULOS ===================== */
+  .modules{padding-block:clamp(20px,3vw,40px)}
+  .mod{
+    display:grid;grid-template-columns:300px 1fr;gap:clamp(24px,4vw,56px);
+    padding-block:clamp(40px,5vw,60px);border-top:1px solid var(--line);position:relative;
+  }
+  .mod:first-child{border-top:none}
+  /* divisor estilo régua de cota */
+  .mod::before{
+    content:"";position:absolute;top:-1px;left:0;right:0;height:10px;
+    background-image:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 32px);
+    opacity:.7;pointer-events:none;
+  }
+  .mod:first-child::before{display:none}
+  .mod-head{position:sticky;top:74px;align-self:start;height:max-content}
+  .mod-no{font-family:var(--font-mono);font-size:13px;letter-spacing:.18em;color:var(--earth);text-transform:uppercase;font-weight:600}
+  .mod-num{font-family:var(--font-display);font-weight:900;font-size:clamp(52px,7vw,82px);line-height:.86;color:var(--ink);letter-spacing:-.04em;margin:6px 0 14px}
+  .mod-num .pct{color:var(--line)}
+  .mod-head h3{font-size:clamp(22px,2.6vw,27px);font-weight:800;letter-spacing:-.02em}
+  .mod-head .desc{margin-top:12px;color:var(--ink-soft);font-size:14.5px;line-height:1.55;max-width:34ch}
+
+  .feats{display:flex;flex-direction:column;gap:0}
+  .feat{
+    display:flex;gap:16px;align-items:flex-start;padding:15px 0;border-bottom:1px dashed var(--line);
+    transition:opacity .2s,filter .2s;
+  }
+  .feat:last-child{border-bottom:none}
+  .feat .txt{flex:1}
+  .feat .ft{font-weight:600;font-size:15.5px;color:var(--ink);letter-spacing:-.005em}
+  .feat .fd{font-size:13.5px;color:var(--ink-soft);margin-top:3px;line-height:1.5}
+  .badge{
+    font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    padding:4px 9px;border-radius:6px;white-space:nowrap;margin-top:1px;flex-shrink:0;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .badge::before{content:"";width:7px;height:7px;border-radius:50%}
+  .badge.b1{background:rgba(255,179,0,.16);color:#946400}
+  .badge.b1::before{background:var(--wave1)}
+  .badge.b2{background:rgba(162,98,47,.15);color:#824c22}
+  .badge.b2::before{background:var(--wave2)}
+  .badge.b3{background:rgba(113,122,130,.18);color:#4d555c}
+  .badge.b3::before{background:var(--wave3)}
+
+  /* dimming pelo filtro */
+  body[data-filter="1"] .feat[data-wave]:not([data-wave="1"]),
+  body[data-filter="2"] .feat[data-wave]:not([data-wave="2"]),
+  body[data-filter="3"] .feat[data-wave]:not([data-wave="3"]){opacity:.26;filter:grayscale(.5)}
+
+  /* ===================== DECISÕES EM ABERTO ===================== */
+  .decisions{background:var(--asphalt);color:#ECE6DA}
+  .decisions .eyebrow{color:var(--machine)}
+  .decisions h2{color:#fff;font-size:clamp(28px,4vw,42px);font-weight:800;margin-top:12px}
+  .decisions .sub{color:#b3ab9c;margin-top:16px;max-width:60ch;font-size:16px}
+  .dec-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:40px;background:#33301f;border:1px solid #33301f;border-radius:14px;overflow:hidden}
+  .dec{background:var(--asphalt);padding:22px 24px;display:flex;gap:15px;align-items:flex-start}
+  .dec .q{font-family:var(--font-mono);font-size:12px;color:var(--machine);font-weight:600;margin-top:2px;min-width:26px}
+  .dec .d{font-size:14.5px;color:#DAD3C5;line-height:1.5}
+  .dec .d b{color:#fff;font-weight:600}
+
+  /* ===================== FUNDAÇÃO TÉCNICA ===================== */
+  .tech .eyebrow{color:var(--steel)}
+  .tech h2{font-size:clamp(26px,3.6vw,38px);font-weight:800;margin-top:12px}
+  .tech-cols{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(24px,4vw,48px);margin-top:36px}
+  .stack-list{display:flex;flex-direction:column;gap:0}
+  .stack-row{display:grid;grid-template-columns:130px 1fr;gap:18px;padding:14px 0;border-bottom:1px dashed var(--line);align-items:baseline}
+  .stack-row:last-child{border-bottom:none}
+  .stack-row .k{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--ink);letter-spacing:.02em}
+  .stack-row .v{font-size:14.5px;color:var(--ink-soft);line-height:1.5}
+  .tension{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--machine);border-radius:14px;padding:26px 28px;align-self:start}
+  .tension h4{font-size:18px;font-weight:800;letter-spacing:-.01em}
+  .tension p{margin-top:12px;font-size:14.5px;color:var(--ink-soft);line-height:1.6}
+  .tension p+p{margin-top:12px}
+
+  /* ===================== FOOTER ===================== */
+  footer{background:var(--asphalt);color:#9b9486;border-top:1px solid #33301f}
+  .foot-inner{padding-block:34px;display:flex;flex-wrap:wrap;gap:14px 28px;justify-content:space-between;align-items:center}
+  .foot-inner .brand{font-family:var(--font-display);font-weight:800;color:#F1ECE0;font-size:15px;letter-spacing:-.01em}
+  .foot-inner .meta{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em}
+  .totop{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--machine);text-decoration:none}
+
+  /* ===================== RESPONSIVO ===================== */
+  @media (max-width:880px){
+    .waves,.index-grid,.dec-grid,.tech-cols{grid-template-columns:1fr}
+    .mod{grid-template-columns:1fr;gap:22px}
+    .mod-head{position:static}
+    .mod-num{font-size:64px}
+    .filter{position:static}
+  }
+  @media (max-width:560px){
+    .index-grid .idx{padding:16px 18px}
+    .stat{flex:1 1 100%}
+    .stack-row{grid-template-columns:1fr;gap:4px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *{transition:none!important}
+  }
+  :focus-visible{outline:2px solid var(--machine);outline-offset:3px;border-radius:4px}
+</style>
+</head>
+<body data-filter="0">
+<div class="hazard"></div>
+
+<!-- ===================== HERO ===================== -->
+<header class="hero">
+  <div class="wrap hero-inner">
+    <div class="kicker-row eyebrow">
+      <span>Mapa de Funcionalidades</span>
+      <span class="sep">/</span>
+      <span class="muted">Discovery · Jun 2026</span>
+      <span class="sep">/</span>
+      <span class="muted">v1 — sujeito a refinamento</span>
+    </div>
+    <h1>Antonello<span class="line2">Terraplanagem</span></h1>
+    <p class="hero-sub">Hoje o controle é todo no papel — blocos de notas que viram pilha no fim de semana e horas somadas à mão. Este mapa desenha a plataforma que põe o apontamento <b>no celular do operador</b> e a cobrança <b>na sua mão, em tempo real</b>.</p>
+    <div class="stats">
+      <div class="stat"><div class="n">≈<b>15</b></div><div class="l">Equipamentos</div></div>
+      <div class="stat"><div class="n">≈<b>15</b></div><div class="l">Operadores em campo</div></div>
+      <div class="stat"><div class="n"><b>9</b> frentes</div><div class="l">Organizadas em 3 ondas</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== ONDAS ===================== -->
+<section class="band wrap" id="ondas">
+  <div class="sec-head">
+    <div class="eyebrow">A estratégia de entrega</div>
+    <h2>Construída em três ondas</h2>
+    <p>Como em qualquer obra, primeiro vem a fundação que sustenta tudo, depois a estrutura e por fim o acabamento. Cada onda já entrega valor real e funciona sozinha — não é preciso esperar o sistema inteiro para parar de juntar folhinhas.</p>
+  </div>
+  <div class="waves">
+    <article class="wave-card w1">
+      <div class="wave-no">Onda 1</div>
+      <h3>Fundação</h3>
+      <div class="wave-tag">// MVP — o essencial</div>
+      <p class="wave-goal">Acabar com a nota manual e encurtar o caminho até a cobrança.</p>
+      <p class="wave-desc">O operador lança o serviço pelo celular — mesmo sem sinal — e a informação cai na sua central na hora, pronta para cobrar. App de campo com horímetro e foto, ordem de serviço colaborativa, cadastros, preço por hora e por metro, faturamento ao fechar a OS e aviso ao cliente por WhatsApp.</p>
+    </article>
+    <article class="wave-card w2">
+      <div class="wave-no">Onda 2</div>
+      <h3>Estrutura</h3>
+      <div class="wave-tag">// gestão financeira e preventiva</div>
+      <p class="wave-goal">Virar o controle operacional em gestão de dinheiro e de máquina.</p>
+      <p class="wave-desc">Com o apontamento rodando, sobe um andar: contas a pagar e receber, boleto e PIX, orçamentos completos, manutenção preventiva avisada pelo próprio horímetro, comprovante assinado pelo cliente e os primeiros indicadores de utilização e diesel.</p>
+    </article>
+    <article class="wave-card w3">
+      <div class="wave-no">Onda 3</div>
+      <h3>Acabamento</h3>
+      <div class="wave-tag">// inteligência de rentabilidade</div>
+      <p class="wave-goal">Responder “qual máquina dá lucro?” e “qual obra é rentável?”.</p>
+      <p class="wave-desc">A camada que revela o que hoje é invisível: custo real da hora-máquina, rentabilidade por equipamento e por obra, gestão de pneus e esteiras, estoque de peças, ranking de operadores e integrações fiscais.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ===================== ÍNDICE ===================== -->
+<section class="index-band">
+  <div class="wrap">
+    <div class="eyebrow">As frentes de trabalho</div>
+    <h2>O que a plataforma faz</h2>
+    <nav class="index-grid">
+      <a class="idx" href="#f01"><span class="no">01</span><span class="nm">App do Operador</span></a>
+      <a class="idx" href="#f02"><span class="no">02</span><span class="nm">Ordem de Serviço Colaborativa</span></a>
+      <a class="idx" href="#f03"><span class="no">03</span><span class="nm">Cadastros e Frota</span></a>
+      <a class="idx" href="#f04"><span class="no">04</span><span class="nm">Orçamentos e Precificação</span></a>
+      <a class="idx" href="#f05"><span class="no">05</span><span class="nm">Financeiro</span></a>
+      <a class="idx" href="#f06"><span class="no">06</span><span class="nm">Manutenção</span></a>
+      <a class="idx" href="#f07"><span class="no">07</span><span class="nm">Dashboards e Relatórios</span></a>
+      <a class="idx" href="#f08"><span class="no">08</span><span class="nm">Automações e Notificações</span></a>
+      <a class="idx" href="#f09"><span class="no">09</span><span class="nm">Acessos e Permissões</span></a>
+    </nav>
+  </div>
+</section>
+
+<!-- ===================== FILTRO ===================== -->
+<div class="filter">
+  <div class="wrap filter-inner">
+    <span class="lab">Filtrar por onda</span>
+    <div class="chips" role="group" aria-label="Filtrar funcionalidades por onda de entrega">
+      <button class="chip is-active" data-filter="0">Todas</button>
+      <button class="chip" data-filter="1"><span class="dot"></span>Fundação</button>
+      <button class="chip" data-filter="2"><span class="dot"></span>Estrutura</button>
+      <button class="chip" data-filter="3"><span class="dot"></span>Acabamento</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== MÓDULOS ===================== -->
+<main class="modules wrap">
+
+  <!-- 01 -->
+  <section class="mod" id="f01">
+    <div class="mod-head">
+      <div class="mod-no">Frente 01</div>
+      <div class="mod-num">01</div>
+      <h3>App do Operador</h3>
+      <p class="desc">O ponto de entrada do dado, no campo. Poucos toques, à prova de erro — pensado para quem opera máquina, não computador.</p>
+    </div>
+    <div class="feats">
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Check-in e check-out por equipamento</div><div class="fd">Operador escaneia o QR Code colado na máquina e abre o trabalho — sem procurar em lista.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Abertura de OS com cadastro rápido</div><div class="fd">Nome do cliente + CPF/CNPJ já libera. Sem burocracia no campo.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Horímetro inicial e final com foto obrigatória</div><div class="fd">Foto do painel a cada leitura — resolve auditoria e erro de digitação de uma vez.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Apontamento por metro (estaca / fundação)</div><div class="fd">Para serviços que não são por hora: metros lançados conforme o diâmetro da broca.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Geolocalização no check-in</div><div class="fd">Amarra automaticamente a máquina à obra/cliente correto.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Funciona offline, sincroniza depois</div><div class="fd">Obra sem sinal registra tudo no aparelho e envia assim que a internet volta.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Leitura assistida do horímetro (OCR)</div><div class="fd">A foto já preenche o número; o operador só confere e confirma.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Registro de paradas e ocorrências</div><div class="fd">Chuva, atolamento, quebra, espera de caminhão — separa hora produtiva de improdutiva.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Apontamento de abastecimento (diesel)</div><div class="fd">Litros por máquina — base para o indicador de consumo e controle de desvio.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Checklist de inspeção pré-operação (NR-12)</div><div class="fd">Confirmação de itens de segurança antes de ligar a máquina.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Comprovante digital + assinatura do cliente</div><div class="fd">A “via do cliente” no celular: horas, foto e assinatura na hora reduzem contestação na cobrança.</div></div><span class="badge b2">Estrutura</span></div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="mod" id="f02">
+    <div class="mod-head">
+      <div class="mod-no">Frente 02</div>
+      <div class="mod-num">02</div>
+      <h3>Ordem de Serviço Colaborativa</h3>
+      <p class="desc">O coração do sistema. Vários equipamentos no mesmo cliente, todos lançando na mesma ordem, e tudo aparecendo na sua central.</p>
+    </div>
+    <div class="feats">
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">OS compartilhada em tempo real</div><div class="fd">Quando alguém abre uma ordem, ela aparece em todos os celulares e na central na hora.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Vários equipamentos e operadores na mesma OS</div><div class="fd">Escavadeira escava, caminhão puxa, rolo compacta, trator espalha — cada um lança suas horas dentro da ordem.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Qualquer um abre, qualquer um fecha</div><div class="fd">Com salvaguarda: fechar avisa se ainda há apontamentos em aberto, para não perder faturamento.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">OS pontual e OS longa</div><div class="fd">Serve tanto para o serviço de uma hora quanto para a máquina que fica a semana na obra, acumulando apontamentos por dia.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Refinamento da OS no escritório</div><div class="fd">A recepção completa os dados que o operador não tem, deixando a ordem “redondinha”.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Ciclo de estados rastreável</div><div class="fd">Aberta → executada → fechada → faturada → recebida. Você enxerga onde cada serviço está parado.</div></div><span class="badge b2">Estrutura</span></div>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="mod" id="f03">
+    <div class="mod-head">
+      <div class="mod-no">Frente 03</div>
+      <div class="mod-num">03</div>
+      <h3>Cadastros e Frota</h3>
+      <p class="desc">A base de dados da operação: máquinas, gente e clientes que alimentam todo o resto.</p>
+    </div>
+    <div class="feats">
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Equipamentos</div><div class="fd">Tipo, porte, nº de patrimônio, horímetro atual e status (operando, manutenção, parado).</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Tipologia com atributos por porte</div><div class="fd">Escavadeiras de 18/10/6/5/2 t, mini carregadeira, retro, trator de esteira, caçamba, rompedor, estaca.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Operadores</div><div class="fd">CNH, habilitação e validade, e quais equipamentos cada um está autorizado a operar.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Clientes</div><div class="fd">Cadastro que nasce simples no campo e é enriquecido no escritório.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Obras / frentes de trabalho</div><div class="fd">Entidade que conecta cliente, localização e os equipamentos alocados.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Fornecedores</div><div class="fd">Combustível, peças e oficinas — base para o contas a pagar e a manutenção.</div></div><span class="badge b2">Estrutura</span></div>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="mod" id="f04">
+    <div class="mod-head">
+      <div class="mod-no">Frente 04</div>
+      <div class="mod-num">04</div>
+      <h3>Orçamentos e Precificação</h3>
+      <p class="desc">Onde os valores ficam — e só com você. O operador lança quantidade; o preço é aplicado no escritório.</p>
+    </div>
+    <div class="feats">
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Tabela de preços configurável</div><div class="fd">Valor da hora por porte de máquina e valor do metro por diâmetro de broca.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Quantidade no campo, valor no escritório</div><div class="fd">O operador nunca vê preço; o sistema aplica o valor do contrato na retaguarda. Decisão comercial centralizada em você.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Cobrança por hora e por metro</div><div class="fd">Os dois modelos do dia a dia já no MVP; empreitada e diária entram em seguida.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Máquina seca vs. operada</div><div class="fd">Orçamento explícito sobre operador e combustível inclusos ou não.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Mobilização e desmobilização</div><div class="fd">Transporte da máquina (prancha) como item próprio do orçamento.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Orçamento em PDF + envio por WhatsApp</div><div class="fd">Proposta apresentável gerada e enviada direto ao cliente.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Versionamento e conversão em OS</div><div class="fd">Revisões controladas; orçamento aprovado vira ordem de serviço sem redigitar.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="3"><div class="txt"><div class="ft">Cálculo do custo real da hora-máquina</div><div class="fd">Depreciação, diesel, manutenção, material rodante, operador e indiretos — para precificar com margem real.</div></div><span class="badge b3">Acabamento</span></div>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section class="mod" id="f05">
+    <div class="mod-head">
+      <div class="mod-no">Frente 05</div>
+      <div class="mod-num">05</div>
+      <h3>Financeiro</h3>
+      <p class="desc">O que entra, o que sai, o que foi faturado e o que não foi. O serviço fechado já libera a cobrança.</p>
+    </div>
+    <div class="feats">
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Faturamento automático ao fechar a OS</div><div class="fd">Horas apontadas × valor do contrato viram a cobrança, sem somar nota à mão.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Liberação de cobrança no escritório</div><div class="fd">Serviço concluído cai pronto na central, liberando você a cobrar na hora.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Contas a receber + faturado vs. não faturado</div><div class="fd">Enxergue a receita que ainda não virou cobrança — o que hoje se perde nas folhinhas.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Contas a pagar</div><div class="fd">Combustível, peças, manutenção, salários e parcelas de financiamento (FINAME) das máquinas.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Emissão de boleto e PIX</div><div class="fd">Via gateway (ex.: Asaas, Efí), integrado ao envio automático ao cliente.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Pipeline financeiro e fluxo de caixa</div><div class="fd">Executado → faturado → recebido, com visão de inadimplência e do caixa.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="3"><div class="txt"><div class="ft">Centro de custo por equipamento e obra</div><div class="fd">A base para saber, com números, quem dá lucro e quem dá prejuízo.</div></div><span class="badge b3">Acabamento</span></div>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section class="mod" id="f06">
+    <div class="mod-head">
+      <div class="mod-no">Frente 06</div>
+      <div class="mod-num">06</div>
+      <h3>Manutenção</h3>
+      <p class="desc">O próprio horímetro avisa quando a máquina precisa de cuidado — antes da quebra cara.</p>
+    </div>
+    <div class="feats">
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Histórico de manutenção por equipamento</div><div class="fd">Tudo que já foi feito em cada máquina, num só lugar.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Preventiva por horímetro</div><div class="fd">Alerta automático de troca de óleo e filtros conforme as horas — o sistema avisa antes.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Corretiva (quebras)</div><div class="fd">Registro de paradas e do custo de cada conserto.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Ordem de serviço de manutenção</div><div class="fd">OS interna para organizar e acompanhar os reparos.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="3"><div class="txt"><div class="ft">Gestão de material rodante</div><div class="fd">Controle dedicado de pneus e esteiras — um dos itens mais caros da frota.</div></div><span class="badge b3">Acabamento</span></div>
+      <div class="feat" data-wave="3"><div class="txt"><div class="ft">Custo de manutenção por equipamento</div><div class="fd">Quanto cada máquina consome em conserto ao longo do tempo.</div></div><span class="badge b3">Acabamento</span></div>
+      <div class="feat" data-wave="3"><div class="txt"><div class="ft">Estoque de peças e insumos</div><div class="fd">Controle do que entra e sai do almoxarifado.</div></div><span class="badge b3">Acabamento</span></div>
+    </div>
+  </section>
+
+  <!-- 07 -->
+  <section class="mod" id="f07">
+    <div class="mod-head">
+      <div class="mod-no">Frente 07</div>
+      <div class="mod-num">07</div>
+      <h3>Dashboards e Relatórios</h3>
+      <p class="desc">Os relatórios que você queria “na mão” — e os indicadores que hoje ninguém mede.</p>
+    </div>
+    <div class="feats">
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Relatórios essenciais</div><div class="fd">Entra/sai, faturado/não faturado e horas por período, cliente e equipamento.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Taxa de utilização e disponibilidade</div><div class="fd">Quanto cada máquina trabalha versus quanto fica disponível.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Consumo de combustível (litros/hora)</div><div class="fd">Indicador duplo: detecta problema mecânico cedo e desvio de diesel.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Horas faturadas vs. trabalhadas</div><div class="fd">O “vazamento” de faturamento que escapa no processo manual.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="3"><div class="txt"><div class="ft">Rentabilidade por equipamento e obra</div><div class="fd">A resposta para “qual máquina dá lucro?” e “qual obra compensou?”.</div></div><span class="badge b3">Acabamento</span></div>
+      <div class="feat" data-wave="3"><div class="txt"><div class="ft">Custo/hora real vs. orçado</div><div class="fd">Compara o que você cobrou com o que a hora realmente custou.</div></div><span class="badge b3">Acabamento</span></div>
+      <div class="feat" data-wave="3"><div class="txt"><div class="ft">Ranking de operadores</div><div class="fd">Produtividade e utilização por operador.</div></div><span class="badge b3">Acabamento</span></div>
+    </div>
+  </section>
+
+  <!-- 08 -->
+  <section class="mod" id="f08">
+    <div class="mod-head">
+      <div class="mod-no">Frente 08</div>
+      <div class="mod-num">08</div>
+      <h3>Automações e Notificações</h3>
+      <p class="desc">O sistema trabalhando sozinho nos bastidores: avisa o cliente, cobra e lembra você do que importa.</p>
+    </div>
+    <div class="feats">
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Aviso ao cliente por WhatsApp</div><div class="fd">Serviço concluído dispara mensagem com o que foi feito, as horas e o comprovante.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Envio automático de boleto / cobrança</div><div class="fd">A cobrança sai sozinha assim que o serviço é faturado.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Lembrete de cobrança e inadimplência</div><div class="fd">Avisos de vencimento e de quem está em atraso.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Alerta de OS parada</div><div class="fd">Ordem aberta há tempo demais sem fechamento sobe para a sua atenção.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Alerta de manutenção próxima</div><div class="fd">Máquina chegando na hora da revisão avisa antes de quebrar.</div></div><span class="badge b2">Estrutura</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Resumo diário para o dono</div><div class="fd">Fechamento do dia com o que rodou, faturou e ficou pendente.</div></div><span class="badge b2">Estrutura</span></div>
+    </div>
+  </section>
+
+  <!-- 09 -->
+  <section class="mod" id="f09">
+    <div class="mod-head">
+      <div class="mod-no">Frente 09</div>
+      <div class="mod-num">09</div>
+      <h3>Acessos e Permissões</h3>
+      <p class="desc">Cada um vê o que precisa. Valores e decisões comerciais ficam só com você.</p>
+    </div>
+    <div class="feats">
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Perfil Operador</div><div class="fd">Abre, lança e fecha ordens no campo — sem acesso a valores.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Perfil Recepção / Escritório</div><div class="fd">Complementa cadastros e prepara a cobrança.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Perfil Dono / Admin</div><div class="fd">Orçamento, valores, financeiro e relatórios — controle total.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="1"><div class="txt"><div class="ft">Valores restritos por perfil</div><div class="fd">Preço e margem visíveis apenas a quem você autorizar.</div></div><span class="badge b1">Fundação</span></div>
+      <div class="feat" data-wave="2"><div class="txt"><div class="ft">Rastreabilidade de quem fez o quê</div><div class="fd">Registro de qual operador lançou cada apontamento e quando — útil na troca de operador.</div></div><span class="badge b2">Estrutura</span></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== DECISÕES EM ABERTO ===================== -->
+<section class="band decisions">
+  <div class="wrap">
+    <div class="eyebrow">Para fechar na próxima conversa</div>
+    <h2>Decisões em aberto</h2>
+    <p class="sub">Pontos que precisam de uma definição do Leonardo antes de partir para a arquitetura e o orçamento do projeto. Nenhum é impeditivo — são escolhas que afinam o escopo.</p>
+    <div class="dec-grid">
+      <div class="dec"><span class="q">01</span><div class="d"><b>Tamanho real da frota.</b> Confirmar o número de equipamentos (citou 14–15 e, em outro ponto, 3–4).</div></div>
+      <div class="dec"><span class="q">02</span><div class="d"><b>Tabela de valores por metro.</b> Levantar os preços reais por diâmetro de broca (30 cm, 40 cm…).</div></div>
+      <div class="dec"><span class="q">03</span><div class="d"><b>Preço da hora por porte.</b> Existe tabela por tipo/porte de máquina ou é negociado caso a caso?</div></div>
+      <div class="dec"><span class="q">04</span><div class="d"><b>Leitura por foto (OCR).</b> Validar a expectativa: foto sempre + número conferido pelo operador.</div></div>
+      <div class="dec"><span class="q">05</span><div class="d"><b>Boleto e cobrança.</b> Definir banco/gateway e o fluxo de emissão desejado.</div></div>
+      <div class="dec"><span class="q">06</span><div class="d"><b>Operação offline.</b> Confirmar a criticidade do uso sem sinal no campo.</div></div>
+      <div class="dec"><span class="q">07</span><div class="d"><b>Horímetro na OS longa.</b> Lançado por dia ou só no início e fim do período?</div></div>
+      <div class="dec"><span class="q">08</span><div class="d"><b>Assinatura do cliente.</b> Confirmação digital do serviço ou basta o aviso por WhatsApp?</div></div>
+      <div class="dec"><span class="q">09</span><div class="d"><b>Migração de cadastros.</b> Trazer clientes do sistema antigo (Farol) ou começar do zero?</div></div>
+      <div class="dec"><span class="q">10</span><div class="d"><b>Regra de fechamento da OS.</b> O que acontece se fecharem com apontamentos ainda abertos?</div></div>
+      <div class="dec"><span class="q">11</span><div class="d"><b>Aluguel de equipamento.</b> Há locação de/para terceiros que o sistema precise contemplar?</div></div>
+      <div class="dec"><span class="q">12</span><div class="d"><b>Modelo comercial do software.</b> Mensalidade, hospedagem e suporte — definir o que é recorrente.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FUNDAÇÃO TÉCNICA ===================== -->
+<section class="band tech wrap">
+  <div class="eyebrow">Nota técnica — fundação de engenharia</div>
+  <h2>Sobre como isso se sustenta</h2>
+  <div class="tech-cols">
+    <div class="stack-list">
+      <div class="stack-row"><div class="k">App / Web</div><div class="v">React + Vite como PWA, instalável no celular do operador e com modo offline.</div></div>
+      <div class="stack-row"><div class="k">Supabase</div><div class="v">Banco Postgres, autenticação, Storage para as fotos de horímetro, Realtime para a OS colaborativa e RLS preparando um futuro multiempresa.</div></div>
+      <div class="stack-row"><div class="k">n8n</div><div class="v">Orquestra as automações: WhatsApp, boletos, lembretes e alertas.</div></div>
+      <div class="stack-row"><div class="k">Deploy</div><div class="v">Vercel, com publicação contínua.</div></div>
+    </div>
+    <div class="tension">
+      <h4>A decisão central de arquitetura</h4>
+      <p>Dois requisitos do Leonardo se tensionam: a ordem de serviço precisa abrir <b>em todos os celulares em tempo real</b>, mas o app também precisa <b>funcionar sem sinal</b> no campo. Conciliar os dois — sincronização ao vivo e fila offline com resolução de conflitos — é o ponto que mais exige cuidado e o primeiro a ser desenhado.</p>
+      <p>A abordagem provável: cada apontamento é “dono” das próprias horas (conflitos raros), enquanto abrir e fechar a ordem seguem regras explícitas. Isso vira tarefa de arquitetura na sequência deste mapa.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap foot-inner">
+    <div class="brand">Antonello Terraplanagem</div>
+    <div class="meta">Mapa de Funcionalidades · Discovery · Junho 2026 · Documento de escopo, sujeito a refinamento</div>
+    <a class="totop" href="#top">↑ Topo</a>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var chips = Array.prototype.slice.call(document.querySelectorAll('.chip[data-filter]'));
+    var body = document.body;
+    chips.forEach(function(chip){
+      chip.addEventListener('click', function(){
+        var f = chip.getAttribute('data-filter');
+        chips.forEach(function(c){ c.classList.toggle('is-active', c === chip); });
+        body.setAttribute('data-filter', f);
+      });
+    });
+  })();
+</script>
+</body>
+</html>
