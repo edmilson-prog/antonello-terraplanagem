@@ -26,6 +26,7 @@ import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipament
 import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
 import { Route as AppOrdensIndexRouteImport } from './routes/app.ordens.index'
 import { Route as AppOrdensOrdemIdRouteImport } from './routes/app.ordens.$ordemId'
+import { Route as AppApontamentoNovoRouteImport } from './routes/app.apontamento.novo'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -113,6 +114,11 @@ const AppOrdensOrdemIdRoute = AppOrdensOrdemIdRouteImport.update({
   path: '/ordens/$ordemId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppApontamentoNovoRoute = AppApontamentoNovoRouteImport.update({
+  id: '/novo',
+  path: '/novo',
+  getParentRoute: () => AppApontamentoRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -125,11 +131,12 @@ export interface FileRoutesByFullPath {
   '/admin/faturamento': typeof AdminFaturamentoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/ordens': typeof AdminOrdensRoute
-  '/app/apontamento': typeof AppApontamentoRoute
+  '/app/apontamento': typeof AppApontamentoRouteWithChildren
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
   '/app/ordens/': typeof AppOrdensIndexRoute
 }
@@ -142,11 +149,12 @@ export interface FileRoutesByTo {
   '/admin/faturamento': typeof AdminFaturamentoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/ordens': typeof AdminOrdensRoute
-  '/app/apontamento': typeof AppApontamentoRoute
+  '/app/apontamento': typeof AppApontamentoRouteWithChildren
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
+  '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
   '/app/ordens': typeof AppOrdensIndexRoute
 }
@@ -162,11 +170,12 @@ export interface FileRoutesById {
   '/admin/faturamento': typeof AdminFaturamentoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/ordens': typeof AdminOrdensRoute
-  '/app/apontamento': typeof AppApontamentoRoute
+  '/app/apontamento': typeof AppApontamentoRouteWithChildren
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
   '/app/ordens/': typeof AppOrdensIndexRoute
 }
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
     | '/app/'
+    | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
     | '/app/ordens/'
   fileRoutesByTo: FileRoutesByTo
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin'
     | '/app'
+    | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
     | '/app/ordens'
   id:
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
     | '/app/'
+    | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
     | '/app/ordens/'
   fileRoutesById: FileRoutesById
@@ -358,6 +370,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppOrdensOrdemIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/apontamento/novo': {
+      id: '/app/apontamento/novo'
+      path: '/novo'
+      fullPath: '/app/apontamento/novo'
+      preLoaderRoute: typeof AppApontamentoNovoRouteImport
+      parentRoute: typeof AppApontamentoRoute
+    }
   }
 }
 
@@ -381,8 +400,20 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface AppApontamentoRouteChildren {
+  AppApontamentoNovoRoute: typeof AppApontamentoNovoRoute
+}
+
+const AppApontamentoRouteChildren: AppApontamentoRouteChildren = {
+  AppApontamentoNovoRoute: AppApontamentoNovoRoute,
+}
+
+const AppApontamentoRouteWithChildren = AppApontamentoRoute._addFileChildren(
+  AppApontamentoRouteChildren,
+)
+
 interface AppRouteChildren {
-  AppApontamentoRoute: typeof AppApontamentoRoute
+  AppApontamentoRoute: typeof AppApontamentoRouteWithChildren
   AppPerfilRoute: typeof AppPerfilRoute
   AppIndexRoute: typeof AppIndexRoute
   AppOrdensOrdemIdRoute: typeof AppOrdensOrdemIdRoute
@@ -390,7 +421,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppApontamentoRoute: AppApontamentoRoute,
+  AppApontamentoRoute: AppApontamentoRouteWithChildren,
   AppPerfilRoute: AppPerfilRoute,
   AppIndexRoute: AppIndexRoute,
   AppOrdensOrdemIdRoute: AppOrdensOrdemIdRoute,
