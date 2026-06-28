@@ -47,7 +47,10 @@ export function EquipamentosPage() {
     return todos.filter((e) => {
       if (!mostrarInativos && !e.ativo) return false;
       if (filtroTipo !== "todos" && e.tipo !== filtroTipo) return false;
-      if (filtroStatus !== "todos" && e.status !== filtroStatus) return false;
+      // Status operacional só se aplica a equipamentos ativos (inativos exibem
+      // o badge "Inativo", não o status), então um filtro de status específico
+      // implica ativo + status correspondente.
+      if (filtroStatus !== "todos" && (!e.ativo || e.status !== filtroStatus)) return false;
       if (!termo) return true;
       return (
         e.nome.toLowerCase().includes(termo) ||
