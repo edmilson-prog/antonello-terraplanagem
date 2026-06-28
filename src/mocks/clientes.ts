@@ -1,10 +1,45 @@
 import type { Cliente } from "@/shared/types";
 
-// Lista pode aparecer vazia — manter export alternativo para validar empty state.
+// ~4 clientes. Edge cases: 1 com CNPJ, 1 sem documento, 1 nome longo, 1 inativo (com CPF).
+// Documentos com dígitos verificadores válidos (passam na validação do form).
 export const clientes: Cliente[] = [
-  { id: "cl-001", nome: "Construtora Horizonte Ltda." },
-  { id: "cl-002", nome: "Incorporadora Vale Verde" },
-  { id: "cl-003", nome: "Prefeitura Municipal de São Pedro do Ivaí" },
+  {
+    id: "cl-001",
+    nome: "Construtora Horizonte Ltda.",
+    documento: "11222333000181", // CNPJ válido
+    telefone: "4432210000",
+    ativo: true,
+    created_at: "2024-01-15T12:00:00.000Z",
+    updated_at: "2024-01-15T12:00:00.000Z",
+  },
+  {
+    id: "cl-002",
+    nome: "Incorporadora Vale Verde",
+    documento: null,
+    telefone: "44991110000",
+    ativo: true,
+    created_at: "2024-02-20T12:00:00.000Z",
+    updated_at: "2024-02-20T12:00:00.000Z",
+  },
+  {
+    id: "cl-003",
+    nome: "Prefeitura Municipal de São Pedro do Ivaí — Secretaria de Obras e Infraestrutura",
+    documento: null,
+    telefone: null,
+    ativo: true,
+    created_at: "2024-03-30T12:00:00.000Z",
+    updated_at: "2024-03-30T12:00:00.000Z",
+  },
+  {
+    id: "cl-004",
+    nome: "João da Silva Construções ME",
+    documento: "52998224725", // CPF válido
+    telefone: "44999998888",
+    ativo: false,
+    created_at: "2023-12-01T12:00:00.000Z",
+    updated_at: "2025-05-10T12:00:00.000Z",
+  },
 ];
 
+// Lista vazia para validar o empty state.
 export const clientesVazio: Cliente[] = [];

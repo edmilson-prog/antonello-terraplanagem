@@ -3,26 +3,47 @@
 
 export type Perfil = "operador" | "recepcao" | "proprietario";
 
+export type TipoEquipamento =
+  | "escavadeira"
+  | "carregadeira"
+  | "caminhao_cacamba"
+  | "trator_esteira"
+  | "retroescavadeira"
+  | "outro";
+
+// status OPERACIONAL (onde a máquina está) — distinto de `ativo` (ciclo de vida)
 export type EquipamentoStatus = "disponivel" | "em_uso" | "manutencao";
 
 export interface Equipamento {
   id: string;
   nome: string;
-  tipo: string;
-  capacidade: string;
+  tipo: TipoEquipamento;
+  capacidade: string; // texto livre ("18 toneladas", "2,5 m³")
   horimetro_atual: number;
-  status: EquipamentoStatus;
+  identificador: string | null; // patrimônio/placa (opcional)
+  status: EquipamentoStatus; // operacional
+  ativo: boolean; // soft-delete / cadastral
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Operador {
   id: string;
   nome: string;
+  telefone: string | null;
   ativo: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Cliente {
   id: string;
   nome: string;
+  documento: string | null; // CPF/CNPJ (opcional nesta fase)
+  telefone: string | null;
+  ativo: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface SessaoMock {
