@@ -83,9 +83,11 @@ export function EquipamentosPage() {
     {
       header: "Nome",
       cell: (e) => (
-        <div className={cn("min-w-0", !e.ativo && "opacity-60")}>
-          <div className="truncate font-medium text-foreground">{e.nome}</div>
-          <div className="font-mono text-xs text-foreground-faint">
+        <div className={cn("min-w-0 max-w-[22rem]", !e.ativo && "opacity-60")}>
+          <div className="truncate font-medium text-foreground" title={e.nome}>
+            {e.nome}
+          </div>
+          <div className="truncate font-mono text-xs text-foreground-faint">
             {e.identificador ?? "sem identificador"}
           </div>
         </div>
