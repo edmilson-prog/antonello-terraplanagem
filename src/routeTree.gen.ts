@@ -27,6 +27,7 @@ import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
 import { Route as AppOrdensIndexRouteImport } from './routes/app.ordens.index'
 import { Route as AppOrdensOrdemIdRouteImport } from './routes/app.ordens.$ordemId'
 import { Route as AppApontamentoNovoRouteImport } from './routes/app.apontamento.novo'
+import { Route as AppApontamentoApontamentoIdRouteImport } from './routes/app.apontamento.$apontamentoId'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -119,6 +120,12 @@ const AppApontamentoNovoRoute = AppApontamentoNovoRouteImport.update({
   path: '/novo',
   getParentRoute: () => AppApontamentoRoute,
 } as any)
+const AppApontamentoApontamentoIdRoute =
+  AppApontamentoApontamentoIdRouteImport.update({
+    id: '/$apontamentoId',
+    path: '/$apontamentoId',
+    getParentRoute: () => AppApontamentoRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
   '/app/ordens/': typeof AppOrdensIndexRoute
@@ -154,6 +162,7 @@ export interface FileRoutesByTo {
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
+  '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
   '/app/ordens': typeof AppOrdensIndexRoute
@@ -175,6 +184,7 @@ export interface FileRoutesById {
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
   '/app/ordens/': typeof AppOrdensIndexRoute
@@ -197,6 +207,7 @@ export interface FileRouteTypes {
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
     | '/app/'
+    | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
     | '/app/ordens/'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin'
     | '/app'
+    | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
     | '/app/ordens'
@@ -235,6 +247,7 @@ export interface FileRouteTypes {
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
     | '/app/'
+    | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
     | '/app/ordens/'
@@ -377,6 +390,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppApontamentoNovoRouteImport
       parentRoute: typeof AppApontamentoRoute
     }
+    '/app/apontamento/$apontamentoId': {
+      id: '/app/apontamento/$apontamentoId'
+      path: '/$apontamentoId'
+      fullPath: '/app/apontamento/$apontamentoId'
+      preLoaderRoute: typeof AppApontamentoApontamentoIdRouteImport
+      parentRoute: typeof AppApontamentoRoute
+    }
   }
 }
 
@@ -401,10 +421,12 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppApontamentoRouteChildren {
+  AppApontamentoApontamentoIdRoute: typeof AppApontamentoApontamentoIdRoute
   AppApontamentoNovoRoute: typeof AppApontamentoNovoRoute
 }
 
 const AppApontamentoRouteChildren: AppApontamentoRouteChildren = {
+  AppApontamentoApontamentoIdRoute: AppApontamentoApontamentoIdRoute,
   AppApontamentoNovoRoute: AppApontamentoNovoRoute,
 }
 
