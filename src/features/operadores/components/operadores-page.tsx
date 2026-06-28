@@ -7,28 +7,13 @@ import { PageHeader } from "@/shared/components/page-header";
 import { DataList, type Column } from "@/shared/components/data-list";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
+import { StatusAtivo } from "@/shared/components/status-ativo";
 import { useMockResource } from "@/shared/hooks/use-mock-resource";
 import { formatTelefone } from "@/shared/lib/format";
 import { operadoresStore } from "@/features/operadores/operadores-store";
 import { OperadorForm } from "@/features/operadores/components/operador-form";
 import type { Operador } from "@/shared/types";
 import { cn } from "@/lib/utils";
-
-function StatusAtivo({ ativo }: { ativo: boolean }) {
-  return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
-        ativo
-          ? "bg-primary/20 text-foreground border-primary/50"
-          : "border-border bg-surface text-foreground-faint",
-      )}
-    >
-      <span className="h-1.5 w-1.5 rounded-full bg-current" />
-      {ativo ? "Ativo" : "Inativo"}
-    </span>
-  );
-}
 
 export function OperadoresPage() {
   const todos = operadoresStore.useAll();
