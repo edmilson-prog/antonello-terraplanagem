@@ -110,6 +110,7 @@ function OrdemDetalhePage() {
       <div>
         <Link
           to="/app/ordens"
+          search={{ q: "", status: "todas" }}
           className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -328,6 +329,7 @@ function OrdemNaoEncontrada() {
       </p>
       <Link
         to="/app/ordens"
+        search={{ q: "", status: "todas" }}
         className="inline-flex items-center gap-1 text-sm font-semibold text-primary"
       >
         <ArrowLeft className="h-4 w-4" />
