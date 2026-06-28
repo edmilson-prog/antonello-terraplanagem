@@ -89,3 +89,24 @@ export interface FaturamentoPorCliente {
   cliente_nome: string;
   valor: number;
 }
+
+export type StatusApontamento = "em_andamento" | "finalizado";
+
+export interface Apontamento {
+  id: string;
+  equipamento_id: string; // FK → Equipamento
+  operador_id: string; // FK → Operador (quem apontou)
+  os_id: string | null; // FK → OS (opcional nesta fase)
+  horimetro_inicial: number; // horas, 1 casa decimal
+  horimetro_final: number | null; // null enquanto em andamento
+  horas_trabalhadas: number | null; // calculado: round1(final - inicial)
+  foto_inicial_url: string | null; // evidência (mock nesta fase)
+  foto_final_url: string | null;
+  observacao: string | null;
+  status: StatusApontamento;
+  pendente_sync: boolean; // afford. de offline (só visual)
+  iniciado_em: string; // ISO 8601
+  finalizado_em: string | null;
+  created_at: string;
+  updated_at: string;
+}
