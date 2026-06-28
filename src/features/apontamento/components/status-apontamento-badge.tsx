@@ -1,15 +1,10 @@
 import type { StatusApontamento } from "@/shared/types";
 import { cn } from "@/lib/utils";
+import { STATUS_APONTAMENTO_LABEL } from "@/features/apontamento/labels";
 
-const config: Record<StatusApontamento, { label: string; classe: string }> = {
-  em_andamento: {
-    label: "Em andamento",
-    classe: "bg-primary/20 text-foreground border-primary/50",
-  },
-  finalizado: {
-    label: "Finalizado",
-    classe: "bg-secondary-soft/25 text-foreground border-secondary/40",
-  },
+const classePorStatus: Record<StatusApontamento, string> = {
+  em_andamento: "bg-primary/20 text-foreground border-primary/50",
+  finalizado: "bg-secondary-soft/25 text-foreground border-secondary/40",
 };
 
 interface Props {
@@ -18,17 +13,16 @@ interface Props {
 }
 
 export function StatusApontamentoBadge({ status, className }: Props) {
-  const c = config[status];
   return (
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
-        c.classe,
+        classePorStatus[status],
         className,
       )}
     >
       <span className="h-1.5 w-1.5 rounded-full bg-current" />
-      {c.label}
+      {STATUS_APONTAMENTO_LABEL[status]}
     </span>
   );
 }

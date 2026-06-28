@@ -7,6 +7,7 @@ import { HorimetroCapture } from "@/shared/components/horimetro-capture";
 import { SyncBadge } from "@/shared/components/sync-badge";
 import { StatusApontamentoBadge } from "@/features/apontamento/components/status-apontamento-badge";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
+import { finalizarApontamentoSchema } from "@/features/apontamento/apontamento-schema";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { ordensOperador } from "@/mocks/ordens-operador";
 import { formatHorimetro, formatDataHora } from "@/shared/lib/format";
@@ -30,11 +31,12 @@ export function ApontamentoDetalhe({ apontamentoId }: Props) {
 
   function confirmarFinalizacao() {
     if (!apontamento) return;
-    const valor = Number(horimetroFinal);
-    if (horimetroFinal.trim() === "" || !Number.isFinite(valor) || valor < 0) {
+    const parsed = finalizarApontamentoSchema.safeParse({ horimetro_final: Number(horimetroFinal) });
+    if (horimetroFinal.trim() === "" || !parsed.success) {
       setErro("Informe o horímetro final.");
       return;
     }
+    const valor = parsed.data.horimetro_final;
     const r = apontamentosStore.finalizar(apontamento.id, {
       horimetro_final: valor,
       foto_final_url: fotoFinalUrl,
