@@ -5,6 +5,25 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.2.0] - 2026-06-28 - Tally
+
+### Added
+- Apontamento de horímetro no app do operador (`/app/apontamento`): iniciar
+  (seleção de equipamento + horímetro inicial), finalizar (horímetro final com
+  cálculo automático de horas) e lista "Meus apontamentos" (em andamento +
+  recentes) — PRD-002.
+- Captura de horímetro compartilhada (`HorimetroCapture`) com digitação manual
+  e leitura por foto via camada de OCR simulada, isolada e plugável.
+- Indicador visual "pendente de sincronização" (afford. de offline; engine real
+  fica para o PRD-000/003).
+- Store dedicado de apontamentos em memória e validações (zod) da captura.
+- Testes unitários (vitest): cálculo de horas, transições do store, schemas,
+  OCR simulado e sanidade dos mocks.
+
+### Changed
+- Contrato de `types` estendido com `Apontamento` e `StatusApontamento`.
+- Formatador compartilhado `formatDataHora` adicionado.
+
 ## [0.1.0] - 2026-06-28 - Registry
 
 ### Added
