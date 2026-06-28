@@ -48,7 +48,10 @@ export function DataList<T>({
           ))}
         </div>
       ) : error ? (
-        <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed bg-surface/60 px-6 py-16 text-center">
+        <div
+          role="alert"
+          className="flex flex-col items-center gap-3 rounded-lg border border-dashed bg-surface/60 px-6 py-16 text-center"
+        >
           <Icon icon="lucide:triangle-alert" className="h-8 w-8 text-destructive" />
           <p className="text-sm text-muted-foreground">{error.message}</p>
           <Button variant="outline" onClick={onRetry} className="gap-2">
@@ -71,12 +74,18 @@ export function DataList<T>({
               <thead>
                 <tr className="border-b text-left text-xs font-mono uppercase tracking-wide text-foreground-faint">
                   {columns.map((c) => (
-                    <th key={c.header} className={cn("px-4 py-3 font-medium", c.headerClassName)}>
+                    <th
+                      key={c.header}
+                      scope="col"
+                      className={cn("px-4 py-3 font-medium", c.headerClassName)}
+                    >
                       {c.header}
                     </th>
                   ))}
                   {rowActions ? (
-                    <th className="px-4 py-3 text-right font-medium">Ações</th>
+                    <th scope="col" className="px-4 py-3 text-right font-medium">
+                      Ações
+                    </th>
                   ) : null}
                 </tr>
               </thead>
