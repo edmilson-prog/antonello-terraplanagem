@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatHorimetro, formatDocumento, formatTelefone } from "./format";
+import { formatHorimetro, formatDocumento, formatTelefone, formatDataHora } from "./format";
 
 describe("formatHorimetro", () => {
   it("formata inteiro com sufixo h e milhar pt-BR", () => {
@@ -31,5 +31,19 @@ describe("formatTelefone", () => {
   });
   it("retorna travessão para nulo", () => {
     expect(formatTelefone(null)).toBe("—");
+  });
+});
+
+describe("formatDataHora", () => {
+  it("retorna travessão para null", () => {
+    expect(formatDataHora(null)).toBe("—");
+  });
+
+  it("retorna travessão para ISO inválido", () => {
+    expect(formatDataHora("não-é-data")).toBe("—");
+  });
+
+  it("formata uma data ISO válida incluindo o ano", () => {
+    expect(formatDataHora("2026-06-27T07:15:00.000Z")).toContain("2026");
   });
 });
