@@ -106,7 +106,7 @@ export function aplicarHoraTipo(
   if (item.tipo !== "hora_maquina") return item;
   const preco = equipamento ? precoHoraDoEquipamento(equipamento, precosHM) : null;
   const valorUnitario = preco ? (tipo === "seca" ? preco.valor_hora_seca : preco.valor_hora_operada) : null;
-  const nome = item.descricao.split(" — ")[0];
+  const nome = equipamento ? equipamento.nome : item.descricao.split(" — ")[0];
   return {
     ...item,
     hora_tipo: tipo,

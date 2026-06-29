@@ -59,11 +59,16 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
   };
 
   const handleValorUnitario = (itemId: string, v: number) => {
-    const valor = Number.isFinite(v) && v >= 0 ? v : 0;
+    const valor = Number.isFinite(v) && v > 0 ? v : null;
     setItens(
       fat.itens.map((i) =>
         i.id === itemId
-          ? { ...i, valor_unitario: valor, valor_total: valorItem(i.quantidade, valor), sem_preco: false }
+          ? {
+              ...i,
+              valor_unitario: valor,
+              valor_total: valor != null ? valorItem(i.quantidade, valor) : 0,
+              sem_preco: valor === null,
+            }
           : i,
       ),
     );
@@ -92,7 +97,7 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
       hora_tipo: null,
       quantidade: 1,
       valor_unitario: preco.valor,
-      valor_total: preco.valor,
+      valor_total: valorItem(1, preco.valor),
       sem_preco: false,
     };
     setItens([...fat.itens, item]);
