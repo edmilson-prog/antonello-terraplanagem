@@ -5,6 +5,21 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.5.0] - 2026-06-29 - Invoice
+
+### Added
+- Faturamento ao fechar OS (PRD-004): geração de fatura em rascunho a partir de OS fechada, aplicando preços (hora-máquina operada/seca e por metro) às horas/metros apontados.
+- Aba **Faturas** em `/admin/faturamento`: pipeline executado → faturado → recebido*, lista "Aguardando faturamento" com geração e lista de faturas com filtros.
+- Editor de rascunho: ajuste de itens (quantidade, valor, seca/operada), inclusão de mobilização, desconto e observação; confirmação `rascunho → faturado` com aviso de pendência.
+- Detalhe da fatura em `/admin/faturamento/$faturamentoId`.
+- Sinalização de item "sem preço" (tarifa inativa/ausente) sem bloquear o restante do rascunho.
+- `types` `Faturamento`, `FaturamentoItem`, `StatusFaturamento`, `TipoItemFaturamento`; mocks coerentes com OS/apontamentos/preços.
+
+### Changed
+- `/admin/faturamento` reorganizado em abas: **Faturas** (operacional) e **Análise** (o dashboard de gráficos, agora aba).
+
+\* "recebido" é estágio futuro (PRD-007).
+
 ## [0.4.0] - 2026-06-29 - Worksite
 
 ### Added

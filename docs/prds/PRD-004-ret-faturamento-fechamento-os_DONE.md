@@ -421,11 +421,11 @@ Tipos: **Added**, **Changed**, **Deprecated**, **Removed**, **Fixed**, **Securit
 
 | Campo | Valor |
 |-------|-------|
-| **Status** | ⏳ PENDENTE |
-| **Data de Implementação** | - |
-| **Versão do App** | - |
-| **Implementado por** | - |
-| **Observações** | - |
+| **Status** | ✅ IMPLEMENTADO |
+| **Data de Implementação** | 2026-06-29 |
+| **Versão do App** | 0.5.0 (Invoice) |
+| **Implementado por** | Claude Code CLI (Claude Opus 4.8) |
+| **Observações** | Frontend mockado. IA em abas (Faturas/Análise); seca/operada default operada com troca por item; geração pela tela a partir de OS fechadas. |
 
 ---
 
