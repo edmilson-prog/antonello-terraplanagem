@@ -51,7 +51,6 @@ export interface SessaoMock {
   nome: string;
 }
 
-
 export interface FaturamentoMes {
   mes: string; // "2025-01"
   rotulo: string; // "Jan"

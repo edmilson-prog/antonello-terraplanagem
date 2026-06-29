@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/shared/components/empty-state";
 import { SyncBadge } from "@/shared/components/sync-badge";
-import { StatusOSBadge, STATUS_OS, STATUS_OS_LABEL } from "@/features/ordem-servico/labels";
+import { StatusOSBadge, STATUS_OS_LABEL } from "@/features/ordem-servico/labels";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { ordensDoOperador, statusEfetivoOS } from "@/features/ordem-servico/derivacoes";
 import { apontamentosStore, OPERADOR_LOGADO_ID } from "@/features/apontamento/apontamentos-store";

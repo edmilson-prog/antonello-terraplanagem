@@ -35,7 +35,7 @@ export interface ApontamentosStore {
 
 // Store dedicado em memória. Não usa createMockStore porque Apontamento tem
 // ciclo de vida (status em_andamento → finalizado), não soft-delete (ativo).
-// Espelha o padrão de features/operador/ordens-store.ts.
+// Espelha o padrão de features/ordem-servico/ordens-store.ts.
 export function criarApontamentosStore(seed: Apontamento[]): ApontamentosStore {
   let itens: Apontamento[] = seed.map((a) => ({ ...a }));
   const ouvintes = new Set<() => void>();

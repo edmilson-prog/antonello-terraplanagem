@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 
-// Store mock genérico em memória. Generaliza features/operador/ordens-store.ts.
+// Store mock genérico em memória. Generaliza features/ordem-servico/ordens-store.ts.
 // Em produção isto vira mutation no backend + invalidate das queries; aqui usamos
 // useSyncExternalStore para refletir mudanças em qualquer tela que leia a lista.
 
