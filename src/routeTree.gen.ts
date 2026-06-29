@@ -20,12 +20,12 @@ import { Route as BlogTerraplanagemOuTerraplenagemRouteImport } from './routes/b
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
 import { Route as AdminPrecosRouteImport } from './routes/admin.precos'
 import { Route as AdminOperadoresRouteImport } from './routes/admin.operadores'
-import { Route as AdminFaturamentoRouteImport } from './routes/admin.faturamento'
 import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
 import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
 import { Route as AppOrdensIndexRouteImport } from './routes/app.ordens.index'
 import { Route as AppApontamentoIndexRouteImport } from './routes/app.apontamento.index'
 import { Route as AdminOrdensIndexRouteImport } from './routes/admin.ordens.index'
+import { Route as AdminFaturamentoIndexRouteImport } from './routes/admin.faturamento.index'
 import { Route as AppOrdensOrdemIdRouteImport } from './routes/app.ordens.$ordemId'
 import { Route as AppApontamentoNovoRouteImport } from './routes/app.apontamento.novo'
 import { Route as AppApontamentoApontamentoIdRouteImport } from './routes/app.apontamento.$apontamentoId'
@@ -87,11 +87,6 @@ const AdminOperadoresRoute = AdminOperadoresRouteImport.update({
   path: '/operadores',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminFaturamentoRoute = AdminFaturamentoRouteImport.update({
-  id: '/faturamento',
-  path: '/faturamento',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminEquipamentosRoute = AdminEquipamentosRouteImport.update({
   id: '/equipamentos',
   path: '/equipamentos',
@@ -115,6 +110,11 @@ const AppApontamentoIndexRoute = AppApontamentoIndexRouteImport.update({
 const AdminOrdensIndexRoute = AdminOrdensIndexRouteImport.update({
   id: '/ordens/',
   path: '/ordens/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFaturamentoIndexRoute = AdminFaturamentoIndexRouteImport.update({
+  id: '/faturamento/',
+  path: '/faturamento/',
   getParentRoute: () => AdminRoute,
 } as any)
 const AppOrdensOrdemIdRoute = AppOrdensOrdemIdRouteImport.update({
@@ -147,7 +147,6 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/clientes': typeof AdminClientesRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
-  '/admin/faturamento': typeof AdminFaturamentoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
   '/app/perfil': typeof AppPerfilRoute
@@ -158,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
+  '/admin/faturamento/': typeof AdminFaturamentoIndexRoute
   '/admin/ordens/': typeof AdminOrdensIndexRoute
   '/app/apontamento/': typeof AppApontamentoIndexRoute
   '/app/ordens/': typeof AppOrdensIndexRoute
@@ -168,7 +168,6 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/clientes': typeof AdminClientesRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
-  '/admin/faturamento': typeof AdminFaturamentoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
   '/app/perfil': typeof AppPerfilRoute
@@ -179,6 +178,7 @@ export interface FileRoutesByTo {
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
+  '/admin/faturamento': typeof AdminFaturamentoIndexRoute
   '/admin/ordens': typeof AdminOrdensIndexRoute
   '/app/apontamento': typeof AppApontamentoIndexRoute
   '/app/ordens': typeof AppOrdensIndexRoute
@@ -192,7 +192,6 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/clientes': typeof AdminClientesRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
-  '/admin/faturamento': typeof AdminFaturamentoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
   '/app/perfil': typeof AppPerfilRoute
@@ -203,6 +202,7 @@ export interface FileRoutesById {
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
+  '/admin/faturamento/': typeof AdminFaturamentoIndexRoute
   '/admin/ordens/': typeof AdminOrdensIndexRoute
   '/app/apontamento/': typeof AppApontamentoIndexRoute
   '/app/ordens/': typeof AppOrdensIndexRoute
@@ -217,7 +217,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/clientes'
     | '/admin/equipamentos'
-    | '/admin/faturamento'
     | '/admin/operadores'
     | '/admin/precos'
     | '/app/perfil'
@@ -228,6 +227,7 @@ export interface FileRouteTypes {
     | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
+    | '/admin/faturamento/'
     | '/admin/ordens/'
     | '/app/apontamento/'
     | '/app/ordens/'
@@ -238,7 +238,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/clientes'
     | '/admin/equipamentos'
-    | '/admin/faturamento'
     | '/admin/operadores'
     | '/admin/precos'
     | '/app/perfil'
@@ -249,6 +248,7 @@ export interface FileRouteTypes {
     | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
+    | '/admin/faturamento'
     | '/admin/ordens'
     | '/app/apontamento'
     | '/app/ordens'
@@ -261,7 +261,6 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/clientes'
     | '/admin/equipamentos'
-    | '/admin/faturamento'
     | '/admin/operadores'
     | '/admin/precos'
     | '/app/perfil'
@@ -272,6 +271,7 @@ export interface FileRouteTypes {
     | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
+    | '/admin/faturamento/'
     | '/admin/ordens/'
     | '/app/apontamento/'
     | '/app/ordens/'
@@ -365,13 +365,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOperadoresRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/faturamento': {
-      id: '/admin/faturamento'
-      path: '/faturamento'
-      fullPath: '/admin/faturamento'
-      preLoaderRoute: typeof AdminFaturamentoRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/equipamentos': {
       id: '/admin/equipamentos'
       path: '/equipamentos'
@@ -405,6 +398,13 @@ declare module '@tanstack/react-router' {
       path: '/ordens'
       fullPath: '/admin/ordens/'
       preLoaderRoute: typeof AdminOrdensIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/faturamento/': {
+      id: '/admin/faturamento/'
+      path: '/faturamento'
+      fullPath: '/admin/faturamento/'
+      preLoaderRoute: typeof AdminFaturamentoIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/app/ordens/$ordemId': {
@@ -441,22 +441,22 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminClientesRoute: typeof AdminClientesRoute
   AdminEquipamentosRoute: typeof AdminEquipamentosRoute
-  AdminFaturamentoRoute: typeof AdminFaturamentoRoute
   AdminOperadoresRoute: typeof AdminOperadoresRoute
   AdminPrecosRoute: typeof AdminPrecosRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminOrdensOrdemIdRoute: typeof AdminOrdensOrdemIdRoute
+  AdminFaturamentoIndexRoute: typeof AdminFaturamentoIndexRoute
   AdminOrdensIndexRoute: typeof AdminOrdensIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminClientesRoute: AdminClientesRoute,
   AdminEquipamentosRoute: AdminEquipamentosRoute,
-  AdminFaturamentoRoute: AdminFaturamentoRoute,
   AdminOperadoresRoute: AdminOperadoresRoute,
   AdminPrecosRoute: AdminPrecosRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminOrdensOrdemIdRoute: AdminOrdensOrdemIdRoute,
+  AdminFaturamentoIndexRoute: AdminFaturamentoIndexRoute,
   AdminOrdensIndexRoute: AdminOrdensIndexRoute,
 }
 

@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
 import {
   Bar,
   BarChart,
@@ -26,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PageHeader } from "@/shared/components/page-header";
 import { brl, numero } from "@/features/retaguarda/format";
 import { exportarFaturamentoPdf } from "@/features/retaguarda/export-faturamento-pdf";
 import {
@@ -35,19 +33,6 @@ import {
   faturamentoPorCliente,
 } from "@/mocks/faturamento";
 import { cn } from "@/lib/utils";
-
-export const Route = createFileRoute("/admin/faturamento")({
-  head: () => ({
-    meta: [
-      { title: "Faturamento · Antonello" },
-      {
-        name: "description",
-        content: "Faturamento da Antonello Terraplanagem — horas, valores e exportação em PDF.",
-      },
-    ],
-  }),
-  component: FaturamentoPage,
-});
 
 const CORES = ["#FFB300", "#A2622F", "#717A82", "#C07B43", "#2C2719"];
 
@@ -69,7 +54,7 @@ function rangeDePreset(preset: PeriodoPreset): { de: string; ate: string } {
   return { de: MESES_ORDENADOS[inicio].mes, ate: MESES_ORDENADOS[fim].mes };
 }
 
-function FaturamentoPage() {
+export function AnaliseTab() {
   const [preset, setPreset] = useState<PeriodoPreset>("6m");
   const [{ de, ate }, setRange] = useState(() => rangeDePreset("6m"));
 
@@ -115,20 +100,6 @@ function FaturamentoPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        titulo="Faturamento"
-        descricao="Visão consolidada do período selecionado, com exportação em PDF."
-        acoes={
-          <Button
-            onClick={exportarFaturamentoPdf}
-            className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
-          >
-            <Download className="h-4 w-4" />
-            Exportar PDF
-          </Button>
-        }
-      />
-
       <section className="rounded-xl border bg-card p-4 shadow-sm">
         <div className="flex flex-wrap items-end gap-4">
           <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-foreground-faint">
@@ -181,6 +152,13 @@ function FaturamentoPage() {
                 }}
               />
             </div>
+            <Button
+              onClick={exportarFaturamentoPdf}
+              className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
+            >
+              <Download className="h-4 w-4" />
+              Exportar PDF
+            </Button>
           </div>
         </div>
       </section>
@@ -349,15 +327,7 @@ function SeletorMes({ valor, aoMudar }: { valor: string; aoMudar: (v: string) =>
   );
 }
 
-function Kpi({
-  rotulo,
-  valor,
-  icone: Icone,
-}: {
-  rotulo: string;
-  valor: string;
-  icone: LucideIcon;
-}) {
+function Kpi({ rotulo, valor, icone: Icone }: { rotulo: string; valor: string; icone: LucideIcon }) {
   return (
     <div className="rounded-xl border bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between">
@@ -373,15 +343,7 @@ function Kpi({
   );
 }
 
-function Card({
-  titulo,
-  descricao,
-  children,
-}: {
-  titulo: string;
-  descricao?: string;
-  children: React.ReactNode;
-}) {
+function Card({ titulo, descricao, children }: { titulo: string; descricao?: string; children: React.ReactNode }) {
   return (
     <section className="rounded-xl border bg-card p-5 shadow-sm">
       <div className="mb-4">
