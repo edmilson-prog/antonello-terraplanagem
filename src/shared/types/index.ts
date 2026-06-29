@@ -143,3 +143,28 @@ export interface PrecoMobilizacao {
   created_at: string;
   updated_at: string;
 }
+
+// OS colaborativa (PRD-003). A OS é contêiner: horas e status efetivo são DERIVADOS
+// dos apontamentos vinculados (via Apontamento.os_id). Sem campos R$, equipamento,
+// operador ou horímetro na OS. (Substitui o legado OrdemServicoOperador na T10.)
+export type ModeloCobranca = "hora_maquina" | "por_metro";
+export type StatusOS = "aberta" | "em_andamento" | "fechada";
+
+export interface OrdemServico {
+  id: string;
+  numero: string; // "OS-2026-0042"
+  cliente_id: string; // FK → Cliente
+  obra_nome: string;
+  endereco: string | null;
+  modelo_cobranca: ModeloCobranca;
+  status: StatusOS;
+  responsavel_id: string | null; // FK → Operador
+  observacao: string | null;
+  metragem_executada: number | null; // por_metro
+  diametro_broca_mm: number | null; // por_metro
+  aberta_em: string; // ISO 8601
+  fechada_em: string | null;
+  pendente_sync: boolean;
+  created_at: string;
+  updated_at: string;
+}
