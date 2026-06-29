@@ -149,3 +149,37 @@ export interface OrdemServico {
   created_at: string;
   updated_at: string;
 }
+
+// Faturamento (PRD-004) — deriva da OS fechada + apontamentos + preços. Só retaguarda;
+// NUNCA importado/renderizado em /app/*. "recebido" é estágio do pipeline gerido no PRD-007.
+export type StatusFaturamento = "rascunho" | "faturado";
+export type TipoItemFaturamento = "hora_maquina" | "por_metro" | "mobilizacao";
+
+export interface FaturamentoItem {
+  id: string;
+  tipo: TipoItemFaturamento;
+  descricao: string; // "Escavadeira 10t — 18 h operada"
+  origem_id: string | null; // equipamento_id (hora) / preco_mobilizacao_id (mob.) / null
+  hora_tipo: "seca" | "operada" | null; // só hora_maquina
+  quantidade: number; // horas, metros ou 1
+  valor_unitario: number | null; // null = SEM PREÇO ativo (pendência)
+  valor_total: number; // round2(quantidade × valor_unitario); 0 se sem preço
+  sem_preco: boolean;
+}
+
+export interface Faturamento {
+  id: string;
+  numero: string; // "FAT-2026-0042"
+  os_id: string; // FK → OrdemServico
+  cliente_id: string; // FK → Cliente
+  modelo_cobranca: ModeloCobranca; // herdado da OS
+  itens: FaturamentoItem[];
+  desconto: number; // R$ subtraído do subtotal (≥ 0)
+  valor_total: number; // soma(itens) − desconto
+  observacao: string | null;
+  status: StatusFaturamento;
+  gerado_em: string; // ISO — rascunho criado
+  faturado_em: string | null; // ISO — confirmado
+  created_at: string;
+  updated_at: string;
+}
