@@ -1,0 +1,56 @@
+import type { PrecoHoraMaquina } from "@/shared/types";
+
+// ~5 preços. Edge cases: mix equipamento/tipo, 1 inativo (phm-005),
+// 1 com seca === operada (phm-004), preços por tipo sem equipamento (phm-003/004).
+export const precosHoraMaquina: PrecoHoraMaquina[] = [
+  {
+    id: "phm-001",
+    equipamento_id: "eq-001",
+    tipo_equipamento: null,
+    valor_hora_seca: 280,
+    valor_hora_operada: 360,
+    ativo: true,
+    created_at: "2025-01-15T12:00:00.000Z",
+    updated_at: "2026-03-10T09:00:00.000Z",
+  },
+  {
+    id: "phm-002",
+    equipamento_id: "eq-002",
+    tipo_equipamento: null,
+    valor_hora_seca: 220,
+    valor_hora_operada: 290,
+    ativo: true,
+    created_at: "2025-01-15T12:00:00.000Z",
+    updated_at: "2026-03-10T09:00:00.000Z",
+  },
+  {
+    id: "phm-003",
+    equipamento_id: null,
+    tipo_equipamento: "carregadeira",
+    valor_hora_seca: 180,
+    valor_hora_operada: 240,
+    ativo: true,
+    created_at: "2025-02-01T12:00:00.000Z",
+    updated_at: "2026-02-01T12:00:00.000Z",
+  },
+  {
+    id: "phm-004",
+    equipamento_id: null,
+    tipo_equipamento: "trator_esteira",
+    valor_hora_seca: 200,
+    valor_hora_operada: 200,
+    ativo: true,
+    created_at: "2025-02-01T12:00:00.000Z",
+    updated_at: "2026-02-01T12:00:00.000Z",
+  },
+  {
+    id: "phm-005",
+    equipamento_id: "eq-005",
+    tipo_equipamento: null,
+    valor_hora_seca: 150,
+    valor_hora_operada: 190,
+    ativo: false,
+    created_at: "2024-08-20T12:00:00.000Z",
+    updated_at: "2025-12-01T12:00:00.000Z",
+  },
+];
