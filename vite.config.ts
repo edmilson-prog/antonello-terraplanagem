@@ -12,4 +12,9 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Deploy target for self-hosted builds (Vercel). Without this, builds outside a
+  // Lovable context skip nitro entirely and ship no server output, so Vercel returns
+  // 404 for every route. Inside a Lovable build the preset is still forced to
+  // Cloudflare; this override only applies on our own CI / Vercel deploy.
+  nitro: { preset: "vercel" },
 });
