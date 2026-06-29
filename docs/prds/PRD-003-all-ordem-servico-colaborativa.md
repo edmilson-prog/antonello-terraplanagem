@@ -48,6 +48,31 @@ Não existe. As rotas `/app/ordens` e `/admin/ordens` foram criadas no scaffold 
 - **Operador:** vê as OS a que está vinculado, contribui com seus apontamentos (do PRD-002) e enxerga as contribuições dos colegas na mesma OS.
 - O comportamento colaborativo e o estado "pendente de sincronização" são **simulados** na UI (engine real definido no PRD-000).
 
+### Sincronização — decisão do PRD-000 (ADR-001)
+
+O spike PRD-000 está **concluído**. A arquitetura de sync/offline foi decidida no
+[`ADR-001`](../adr/ADR-001-sync-offline-os-colaborativa.md): **Supabase Realtime + fila
+offline própria**. O que isso fixa para este PRD:
+
+**O frontend (esta UI) PODE prometer / simular com segurança:**
+- Apontar e atualizar a OS **offline** sem travar nem perder; selo "pendente de
+  sincronização" (campo `pendente_sync` do PRD-002) e reconciliação ao reconectar.
+- Atualizações **otimistas** dos campos do cabeçalho; reconciliação por **LWW por campo**.
+- Visão "tempo real" da OS quando há rede.
+
+**Regras de negócio que a UI DEVE refletir desde já:**
+- **Fechar a OS é exclusivo da retaguarda.** O app do operador **não** oferece a ação de
+  fechar — só aponta e acompanha. (Elimina o conflito mais perigoso.)
+- **Apontamentos são append-only:** cada operador é dono das próprias horas; somam-se na
+  OS, nunca se sobrescrevem.
+
+**O que NÃO prometer:** co-edição em tempo real sem conflito de campos arbitrários por
+muitos operadores; resolução de conflito além de LWW por campo (colaboração simultânea na
+mesma OS é rara — premissa do spike).
+
+**O backend (fase 4) entregará:** ingestão idempotente por `opId`, `updated_at` por campo
+para o LWW, RLS reservando o fechamento à retaguarda, e canal Realtime por OS.
+
 ### Alternativas Consideradas
 
 | Alternativa | Por que foi descartada |

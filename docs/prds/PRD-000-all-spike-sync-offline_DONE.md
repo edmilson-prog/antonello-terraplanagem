@@ -195,12 +195,12 @@ O spike está **concluído** quando:
 
 | Campo | Valor |
 |-------|-------|
-| **Status** | ⏳ PENDENTE |
-| **Data de Conclusão** | - |
-| **Recomendação (abordagem)** | - |
-| **ADR** | - |
-| **Investigado por** | - |
-| **Observações** | - |
+| **Status** | ✅ CONCLUÍDO |
+| **Data de Conclusão** | 2026-06-28 |
+| **Recomendação (abordagem)** | **A — Supabase Realtime + fila offline própria** (apontamentos append-only idempotentes; cabeçalho LWW por campo; fechar OS exclusivo da retaguarda) |
+| **ADR** | [`ADR-001`](../adr/ADR-001-sync-offline-os-colaborativa.md) |
+| **Investigado por** | Claude Opus 4.8 (Claude Code CLI) |
+| **Observações** | Hipótese de direção **confirmada** por PoC descartável (branch `spike/prd-000-sync-poc`, 5/5 cenários). Premissas alinhadas: fechar = retaguarda, colaboração simultânea rara. Sem bump de versão (spike não entrega código de produção). PoC **não** merge na main. |
 
 ---
 

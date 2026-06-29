@@ -48,11 +48,17 @@ Os perfis (`operador`, `recepção`, `proprietário/admin`) definem o que cada u
 
 ## Arquitetura — Ponto Crítico (ler antes de modelar dados)
 
-O núcleo técnico de maior risco é a **OS colaborativa**: precisa ser **offline-first** (o operador aponta em campo sem sinal) e, ao mesmo tempo, **sincronizar em tempo real** entre vários celulares e a central. Conciliar fila offline + sync ao vivo + resolução de conflito é o ponto mais delicado do sistema.
+O núcleo técnico de maior risco é a **OS colaborativa**: precisa ser **offline-first** (o operador aponta em campo sem sinal) e, ao mesmo tempo, **sincronizar em tempo real** entre vários celulares e a central.
 
-Direção provável (a validar em spike — ver `PRD-000` no INDEX): cada **apontamento é "dono" das próprias horas** (conflito raro), enquanto **abrir/fechar a OS** segue regras explícitas.
+> ✅ **Resolvido pelo spike PRD-000 → [`ADR-001`](../adr/ADR-001-sync-offline-os-colaborativa.md).** Decisão: **Supabase Realtime + fila offline própria (Abordagem A)**:
+> - **Apontamentos append-only e idempotentes** (dedup por `opId` do cliente) — cada apontamento é dono das próprias horas; conflito ~zero.
+> - **Cabeçalho da OS por LWW por campo** (last-write-wins) — basta porque a colaboração simultânea é rara.
+> - **Fechar a OS é exclusivo da retaguarda** (RLS) — o operador nunca fecha; elimina o conflito mais perigoso.
+> - **Fila offline em IndexedDB** → flush idempotente ao reconectar → Supabase Realtime propaga.
+>
+> Validado por PoC descartável (branch `spike/prd-000-sync-poc`, 5/5 cenários). O impacto no PRD-003 (o que o frontend pode prometer / o que o backend entrega) está no ADR.
 
-> **Regra:** não mockar sync perfeito e descobrir o problema só na fase de backend. Essa camada exige um **spike técnico** antes de prometer o comportamento na UI.
+> **Regra:** não mockar sync perfeito e descobrir o problema só na fase de backend. O comportamento prometido na UI deve respeitar o **ADR-001**.
 
 ## Stack
 
