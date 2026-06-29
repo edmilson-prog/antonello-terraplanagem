@@ -412,11 +412,11 @@ Tipos: **Added**, **Changed**, **Deprecated**, **Removed**, **Fixed**, **Securit
 
 | Campo | Valor |
 |-------|-------|
-| **Status** | ⏳ PENDENTE |
-| **Data de Implementação** | - |
-| **Versão do App** | - |
-| **Implementado por** | - |
-| **Observações** | - |
+| **Status** | ✅ IMPLEMENTADO |
+| **Data de Implementação** | 2026-06-28 |
+| **Versão do App** | 0.3.0 (Tariff) |
+| **Implementado por** | Claude Opus 4.8 (Claude Code CLI) |
+| **Observações** | Frontend First / mockado. Vínculo hora-máquina por equipamento OU tipo. 3 abas (inclui mobilização). Types sem prefixo `I` p/ consistência. |
 
 ---
 

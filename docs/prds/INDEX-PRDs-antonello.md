@@ -8,11 +8,11 @@
 | **Cliente** | Leonardo Antonello |
 | **Repositório** | [a definir — repo único / monorepo] |
 | **Início** | Jun/2026 |
-| **Versão Atual** | 0.0.0 (pré-scaffold) |
+| **Versão Atual** | 0.3.0 (Tariff) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 15 (PRD-000 a PRD-014) |
 | **PRDs Documentados** | 6 — **Onda 1 completa** (PRD-000 a PRD-005) |
-| **PRDs Implementados** | 0 |
+| **PRDs Implementados** | 3 |
 
 ### Agentes do Workflow
 
@@ -42,9 +42,9 @@
 
 | Status | Quantidade | Percentual |
 |--------|------------|------------|
-| ✅ Implementado | 0 | 0% |
+| ✅ Implementado | 3 | 20% |
 | 🔄 Em Andamento | 0 | 0% |
-| ⏳ Pendente | 15 | 100% |
+| ⏳ Pendente | 12 | 80% |
 | ❌ Cancelado | 0 | 0% |
 | **Total** | **15** | **100%** |
 
@@ -63,11 +63,11 @@ O coração do sistema: campo aponta horas, central recebe, fatura.
 | PRD | Arquivo | Tipo | Amb. | Prioridade | Depende de | Template | Doc | Status |
 |-----|---------|------|------|------------|------------|----------|-----|--------|
 | 000 | `PRD-000-all-spike-sync-offline.md` | Spike | all | Alta | — | (adaptado) | ✍️ | ⏳ |
-| 001 | `PRD-001-ret-cadastros-base.md` | Feature | ret | Alta | — | feature | ✍️ | ⏳ |
-| 002 | `PRD-002-op-apontamento-horimetro.md` | Feature | op | Alta | 001 | feature | ✍️ | ⏳ |
+| 001 | `PRD-001-ret-cadastros-base_DONE.md` | Feature | ret | Alta | — | feature | ✍️ | ✅ |
+| 002 | `PRD-002-op-apontamento-horimetro_DONE.md` | Feature | op | Alta | 001 | feature | ✍️ | ✅ |
 | 003 | `PRD-003-all-ordem-servico-colaborativa.md` | Feature | all | Alta | 000, 001 | feature | ✍️ | ⏳ |
 | 004 | `PRD-004-ret-faturamento-fechamento-os.md` | Feature | ret | Média | 003, 005 | feature | ✍️ | ⏳ |
-| 005 | `PRD-005-ret-tabela-precos.md` | Feature | ret | Média | 001 | feature | ✍️ | ⏳ |
+| 005 | `PRD-005-ret-tabela-precos_DONE.md` | Feature | ret | Média | 001 | feature | ✍️ | ✅ |
 
 ### Onda 2 — Estrutura
 
@@ -98,20 +98,21 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 
 ## Catálogo por Status
 
-### ✍️ Documentados, ⏳ aguardando implementação (Onda 1 completa)
+### ✍️ Documentados, ⏳ aguardando implementação
 
 | PRD | Título | Tipo | Ambiente |
 |-----|--------|------|----------|
 | [PRD-000](./PRD-000-all-spike-sync-offline.md) | Spike — Arquitetura offline-first + sync colaborativa | Spike | all |
-| [PRD-001](./PRD-001-ret-cadastros-base.md) | Cadastros Base (equipamentos, operadores, clientes) | Feature | ret |
-| [PRD-002](./PRD-002-op-apontamento-horimetro.md) | Apontamento de Horímetro | Feature | op |
 | [PRD-003](./PRD-003-all-ordem-servico-colaborativa.md) | Ordem de Serviço Colaborativa | Feature | all |
 | [PRD-004](./PRD-004-ret-faturamento-fechamento-os.md) | Faturamento ao Fechar OS | Feature | ret |
-| [PRD-005](./PRD-005-ret-tabela-precos.md) | Tabela de Preços (hora-máquina + por metro) | Feature | ret |
 
 ### ✅ Implementados
 
-*Nenhum ainda.*
+| PRD | Título | Tipo | Ambiente | Versão |
+|-----|--------|------|----------|--------|
+| [PRD-001](./PRD-001-ret-cadastros-base_DONE.md) | Cadastros Base (equipamentos, operadores, clientes) | Feature | ret | 0.1.0 Registry |
+| [PRD-002](./PRD-002-op-apontamento-horimetro_DONE.md) | Apontamento de Horímetro | Feature | op | 0.2.0 Tally |
+| [PRD-005](./PRD-005-ret-tabela-precos_DONE.md) | Tabela de Preços (hora-máquina + por metro) | Feature | ret | 0.3.0 Tariff |
 
 ### 🔄 Em Andamento
 
@@ -181,6 +182,9 @@ Jun/2026  ───────────────────────�
 | Versão | Codinome | Data | PRDs Incluídos | Tipo |
 |--------|----------|------|----------------|------|
 | 0.0.0 | — | Jun/2026 | (pré-scaffold) | Inicial |
+| 0.1.0 | Registry | 2026-06-28 | PRD-001 | MINOR |
+| 0.2.0 | Tally | 2026-06-28 | PRD-002 | MINOR |
+| 0.3.0 | Tariff | 2026-06-28 | PRD-005 | MINOR |
 
 ---
 
@@ -245,6 +249,6 @@ Jun/2026  ───────────────────────�
 
 | Campo | Valor |
 |-------|-------|
-| **Data** | Jun/2026 |
-| **Atualizado por** | Arquiteto (claude.ai) |
-| **Motivo** | Fechamento da documentação da Onda 1 — PRD-000 a PRD-005 escritos (✍️) e catalogados como documentados |
+| **Data** | 2026-06-28 |
+| **Atualizado por** | Claude Code CLI (claude-sonnet-4-6) |
+| **Motivo** | Release 0.3.0 Tariff — PRD-001, PRD-002 e PRD-005 marcados como implementados; contagem corrigida (3/15, 20%) |

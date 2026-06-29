@@ -5,6 +5,22 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.3.0] - 2026-06-28 - Tariff
+
+### Added
+- Tabela de preços na retaguarda (`/admin/precos`) com três abas: hora-máquina
+  (valor seca/operada, vínculo por equipamento ou por tipo), por metro (fundação,
+  por diâmetro de broca) e mobilização/transporte.
+- Tipos de contrato `PrecoHoraMaquina`, `PrecoFundacao`, `PrecoMobilizacao`.
+- Componente de entrada monetária `CurrencyInput` (máscara R$, 2 casas) e
+  formatador `formatBRL`/`brlExato`.
+- CRUD em memória com soft-delete (inativar/reativar) e validação de valores
+  positivos.
+
+### Security
+- Barreira financeira: nada de `features/precos` é importado pelo ambiente do
+  operador (`/app/*`); valores de preço nunca são carregados no app de campo.
+
 ## [0.2.0] - 2026-06-28 - Tally
 
 ### Added
