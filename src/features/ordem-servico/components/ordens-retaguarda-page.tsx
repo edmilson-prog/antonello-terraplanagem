@@ -61,9 +61,7 @@ export function OrdensRetaguardaPage() {
       header: "OS",
       cell: (o) => (
         <Link
-          // @ts-expect-error -- /admin/ordens/$ordemId route will be added in Task 9
           to="/admin/ordens/$ordemId"
-          // @ts-expect-error -- params follows to (route created in Task 9)
           params={{ ordemId: o.id }}
           className="font-mono text-sm font-semibold text-foreground hover:text-primary"
         >
@@ -128,9 +126,7 @@ export function OrdensRetaguardaPage() {
     <div className="rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between gap-2">
         <Link
-          // @ts-expect-error -- /admin/ordens/$ordemId route will be added in Task 9
           to="/admin/ordens/$ordemId"
-          // @ts-expect-error -- params follows to (route created in Task 9)
           params={{ ordemId: o.id }}
           className="font-mono text-sm font-semibold text-foreground"
         >

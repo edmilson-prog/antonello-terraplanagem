@@ -29,6 +29,7 @@ import { Route as AdminOrdensIndexRouteImport } from './routes/admin.ordens.inde
 import { Route as AppOrdensOrdemIdRouteImport } from './routes/app.ordens.$ordemId'
 import { Route as AppApontamentoNovoRouteImport } from './routes/app.apontamento.novo'
 import { Route as AppApontamentoApontamentoIdRouteImport } from './routes/app.apontamento.$apontamentoId'
+import { Route as AdminOrdensOrdemIdRouteImport } from './routes/admin.ordens.$ordemId'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -132,6 +133,11 @@ const AppApontamentoApontamentoIdRoute =
     path: '/apontamento/$apontamentoId',
     getParentRoute: () => AppRoute,
   } as any)
+const AdminOrdensOrdemIdRoute = AdminOrdensOrdemIdRouteImport.update({
+  id: '/ordens/$ordemId',
+  path: '/ordens/$ordemId',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -148,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
@@ -168,6 +175,7 @@ export interface FileRoutesByTo {
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
+  '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
@@ -191,6 +199,7 @@ export interface FileRoutesById {
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
+  '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
@@ -215,6 +224,7 @@ export interface FileRouteTypes {
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
     | '/app/'
+    | '/admin/ordens/$ordemId'
     | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
@@ -235,6 +245,7 @@ export interface FileRouteTypes {
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin'
     | '/app'
+    | '/admin/ordens/$ordemId'
     | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
@@ -257,6 +268,7 @@ export interface FileRouteTypes {
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
     | '/app/'
+    | '/admin/ordens/$ordemId'
     | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
@@ -416,6 +428,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppApontamentoApontamentoIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/admin/ordens/$ordemId': {
+      id: '/admin/ordens/$ordemId'
+      path: '/ordens/$ordemId'
+      fullPath: '/admin/ordens/$ordemId'
+      preLoaderRoute: typeof AdminOrdensOrdemIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
@@ -426,6 +445,7 @@ interface AdminRouteChildren {
   AdminOperadoresRoute: typeof AdminOperadoresRoute
   AdminPrecosRoute: typeof AdminPrecosRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminOrdensOrdemIdRoute: typeof AdminOrdensOrdemIdRoute
   AdminOrdensIndexRoute: typeof AdminOrdensIndexRoute
 }
 
@@ -436,6 +456,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminOperadoresRoute: AdminOperadoresRoute,
   AdminPrecosRoute: AdminPrecosRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminOrdensOrdemIdRoute: AdminOrdensOrdemIdRoute,
   AdminOrdensIndexRoute: AdminOrdensIndexRoute,
 }
 
