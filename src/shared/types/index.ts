@@ -51,24 +51,6 @@ export interface SessaoMock {
   nome: string;
 }
 
-export type OrdemStatus = "aberta" | "em_andamento" | "concluida";
-
-export interface OrdemServicoOperador {
-  id: string;
-  numero: string;
-  cliente_nome: string;
-  obra: string;
-  endereco: string;
-  equipamento_id: string;
-  equipamento_nome: string;
-  operador_id: string;
-  status: OrdemStatus;
-  data_abertura: string; // ISO
-  data_fechamento: string | null;
-  horimetro_inicio: number | null;
-  horimetro_fim: number | null;
-  observacoes: string | null;
-}
 
 export interface FaturamentoMes {
   mes: string; // "2025-01"
