@@ -183,3 +183,38 @@ export interface Faturamento {
   created_at: string;
   updated_at: string;
 }
+
+// Orçamentos (PRD-006) — pré-venda; montados a partir das tabelas de preço. Só retaguarda;
+// NUNCA importado/renderizado em /app/*. Item espelha FaturamentoItem (quantidade_estimada).
+export type StatusOrcamento = "rascunho" | "enviado" | "aprovado" | "recusado";
+export type TipoItemOrcamento = "hora_maquina" | "por_metro" | "mobilizacao";
+
+export interface OrcamentoItem {
+  id: string;
+  tipo: TipoItemOrcamento;
+  descricao: string; // "Escavadeira 10t — 40 h operada (estimado)"
+  origem_id: string | null; // equipamento_id (hora) / preco_fundacao_id (metro) / preco_mobilizacao_id (mob.)
+  hora_tipo: "seca" | "operada" | null; // só hora_maquina
+  quantidade_estimada: number; // horas, metros ou 1
+  valor_unitario: number | null; // null = SEM PREÇO ativo (pendência)
+  valor_total: number; // round2(quantidade_estimada × valor_unitario); 0 se sem preço
+  sem_preco: boolean;
+}
+
+export interface Orcamento {
+  id: string;
+  numero: string; // "ORC-2026-0001"
+  cliente_id: string; // FK → Cliente (PRD-001)
+  descricao_obra: string;
+  itens: OrcamentoItem[];
+  desconto: number; // R$ subtraído do subtotal (≥ 0)
+  valor_total: number; // soma(itens) − desconto
+  validade: string | null; // "YYYY-MM-DD" (limite); default hoje+30d na criação
+  observacao: string | null;
+  status: StatusOrcamento;
+  os_id: string | null; // preenchido quando vira OS (PRD-003)
+  enviado_em: string | null; // ISO — quando marcado enviado
+  decidido_em: string | null; // ISO — quando aprovado/recusado
+  created_at: string;
+  updated_at: string;
+}
