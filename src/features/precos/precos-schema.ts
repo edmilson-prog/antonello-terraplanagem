@@ -1,7 +1,8 @@
 import { z } from "zod";
 
-// Valores do form da hora-máquina incluem `vinculo` (estado local do form que decide
-// qual FK gravar); o contrato/store NÃO tem esse campo.
+// Mantém em sincronia com TipoEquipamento (@/shared/types) e TIPOS
+// (@/features/equipamentos/labels): z.enum exige uma tupla literal `as const`,
+// e o tsc NÃO detecta divergência (um union-subconjunto continua atribuível).
 const TIPO_VALUES = [
   "escavadeira",
   "carregadeira",
