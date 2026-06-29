@@ -5,6 +5,25 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.4.0] - 2026-06-29 - Worksite
+
+### Added
+- Ordem de Serviço colaborativa nos dois ambientes: lista + detalhe do operador
+  ("Minhas OS", apontamentos dos colegas, "Apontar nesta OS") e retaguarda (lista,
+  criar, detalhar, fechar, editar).
+- Total de horas e status efetivo derivados dos apontamentos; numeração automática
+  `OS-AAAA-NNNN`; modelo de cobrança hora-máquina/por-metro.
+- Regra de fechamento: exclusivo da retaguarda, bloqueado com apontamento em andamento.
+
+### Changed
+- Modelo de OS migrado de `OrdemServicoOperador` (turno único por operador) para
+  `OrdemServico` colaborativa; apontamentos (PRD-002) passam a vincular às novas OS,
+  e o seletor de OS do apontamento aceita pré-preenchimento via `?os=`.
+
+### Removed
+- Modelo de OS legado (`OrdemServicoOperador`, store e mock do operador) e fluxo de
+  "Iniciar turno / Finalizar OS" com horímetro direto na OS.
+
 ## [0.3.0] - 2026-06-28 - Tariff
 
 ### Added

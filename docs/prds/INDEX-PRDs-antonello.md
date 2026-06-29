@@ -8,11 +8,11 @@
 | **Cliente** | Leonardo Antonello |
 | **Repositório** | [a definir — repo único / monorepo] |
 | **Início** | Jun/2026 |
-| **Versão Atual** | 0.3.0 (Tariff) |
+| **Versão Atual** | 0.4.0 (Worksite) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 15 (PRD-000 a PRD-014) |
 | **PRDs Documentados** | 6 — **Onda 1 completa** (PRD-000 a PRD-005) |
-| **PRDs Implementados** | 4 (inclui o spike PRD-000) |
+| **PRDs Implementados** | 5 (inclui o spike PRD-000) |
 
 ### Agentes do Workflow
 
@@ -42,9 +42,9 @@
 
 | Status | Quantidade | Percentual |
 |--------|------------|------------|
-| ✅ Implementado | 4 | 27% |
+| ✅ Implementado | 5 | 33% |
 | 🔄 Em Andamento | 0 | 0% |
-| ⏳ Pendente | 11 | 73% |
+| ⏳ Pendente | 10 | 67% |
 | ❌ Cancelado | 0 | 0% |
 | **Total** | **15** | **100%** |
 
@@ -65,7 +65,7 @@ O coração do sistema: campo aponta horas, central recebe, fatura.
 | 000 | `PRD-000-all-spike-sync-offline_DONE.md` | Spike | all | Alta | — | (adaptado) | ✍️ | ✅ |
 | 001 | `PRD-001-ret-cadastros-base_DONE.md` | Feature | ret | Alta | — | feature | ✍️ | ✅ |
 | 002 | `PRD-002-op-apontamento-horimetro_DONE.md` | Feature | op | Alta | 001 | feature | ✍️ | ✅ |
-| 003 | `PRD-003-all-ordem-servico-colaborativa.md` | Feature | all | Alta | 000, 001 | feature | ✍️ | ⏳ |
+| 003 | `PRD-003-all-ordem-servico-colaborativa_DONE.md` | Feature | all | Alta | 000, 001 | feature | ✍️ | ✅ |
 | 004 | `PRD-004-ret-faturamento-fechamento-os.md` | Feature | ret | Média | 003, 005 | feature | ✍️ | ⏳ |
 | 005 | `PRD-005-ret-tabela-precos_DONE.md` | Feature | ret | Média | 001 | feature | ✍️ | ✅ |
 
@@ -102,7 +102,6 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 
 | PRD | Título | Tipo | Ambiente |
 |-----|--------|------|----------|
-| [PRD-003](./PRD-003-all-ordem-servico-colaborativa.md) | Ordem de Serviço Colaborativa | Feature | all |
 | [PRD-004](./PRD-004-ret-faturamento-fechamento-os.md) | Faturamento ao Fechar OS | Feature | ret |
 
 ### ✅ Implementados
@@ -112,6 +111,7 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 | [PRD-000](./PRD-000-all-spike-sync-offline_DONE.md) | Spike — Sync offline-first + OS colaborativa | Spike | all | — (ADR-001) |
 | [PRD-001](./PRD-001-ret-cadastros-base_DONE.md) | Cadastros Base (equipamentos, operadores, clientes) | Feature | ret | 0.1.0 Registry |
 | [PRD-002](./PRD-002-op-apontamento-horimetro_DONE.md) | Apontamento de Horímetro | Feature | op | 0.2.0 Tally |
+| [PRD-003](./PRD-003-all-ordem-servico-colaborativa_DONE.md) | Ordem de Serviço Colaborativa | Feature | all | 0.4.0 Worksite |
 | [PRD-005](./PRD-005-ret-tabela-precos_DONE.md) | Tabela de Preços (hora-máquina + por metro) | Feature | ret | 0.3.0 Tariff |
 
 ### 🔄 Em Andamento
@@ -185,6 +185,7 @@ Jun/2026  ───────────────────────�
 | 0.1.0 | Registry | 2026-06-28 | PRD-001 | MINOR |
 | 0.2.0 | Tally | 2026-06-28 | PRD-002 | MINOR |
 | 0.3.0 | Tariff | 2026-06-28 | PRD-005 | MINOR |
+| 0.4.0 | Worksite | 2026-06-29 | PRD-003 | MINOR |
 
 ---
 
@@ -250,6 +251,6 @@ Jun/2026  ───────────────────────�
 
 | Campo | Valor |
 |-------|-------|
-| **Data** | 2026-06-28 |
+| **Data** | 2026-06-29 |
 | **Atualizado por** | Claude Code CLI (Claude Opus 4.8) |
-| **Motivo** | Spike PRD-000 concluído → ADR-001 (sync offline-first decidido); PRD-000 marcado ✅; contagem 4/15 (27%); risco arquitetural mitigado |
+| **Motivo** | PRD-003 OS Colaborativa implementado → versão 0.4.0 Worksite; contagem 5/15 (33%); PRD-003 marcado ✅ e movido para Implementados |

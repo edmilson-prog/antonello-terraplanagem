@@ -459,11 +459,11 @@ Tipos: **Added**, **Changed**, **Deprecated**, **Removed**, **Fixed**, **Securit
 
 | Campo | Valor |
 |-------|-------|
-| **Status** | ⏳ PENDENTE |
-| **Data de Implementação** | - |
-| **Versão do App** | - |
-| **Implementado por** | - |
-| **Observações** | - |
+| **Status** | ✅ IMPLEMENTADO |
+| **Data de Implementação** | 2026-06-29 |
+| **Versão do App** | 0.4.0 (Worksite) |
+| **Implementado por** | Claude Opus 4.8 (Claude Code CLI) |
+| **Observações** | Frontend First. Reconcilia o modelo legado (ADR-001). Fechar = retaguarda; horas derivadas; colaboração demonstrável (os-001). |
 
 ---
 
