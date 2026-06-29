@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/select";
 import { HorimetroCapture } from "@/shared/components/horimetro-capture";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
-import { ordensOperador } from "@/mocks/ordens-operador";
+import { ordensStore } from "@/features/ordem-servico/ordens-store";
+import { ordensDoOperador } from "@/features/ordem-servico/derivacoes";
 import {
   apontamentosStore,
   OPERADOR_LOGADO_ID,
@@ -28,10 +29,13 @@ import {
 
 const SEM_OS = "sem-os";
 
-export function IniciarApontamentoForm() {
+export function IniciarApontamentoForm({ osIdInicial }: { osIdInicial?: string }) {
   const navigate = useNavigate();
   const equipamentos = equipamentosStore.useAll().filter((e) => e.ativo);
-  const ordens = ordensOperador.filter((o) => o.operador_id === OPERADOR_LOGADO_ID);
+  const apontamentos = apontamentosStore.useTodos();
+  const ordens = ordensDoOperador(ordensStore.useTodas(), apontamentos, OPERADOR_LOGADO_ID).filter(
+    (o) => o.status !== "fechada",
+  );
   const [fotoInicialUrl, setFotoInicialUrl] = useState<string | null>(null);
 
   const {
@@ -45,7 +49,7 @@ export function IniciarApontamentoForm() {
     defaultValues: {
       equipamento_id: "",
       horimetro_inicial: Number.NaN,
-      os_id: SEM_OS,
+      os_id: osIdInicial ?? SEM_OS,
       observacao: "",
     },
   });
@@ -144,7 +148,7 @@ export function IniciarApontamentoForm() {
                   <SelectItem value={SEM_OS}>Sem OS</SelectItem>
                   {ordens.map((o) => (
                     <SelectItem key={o.id} value={o.id}>
-                      {o.numero} — {o.obra}
+                      {o.numero} — {o.obra_nome}
                     </SelectItem>
                   ))}
                 </SelectContent>

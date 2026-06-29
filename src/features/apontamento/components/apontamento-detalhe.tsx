@@ -9,7 +9,7 @@ import { StatusApontamentoBadge } from "@/features/apontamento/components/status
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { finalizarApontamentoSchema } from "@/features/apontamento/apontamento-schema";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
-import { ordensOperador } from "@/mocks/ordens-operador";
+import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { formatHorimetro, formatDataHora } from "@/shared/lib/format";
 
 interface Props {
@@ -25,9 +25,7 @@ export function ApontamentoDetalhe({ apontamentoId }: Props) {
   if (!apontamento) return <ApontamentoNaoEncontrado />;
 
   const equipamento = equipamentosStore.getById(apontamento.equipamento_id);
-  const os = apontamento.os_id
-    ? ordensOperador.find((o) => o.id === apontamento.os_id)
-    : null;
+  const os = apontamento.os_id ? ordensStore.obter(apontamento.os_id) : null;
 
   function confirmarFinalizacao() {
     if (!apontamento) return;
@@ -71,7 +69,7 @@ export function ApontamentoDetalhe({ apontamentoId }: Props) {
             </h2>
             {os ? (
               <p className="text-sm text-muted-foreground">
-                {os.numero} — {os.obra}
+                {os.numero} — {os.obra_nome}
               </p>
             ) : (
               <p className="text-sm text-muted-foreground">Sem OS vinculada</p>
