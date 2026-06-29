@@ -110,3 +110,36 @@ export interface Apontamento {
   created_at: string;
   updated_at: string;
 }
+
+// Preços (PRD-005) — geridos só na retaguarda; jamais expostos ao operador.
+// Vínculo do preço hora-máquina é DERIVADO: exatamente uma de equipamento_id /
+// tipo_equipamento é não-nula (sem campo `vinculo` no contrato).
+export interface PrecoHoraMaquina {
+  id: string;
+  equipamento_id: string | null; // preenchido p/ vínculo por equipamento específico
+  tipo_equipamento: TipoEquipamento | null; // preenchido p/ vínculo por tipo/porte
+  valor_hora_seca: number; // R$/h sem operador (reais, 2 casas)
+  valor_hora_operada: number; // R$/h com operador
+  ativo: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PrecoFundacao {
+  id: string;
+  diametro_broca_mm: number; // ex.: 300, 400, 500
+  valor_metro: number; // R$/m
+  descricao: string | null;
+  ativo: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PrecoMobilizacao {
+  id: string;
+  descricao: string; // ex.: "Mobilização escavadeira até 50km"
+  valor: number; // R$
+  ativo: boolean;
+  created_at: string;
+  updated_at: string;
+}
