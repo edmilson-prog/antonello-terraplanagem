@@ -18,6 +18,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as BlogTerraplanagemOuTerraplenagemRouteImport } from './routes/blog.terraplanagem-ou-terraplenagem'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
+import { Route as AdminPrecosRouteImport } from './routes/admin.precos'
 import { Route as AdminOrdensRouteImport } from './routes/admin.ordens'
 import { Route as AdminOperadoresRouteImport } from './routes/admin.operadores'
 import { Route as AdminFaturamentoRouteImport } from './routes/admin.faturamento'
@@ -74,6 +75,11 @@ const AppPerfilRoute = AppPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
   getParentRoute: () => AppRoute,
+} as any)
+const AdminPrecosRoute = AdminPrecosRouteImport.update({
+  id: '/precos',
+  path: '/precos',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminOrdensRoute = AdminOrdensRouteImport.update({
   id: '/ordens',
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/admin/faturamento': typeof AdminFaturamentoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/ordens': typeof AdminOrdensRoute
+  '/admin/precos': typeof AdminPrecosRoute
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/admin/faturamento': typeof AdminFaturamentoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/ordens': typeof AdminOrdensRoute
+  '/admin/precos': typeof AdminPrecosRoute
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin': typeof AdminIndexRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/admin/faturamento': typeof AdminFaturamentoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/ordens': typeof AdminOrdensRoute
+  '/admin/precos': typeof AdminPrecosRoute
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
@@ -202,6 +211,7 @@ export interface FileRouteTypes {
     | '/admin/faturamento'
     | '/admin/operadores'
     | '/admin/ordens'
+    | '/admin/precos'
     | '/app/perfil'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/admin/faturamento'
     | '/admin/operadores'
     | '/admin/ordens'
+    | '/admin/precos'
     | '/app/perfil'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin'
@@ -242,6 +253,7 @@ export interface FileRouteTypes {
     | '/admin/faturamento'
     | '/admin/operadores'
     | '/admin/ordens'
+    | '/admin/precos'
     | '/app/perfil'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
@@ -327,6 +339,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPerfilRouteImport
       parentRoute: typeof AppRoute
     }
+    '/admin/precos': {
+      id: '/admin/precos'
+      path: '/precos'
+      fullPath: '/admin/precos'
+      preLoaderRoute: typeof AdminPrecosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/ordens': {
       id: '/admin/ordens'
       path: '/ordens'
@@ -406,6 +425,7 @@ interface AdminRouteChildren {
   AdminFaturamentoRoute: typeof AdminFaturamentoRoute
   AdminOperadoresRoute: typeof AdminOperadoresRoute
   AdminOrdensRoute: typeof AdminOrdensRoute
+  AdminPrecosRoute: typeof AdminPrecosRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
@@ -415,6 +435,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminFaturamentoRoute: AdminFaturamentoRoute,
   AdminOperadoresRoute: AdminOperadoresRoute,
   AdminOrdensRoute: AdminOrdensRoute,
+  AdminPrecosRoute: AdminPrecosRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 

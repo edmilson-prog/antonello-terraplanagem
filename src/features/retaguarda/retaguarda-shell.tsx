@@ -7,6 +7,7 @@ import {
   Building2,
   HardHat,
   Receipt,
+  Tags,
   Menu,
   ChevronRight,
 } from "lucide-react";
@@ -29,6 +30,7 @@ const itens: NavItem[] = [
   { to: "/admin/equipamentos", label: "Equipamentos", icone: Truck },
   { to: "/admin/clientes", label: "Clientes", icone: Building2 },
   { to: "/admin/operadores", label: "Operadores", icone: HardHat },
+  { to: "/admin/precos", label: "Preços", icone: Tags },
   { to: "/admin/faturamento", label: "Faturamento", icone: Receipt },
 ];
 
