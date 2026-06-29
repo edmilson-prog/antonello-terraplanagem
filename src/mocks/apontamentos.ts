@@ -1,15 +1,14 @@
 import type { Apontamento } from "@/shared/types";
 
 // ~6 apontamentos espelhando o schema futuro (snake_case). Reusa equipamentos
-// (eq-001..eq-007) e OS (os-1042/os-1039/os-1037) dos mocks existentes.
-// Edge cases: em andamento, finalizados, sem os_id, observação longa,
-// pendente_sync e um de outro operador (prova o filtro "Meus apontamentos").
+// (eq-001..eq-007) e OS (os-001/os-003/os-004) dos mocks. os-001 é colaborativa
+// (ap-001 op-001 + ap-006 op-002). Edge cases: em andamento, finalizados, sem os_id,
 export const apontamentos: Apontamento[] = [
   {
     id: "ap-001",
     equipamento_id: "eq-001",
     operador_id: "op-001",
-    os_id: "os-1042",
+    os_id: "os-001",
     horimetro_inicial: 8432,
     horimetro_final: null,
     horas_trabalhadas: null,
@@ -27,7 +26,7 @@ export const apontamentos: Apontamento[] = [
     id: "ap-002",
     equipamento_id: "eq-002",
     operador_id: "op-001",
-    os_id: "os-1039",
+    os_id: "os-003",
     horimetro_inicial: 5102,
     horimetro_final: 5120,
     horas_trabalhadas: 18,
@@ -63,7 +62,7 @@ export const apontamentos: Apontamento[] = [
     id: "ap-004",
     equipamento_id: "eq-006",
     operador_id: "op-001",
-    os_id: "os-1037",
+    os_id: "os-004",
     horimetro_inicial: 4196,
     horimetro_final: 4205,
     horas_trabalhadas: 9,
@@ -100,7 +99,7 @@ export const apontamentos: Apontamento[] = [
     id: "ap-006",
     equipamento_id: "eq-007",
     operador_id: "op-002",
-    os_id: null,
+    os_id: "os-001",
     horimetro_inicial: 9876.5,
     horimetro_final: 9881.5,
     horas_trabalhadas: 5,
