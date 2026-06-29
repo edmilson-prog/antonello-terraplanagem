@@ -1,4 +1,4 @@
-import { Controller, useForm, type Resolver } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -40,9 +40,7 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
     watch,
     formState: { errors, isSubmitting },
   } = useForm<OrdemFormValues>({
-    // z.preprocess changes the input type to unknown; cast is safe because the
-    // output type (OrdemFormValues) is what we actually consume downstream.
-    resolver: zodResolver(ordemSchema) as unknown as Resolver<OrdemFormValues>,
+    resolver: zodResolver(ordemSchema),
     defaultValues: {
       cliente_id: inicial?.cliente_id ?? "",
       obra_nome: inicial?.obra_nome ?? "",
@@ -185,7 +183,7 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
               min="0"
               className="font-mono"
               placeholder="ex.: 400"
-              {...register("diametro_broca_mm", { valueAsNumber: true })}
+              {...register("diametro_broca_mm", { setValueAs: (v) => (v === "" ? undefined : Number(v)) })}
               aria-invalid={!!errors.diametro_broca_mm}
             />
             {errors.diametro_broca_mm ? (
@@ -201,7 +199,7 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
               min="0"
               className="font-mono"
               placeholder="opcional"
-              {...register("metragem_executada", { valueAsNumber: true })}
+              {...register("metragem_executada", { setValueAs: (v) => (v === "" ? undefined : Number(v)) })}
               aria-invalid={!!errors.metragem_executada}
             />
             {errors.metragem_executada ? (

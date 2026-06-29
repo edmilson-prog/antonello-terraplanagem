@@ -1,13 +1,9 @@
 import { z } from "zod";
 
-// number opcional positivo que tolera "" (NaN do valueAsNumber) como ausência.
-const numeroOpcionalPositivo = z.preprocess(
-  (v) => (typeof v === "number" && Number.isNaN(v) ? undefined : v),
-  z
-    .number({ invalid_type_error: "Informe um número válido" })
-    .positive("Informe um valor maior que zero")
-    .optional(),
-);
+const numeroOpcionalPositivo = z
+  .number({ invalid_type_error: "Informe um número válido" })
+  .positive("Informe um valor maior que zero")
+  .optional();
 
 export const ordemSchema = z
   .object({
