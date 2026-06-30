@@ -33,6 +33,7 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
   const orc = orcamentosStore.useOrcamento(orcamentoId);
   const equipamentos = equipamentosStore.useAll();
   const precosHM = precoHoraMaquinaStore.useAll();
+  const navigate = useNavigate();
   const [enviar, setEnviar] = useState(false);
   const [decisao, setDecisao] = useState<null | "aprovar" | "recusar">(null);
 
@@ -42,8 +43,6 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
   const cliente = clientesStore.getById(orc.cliente_id);
   const pendente = temPendencia(orc);
   const vencida = validadeVencida(orc, new Date().toISOString());
-
-  const navigate = useNavigate();
 
   const gerarOS = () => {
     const modelo = inferirModelo(orc.itens);
