@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -16,9 +16,18 @@ import { valorItem } from "@/features/faturamento/calculo";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { precoHoraMaquinaStore } from "@/features/precos/precos-hora-maquina-store";
 import { clientesStore } from "@/features/clientes/clientes-store";
+import { ordensStore } from "@/features/ordem-servico/ordens-store";
+import { proximoNumeroOS } from "@/features/ordem-servico/numero-os";
+import { precoFundacaoStore } from "@/features/precos/precos-fundacao-store";
 import { formatBRL } from "@/features/retaguarda/format";
 import { formatDataHora } from "@/shared/lib/format";
-import type { OrcamentoItem } from "@/shared/types";
+import type { ModeloCobranca, OrcamentoItem } from "@/shared/types";
+
+// Modelo de cobrança da OS gerada: o primeiro item não-mobilização decide (default hora_maquina).
+function inferirModelo(itens: OrcamentoItem[]): ModeloCobranca {
+  const naoMob = itens.find((i) => i.tipo !== "mobilizacao");
+  return naoMob?.tipo === "por_metro" ? "por_metro" : "hora_maquina";
+}
 
 export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
   const orc = orcamentosStore.useOrcamento(orcamentoId);
@@ -33,6 +42,33 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
   const cliente = clientesStore.getById(orc.cliente_id);
   const pendente = temPendencia(orc);
   const vencida = validadeVencida(orc, new Date().toISOString());
+
+  const navigate = useNavigate();
+
+  const gerarOS = () => {
+    const modelo = inferirModelo(orc.itens);
+    const ehPorMetro = modelo === "por_metro";
+    const itemMetro = ehPorMetro ? orc.itens.find((i) => i.tipo === "por_metro") : undefined;
+    const diametro =
+      itemMetro?.origem_id != null
+        ? (precoFundacaoStore.getById(itemMetro.origem_id)?.diametro_broca_mm ?? null)
+        : null;
+    const numero = proximoNumeroOS(ordensStore.listar(), new Date().getFullYear());
+    const nova = ordensStore.criar({
+      numero,
+      cliente_id: orc.cliente_id,
+      obra_nome: orc.descricao_obra,
+      endereco: null,
+      modelo_cobranca: modelo,
+      responsavel_id: null,
+      observacao: `Gerado do orçamento ${orc.numero}`,
+      metragem_executada: ehPorMetro && itemMetro ? itemMetro.quantidade_estimada : null,
+      diametro_broca_mm: ehPorMetro ? diametro : null,
+    });
+    orcamentosStore.vincularOS(orc.id, nova.id);
+    toast.success(`OS ${nova.numero} criada a partir do orçamento.`);
+    navigate({ to: "/admin/ordens/$ordemId", params: { ordemId: nova.id } });
+  };
 
   const setItens = (next: OrcamentoItem[]) => orcamentosStore.atualizar(orc.id, { itens: next });
 
@@ -235,6 +271,15 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
               Aprovar
             </Button>
           </>
+        ) : null}
+        {orc.status === "aprovado" && !orc.os_id ? (
+          <Button
+            onClick={gerarOS}
+            className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
+          >
+            <Icon icon="lucide:file-plus-2" className="h-4 w-4" />
+            Gerar OS
+          </Button>
         ) : null}
         {orc.status === "aprovado" && orc.os_id ? (
           <Link
