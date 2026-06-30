@@ -218,3 +218,41 @@ export interface Orcamento {
   created_at: string;
   updated_at: string;
 }
+
+// Financeiro (PRD-007) — contas a pagar e a receber. Só retaguarda;
+// NUNCA importado/renderizado em /app/*.
+export type StatusConta = "aberta" | "liquidada";
+export type FormaRecebimento =
+  | "dinheiro"
+  | "pix"
+  | "transferencia"
+  | "boleto"
+  | "cheque"
+  | "outro";
+export type CategoriaDespesa = "diesel" | "manutencao" | "folha" | "fornecedor" | "outro";
+
+export interface ContaReceber {
+  id: string;
+  faturamento_id: string; // FK → Faturamento (PRD-004)
+  cliente_id: string; // FK → Cliente (PRD-001)
+  valor: number; // espelha Faturamento.valor_total
+  vencimento: string; // "YYYY-MM-DD" = faturado_em + 30 dias
+  status: StatusConta;
+  recebido_em: string | null; // "YYYY-MM-DD"
+  forma_recebimento: FormaRecebimento | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ContaPagar {
+  id: string;
+  descricao: string;
+  fornecedor: string | null;
+  categoria: CategoriaDespesa;
+  valor: number;
+  vencimento: string; // "YYYY-MM-DD"
+  status: StatusConta;
+  pago_em: string | null; // "YYYY-MM-DD"
+  created_at: string;
+  updated_at: string;
+}
