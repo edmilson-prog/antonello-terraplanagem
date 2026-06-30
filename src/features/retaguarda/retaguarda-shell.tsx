@@ -8,6 +8,7 @@ import {
   HardHat,
   Receipt,
   Tags,
+  FileSpreadsheet,
   Menu,
   ChevronRight,
 } from "lucide-react";
@@ -31,6 +32,7 @@ const itens: NavItem[] = [
   { to: "/admin/clientes", label: "Clientes", icone: Building2 },
   { to: "/admin/operadores", label: "Operadores", icone: HardHat },
   { to: "/admin/precos", label: "Preços", icone: Tags },
+  { to: "/admin/orcamentos", label: "Orçamentos", icone: FileSpreadsheet },
   { to: "/admin/faturamento", label: "Faturamento", icone: Receipt },
 ];
 
