@@ -401,11 +401,11 @@ Tipos: **Added**, **Changed**, **Deprecated**, **Removed**, **Fixed**, **Securit
 
 | Campo | Valor |
 |-------|-------|
-| **Status** | ⏳ PENDENTE |
-| **Data de Implementação** | - |
-| **Versão do App** | - |
-| **Implementado por** | - |
-| **Observações** | - |
+| **Status** | ✅ IMPLEMENTADO |
+| **Data de Implementação** | 2026-06-29 |
+| **Versão do App** | 0.6.0 (Quote) |
+| **Implementado por** | Claude Code CLI (Claude Opus 4.8) |
+| **Observações** | Espelho pré-venda do Faturamento; só retaguarda; handoff aprovado → OS. |
 
 ---
 
