@@ -1,5 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { orcamentosStore } from "@/features/orcamentos/orcamentos-store";
+import { OrcamentoDetalhe } from "@/features/orcamentos";
 
 export const Route = createFileRoute("/admin/orcamentos/$orcamentoId")({
   loader: ({ params }) => {
@@ -8,9 +9,7 @@ export const Route = createFileRoute("/admin/orcamentos/$orcamentoId")({
   },
   head: ({ params }) => ({
     meta: [
-      {
-        title: `${orcamentosStore.obter(params.orcamentoId)?.numero ?? "Orçamento"} · Antonello`,
-      },
+      { title: `${orcamentosStore.obter(params.orcamentoId)?.numero ?? "Orçamento"} · Antonello` },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),
@@ -19,9 +18,5 @@ export const Route = createFileRoute("/admin/orcamentos/$orcamentoId")({
 
 function OrcamentoDetalheRoute() {
   const { orcamentoId } = Route.useParams();
-  return (
-    <div className="py-8 text-center text-muted-foreground">
-      Orçamento {orcamentoId} — detalhes em breve.
-    </div>
-  );
+  return <OrcamentoDetalhe orcamentoId={orcamentoId} />;
 }
