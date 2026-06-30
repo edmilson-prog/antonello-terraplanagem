@@ -11,7 +11,7 @@
 | **Versão Atual** | 0.6.0 (Quote) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 15 (PRD-000 a PRD-014) |
-| **PRDs Documentados** | 6 — **Onda 1 completa** (PRD-000 a PRD-005) |
+| **PRDs Documentados** | 7 — Onda 1 (PRD-000 a PRD-005) + PRD-006 |
 | **PRDs Implementados** | 7 (inclui o spike PRD-000) |
 
 ### Agentes do Workflow

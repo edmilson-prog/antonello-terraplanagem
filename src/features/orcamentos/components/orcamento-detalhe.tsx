@@ -133,6 +133,14 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
     toast.success(decisao === "aprovar" ? "Orçamento aprovado." : "Orçamento recusado.");
   };
 
+  const onEnviarClick = () => {
+    if (orc.itens.length === 0) {
+      toast.error("Orçamento vazio: adicione ao menos um item.");
+      return;
+    }
+    setEnviar(true);
+  };
+
   return (
     <div className="space-y-5">
       <Link
@@ -232,9 +240,14 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
               />
             </div>
           </>
-        ) : orc.observacao ? (
-          <p className="text-sm text-muted-foreground">{orc.observacao}</p>
-        ) : null}
+        ) : (
+          <div className="space-y-2">
+            {orc.desconto > 0 ? (
+              <p className="text-sm text-muted-foreground">Desconto: {formatBRL(orc.desconto)}</p>
+            ) : null}
+            {orc.observacao ? <p className="text-sm text-muted-foreground">{orc.observacao}</p> : null}
+          </div>
+        )}
 
         <div className="flex items-center justify-between border-t pt-4">
           <span className="font-mono text-sm uppercase tracking-wide text-foreground-faint">Total</span>
@@ -245,7 +258,7 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
       <section className="flex flex-wrap items-center justify-end gap-2">
         {orc.status === "rascunho" ? (
           <Button
-            onClick={() => setEnviar(true)}
+            onClick={onEnviarClick}
             className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
           >
             <Icon icon="lucide:send" className="h-4 w-4" />
