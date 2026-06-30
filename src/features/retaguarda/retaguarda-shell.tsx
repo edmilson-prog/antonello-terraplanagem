@@ -9,6 +9,7 @@ import {
   Receipt,
   Tags,
   FileSpreadsheet,
+  Wallet,
   Menu,
   ChevronRight,
 } from "lucide-react";
@@ -34,6 +35,7 @@ const itens: NavItem[] = [
   { to: "/admin/precos", label: "Preços", icone: Tags },
   { to: "/admin/orcamentos", label: "Orçamentos", icone: FileSpreadsheet },
   { to: "/admin/faturamento", label: "Faturamento", icone: Receipt },
+  { to: "/admin/financeiro", label: "Financeiro", icone: Wallet },
 ];
 
 function isActive(pathname: string, to: string) {
@@ -76,9 +78,7 @@ function Branding() {
     <div className="flex items-center gap-3 px-3 py-4">
       <div className="hazard-stripe h-9 w-9 rounded-md border border-sidebar-border" />
       <div className="leading-tight">
-        <div className="font-display text-base font-bold text-sidebar-foreground">
-          Antonello
-        </div>
+        <div className="font-display text-base font-bold text-sidebar-foreground">Antonello</div>
         <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-sidebar-foreground/60">
           Terraplanagem
         </div>
@@ -125,12 +125,7 @@ export function RetaguardaShell() {
             {/* Hambúrguer mobile */}
             <Sheet open={aberto} onOpenChange={setAberto}>
               <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden"
-                  aria-label="Abrir menu"
-                >
+                <Button variant="ghost" size="icon" className="md:hidden" aria-label="Abrir menu">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>

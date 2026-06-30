@@ -26,6 +26,7 @@ import { Route as AppOrdensIndexRouteImport } from './routes/app.ordens.index'
 import { Route as AppApontamentoIndexRouteImport } from './routes/app.apontamento.index'
 import { Route as AdminOrdensIndexRouteImport } from './routes/admin.ordens.index'
 import { Route as AdminOrcamentosIndexRouteImport } from './routes/admin.orcamentos.index'
+import { Route as AdminFinanceiroIndexRouteImport } from './routes/admin.financeiro.index'
 import { Route as AdminFaturamentoIndexRouteImport } from './routes/admin.faturamento.index'
 import { Route as AppOrdensOrdemIdRouteImport } from './routes/app.ordens.$ordemId'
 import { Route as AppApontamentoNovoRouteImport } from './routes/app.apontamento.novo'
@@ -120,6 +121,11 @@ const AdminOrcamentosIndexRoute = AdminOrcamentosIndexRouteImport.update({
   path: '/orcamentos/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFinanceiroIndexRoute = AdminFinanceiroIndexRouteImport.update({
+  id: '/financeiro/',
+  path: '/financeiro/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminFaturamentoIndexRoute = AdminFaturamentoIndexRouteImport.update({
   id: '/faturamento/',
   path: '/faturamento/',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
   '/admin/faturamento/': typeof AdminFaturamentoIndexRoute
+  '/admin/financeiro/': typeof AdminFinanceiroIndexRoute
   '/admin/orcamentos/': typeof AdminOrcamentosIndexRoute
   '/admin/ordens/': typeof AdminOrdensIndexRoute
   '/app/apontamento/': typeof AppApontamentoIndexRoute
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
   '/admin/faturamento': typeof AdminFaturamentoIndexRoute
+  '/admin/financeiro': typeof AdminFinanceiroIndexRoute
   '/admin/orcamentos': typeof AdminOrcamentosIndexRoute
   '/admin/ordens': typeof AdminOrdensIndexRoute
   '/app/apontamento': typeof AppApontamentoIndexRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
   '/admin/faturamento/': typeof AdminFaturamentoIndexRoute
+  '/admin/financeiro/': typeof AdminFinanceiroIndexRoute
   '/admin/orcamentos/': typeof AdminOrcamentosIndexRoute
   '/admin/ordens/': typeof AdminOrdensIndexRoute
   '/app/apontamento/': typeof AppApontamentoIndexRoute
@@ -259,6 +268,7 @@ export interface FileRouteTypes {
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
     | '/admin/faturamento/'
+    | '/admin/financeiro/'
     | '/admin/orcamentos/'
     | '/admin/ordens/'
     | '/app/apontamento/'
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
     | '/admin/faturamento'
+    | '/admin/financeiro'
     | '/admin/orcamentos'
     | '/admin/ordens'
     | '/app/apontamento'
@@ -309,6 +320,7 @@ export interface FileRouteTypes {
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
     | '/admin/faturamento/'
+    | '/admin/financeiro/'
     | '/admin/orcamentos/'
     | '/admin/ordens/'
     | '/app/apontamento/'
@@ -445,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrcamentosIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/financeiro/': {
+      id: '/admin/financeiro/'
+      path: '/financeiro'
+      fullPath: '/admin/financeiro/'
+      preLoaderRoute: typeof AdminFinanceiroIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/faturamento/': {
       id: '/admin/faturamento/'
       path: '/faturamento'
@@ -507,6 +526,7 @@ interface AdminRouteChildren {
   AdminOrcamentosOrcamentoIdRoute: typeof AdminOrcamentosOrcamentoIdRoute
   AdminOrdensOrdemIdRoute: typeof AdminOrdensOrdemIdRoute
   AdminFaturamentoIndexRoute: typeof AdminFaturamentoIndexRoute
+  AdminFinanceiroIndexRoute: typeof AdminFinanceiroIndexRoute
   AdminOrcamentosIndexRoute: typeof AdminOrcamentosIndexRoute
   AdminOrdensIndexRoute: typeof AdminOrdensIndexRoute
 }
@@ -521,6 +541,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminOrcamentosOrcamentoIdRoute: AdminOrcamentosOrcamentoIdRoute,
   AdminOrdensOrdemIdRoute: AdminOrdensOrdemIdRoute,
   AdminFaturamentoIndexRoute: AdminFaturamentoIndexRoute,
+  AdminFinanceiroIndexRoute: AdminFinanceiroIndexRoute,
   AdminOrcamentosIndexRoute: AdminOrcamentosIndexRoute,
   AdminOrdensIndexRoute: AdminOrdensIndexRoute,
 }
