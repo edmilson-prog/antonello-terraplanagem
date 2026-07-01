@@ -23,6 +23,12 @@ dist-ssr
 # Vercel (Build Output API)
 .vercel/
 
+# graphify knowledge graph (gerado — regenerar com `graphify . --update`)
+graphify-out/
+
+# MCP local — caminho do interpretador Python varia por máquina (ver CLAUDE.md)
+.mcp.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
