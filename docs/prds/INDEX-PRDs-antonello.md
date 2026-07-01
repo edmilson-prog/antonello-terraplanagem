@@ -11,7 +11,7 @@
 | **Versão Atual** | 0.7.0 (Cashflow) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 15 (PRD-000 a PRD-014) |
-| **PRDs Documentados** | 8 — Onda 1 (PRD-000 a PRD-005) + PRD-006, PRD-007 |
+| **PRDs Documentados** | 12 — **Ondas 1 e 2 completas** (PRD-000 a PRD-011) |
 | **PRDs Implementados** | 8 (inclui o spike PRD-000) |
 
 ### Agentes do Workflow
@@ -48,7 +48,7 @@
 | ❌ Cancelado | 0 | 0% |
 | **Total** | **15** | **100%** |
 
-**Progresso de documentação:** 6/15 PRDs com documento escrito — **toda a Onda 1** (PRD-000 a PRD-005). Ondas 2 e 3 planejadas.
+**Progresso de documentação:** 12/15 PRDs com documento escrito — **Ondas 1 e 2 completas** (PRD-000 a PRD-011). Onda 3 planejada.
 
 ---
 
@@ -69,18 +69,20 @@ O coração do sistema: campo aponta horas, central recebe, fatura.
 | 004 | `PRD-004-ret-faturamento-fechamento-os_DONE.md` | Feature | ret | Média | 003, 005 | feature | ✍️ | ✅ |
 | 005 | `PRD-005-ret-tabela-precos_DONE.md` | Feature | ret | Média | 001 | feature | ✍️ | ✅ |
 
-### Onda 2 — Estrutura
+### Onda 2 — Estrutura — ✍️ documentação completa
 
-Fecha o ciclo financeiro e adiciona automações. **Boa parte é Fase 4 (backend)** e só destrava após a aprovação do frontend.
+Fecha o ciclo financeiro e adiciona automações. As **features (006, 007, 010, 011)** já foram mockadas na Fase 2; as **integrações reais (008, 009)** são **Fase 4** e dependem de provedor — documentadas como provisórias.
 
 | PRD | Arquivo | Tipo | Amb. | Prioridade | Depende de | Template | Doc | Status |
 |-----|---------|------|------|------------|------------|----------|-----|--------|
 | 006 | `PRD-006-ret-orcamentos_DONE.md` | Feature | ret | Média | 001, 005 | feature | ✍️ | ✅ |
 | 007 | `PRD-007-ret-contas-pagar-receber_DONE.md` | Feature | ret | Média | 004 | feature | ✍️ | ✅ |
-| 008 | `PRD-008-ret-integracao-gateway-cobranca.md` | Integração | ret | Média | 004, 007 | integration | 📋 | ⏳ |
-| 009 | `PRD-009-all-integracao-whatsapp-fechamento-os.md` | Integração (n8n) | all | Média | 003 | integration | 📋 | ⏳ |
-| 010 | `PRD-010-all-manutencao-preventiva-horimetro.md` | Feature | all | Baixa | 001, 002 | feature | 📋 | ⏳ |
-| 011 | `PRD-011-ret-comprovante-assinado.md` | Feature | ret | Baixa | 003 | feature | 📋 | ⏳ |
+| 008 | `PRD-008-ret-integracao-gateway-cobranca.md` | Integração | ret | Média | 004, 007 | integration | ✍️* | ⏳ |
+| 009 | `PRD-009-all-integracao-whatsapp-fechamento-os.md` | Integração (n8n) | all | Média | 003 | integration | ✍️* | ⏳ |
+| 010 | `PRD-010-all-manutencao-preventiva-horimetro.md` | Feature | all | Baixa | 001, 002 | feature | ✍️ | ⏳ |
+| 011 | `PRD-011-ret-comprovante-assinado.md` | Feature | ret | Baixa | 003 | feature | ✍️ | ⏳ |
+
+\* Integrações documentadas como **provisórias** (Fase 4 / provedor em aberto).
 
 ### Onda 3 — Acabamento
 
@@ -100,7 +102,12 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 
 ### ✍️ Documentados, ⏳ aguardando implementação
 
-*Nenhum da Onda 1 pendente.*
+| PRD | Título | Tipo | Ambiente |
+|-----|--------|------|----------|
+| [PRD-008](./PRD-008-ret-integracao-gateway-cobranca.md) | Integração — Gateway de Cobrança (provisório) | Integração | ret |
+| [PRD-009](./PRD-009-all-integracao-whatsapp-fechamento-os.md) | Integração — WhatsApp via n8n (provisório) | Integração | all |
+| [PRD-010](./PRD-010-all-manutencao-preventiva-horimetro.md) | Manutenção Preventiva por Horímetro | Feature | all |
+| [PRD-011](./PRD-011-ret-comprovante-assinado.md) | Comprovante Assinado pelo Cliente | Feature | ret |
 
 ### ✅ Implementados
 
@@ -168,14 +175,14 @@ Jun/2026  ───────────────────────�
           ├─ Fase 0 (Kickoff): CLAUDE.md + INDEX ✅
           ├─ Fase 1 (Scaffold): kickoff Lovable (design system + shells)
           │
-          ├─ Fase 2 (Frontend First) — Onda 1 mockada [documentação ✍️ completa]:
-          │     PRD-001 → PRD-002 → PRD-005 → (PRD-000 spike) → PRD-003 → PRD-004
+          ├─ Fase 2 (Frontend First) — Onda 1 ✅ + Onda 2 (features) ✅ mockadas:
+          │     PRD-001 → PRD-002 → PRD-005 → (PRD-000 spike) → PRD-003 → PRD-004 → PRD-006 → PRD-007
+          │     → PRD-010, PRD-011 (restantes da Onda 2, ainda pendentes)
           │
           ├─ Fase 3 (Validação): frontend navegável apresentado ao Leonardo
           │
-          └─ Fase 4 (Backend, se aprovado) — Ondas 2 e 3:
-                cobrança (008), WhatsApp (009), financeiro (007),
-                e a inteligência de custo/rentabilidade (012→013→014)
+          └─ Fase 4 (Backend, se aprovado) — integrações provisórias (008, 009)
+                + Onda 3, a inteligência de custo/rentabilidade (012→013→014)
 ```
 
 ### Histórico de Versões do App
@@ -206,13 +213,15 @@ Jun/2026  ───────────────────────�
 | Jun/2026 | Roadmap completo formalizado: 15 PRDs (000–014) em 3 ondas | Base de planejamento da Onda 1 à 3 |
 | Jun/2026 | **Onda 1 totalmente documentada** (PRD-000 a PRD-005) | Pronta para implementação após scaffold |
 | 2026-06-28 | **Sync offline-first decidido** (spike PRD-000 → [ADR-001](../adr/ADR-001-sync-offline-os-colaborativa.md)): Supabase Realtime + fila offline própria; apontamentos append-only; cabeçalho LWW por campo; fechar OS = retaguarda | Destrava o PRD-003; define o que o backend (Fase 4) entrega |
+| Jun/2026 | **Ondas 1 e 2 totalmente documentadas** (PRD-000 a PRD-011) | Onda 1 e features da Onda 2 (006, 007, 010, 011) mockáveis/implementadas; integrações (008, 009) provisórias |
+| Jun/2026 | Integrações **008/009 orquestradas/isoladas** (gateway; WhatsApp via n8n) | Trocar provedor = mudar fluxo, não o app |
 
 ### Riscos Identificados
 
 | Risco | Probabilidade | Impacto | Mitigação |
 |-------|---------------|---------|-----------|
 | OS colaborativa **offline + sync em tempo real** com resolução de conflito | **Mitigado** | Alto | ✅ **Resolvido pelo spike PRD-000 → [ADR-001](../adr/ADR-001-sync-offline-os-colaborativa.md)** (Realtime + fila offline; append-only; LWW por campo; fechar = retaguarda). PoC confirmou a hipótese. |
-| Integrações da Onda 2 (gateway, WhatsApp) **não se mockam** de verdade | Média | Médio | Tratar 008/009 como Fase 4; considerar spike antes da UI dependente (guia §3.5) |
+| Integrações da Onda 2 (gateway, WhatsApp) **não se mockam** de verdade | Média | Médio | Tratadas como Fase 4 e provisórias (008/009); spike antes da UI dependente (guia §3.5) |
 | OCR do horímetro por foto pode não ser viável no MVP | Média | Médio | Validar viabilidade; fallback de digitação manual (PRD-002) |
 | Migração de clientes do sistema antigo (Farol) | Baixa | Médio | Confirmar com o cliente; mocks preveem cadastro do zero |
 
@@ -220,11 +229,12 @@ Jun/2026  ───────────────────────�
 
 - [ ] Existe **tabela de preço** por porte/tipo de equipamento, ou negocia caso a caso?
 - [ ] **Migrar** o cadastro de clientes do sistema antigo (Farol) ou começar do zero?
-- [ ] Cliente **assina/confirma** o serviço digitalmente, ou basta o aviso por WhatsApp?
+- [ ] Cliente **assina/confirma** o serviço digitalmente (PRD-011) ou basta o aviso por WhatsApp (PRD-009)? (ou os dois)
 - [ ] Leonardo **aluga máquinas de terceiros** ou **aluga as dele** para terceiros? (muda o modelo)
 - [ ] **OCR** do horímetro por foto — viável no MVP, ou só digitação manual?
 - [ ] Onde se define **máquina seca × operada** para o cálculo do faturamento?
 - [ ] **Gateway** de cobrança (boleto + PIX): Asaas / Efí / outro?
+- [ ] **Provedor de WhatsApp:** Evolution API (não oficial) ou Meta Cloud API (oficial, com templates)?
 - [ ] **Operação offline** — quanto tempo o operador fica sem sinal em campo? (define a estratégia de fila)
 - [ ] **Frota real** — inconsistência nos áudios (≈15 equipamentos vs "três ou quatro"). Confirmar contagem.
 - [ ] **Modelo comercial** do software — como o Leonardo paga/usa a plataforma?
@@ -255,6 +265,6 @@ Jun/2026  ───────────────────────�
 
 | Campo | Valor |
 |-------|-------|
-| **Data** | 2026-06-30 |
-| **Atualizado por** | Claude Code via SDD |
-| **Motivo** | PRD-007 Contas a Pagar e Receber implementado → 0.7.0 Cashflow; 8/15 (53%) |
+| **Data** | 2026-07-01 |
+| **Atualizado por** | Claude Code via SDD (reconciliado com a exportação do Arquiteto) |
+| **Motivo** | PRD-008, PRD-010 e PRD-011 documentados pelo Arquiteto (✍️); reconciliado com o status real de implementação (PRD-000 a PRD-007 já implementados, 0.7.0 Cashflow) antes de iniciar o PRD-010 |
