@@ -256,3 +256,35 @@ export interface ContaPagar {
   created_at: string;
   updated_at: string;
 }
+
+// Manutenção Preventiva (PRD-010) — status é DERIVADO do horímetro atual do
+// equipamento vs. o próximo registro "prevista"; nunca armazenado. Vínculo do
+// plano espelha PrecoHoraMaquina: exatamente um de equipamento_id/tipo_equipamento
+// é não-nulo (sem campo `vinculo` no contrato).
+export type StatusManutencao = "em_dia" | "proxima" | "vencida";
+export type StatusRegistroManutencao = "prevista" | "realizada";
+
+export interface PlanoManutencao {
+  id: string;
+  equipamento_id: string | null;
+  tipo_equipamento: TipoEquipamento | null;
+  descricao: string;
+  intervalo_horas: number;
+  ativo: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RegistroManutencao {
+  id: string;
+  equipamento_id: string;
+  plano_id: string;
+  horimetro_previsto: number;
+  horimetro_realizado: number | null;
+  status: StatusRegistroManutencao;
+  custo: number | null; // R$ — RETAGUARDA-ONLY (opcional), nunca em /app/*
+  observacao: string | null;
+  realizada_em: string | null;
+  created_at: string;
+  updated_at: string;
+}
