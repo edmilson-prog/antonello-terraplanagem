@@ -39,6 +39,6 @@ describe("derivacoes de faturamento", () => {
     const r = resumoPipeline(ordens, fats);
     expect(r.executado).toBe(2); // b (rascunho) + c (sem fatura); a é faturado
     expect(r.faturado).toEqual({ qtd: 1, total: 5220 });
-    expect(r.recebido).toBe(0);
+    expect(r.recebido).toStrictEqual({ qtd: 0, total: 0 });
   });
 });

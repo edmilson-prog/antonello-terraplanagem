@@ -5,9 +5,10 @@ import { cn } from "@/lib/utils";
 interface FaturamentoPipelineProps {
   executado: number;
   faturado: { qtd: number; total: number };
+  recebido: { qtd: number; total: number };
 }
 
-export function FaturamentoPipeline({ executado, faturado }: FaturamentoPipelineProps) {
+export function FaturamentoPipeline({ executado, faturado, recebido }: FaturamentoPipelineProps) {
   return (
     <div className="grid gap-3 sm:grid-cols-3">
       <Coluna
@@ -26,9 +27,12 @@ export function FaturamentoPipeline({ executado, faturado }: FaturamentoPipeline
       <Coluna
         icone="lucide:hand-coins"
         rotulo="Recebido"
-        principal="—"
-        secundario="Em breve (PRD-007)"
-        esmaecido
+        principal={recebido.qtd > 0 ? formatBRL(recebido.total) : "—"}
+        secundario={
+          recebido.qtd > 0
+            ? `${recebido.qtd} ${recebido.qtd === 1 ? "recebimento" : "recebimentos"}`
+            : "Nenhum recebimento ainda"
+        }
       />
     </div>
   );
@@ -40,25 +44,24 @@ function Coluna({
   principal,
   secundario,
   destaque = false,
-  esmaecido = false,
 }: {
   icone: string;
   rotulo: string;
   principal: string;
   secundario: string;
   destaque?: boolean;
-  esmaecido?: boolean;
 }) {
   return (
     <div
       className={cn(
         "rounded-xl border bg-card p-4 shadow-sm",
         destaque && "border-primary/40",
-        esmaecido && "opacity-60",
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">{rotulo}</span>
+        <span className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
+          {rotulo}
+        </span>
         <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 text-primary">
           <Icon icon={icone} className="h-4 w-4" />
         </span>

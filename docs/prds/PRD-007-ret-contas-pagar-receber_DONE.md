@@ -417,11 +417,11 @@ Tipos: **Added**, **Changed**, **Deprecated**, **Removed**, **Fixed**, **Securit
 
 | Campo | Valor |
 |-------|-------|
-| **Status** | ⏳ PENDENTE |
-| **Data de Implementação** | - |
-| **Versão do App** | - |
-| **Implementado por** | - |
-| **Observações** | - |
+| **Status** | ✅ IMPLEMENTADO |
+| **Data de Implementação** | 2026-06-30 |
+| **Versão do App** | 0.7.0 Cashflow |
+| **Implementado por** | Claude Code via SDD |
+| **Observações** | Frontend First (mockado). Pipeline recebido ativo. |
 
 ---
 

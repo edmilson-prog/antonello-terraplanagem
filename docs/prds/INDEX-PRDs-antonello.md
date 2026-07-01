@@ -8,11 +8,11 @@
 | **Cliente** | Leonardo Antonello |
 | **Repositório** | [a definir — repo único / monorepo] |
 | **Início** | Jun/2026 |
-| **Versão Atual** | 0.6.0 (Quote) |
+| **Versão Atual** | 0.7.0 (Cashflow) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 15 (PRD-000 a PRD-014) |
-| **PRDs Documentados** | 7 — Onda 1 (PRD-000 a PRD-005) + PRD-006 |
-| **PRDs Implementados** | 7 (inclui o spike PRD-000) |
+| **PRDs Documentados** | 8 — Onda 1 (PRD-000 a PRD-005) + PRD-006, PRD-007 |
+| **PRDs Implementados** | 8 (inclui o spike PRD-000) |
 
 ### Agentes do Workflow
 
@@ -42,9 +42,9 @@
 
 | Status | Quantidade | Percentual |
 |--------|------------|------------|
-| ✅ Implementado | 7 | 47% |
+| ✅ Implementado | 8 | 53% |
 | 🔄 Em Andamento | 0 | 0% |
-| ⏳ Pendente | 8 | 53% |
+| ⏳ Pendente | 7 | 47% |
 | ❌ Cancelado | 0 | 0% |
 | **Total** | **15** | **100%** |
 
@@ -76,7 +76,7 @@ Fecha o ciclo financeiro e adiciona automações. **Boa parte é Fase 4 (backend
 | PRD | Arquivo | Tipo | Amb. | Prioridade | Depende de | Template | Doc | Status |
 |-----|---------|------|------|------------|------------|----------|-----|--------|
 | 006 | `PRD-006-ret-orcamentos_DONE.md` | Feature | ret | Média | 001, 005 | feature | ✍️ | ✅ |
-| 007 | `PRD-007-ret-contas-pagar-receber.md` | Feature | ret | Média | 004 | feature | 📋 | ⏳ |
+| 007 | `PRD-007-ret-contas-pagar-receber_DONE.md` | Feature | ret | Média | 004 | feature | ✍️ | ✅ |
 | 008 | `PRD-008-ret-integracao-gateway-cobranca.md` | Integração | ret | Média | 004, 007 | integration | 📋 | ⏳ |
 | 009 | `PRD-009-all-integracao-whatsapp-fechamento-os.md` | Integração (n8n) | all | Média | 003 | integration | 📋 | ⏳ |
 | 010 | `PRD-010-all-manutencao-preventiva-horimetro.md` | Feature | all | Baixa | 001, 002 | feature | 📋 | ⏳ |
@@ -113,6 +113,7 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 | [PRD-004](./PRD-004-ret-faturamento-fechamento-os_DONE.md) | Faturamento ao Fechar OS | Feature | ret | 0.5.0 Invoice |
 | [PRD-005](./PRD-005-ret-tabela-precos_DONE.md) | Tabela de Preços (hora-máquina + por metro) | Feature | ret | 0.3.0 Tariff |
 | [PRD-006](./PRD-006-ret-orcamentos_DONE.md) | Orçamentos | Feature | ret | 0.6.0 Quote |
+| [PRD-007](./PRD-007-ret-contas-pagar-receber_DONE.md) | Contas a Pagar e Receber | Feature | ret | 0.7.0 Cashflow |
 
 ### 🔄 Em Andamento
 
@@ -188,6 +189,7 @@ Jun/2026  ───────────────────────�
 | 0.4.0 | Worksite | 2026-06-29 | PRD-003 | MINOR |
 | 0.5.0 | Invoice | 2026-06-29 | PRD-004 | MINOR |
 | 0.6.0 | Quote | 2026-06-29 | PRD-006 | MINOR |
+| 0.7.0 | Cashflow | 2026-06-30 | PRD-007 | MINOR |
 
 ---
 
@@ -253,6 +255,6 @@ Jun/2026  ───────────────────────�
 
 | Campo | Valor |
 |-------|-------|
-| **Data** | 2026-06-29 |
-| **Atualizado por** | Claude Code CLI (Claude Opus 4.8) |
-| **Motivo** | PRD-006 Orçamentos implementado → 0.6.0 Quote; 7/15 (47%) |
+| **Data** | 2026-06-30 |
+| **Atualizado por** | Claude Code via SDD |
+| **Motivo** | PRD-007 Contas a Pagar e Receber implementado → 0.7.0 Cashflow; 8/15 (53%) |

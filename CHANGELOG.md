@@ -5,6 +5,20 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.7.0] - 2026-06-30 - Cashflow
+
+### Added
+- Contas a Receber: geradas a partir dos faturamentos confirmados; dar baixa com data e forma de recebimento
+- Contas a Pagar: registro manual com descrição, fornecedor, categoria, valor e vencimento; dar baixa com data
+- Visão de Caixa: resumo de total a receber × total a pagar × saldo previsto
+- Destaque de contas vencidas (em aberto com vencimento passado) nas listas
+- Nova rota `/admin/financeiro` com abas A Receber, A Pagar e Caixa
+- Coluna "Recebido" do pipeline de faturamento exibe dados reais de recebimentos liquidados
+
+### Changed
+- Pipeline executado → faturado → **recebido** completo com dados ao vivo
+- Sidebar da retaguarda: novo item "Financeiro" após "Faturamento"
+
 ## [0.6.0] - 2026-06-29 - Quote
 
 ### Added
