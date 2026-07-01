@@ -50,7 +50,7 @@ Os perfis (`operador`, `recepção`, `proprietário/admin`) definem o que cada u
 
 O núcleo técnico de maior risco é a **OS colaborativa**: precisa ser **offline-first** (o operador aponta em campo sem sinal) e, ao mesmo tempo, **sincronizar em tempo real** entre vários celulares e a central.
 
-> ✅ **Resolvido pelo spike PRD-000 → [`ADR-001`](../adr/ADR-001-sync-offline-os-colaborativa.md).** Decisão: **Supabase Realtime + fila offline própria (Abordagem A)**:
+> ✅ **Resolvido pelo spike PRD-000 → [`ADR-001`](docs/adr/ADR-001-sync-offline-os-colaborativa.md).** Decisão: **Supabase Realtime + fila offline própria (Abordagem A)**:
 > - **Apontamentos append-only e idempotentes** (dedup por `opId` do cliente) — cada apontamento é dono das próprias horas; conflito ~zero.
 > - **Cabeçalho da OS por LWW por campo** (last-write-wins) — basta porque a colaboração simultânea é rara.
 > - **Fechar a OS é exclusivo da retaguarda** (RLS) — o operador nunca fecha; elimina o conflito mais perigoso.
