@@ -8,7 +8,7 @@ import type { Apontamento, OrdemServico } from "@/shared/types";
 const os: OrdemServico = {
   id: "os-test", numero: "OS-2026-9001", cliente_id: "cl-001", obra_nome: "x", endereco: null,
   modelo_cobranca: "hora_maquina", status: "fechada", responsavel_id: "op-001", observacao: null,
-  metragem_executada: null, diametro_broca_mm: null, aberta_em: "2026-06-20T07:00:00.000Z",
+  diametro_broca_mm: null, aberta_em: "2026-06-20T07:00:00.000Z",
   fechada_em: "2026-06-20T17:00:00.000Z", pendente_sync: false,
   created_at: "2026-06-20T07:00:00.000Z", updated_at: "2026-06-20T17:00:00.000Z",
 };
@@ -16,7 +16,8 @@ const aps: Apontamento[] = [
   {
     id: "a1", equipamento_id: "eq-002", operador_id: "op-001", os_id: "os-test",
     horimetro_inicial: 100, horimetro_final: 118, horas_trabalhadas: 18, foto_inicial_url: null,
-    foto_final_url: null, observacao: null, status: "finalizado", pendente_sync: false,
+    foto_final_url: null, observacao: null, modalidade: "operada", metros_executados: null,
+    status: "finalizado", pendente_sync: false,
     iniciado_em: "2026-06-20T07:00:00.000Z", finalizado_em: "2026-06-20T17:00:00.000Z",
     created_at: "2026-06-20T07:00:00.000Z", updated_at: "2026-06-20T17:00:00.000Z",
   },

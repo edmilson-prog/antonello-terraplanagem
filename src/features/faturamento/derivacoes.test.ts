@@ -6,7 +6,7 @@ function os(id: string, status: OrdemServico["status"]): OrdemServico {
   return {
     id, numero: `OS-2026-${id}`, cliente_id: "cl-001", obra_nome: "x", endereco: null,
     modelo_cobranca: "hora_maquina", status, responsavel_id: null, observacao: null,
-    metragem_executada: null, diametro_broca_mm: null, aberta_em: "2026-06-01T00:00:00.000Z",
+    diametro_broca_mm: null, aberta_em: "2026-06-01T00:00:00.000Z",
     fechada_em: status === "fechada" ? "2026-06-02T00:00:00.000Z" : null, pendente_sync: false,
     created_at: "2026-06-01T00:00:00.000Z", updated_at: "2026-06-01T00:00:00.000Z",
   };

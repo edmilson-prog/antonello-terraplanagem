@@ -31,7 +31,7 @@ export function criarFaturamentosStore(inicial: Faturamento[]) {
   const obter = (id: string) => itens.find((f) => f.id === id);
 
   function gerarDeOS(
-    os: { id: string; cliente_id: string; modelo_cobranca: Faturamento["modelo_cobranca"]; metragem_executada: number | null; diametro_broca_mm: number | null },
+    os: { id: string; cliente_id: string; modelo_cobranca: Faturamento["modelo_cobranca"]; diametro_broca_mm: number | null },
     apontamentos: Apontamento[],
     equipamentos: Equipamento[],
     precosHM: PrecoHoraMaquina[],
@@ -43,7 +43,6 @@ export function criarFaturamentosStore(inicial: Faturamento[]) {
       id: os.id,
       cliente_id: os.cliente_id,
       modelo_cobranca: os.modelo_cobranca,
-      metragem_executada: os.metragem_executada,
       diametro_broca_mm: os.diametro_broca_mm,
     };
     const itensFat = gerarItens(

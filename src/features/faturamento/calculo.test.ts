@@ -25,6 +25,7 @@ function apontamentoFinalizado(
   equipamento_id: string,
   os_id: string,
   horas: number,
+  modalidade: "seca" | "operada" | null = "operada",
 ): Apontamento {
   return {
     id,
@@ -37,6 +38,8 @@ function apontamentoFinalizado(
     foto_inicial_url: null,
     foto_final_url: null,
     observacao: null,
+    modalidade,
+    metros_executados: null,
     status: "finalizado",
     pendente_sync: false,
     iniciado_em: "2026-06-20T07:00:00.000Z",
@@ -44,6 +47,10 @@ function apontamentoFinalizado(
     created_at: "2026-06-20T07:00:00.000Z",
     updated_at: "2026-06-20T17:00:00.000Z",
   };
+}
+
+function apontamentoComMetros(id: string, os_id: string, metros: number): Apontamento {
+  return { ...apontamentoFinalizado(id, "eq-001", os_id, 0, null), metros_executados: metros };
 }
 
 function osHora(id: string): OrdemServico {
@@ -57,7 +64,6 @@ function osHora(id: string): OrdemServico {
     status: "fechada",
     responsavel_id: "op-001",
     observacao: null,
-    metragem_executada: null,
     diametro_broca_mm: null,
     aberta_em: "2026-06-20T07:00:00.000Z",
     fechada_em: "2026-06-20T17:00:00.000Z",
@@ -67,8 +73,8 @@ function osHora(id: string): OrdemServico {
   };
 }
 
-function osMetro(id: string, metros: number | null, diametro: number | null): OrdemServico {
-  return { ...osHora(id), modelo_cobranca: "por_metro", metragem_executada: metros, diametro_broca_mm: diametro };
+function osMetro(id: string, diametro: number | null): OrdemServico {
+  return { ...osHora(id), modelo_cobranca: "por_metro", diametro_broca_mm: diametro };
 }
 
 describe("calculo de faturamento", () => {
@@ -129,9 +135,32 @@ describe("calculo de faturamento", () => {
     expect(itens).toHaveLength(0);
   });
 
-  it("gerarItens por_metro aplica valor do diâmetro", () => {
-    const os = osMetro("os-m", 30, 300);
-    const itens = gerarItens(os, [], equipamentos, precosHoraMaquina, precosFundacao);
+  it("gerarItens separa seca e operada do mesmo equipamento em itens distintos", () => {
+    const os = osHora("os-sep");
+    const aps = [
+      apontamentoFinalizado("a1", "eq-001", "os-sep", 5, "operada"),
+      apontamentoFinalizado("a2", "eq-001", "os-sep", 3, "seca"),
+    ];
+    const itens = gerarItens(os, aps, equipamentos, precosHoraMaquina, precosFundacao);
+    expect(itens).toHaveLength(2);
+    const operada = itens.find((i) => i.hora_tipo === "operada");
+    const seca = itens.find((i) => i.hora_tipo === "seca");
+    expect(operada).toMatchObject({ quantidade: 5, valor_unitario: 360, valor_total: 1800 });
+    expect(seca).toMatchObject({ quantidade: 3, valor_unitario: 280, valor_total: 840 });
+  });
+
+  it("gerarItens trata modalidade ausente como operada", () => {
+    const os = osHora("os-null-mod");
+    const aps = [apontamentoFinalizado("a1", "eq-001", "os-null-mod", 4, null)];
+    const itens = gerarItens(os, aps, equipamentos, precosHoraMaquina, precosFundacao);
+    expect(itens).toHaveLength(1);
+    expect(itens[0]).toMatchObject({ hora_tipo: "operada", quantidade: 4 });
+  });
+
+  it("gerarItens por_metro soma metros_executados dos apontamentos finalizados", () => {
+    const os = osMetro("os-m", 300);
+    const aps = [apontamentoComMetros("a1", "os-m", 30)];
+    const itens = gerarItens(os, aps, equipamentos, precosHoraMaquina, precosFundacao);
     expect(itens).toHaveLength(1);
     expect(itens[0]).toMatchObject({ tipo: "por_metro", quantidade: 30, valor_unitario: 90, valor_total: 2700, sem_preco: false });
   });

@@ -1,4 +1,5 @@
 import { formatHorimetro } from "@/shared/lib/format";
+import { totalMetragemOS } from "@/features/ordem-servico/derivacoes";
 import type {
   Apontamento,
   Equipamento,
@@ -49,7 +50,7 @@ export function gerarItens(
   precosFund: PrecoFundacao[],
 ): FaturamentoItem[] {
   if (os.modelo_cobranca === "por_metro") {
-    const metros = os.metragem_executada ?? 0;
+    const metros = totalMetragemOS(os.id, apontamentos);
     const preco = precoFundacaoDoDiametro(os.diametro_broca_mm, precosFund);
     const valorUnitario = preco ? preco.valor_metro : null;
     const diametro = os.diametro_broca_mm;
@@ -68,25 +69,37 @@ export function gerarItens(
     ];
   }
 
-  const horasPorEquip = new Map<string, number>();
+  type GrupoHora = { equipamento_id: string; modalidade: "seca" | "operada"; horas: number };
+  const horasPorGrupo = new Map<string, GrupoHora>();
   for (const a of apontamentos) {
     if (a.os_id !== os.id || a.status !== "finalizado") continue;
-    horasPorEquip.set(a.equipamento_id, (horasPorEquip.get(a.equipamento_id) ?? 0) + (a.horas_trabalhadas ?? 0));
+    const modalidade = a.modalidade ?? "operada";
+    const chave = `${a.equipamento_id}::${modalidade}`;
+    const atual = horasPorGrupo.get(chave);
+    horasPorGrupo.set(chave, {
+      equipamento_id: a.equipamento_id,
+      modalidade,
+      horas: (atual?.horas ?? 0) + (a.horas_trabalhadas ?? 0),
+    });
   }
 
   const itens: FaturamentoItem[] = [];
-  for (const [equipId, horasBrutas] of horasPorEquip) {
-    const horas = round2(horasBrutas);
-    const equipamento = equipamentos.find((e) => e.id === equipId);
+  for (const [chave, grupo] of horasPorGrupo) {
+    const horas = round2(grupo.horas);
+    const equipamento = equipamentos.find((e) => e.id === grupo.equipamento_id);
     const nome = equipamento ? equipamento.nome : "Equipamento removido";
     const preco = equipamento ? precoHoraDoEquipamento(equipamento, precosHM) : null;
-    const valorUnitario = preco ? preco.valor_hora_operada : null;
+    const valorUnitario = preco
+      ? grupo.modalidade === "seca"
+        ? preco.valor_hora_seca
+        : preco.valor_hora_operada
+      : null;
     itens.push({
-      id: `${os.id}:${equipId}`,
+      id: `${os.id}:${chave}`,
       tipo: "hora_maquina",
-      descricao: descricaoHora(nome, horas, "operada"),
-      origem_id: equipId,
-      hora_tipo: "operada",
+      descricao: descricaoHora(nome, horas, grupo.modalidade),
+      origem_id: grupo.equipamento_id,
+      hora_tipo: grupo.modalidade,
       quantidade: horas,
       valor_unitario: valorUnitario,
       valor_total: valorUnitario != null ? valorItem(horas, valorUnitario) : 0,
