@@ -289,6 +289,25 @@ export interface RegistroManutencao {
   updated_at: string;
 }
 
+// Gestão de Diesel e Utilização (PRD-012) — litros e horímetro são
+// operacionais (podem aparecer nos dois ambientes); preço/custo são
+// RETAGUARDA-ONLY. Consumo médio (l/h) e utilização (horas trabalhadas no
+// período) são DERIVADOS cruzando Abastecimento[] com Apontamento[] — nunca
+// armazenados.
+export interface Abastecimento {
+  id: string;
+  equipamento_id: string;
+  operador_id: string | null; // quem registrou, se em campo
+  litros: number;
+  horimetro: number;
+  preco_litro: number | null; // R$/l — RETAGUARDA-ONLY (opcional), nunca em /app/*
+  custo_total: number | null; // R$ — RETAGUARDA-ONLY (opcional), nunca em /app/*
+  local: string | null; // posto/obra/comboio próprio
+  abastecido_em: string; // ISO
+  created_at: string;
+  updated_at: string;
+}
+
 // Comprovante Assinado pelo Cliente (PRD-011) — deriva de uma OrdemServico
 // "fechada"; `resumo_servico` é um snapshot textual congelado no momento da
 // geração (obra, período, equipamentos, horas ou metragem), nunca recalculado
