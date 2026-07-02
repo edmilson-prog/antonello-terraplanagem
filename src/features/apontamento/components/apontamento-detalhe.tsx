@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { HorimetroCapture } from "@/shared/components/horimetro-capture";
 import { SyncBadge } from "@/shared/components/sync-badge";
 import { StatusApontamentoBadge } from "@/features/apontamento/components/status-apontamento-badge";
@@ -21,6 +23,7 @@ export function ApontamentoDetalhe({ apontamentoId }: Props) {
   const apontamento = apontamentosStore.useApontamento(apontamentoId);
   const [horimetroFinal, setHorimetroFinal] = useState("");
   const [fotoFinalUrl, setFotoFinalUrl] = useState<string | null>(null);
+  const [metrosExecutados, setMetrosExecutados] = useState("");
   const [erro, setErro] = useState<string | null>(null);
   const [abastecimentoAberto, setAbastecimentoAberto] = useState(false);
 
@@ -28,18 +31,30 @@ export function ApontamentoDetalhe({ apontamentoId }: Props) {
 
   const equipamento = equipamentosStore.getById(apontamento.equipamento_id);
   const os = apontamento.os_id ? ordensStore.obter(apontamento.os_id) : null;
+  const exigeMetros = os?.modelo_cobranca === "por_metro";
 
   function confirmarFinalizacao() {
     if (!apontamento) return;
-    const parsed = finalizarApontamentoSchema.safeParse({ horimetro_final: Number(horimetroFinal) });
-    if (horimetroFinal.trim() === "" || !parsed.success) {
+    if (horimetroFinal.trim() === "") {
       setErro("Informe o horímetro final.");
       return;
     }
-    const valor = parsed.data.horimetro_final;
+    if (exigeMetros && metrosExecutados.trim() === "") {
+      setErro("Informe a metragem executada.");
+      return;
+    }
+    const parsed = finalizarApontamentoSchema.safeParse({
+      horimetro_final: Number(horimetroFinal),
+      metros_executados: metrosExecutados.trim() === "" ? undefined : Number(metrosExecutados),
+    });
+    if (!parsed.success) {
+      setErro("Informe o horímetro final.");
+      return;
+    }
     const r = apontamentosStore.finalizar(apontamento.id, {
-      horimetro_final: valor,
+      horimetro_final: parsed.data.horimetro_final,
       foto_final_url: fotoFinalUrl,
+      metros_executados: parsed.data.metros_executados ?? null,
     });
     if (!r.ok) {
       setErro(
@@ -148,6 +163,25 @@ export function ApontamentoDetalhe({ apontamentoId }: Props) {
             onFotoCapturada={setFotoFinalUrl}
             error={erro ?? undefined}
           />
+          {exigeMetros ? (
+            <div className="space-y-1.5">
+              <Label htmlFor="metros_executados">Metragem executada (m) *</Label>
+              <Input
+                id="metros_executados"
+                type="number"
+                inputMode="decimal"
+                step="0.1"
+                min="0"
+                className="h-12 font-mono"
+                placeholder="ex.: 30"
+                value={metrosExecutados}
+                onChange={(e) => {
+                  setMetrosExecutados(e.target.value);
+                  setErro(null);
+                }}
+              />
+            </div>
+          ) : null}
           <Button
             type="button"
             size="lg"

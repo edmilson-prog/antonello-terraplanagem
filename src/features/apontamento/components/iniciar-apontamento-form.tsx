@@ -57,11 +57,15 @@ export function IniciarApontamentoForm({ osIdInicial }: { osIdInicial?: string }
       horimetro_inicial: Number.NaN,
       os_id: osIdInicial ?? SEM_OS,
       observacao: "",
+      modalidade: "operada",
     },
   });
 
   const equipamentoId = watch("equipamento_id");
   const equipamentoSel = equipamentos.find((e) => e.id === equipamentoId);
+  const osIdSel = watch("os_id");
+  const osSel = ordens.find((o) => o.id === osIdSel);
+  const mostrarModalidade = osSel?.modelo_cobranca !== "por_metro";
 
   // Conveniência de campo: ao escolher o equipamento, sugere o horímetro atual
   // dele (editável). Trocar de equipamento atualiza a sugestão.
@@ -77,6 +81,7 @@ export function IniciarApontamentoForm({ osIdInicial }: { osIdInicial?: string }
       os_id: values.os_id && values.os_id !== SEM_OS ? values.os_id : null,
       observacao: values.observacao ?? null,
       foto_inicial_url: fotoInicialUrl,
+      modalidade: mostrarModalidade ? (values.modalidade ?? "operada") : null,
     });
     toast.success("Apontamento iniciado.");
     navigate({ to: "/app/apontamento" });
@@ -165,6 +170,27 @@ export function IniciarApontamentoForm({ osIdInicial }: { osIdInicial?: string }
             )}
           />
         </div>
+
+        {mostrarModalidade ? (
+          <div className="space-y-1.5">
+            <Label htmlFor="modalidade">Modalidade</Label>
+            <Controller
+              control={control}
+              name="modalidade"
+              render={({ field }) => (
+                <Select value={field.value ?? "operada"} onValueChange={field.onChange}>
+                  <SelectTrigger id="modalidade" className="h-12">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="operada">Operada (com operador)</SelectItem>
+                    <SelectItem value="seca">Seca (sem operador)</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
+        ) : null}
 
         <div className="space-y-1.5">
           <Label htmlFor="observacao">Observação (opcional)</Label>
