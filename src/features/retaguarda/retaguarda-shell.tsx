@@ -12,6 +12,7 @@ import {
   FileSpreadsheet,
   Wallet,
   Wrench,
+  Fuel,
   Menu,
   ChevronRight,
 } from "lucide-react";
@@ -34,6 +35,7 @@ const itens: NavItem[] = [
   { to: "/admin/comprovantes", label: "Comprovantes", icone: FileCheck2 },
   { to: "/admin/equipamentos", label: "Equipamentos", icone: Truck },
   { to: "/admin/manutencao", label: "Manutenção", icone: Wrench },
+  { to: "/admin/diesel", label: "Diesel", icone: Fuel },
   { to: "/admin/clientes", label: "Clientes", icone: Building2 },
   { to: "/admin/operadores", label: "Operadores", icone: HardHat },
   { to: "/admin/precos", label: "Preços", icone: Tags },
