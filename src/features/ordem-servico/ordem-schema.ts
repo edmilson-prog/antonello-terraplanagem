@@ -13,7 +13,6 @@ export const ordemSchema = z
     modelo_cobranca: z.enum(["hora_maquina", "por_metro"]),
     responsavel_id: z.string().optional(),
     observacao: z.string().trim().max(500).optional(),
-    metragem_executada: numeroOpcionalPositivo,
     diametro_broca_mm: numeroOpcionalPositivo,
   })
   .superRefine((val, ctx) => {

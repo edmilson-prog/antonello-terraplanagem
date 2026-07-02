@@ -143,7 +143,6 @@ export interface OrdemServico {
   status: StatusOS;
   responsavel_id: string | null; // FK → Operador
   observacao: string | null;
-  metragem_executada: number | null; // por_metro
   diametro_broca_mm: number | null; // por_metro
   aberta_em: string; // ISO 8601
   fechada_em: string | null;

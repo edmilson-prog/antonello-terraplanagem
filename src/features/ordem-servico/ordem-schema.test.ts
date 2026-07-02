@@ -19,9 +19,4 @@ describe("ordemSchema", () => {
     const comDiam = ordemSchema.safeParse({ ...base, modelo_cobranca: "por_metro", diametro_broca_mm: 300 });
     expect(comDiam.success).toBe(true);
   });
-  it("rejeita metragem zero/negativa", () => {
-    expect(
-      ordemSchema.safeParse({ ...base, modelo_cobranca: "por_metro", diametro_broca_mm: 300, metragem_executada: 0 }).success,
-    ).toBe(false);
-  });
 });

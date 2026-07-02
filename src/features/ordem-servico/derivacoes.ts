@@ -11,6 +11,16 @@ export function totalHorasOS(osId: string, apontamentos: Apontamento[]): number 
     .reduce((soma, a) => soma + (a.horas_trabalhadas ?? 0), 0);
 }
 
+// Total de metros da OS (modelo por_metro) = soma de metros_executados dos
+// apontamentos finalizados vinculados. Espelha totalHorasOS: não vive no
+// cabeçalho da OS (evita o conflito multi-operador de um campo de header
+// mutável — ver PATCH v2 do PRD-003).
+export function totalMetragemOS(osId: string, apontamentos: Apontamento[]): number {
+  return apontamentos
+    .filter((a) => a.os_id === osId && a.status === "finalizado")
+    .reduce((soma, a) => soma + (a.metros_executados ?? 0), 0);
+}
+
 // Status para exibição: fechada > em_andamento (se há apontamento) > status armazenado.
 export function statusEfetivoOS(os: OrdemServico, apontamentos: Apontamento[]): StatusOS {
   if (os.status === "fechada") return "fechada";

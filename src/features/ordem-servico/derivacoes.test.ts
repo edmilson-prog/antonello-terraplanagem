@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   totalHorasOS,
+  totalMetragemOS,
   statusEfetivoOS,
   podeFecharOS,
   ordensDoOperador,
@@ -19,7 +20,6 @@ function os(over: Partial<OrdemServico> & { id: string }): OrdemServico {
     status: over.status ?? "aberta",
     responsavel_id: over.responsavel_id ?? null,
     observacao: over.observacao ?? null,
-    metragem_executada: over.metragem_executada ?? null,
     diametro_broca_mm: over.diametro_broca_mm ?? null,
     aberta_em: "2026-06-01T00:00:00.000Z",
     fechada_em: over.fechada_em ?? null,
@@ -41,6 +41,8 @@ function ap(over: Partial<Apontamento> & { id: string }): Apontamento {
     foto_inicial_url: null,
     foto_final_url: null,
     observacao: null,
+    modalidade: over.modalidade ?? null,
+    metros_executados: over.metros_executados ?? null,
     status: over.status ?? "em_andamento",
     pendente_sync: false,
     iniciado_em: "2026-06-01T00:00:00.000Z",
@@ -115,5 +117,20 @@ describe("apontamentosDaOS", () => {
   it("filtra por os_id", () => {
     const aps = [ap({ id: "a1", os_id: "x" }), ap({ id: "a2", os_id: "y" })];
     expect(apontamentosDaOS("x", aps).map((a) => a.id)).toEqual(["a1"]);
+  });
+});
+
+describe("totalMetragemOS", () => {
+  it("soma só metros_executados de apontamentos finalizados da OS", () => {
+    const aps = [
+      ap({ id: "a1", os_id: "x", status: "finalizado", metros_executados: 30 }),
+      ap({ id: "a2", os_id: "x", status: "finalizado", metros_executados: 12 }),
+      ap({ id: "a3", os_id: "x", status: "em_andamento", metros_executados: 5 }), // ignorado
+      ap({ id: "a4", os_id: "y", status: "finalizado", metros_executados: 20 }), // outra OS
+    ];
+    expect(totalMetragemOS("x", aps)).toBe(42);
+  });
+  it("retorna 0 sem apontamentos", () => {
+    expect(totalMetragemOS("x", [])).toBe(0);
   });
 });
