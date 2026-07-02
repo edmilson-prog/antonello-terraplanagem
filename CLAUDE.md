@@ -34,6 +34,8 @@ Repositório único com dois ambientes que compartilham os mesmos `types` (o con
 
 Os perfis (`operador`, `recepção`, `proprietário/admin`) definem o que cada um vê. Dados financeiros só para perfis autorizados.
 
+> **Navegação da retaguarda:** a sidebar crescerá com as ondas (~12 itens ao final do roadmap). Prever **agrupamento de menu** desde o scaffold: **Operação** (ordens, apontamentos), **Cadastros** (equipamentos, operadores, clientes), **Comercial** (orçamentos, preços), **Financeiro** (faturamento, contas, rentabilidade), **Frota** (manutenção, diesel). No app do operador, o bottom nav permanece com 4 itens — novas ações entram como ações secundárias dentro das telas, não como novos itens.
+
 ## Glossário do Domínio
 
 | Termo | Significado |
@@ -45,6 +47,10 @@ Os perfis (`operador`, `recepção`, `proprietário/admin`) definem o que cada u
 | **Por metro / estaca / fundação** | Modelo de cobrança alternativo (estaqueamento), varia por **diâmetro da broca**. |
 | **Equipamento** | Escavadeira (18t/10t/5t), carregadeira, caçamba, trator de esteira, etc. |
 | **Pipeline de cobrança** | **Executado → Faturado → Recebido**: serviço feito → nota emitida → pagamento recebido. São estágios distintos, não um log único. |
+| **Máquina seca × operada** | Locação **sem** operador (seca) ou **com** operador (operada) — muda o preço da hora. |
+| **Mobilização / desmobilização** | Transporte do equipamento até a obra e de volta — pode ser cobrado à parte. |
+| **Material rodante** | Pneus/esteiras e componentes de rodagem — custo relevante por hora de uso. |
+| **FINAME / BNDES** | Financiamento típico de equipamento pesado — a parcela entra no custo fixo mensal (PRD-013). |
 
 ## Arquitetura — Ponto Crítico (ler antes de modelar dados)
 
@@ -165,6 +171,14 @@ src/
 | **Estados de tela** | Toda tela de dados trata: loading, empty, error, success |
 | **Responsividade** | Mobile-first. Validar em 375px, 768px, 1280px. Toque ≥ 44px no app do operador |
 | **Financeiro no operador** | **NUNCA** exibir preço, valor ou dado financeiro no ambiente `/app/*` |
+
+## Dados Pessoais (LGPD)
+
+O sistema trata dados pessoais: CPF/CNPJ e telefone de clientes, telefone de operadores, assinatura no comprovante (PRD-011). Regras transversais:
+
+- **Minimização:** coletar o mínimo necessário; campos pessoais opcionais quando possível.
+- **Backend:** RLS restringindo acesso por perfil; **nunca logar** dados pessoais.
+- **Comunicação ao cliente** (WhatsApp, PRD-009): exige base legal / opt-in registrado.
 
 ## Dados Mockados (fase Frontend First)
 
