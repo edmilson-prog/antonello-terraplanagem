@@ -19,6 +19,7 @@ import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import {
   statusEfetivoOS,
   totalHorasOS,
+  totalMetragemOS,
 } from "@/features/ordem-servico/derivacoes";
 import {
   StatusOSBadge,
@@ -82,12 +83,11 @@ export function OrdensRetaguardaPage() {
     {
       header: "Horas",
       className: "font-mono",
-      cell: (o) =>
-        o.modelo_cobranca === "hora_maquina"
-          ? formatHorimetro(totalHorasOS(o.id, apontamentos))
-          : o.metragem_executada != null
-            ? `${o.metragem_executada} m`
-            : "—",
+      cell: (o) => {
+        if (o.modelo_cobranca === "hora_maquina") return formatHorimetro(totalHorasOS(o.id, apontamentos));
+        const metros = totalMetragemOS(o.id, apontamentos);
+        return metros > 0 ? `${metros} m` : "—";
+      },
     },
     { header: "Status", cell: (o) => <StatusOSBadge status={statusEfetivoOS(o, apontamentos)} /> },
   ];
@@ -142,8 +142,8 @@ export function OrdensRetaguardaPage() {
         {MODELO_LABEL[o.modelo_cobranca]} ·{" "}
         {o.modelo_cobranca === "hora_maquina"
           ? formatHorimetro(totalHorasOS(o.id, apontamentos))
-          : o.metragem_executada != null
-            ? `${o.metragem_executada} m`
+          : totalMetragemOS(o.id, apontamentos) > 0
+            ? `${totalMetragemOS(o.id, apontamentos)} m`
             : "—"}
       </div>
     </div>

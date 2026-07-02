@@ -48,7 +48,6 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
       modelo_cobranca: inicial?.modelo_cobranca ?? "hora_maquina",
       responsavel_id: inicial?.responsavel_id ?? undefined,
       observacao: inicial?.observacao ?? "",
-      metragem_executada: inicial?.metragem_executada ?? undefined,
       diametro_broca_mm: inicial?.diametro_broca_mm ?? undefined,
     },
   });
@@ -68,7 +67,6 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
       modelo_cobranca: values.modelo_cobranca,
       responsavel_id: responsavel,
       observacao: values.observacao?.trim() ? values.observacao.trim() : null,
-      metragem_executada: ehPorMetro ? (values.metragem_executada ?? null) : null,
       diametro_broca_mm: ehPorMetro ? (values.diametro_broca_mm ?? null) : null,
     };
 
@@ -173,39 +171,21 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
       </div>
 
       {modelo === "por_metro" ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="diametro_broca_mm">Diâmetro da broca (mm) *</Label>
-            <Input
-              id="diametro_broca_mm"
-              type="number"
-              step="1"
-              min="0"
-              className="font-mono"
-              placeholder="ex.: 400"
-              {...register("diametro_broca_mm", { setValueAs: (v) => (v === "" ? undefined : Number(v)) })}
-              aria-invalid={!!errors.diametro_broca_mm}
-            />
-            {errors.diametro_broca_mm ? (
-              <p className="text-xs text-destructive">{errors.diametro_broca_mm.message}</p>
-            ) : null}
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="metragem_executada">Metragem executada (m)</Label>
-            <Input
-              id="metragem_executada"
-              type="number"
-              step="0.1"
-              min="0"
-              className="font-mono"
-              placeholder="opcional"
-              {...register("metragem_executada", { setValueAs: (v) => (v === "" ? undefined : Number(v)) })}
-              aria-invalid={!!errors.metragem_executada}
-            />
-            {errors.metragem_executada ? (
-              <p className="text-xs text-destructive">{errors.metragem_executada.message}</p>
-            ) : null}
-          </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="diametro_broca_mm">Diâmetro da broca (mm) *</Label>
+          <Input
+            id="diametro_broca_mm"
+            type="number"
+            step="1"
+            min="0"
+            className="font-mono"
+            placeholder="ex.: 400"
+            {...register("diametro_broca_mm", { setValueAs: (v) => (v === "" ? undefined : Number(v)) })}
+            aria-invalid={!!errors.diametro_broca_mm}
+          />
+          {errors.diametro_broca_mm ? (
+            <p className="text-xs text-destructive">{errors.diametro_broca_mm.message}</p>
+          ) : null}
         </div>
       ) : null}
 

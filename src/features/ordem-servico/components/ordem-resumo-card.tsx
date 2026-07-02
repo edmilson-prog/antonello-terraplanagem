@@ -1,5 +1,5 @@
 import { StatusOSBadge, MODELO_LABEL } from "@/features/ordem-servico/labels";
-import { statusEfetivoOS, totalHorasOS } from "@/features/ordem-servico/derivacoes";
+import { statusEfetivoOS, totalHorasOS, totalMetragemOS } from "@/features/ordem-servico/derivacoes";
 import { SyncBadge } from "@/shared/components/sync-badge";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { formatHorimetro } from "@/shared/lib/format";
@@ -15,6 +15,7 @@ export function OrdemResumoCard({
   const cliente = clientesStore.getById(ordem.cliente_id);
   const status = statusEfetivoOS(ordem, apontamentos);
   const total = totalHorasOS(ordem.id, apontamentos);
+  const totalMetros = totalMetragemOS(ordem.id, apontamentos);
 
   return (
     <div className="rounded-xl border bg-card p-5 shadow-sm">
@@ -41,9 +42,7 @@ export function OrdemResumoCard({
           </span>
         ) : (
           <span className="font-mono text-sm text-foreground">
-            {ordem.metragem_executada != null
-              ? `${ordem.metragem_executada} m`
-              : "metragem pendente"}
+            {totalMetros > 0 ? `${totalMetros} m` : "metragem pendente"}
             {ordem.diametro_broca_mm != null ? ` · Ø${ordem.diametro_broca_mm}mm` : ""}
           </span>
         )}
