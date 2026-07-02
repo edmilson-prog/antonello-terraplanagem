@@ -10,8 +10,8 @@
 | **Início** | Jun/2026 |
 | **Versão Atual** | 0.9.0 (Seal) |
 | **Fase Atual** | Frontend First (mockado) |
-| **PRDs no Roadmap** | 15 (PRD-000 a PRD-014) |
-| **PRDs Documentados** | **15 — roadmap 100% documentado** (PRD-000 a PRD-014) |
+| **PRDs no Roadmap** | 16 (PRD-000 a PRD-015) |
+| **PRDs Documentados** | **16 — roadmap 100% documentado** (PRD-000 a PRD-014) + **PRD-015** (pós-roadmap, home screens) |
 | **PRDs Implementados** | 10 (inclui o spike PRD-000) |
 
 ### Agentes do Workflow
@@ -42,13 +42,13 @@
 
 | Status | Quantidade | Percentual |
 |--------|------------|------------|
-| ✅ Implementado | 10 | 67% |
+| ✅ Implementado | 10 | 63% |
 | 🔄 Em Andamento | 0 | 0% |
-| ⏳ Pendente | 5 | 33% |
+| ⏳ Pendente | 6 | 37% |
 | ❌ Cancelado | 0 | 0% |
-| **Total** | **15** | **100%** |
+| **Total** | **16** | **100%** |
 
-**Progresso de documentação:** **15/15 — roadmap 100% documentado** (PRD-000 a PRD-014). 10/15 implementados (67%) — restam 008, 009, 012, 013, 014.
+**Progresso de documentação:** **16/16 — roadmap 100% documentado** (PRD-000 a PRD-014) + PRD-015 (pós-roadmap). 10/16 implementados (63%) — restam 008, 009, 012, 013, 014, 015.
 
 ---
 
@@ -96,6 +96,14 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 
 > **Pirâmide analítica:** diesel/utilização (012) → custo da hora-máquina (013) → rentabilidade por equipamento e obra (014).
 
+### Pós-Roadmap — home screens
+
+Telas de entrada dos dois ambientes, adicionadas depois do roadmap original de 15 PRDs (ver "Próximos PRDs Planejados" mais abaixo — o item "Dashboard retaguarda + Início operador" foi promovido a PRD numerado).
+
+| PRD | Arquivo | Tipo | Amb. | Prioridade | Depende de | Template | Doc | Status |
+|-----|---------|------|------|------------|------------|----------|-----|--------|
+| 015 | `PRD-015-all-home-dashboard-inicio.md` | Feature | all | Alta | 002, 003, 004, 007, 010, 012 | feature | ✍️ | ⏳ |
+
 ---
 
 ## Catálogo por Status
@@ -109,6 +117,7 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 | [PRD-012](./PRD-012-all-gestao-diesel-utilizacao.md) | Gestão de Diesel e Utilização | Feature | all |
 | [PRD-013](./PRD-013-ret-custo-hora-maquina.md) | Custo Real da Hora-Máquina | Feature | ret |
 | [PRD-014](./PRD-014-ret-rentabilidade-equipamento-obra.md) | Rentabilidade por Equipamento e Obra | Feature | ret |
+| [PRD-015](./PRD-015-all-home-dashboard-inicio.md) | Home Screens — Dashboard (Retaguarda) + Início (Operador) | Feature | all |
 
 ### ✅ Implementados
 
@@ -127,7 +136,7 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 
 ### 🔄 Em Andamento
 
-*Nenhum ainda.*
+*Nenhum.*
 
 ### ❌ Cancelados
 
@@ -163,19 +172,20 @@ PRD-004 (receita) ────────────────────�
 |-----|-----------|----------|
 | PRD-000 | — | PRD-003 |
 | PRD-001 | — | PRD-002, PRD-003, PRD-005, PRD-006, PRD-010, PRD-012 |
-| PRD-002 | PRD-001 | PRD-010, PRD-012, PRD-013 |
-| PRD-003 | PRD-000, PRD-001 | PRD-004, PRD-009, PRD-011 |
-| PRD-004 | PRD-003, PRD-005 | PRD-007, PRD-008, PRD-014 |
+| PRD-002 | PRD-001 | PRD-010, PRD-012, PRD-013, PRD-015 |
+| PRD-003 | PRD-000, PRD-001 | PRD-004, PRD-009, PRD-011, PRD-015 |
+| PRD-004 | PRD-003, PRD-005 | PRD-007, PRD-008, PRD-014, PRD-015 |
 | PRD-005 | PRD-001 | PRD-004, PRD-006 |
 | PRD-006 | PRD-001, PRD-005 | — |
-| PRD-007 | PRD-004 | PRD-008 |
+| PRD-007 | PRD-004 | PRD-008, PRD-015 |
 | PRD-008 | PRD-004, PRD-007 | — |
 | PRD-009 | PRD-003 | — |
-| PRD-010 | PRD-001, PRD-002 | PRD-013 |
+| PRD-010 | PRD-001, PRD-002 | PRD-013, PRD-015 |
 | PRD-011 | PRD-003 | — |
-| PRD-012 | PRD-001, PRD-002 | PRD-013 |
+| PRD-012 | PRD-001, PRD-002 | PRD-013, PRD-015 |
 | PRD-013 | PRD-002, PRD-010, PRD-012 | PRD-014 |
 | PRD-014 | PRD-004, PRD-013 | — |
+| PRD-015 | PRD-002, PRD-003, PRD-004, PRD-007, PRD-010, PRD-012 | — |
 
 ---
 
@@ -193,7 +203,8 @@ Jun/2026  ───────────────────────�
           ├─ Fase 3 (Validação): frontend navegável apresentado ao Leonardo
           │
           └─ Fase 4 (Backend, se aprovado) — integrações provisórias (008, 009)
-                + Onda 3, a inteligência de custo/rentabilidade (012→013→014)
+                + Onda 3, a inteligência de custo/rentabilidade (002/010/012 + 004) → 013 → 014
+                + PRD-015 (home screens, pós-roadmap) mockável já na Fase 2
 ```
 
 ### Histórico de Versões do App
@@ -213,6 +224,21 @@ Jun/2026  ───────────────────────�
 
 ---
 
+## Próximos PRDs Planejados (a numerar quando chegar a hora)
+
+A **Fase 4 (backend)** gerará PRDs próprios quando o frontend for aprovado:
+
+| # | Título Provisório | Tipo | Fase | Gate / Observação |
+|---|-------------------|------|------|-------------------|
+| 0xx | **Auth real + perfis + RLS** (Supabase Auth) | Feature (backend) | Fase 4 | **Primeiro da Fase 4** — pré-requisito de todo backend; as políticas finas dependem do **ADR do spike** (PRD-000), por isso não é escrito agora |
+| 0xx | Schema + migrations + **mock→seed** | Feature (backend) | Fase 4 | Após auth; converte os mocks em `seed.sql` |
+| 0xx | Backend por feature (conexão mock→real, por onda) | Feature (backend) | Fase 4 | Ordem do grafo; backend da OS (003) **só após o ADR** |
+| 0xx | Notificação interna de alertas (manutenção → retaguarda) | Integração | Fase 4+ | Automação própria — distinta do PRD-009 (aviso ao cliente) |
+
+> **Regra:** não escrever esses PRDs antes de seus gates (aprovação do frontend / ADR do spike / provedor definido). Escrever antes = especular = retrabalho. O item "Dashboard retaguarda + Início operador" que estava nesta lista foi promovido a **PRD-015** (ver Pós-Roadmap acima).
+
+---
+
 ## Notas e Observações
 
 ### Decisões Importantes
@@ -228,7 +254,9 @@ Jun/2026  ───────────────────────�
 | 2026-06-28 | **Sync offline-first decidido** (spike PRD-000 → [ADR-001](../adr/ADR-001-sync-offline-os-colaborativa.md)): Supabase Realtime + fila offline própria; apontamentos append-only; cabeçalho LWW por campo; fechar OS = retaguarda | Destrava o PRD-003; define o que o backend (Fase 4) entrega |
 | Jun/2026 | **Ondas 1 e 2 totalmente documentadas** (PRD-000 a PRD-011) | Onda 1 e features da Onda 2 (006, 007, 010, 011) mockáveis/implementadas; integrações (008, 009) provisórias |
 | Jun/2026 | Integrações **008/009 orquestradas/isoladas** (gateway; WhatsApp via n8n) | Trocar provedor = mudar fluxo, não o app |
-| Jun/2026 | **Roadmap 100% documentado** (PRD-000 a PRD-014) — Onda 3 (012–014) adicionada pelo Arquiteto | Todo o produto especificado; falta implementar 011 (Onda 2) e a Onda 3 completa |
+| Jun/2026 | **Roadmap 100% documentado** (PRD-000 a PRD-014) | Todo o produto especificado; camada analítica (012→013→014) é Fase 4/dados reais |
+| Jun/2026 | **Patch consolidado "Retrofit"** (v2 em 002/003/004/010/012): modalidade no apontamento, metragem append-only, rota do diesel | Deltas de contrato ainda não aplicados no código — aplicar via Claude Code quando pertinente |
+| Jun/2026 | **PRD-015 (Home Screens) criado** pelo Arquiteto — promove o item "Dashboard retaguarda + Início operador" de "planejado" para PRD numerado | Substitui os placeholders de `/admin` e `/app` agregando dados das features já implementadas; sem contrato novo |
 
 ### Riscos Identificados
 
@@ -282,6 +310,6 @@ Jun/2026  ───────────────────────�
 
 | Campo | Valor |
 |-------|-------|
-| **Data** | 2026-07-01 |
+| **Data** | 2026-07-02 |
 | **Atualizado por** | Claude Code via SDD |
-| **Motivo** | PRD-011 Comprovante Assinado pelo Cliente implementado → 0.9.0 Seal; 10/15 (67%) |
+| **Motivo** | Reconciliação pós-export do Arquiteto: incorporado PRD-015 (Home Screens, pós-roadmap) e a nota do patch "Retrofit"; restaurado o status real de implementação (10/16, 0.9.0 Seal) que o export do Arquiteto havia revertido para zero |
