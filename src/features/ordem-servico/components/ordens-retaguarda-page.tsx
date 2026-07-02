@@ -32,13 +32,13 @@ import { clientesStore } from "@/features/clientes/clientes-store";
 import { formatHorimetro } from "@/shared/lib/format";
 import type { OrdemServico, StatusOS } from "@/shared/types";
 
-export function OrdensRetaguardaPage() {
+export function OrdensRetaguardaPage({ statusInicial }: { statusInicial?: StatusOS } = {}) {
   const todas = ordensStore.useTodas();
   const apontamentos = apontamentosStore.useTodos();
   const { isLoading, error, retry } = useMockResource(todas);
 
   const [q, setQ] = useState("");
-  const [filtroStatus, setFiltroStatus] = useState<StatusOS | "todos">("todos");
+  const [filtroStatus, setFiltroStatus] = useState<StatusOS | "todos">(statusInicial ?? "todos");
   const [formAberto, setFormAberto] = useState(false);
 
   const lista = useMemo(() => {
