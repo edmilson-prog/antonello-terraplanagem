@@ -16,6 +16,10 @@ import {
 } from "@/components/ui/select";
 import { HorimetroCapture } from "@/shared/components/horimetro-capture";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
+import { planosManutencaoStore } from "@/features/manutencao/planos-manutencao-store";
+import { registrosManutencaoStore } from "@/features/manutencao/registros-manutencao-store";
+import { statusEquipamento } from "@/features/manutencao/derivacoes";
+import { ManutencaoIndicador } from "@/features/manutencao/components/manutencao-indicador";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { ordensDoOperador } from "@/features/ordem-servico/derivacoes";
 import {
@@ -32,6 +36,8 @@ const SEM_OS = "sem-os";
 export function IniciarApontamentoForm({ osIdInicial }: { osIdInicial?: string }) {
   const navigate = useNavigate();
   const equipamentos = equipamentosStore.useAll().filter((e) => e.ativo);
+  const planos = planosManutencaoStore.useAll();
+  const registros = registrosManutencaoStore.useTodos();
   const apontamentos = apontamentosStore.useTodos();
   const ordens = ordensDoOperador(ordensStore.useTodas(), apontamentos, OPERADOR_LOGADO_ID).filter(
     (o) => o.status !== "fechada",
@@ -107,7 +113,10 @@ export function IniciarApontamentoForm({ osIdInicial }: { osIdInicial?: string }
                 <SelectContent>
                   {equipamentos.map((e) => (
                     <SelectItem key={e.id} value={e.id}>
-                      {e.nome}
+                      <span className="flex items-center gap-2">
+                        {e.nome}
+                        <ManutencaoIndicador status={statusEquipamento(e, planos, registros)} />
+                      </span>
                     </SelectItem>
                   ))}
                 </SelectContent>

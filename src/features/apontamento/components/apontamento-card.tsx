@@ -5,9 +5,18 @@ import { StatusApontamentoBadge } from "@/features/apontamento/components/status
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { formatHorimetro } from "@/shared/lib/format";
 import type { Apontamento } from "@/shared/types";
+import { planosManutencaoStore } from "@/features/manutencao/planos-manutencao-store";
+import { registrosManutencaoStore } from "@/features/manutencao/registros-manutencao-store";
+import { statusEquipamento } from "@/features/manutencao/derivacoes";
+import { ManutencaoIndicador } from "@/features/manutencao/components/manutencao-indicador";
 
 export function ApontamentoCard({ apontamento }: { apontamento: Apontamento }) {
   const equipamento = equipamentosStore.getById(apontamento.equipamento_id);
+  const planos = planosManutencaoStore.useAll();
+  const registros = registrosManutencaoStore.useTodos();
+  const statusManutencao = equipamento
+    ? statusEquipamento(equipamento, planos, registros)
+    : null;
   const emAndamento = apontamento.status === "em_andamento";
 
   return (
@@ -26,6 +35,12 @@ export function ApontamentoCard({ apontamento }: { apontamento: Apontamento }) {
         </div>
         <StatusApontamentoBadge status={apontamento.status} />
       </div>
+
+      {statusManutencao === "proxima" || statusManutencao === "vencida" ? (
+        <div className="mt-3">
+          <ManutencaoIndicador status={statusManutencao} />
+        </div>
+      ) : null}
 
       {apontamento.pendente_sync ? (
         <div className="mt-3">
