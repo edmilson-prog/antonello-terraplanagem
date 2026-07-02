@@ -112,7 +112,10 @@ export function InicioOperadorPage() {
           <h2 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
             Minhas OS
           </h2>
-          <Link to="/app/ordens" className="text-sm font-semibold text-primary hover:underline">
+          <Link
+            to="/app/ordens"
+            className="inline-flex min-h-11 items-center text-sm font-semibold text-primary hover:underline"
+          >
             Ver todas
           </Link>
         </div>
