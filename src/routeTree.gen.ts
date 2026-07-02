@@ -20,6 +20,7 @@ import { Route as BlogTerraplanagemOuTerraplenagemRouteImport } from './routes/b
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
 import { Route as AdminPrecosRouteImport } from './routes/admin.precos'
 import { Route as AdminOperadoresRouteImport } from './routes/admin.operadores'
+import { Route as AdminManutencaoRouteImport } from './routes/admin.manutencao'
 import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
 import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
 import { Route as AppOrdensIndexRouteImport } from './routes/app.ordens.index'
@@ -89,6 +90,11 @@ const AdminPrecosRoute = AdminPrecosRouteImport.update({
 const AdminOperadoresRoute = AdminOperadoresRouteImport.update({
   id: '/operadores',
   path: '/operadores',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminManutencaoRoute = AdminManutencaoRouteImport.update({
+  id: '/manutencao',
+  path: '/manutencao',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminEquipamentosRoute = AdminEquipamentosRouteImport.update({
@@ -173,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/clientes': typeof AdminClientesRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
+  '/admin/manutencao': typeof AdminManutencaoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
   '/app/perfil': typeof AppPerfilRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/clientes': typeof AdminClientesRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
+  '/admin/manutencao': typeof AdminManutencaoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
   '/app/perfil': typeof AppPerfilRoute
@@ -226,6 +234,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/clientes': typeof AdminClientesRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
+  '/admin/manutencao': typeof AdminManutencaoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
   '/app/perfil': typeof AppPerfilRoute
@@ -255,6 +264,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/clientes'
     | '/admin/equipamentos'
+    | '/admin/manutencao'
     | '/admin/operadores'
     | '/admin/precos'
     | '/app/perfil'
@@ -280,6 +290,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/clientes'
     | '/admin/equipamentos'
+    | '/admin/manutencao'
     | '/admin/operadores'
     | '/admin/precos'
     | '/app/perfil'
@@ -307,6 +318,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/admin/clientes'
     | '/admin/equipamentos'
+    | '/admin/manutencao'
     | '/admin/operadores'
     | '/admin/precos'
     | '/app/perfil'
@@ -415,6 +427,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOperadoresRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/manutencao': {
+      id: '/admin/manutencao'
+      path: '/manutencao'
+      fullPath: '/admin/manutencao'
+      preLoaderRoute: typeof AdminManutencaoRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/equipamentos': {
       id: '/admin/equipamentos'
       path: '/equipamentos'
@@ -519,6 +538,7 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminClientesRoute: typeof AdminClientesRoute
   AdminEquipamentosRoute: typeof AdminEquipamentosRoute
+  AdminManutencaoRoute: typeof AdminManutencaoRoute
   AdminOperadoresRoute: typeof AdminOperadoresRoute
   AdminPrecosRoute: typeof AdminPrecosRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -534,6 +554,7 @@ interface AdminRouteChildren {
 const AdminRouteChildren: AdminRouteChildren = {
   AdminClientesRoute: AdminClientesRoute,
   AdminEquipamentosRoute: AdminEquipamentosRoute,
+  AdminManutencaoRoute: AdminManutencaoRoute,
   AdminOperadoresRoute: AdminOperadoresRoute,
   AdminPrecosRoute: AdminPrecosRoute,
   AdminIndexRoute: AdminIndexRoute,

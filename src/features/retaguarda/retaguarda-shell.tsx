@@ -10,6 +10,7 @@ import {
   Tags,
   FileSpreadsheet,
   Wallet,
+  Wrench,
   Menu,
   ChevronRight,
 } from "lucide-react";
@@ -30,6 +31,7 @@ const itens: NavItem[] = [
   { to: "/admin", label: "Dashboard", icone: LayoutDashboard },
   { to: "/admin/ordens", label: "Ordens de Serviço", icone: FileText },
   { to: "/admin/equipamentos", label: "Equipamentos", icone: Truck },
+  { to: "/admin/manutencao", label: "Manutenção", icone: Wrench },
   { to: "/admin/clientes", label: "Clientes", icone: Building2 },
   { to: "/admin/operadores", label: "Operadores", icone: HardHat },
   { to: "/admin/precos", label: "Preços", icone: Tags },
