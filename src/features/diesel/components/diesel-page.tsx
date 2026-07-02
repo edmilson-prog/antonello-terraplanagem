@@ -44,20 +44,25 @@ export function DieselPage() {
   const [dialogAberto, setDialogAberto] = useState(false);
 
   const periodo = useMemo(() => periodoDePreset(preset), [preset]);
+  const equipamentosAtivos = useMemo(() => equipamentos.filter((e) => e.ativo), [equipamentos]);
   const indicadores = useMemo(
     () => indicadoresPorEquipamento(equipamentos, abastecimentos, apontamentos, periodo),
     [equipamentos, abastecimentos, apontamentos, periodo],
   );
 
-  const abastecimentosDoPeriodo = useMemo(
-    () =>
-      abastecimentos.filter((a) => {
-        if (!periodo) return true;
-        const data = a.abastecido_em.slice(0, 10);
-        return data >= periodo.de && data <= periodo.ate;
-      }),
-    [abastecimentos, periodo],
-  );
+  // Filtra por equipamento ATIVO também (não só por período), para bater com
+  // indicadoresPorEquipamento — que já exclui equipamentos inativos. Sem
+  // isso, "Custo no período" poderia divergir de "Litros no período" se um
+  // equipamento desativado tivesse abastecimento com custo registrado.
+  const abastecimentosDoPeriodo = useMemo(() => {
+    const idsAtivos = new Set(equipamentosAtivos.map((e) => e.id));
+    return abastecimentos.filter((a) => {
+      if (!idsAtivos.has(a.equipamento_id)) return false;
+      if (!periodo) return true;
+      const data = a.abastecido_em.slice(0, 10);
+      return data >= periodo.de && data <= periodo.ate;
+    });
+  }, [abastecimentos, equipamentosAtivos, periodo]);
 
   const totalLitrosPeriodo = indicadores.reduce((s, i) => s + i.litros_periodo, 0);
   const totalCustoPeriodo = abastecimentosDoPeriodo.reduce(
@@ -75,8 +80,6 @@ export function DieselPage() {
   const listaAbastecimentos = [...abastecimentos].sort((a, b) =>
     b.abastecido_em.localeCompare(a.abastecido_em),
   );
-
-  const equipamentosAtivos = equipamentos.filter((e) => e.ativo);
 
   return (
     <div className="space-y-6">
