@@ -3,6 +3,7 @@ import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   FileText,
+  FileCheck2,
   Truck,
   Building2,
   HardHat,
@@ -30,6 +31,7 @@ interface NavItem {
 const itens: NavItem[] = [
   { to: "/admin", label: "Dashboard", icone: LayoutDashboard },
   { to: "/admin/ordens", label: "Ordens de Serviço", icone: FileText },
+  { to: "/admin/comprovantes", label: "Comprovantes", icone: FileCheck2 },
   { to: "/admin/equipamentos", label: "Equipamentos", icone: Truck },
   { to: "/admin/manutencao", label: "Manutenção", icone: Wrench },
   { to: "/admin/clientes", label: "Clientes", icone: Building2 },
