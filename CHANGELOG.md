@@ -5,6 +5,17 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.12.0] - 2026-07-02 - Cockpit
+
+### Added
+- Dashboard da retaguarda (`/admin`, PRD-015): widgets de OS por status (com navegação filtrada), horas apontadas no período, pipeline financeiro (executado → faturado → recebido, em R$), contas a vencer/vencidas, alertas de manutenção e atalhos (nova OS, novo orçamento)
+- Filtro de período no dashboard (Hoje / Semana / Mês) — aplica-se aos widgets de OS, horas e pipeline financeiro; contas e alertas de manutenção são sempre a situação atual
+- Início do operador (`/app`): apontamento em andamento em destaque (retomar/finalizar) ou CTA "Iniciar apontamento", lista de OS ativas, indicador agregado de itens pendentes de sincronização, atalho para registrar abastecimento — sem nenhum valor financeiro
+- `apontamentoEmAndamentoDoOperador` deriva o apontamento em andamento de um operador a partir da lista de apontamentos, espelhando o padrão de `apontamentosDoOperador`
+
+### Changed
+- Ambas as home screens (`/admin` e `/app`) deixam de ser placeholders "em construção" — todos os dados são derivados dos services já existentes (PRD-002/003/004/007/010/012), sem contrato persistido novo
+
 ## [0.11.0] - 2026-07-02 - Retrofit
 
 ### Added

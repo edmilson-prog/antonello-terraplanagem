@@ -8,11 +8,11 @@
 | **Cliente** | Leonardo Antonello |
 | **Repositório** | [a definir — repo único / monorepo] |
 | **Início** | Jun/2026 |
-| **Versão Atual** | 0.11.0 (Retrofit) |
+| **Versão Atual** | 0.12.0 (Cockpit) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 16 (PRD-000 a PRD-015) |
 | **PRDs Documentados** | **16 — roadmap 100% documentado** (PRD-000 a PRD-014) + **PRD-015** (pós-roadmap, home screens) |
-| **PRDs Implementados** | 11 (inclui o spike PRD-000) |
+| **PRDs Implementados** | 12 (inclui o spike PRD-000) |
 
 ### Agentes do Workflow
 
@@ -42,13 +42,13 @@
 
 | Status | Quantidade | Percentual |
 |--------|------------|------------|
-| ✅ Implementado | 11 | 69% |
+| ✅ Implementado | 12 | 75% |
 | 🔄 Em Andamento | 0 | 0% |
-| ⏳ Pendente | 5 | 31% |
+| ⏳ Pendente | 4 | 25% |
 | ❌ Cancelado | 0 | 0% |
 | **Total** | **16** | **100%** |
 
-**Progresso de documentação:** **16/16 — roadmap 100% documentado** (PRD-000 a PRD-014) + PRD-015 (pós-roadmap). 11/16 implementados (69%) — restam 008, 009, 013, 014, 015.
+**Progresso de documentação:** **16/16 — roadmap 100% documentado** (PRD-000 a PRD-014) + PRD-015 (pós-roadmap). 12/16 implementados (75%) — restam 008, 009, 013, 014.
 
 ---
 
@@ -102,7 +102,7 @@ Telas de entrada dos dois ambientes, adicionadas depois do roadmap original de 1
 
 | PRD | Arquivo | Tipo | Amb. | Prioridade | Depende de | Template | Doc | Status |
 |-----|---------|------|------|------------|------------|----------|-----|--------|
-| 015 | `PRD-015-all-home-dashboard-inicio.md` | Feature | all | Alta | 002, 003, 004, 007, 010, 012 | feature | ✍️ | ⏳ |
+| 015 | `PRD-015-all-home-dashboard-inicio_DONE.md` | Feature | all | Alta | 002, 003, 004, 007, 010, 012 | feature | ✍️ | ✅ |
 
 ---
 
@@ -116,7 +116,6 @@ Telas de entrada dos dois ambientes, adicionadas depois do roadmap original de 1
 | [PRD-009](./PRD-009-all-integracao-whatsapp-fechamento-os.md) | Integração — WhatsApp via n8n (provisório) | Integração | all |
 | [PRD-013](./PRD-013-ret-custo-hora-maquina.md) | Custo Real da Hora-Máquina | Feature | ret |
 | [PRD-014](./PRD-014-ret-rentabilidade-equipamento-obra.md) | Rentabilidade por Equipamento e Obra | Feature | ret |
-| [PRD-015](./PRD-015-all-home-dashboard-inicio.md) | Home Screens — Dashboard (Retaguarda) + Início (Operador) | Feature | all |
 
 ### ✅ Implementados
 
@@ -133,6 +132,7 @@ Telas de entrada dos dois ambientes, adicionadas depois do roadmap original de 1
 | [PRD-010](./PRD-010-all-manutencao-preventiva-horimetro_DONE.md) | Manutenção Preventiva por Horímetro | Feature | all | 0.8.0 Wrench |
 | [PRD-011](./PRD-011-ret-comprovante-assinado_DONE.md) | Comprovante Assinado pelo Cliente | Feature | ret | 0.9.0 Seal |
 | [PRD-012](./PRD-012-all-gestao-diesel-utilizacao_DONE.md) | Gestão de Diesel e Utilização | Feature | all | 0.10.0 Fuel |
+| [PRD-015](./PRD-015-all-home-dashboard-inicio_DONE.md) | Home Screens — Dashboard (Retaguarda) + Início (Operador) | Feature | all | 0.12.0 Cockpit |
 
 ### 🔄 Em Andamento
 
@@ -223,6 +223,7 @@ Jun/2026  ───────────────────────�
 | 0.9.0 | Seal | 2026-07-01 | PRD-011 | MINOR |
 | 0.10.0 | Fuel | 2026-07-02 | PRD-012 | MINOR |
 | 0.11.0 | Retrofit | 2026-07-02 | Deltas pós-implementação dos PRD-002/003/004 (patches v2) | MINOR |
+| 0.12.0 | Cockpit | 2026-07-02 | PRD-015 (Home Screens — Dashboard retaguarda + Início operador) | MINOR |
 
 ---
 
@@ -259,6 +260,7 @@ A **Fase 4 (backend)** gerará PRDs próprios quando o frontend for aprovado:
 | Jun/2026 | **Roadmap 100% documentado** (PRD-000 a PRD-014) | Todo o produto especificado; camada analítica (012→013→014) é Fase 4/dados reais |
 | Jun/2026 | **Patch consolidado "Retrofit"** (v2 em 002/003/004/010/012): modalidade no apontamento, metragem append-only, rota do diesel | 2026-07-02: delta de código dos PRD-002/003/004 aplicado (v0.11.0 Retrofit); PRD-010 era docs-only (sem ação de código); PRD-012 já havia sido implementado à parte (v0.10.0 Fuel) |
 | Jun/2026 | **PRD-015 (Home Screens) criado** pelo Arquiteto — promove o item "Dashboard retaguarda + Início operador" de "planejado" para PRD numerado | Substitui os placeholders de `/admin` e `/app` agregando dados das features já implementadas; sem contrato novo |
+| 2026-07-02 | **PRD-015 implementado** (v0.12.0 "Cockpit") — dashboard da retaguarda (6 widgets + filtro de período) e Início do operador, via Subagent-Driven Development (5 tasks + revisão final, 0 Critical/Important) | Placeholders de `/admin` e `/app` substituídos por telas reais; barreira financeira verificada transitivamente |
 
 ### Riscos Identificados
 
@@ -314,4 +316,4 @@ A **Fase 4 (backend)** gerará PRDs próprios quando o frontend for aprovado:
 |-------|-------|
 | **Data** | 2026-07-02 |
 | **Atualizado por** | Claude Code via SDD |
-| **Motivo** | Patch consolidado "Retrofit" aplicado (deltas pós-implementação dos PRD-002/003/004) → 0.11.0 Retrofit; contagem de implementados inalterada (11/16, 69% — patch sobre PRDs já implementados, não nova implementação) |
+| **Motivo** | PRD-015 (Home Screens) implementado → 0.12.0 Cockpit; contagem de implementados 12/16 (75%) |
