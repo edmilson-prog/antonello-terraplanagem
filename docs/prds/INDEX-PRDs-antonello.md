@@ -8,7 +8,7 @@
 | **Cliente** | Leonardo Antonello |
 | **Repositório** | [a definir — repo único / monorepo] |
 | **Início** | Jun/2026 |
-| **Versão Atual** | 0.10.0 (Fuel) |
+| **Versão Atual** | 0.11.0 (Retrofit) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 16 (PRD-000 a PRD-015) |
 | **PRDs Documentados** | **16 — roadmap 100% documentado** (PRD-000 a PRD-014) + **PRD-015** (pós-roadmap, home screens) |
@@ -222,6 +222,7 @@ Jun/2026  ───────────────────────�
 | 0.8.0 | Wrench | 2026-07-01 | PRD-010 | MINOR |
 | 0.9.0 | Seal | 2026-07-01 | PRD-011 | MINOR |
 | 0.10.0 | Fuel | 2026-07-02 | PRD-012 | MINOR |
+| 0.11.0 | Retrofit | 2026-07-02 | Deltas pós-implementação dos PRD-002/003/004 (patches v2) | MINOR |
 
 ---
 
@@ -256,7 +257,7 @@ A **Fase 4 (backend)** gerará PRDs próprios quando o frontend for aprovado:
 | Jun/2026 | **Ondas 1 e 2 totalmente documentadas** (PRD-000 a PRD-011) | Onda 1 e features da Onda 2 (006, 007, 010, 011) mockáveis/implementadas; integrações (008, 009) provisórias |
 | Jun/2026 | Integrações **008/009 orquestradas/isoladas** (gateway; WhatsApp via n8n) | Trocar provedor = mudar fluxo, não o app |
 | Jun/2026 | **Roadmap 100% documentado** (PRD-000 a PRD-014) | Todo o produto especificado; camada analítica (012→013→014) é Fase 4/dados reais |
-| Jun/2026 | **Patch consolidado "Retrofit"** (v2 em 002/003/004/010/012): modalidade no apontamento, metragem append-only, rota do diesel | Deltas de contrato ainda não aplicados no código — aplicar via Claude Code quando pertinente |
+| Jun/2026 | **Patch consolidado "Retrofit"** (v2 em 002/003/004/010/012): modalidade no apontamento, metragem append-only, rota do diesel | 2026-07-02: delta de código dos PRD-002/003/004 aplicado (v0.11.0 Retrofit); PRD-010 era docs-only (sem ação de código); PRD-012 já havia sido implementado à parte (v0.10.0 Fuel) |
 | Jun/2026 | **PRD-015 (Home Screens) criado** pelo Arquiteto — promove o item "Dashboard retaguarda + Início operador" de "planejado" para PRD numerado | Substitui os placeholders de `/admin` e `/app` agregando dados das features já implementadas; sem contrato novo |
 
 ### Riscos Identificados
@@ -313,4 +314,4 @@ A **Fase 4 (backend)** gerará PRDs próprios quando o frontend for aprovado:
 |-------|-------|
 | **Data** | 2026-07-02 |
 | **Atualizado por** | Claude Code via SDD |
-| **Motivo** | PRD-012 Gestão de Diesel e Utilização implementado → 0.10.0 Fuel; 11/16 (69%) |
+| **Motivo** | Patch consolidado "Retrofit" aplicado (deltas pós-implementação dos PRD-002/003/004) → 0.11.0 Retrofit; contagem de implementados inalterada (11/16, 69% — patch sobre PRDs já implementados, não nova implementação) |

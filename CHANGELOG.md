@@ -5,6 +5,20 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.11.0] - 2026-07-02 - Retrofit
+
+### Added
+- `Apontamento` ganha `modalidade` ("seca" | "operada"), capturada ao iniciar o apontamento quando a OS vinculada não é `por_metro`, e `metros_executados`, capturado (obrigatório) ao finalizar quando a OS vinculada é `por_metro`
+- `totalMetragemOS` deriva a metragem executada de uma OS a partir dos apontamentos finalizados vinculados, espelhando `totalHorasOS`
+
+### Changed
+- `OrdemServico.metragem_executada` deixa de ser um campo armazenado no cabeçalho — passa a ser **derivado** (soma de `apontamentos.metros_executados`), evitando o conflito multi-operador de um campo de header mutável
+- Faturamento (`gerarItens`) agrupa horas de uma OS `hora_maquina` por **equipamento + modalidade** (lendo `modalidade` do apontamento) em vez de assumir sempre "operada"; um mesmo equipamento pode gerar dois itens (seca e operada) quando ambos ocorreram na mesma OS
+- Geração de OS a partir de um orçamento não copia mais a metragem estimada para o cabeçalho da nova OS (o campo não existe mais); a estimativa continua visível no orçamento de origem
+
+### Fixed
+- Consolida os deltas pós-implementação registrados nos patches dos PRD-002, PRD-003 e PRD-004
+
 ## [0.10.0] - 2026-07-02 - Fuel
 
 ### Added
