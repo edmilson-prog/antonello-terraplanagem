@@ -8,11 +8,11 @@
 | **Cliente** | Leonardo Antonello |
 | **Repositório** | [a definir — repo único / monorepo] |
 | **Início** | Jun/2026 |
-| **Versão Atual** | 0.8.0 (Wrench) |
+| **Versão Atual** | 0.9.0 (Seal) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 15 (PRD-000 a PRD-014) |
 | **PRDs Documentados** | **15 — roadmap 100% documentado** (PRD-000 a PRD-014) |
-| **PRDs Implementados** | 9 (inclui o spike PRD-000) |
+| **PRDs Implementados** | 10 (inclui o spike PRD-000) |
 
 ### Agentes do Workflow
 
@@ -42,13 +42,13 @@
 
 | Status | Quantidade | Percentual |
 |--------|------------|------------|
-| ✅ Implementado | 9 | 60% |
+| ✅ Implementado | 10 | 67% |
 | 🔄 Em Andamento | 0 | 0% |
-| ⏳ Pendente | 6 | 40% |
+| ⏳ Pendente | 5 | 33% |
 | ❌ Cancelado | 0 | 0% |
 | **Total** | **15** | **100%** |
 
-**Progresso de documentação:** **15/15 — roadmap 100% documentado** (PRD-000 a PRD-014). 9/15 implementados (60%) — restam 008, 009, 011, 012, 013, 014.
+**Progresso de documentação:** **15/15 — roadmap 100% documentado** (PRD-000 a PRD-014). 10/15 implementados (67%) — restam 008, 009, 012, 013, 014.
 
 ---
 
@@ -71,7 +71,7 @@ O coração do sistema: campo aponta horas, central recebe, fatura.
 
 ### Onda 2 — Estrutura — ✍️ completa
 
-Fecha o ciclo financeiro e adiciona automações. As **features (006, 007, 010)** já foram mockadas/implementadas na Fase 2; **011** ainda pendente. As **integrações reais (008, 009)** são **Fase 4** e dependem de provedor — documentadas como provisórias.
+Fecha o ciclo financeiro e adiciona automações. As **features (006, 007, 010, 011)** já foram mockadas/implementadas na Fase 2 — a Onda 2 está com todas as features prontas. As **integrações reais (008, 009)** são **Fase 4** e dependem de provedor — documentadas como provisórias.
 
 | PRD | Arquivo | Tipo | Amb. | Prioridade | Depende de | Template | Doc | Status |
 |-----|---------|------|------|------------|------------|----------|-----|--------|
@@ -80,7 +80,7 @@ Fecha o ciclo financeiro e adiciona automações. As **features (006, 007, 010)*
 | 008 | `PRD-008-ret-integracao-gateway-cobranca.md` | Integração | ret | Média | 004, 007 | integration | ✍️* | ⏳ |
 | 009 | `PRD-009-all-integracao-whatsapp-fechamento-os.md` | Integração (n8n) | all | Média | 003 | integration | ✍️* | ⏳ |
 | 010 | `PRD-010-all-manutencao-preventiva-horimetro_DONE.md` | Feature | all | Baixa | 001, 002 | feature | ✍️ | ✅ |
-| 011 | `PRD-011-ret-comprovante-assinado.md` | Feature | ret | Baixa | 003 | feature | ✍️ | ⏳ |
+| 011 | `PRD-011-ret-comprovante-assinado_DONE.md` | Feature | ret | Baixa | 003 | feature | ✍️ | ✅ |
 
 \* Integrações documentadas como **provisórias** (Fase 4 / provedor em aberto).
 
@@ -106,7 +106,6 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 |-----|--------|------|----------|
 | [PRD-008](./PRD-008-ret-integracao-gateway-cobranca.md) | Integração — Gateway de Cobrança (provisório) | Integração | ret |
 | [PRD-009](./PRD-009-all-integracao-whatsapp-fechamento-os.md) | Integração — WhatsApp via n8n (provisório) | Integração | all |
-| [PRD-011](./PRD-011-ret-comprovante-assinado.md) | Comprovante Assinado pelo Cliente | Feature | ret |
 | [PRD-012](./PRD-012-all-gestao-diesel-utilizacao.md) | Gestão de Diesel e Utilização | Feature | all |
 | [PRD-013](./PRD-013-ret-custo-hora-maquina.md) | Custo Real da Hora-Máquina | Feature | ret |
 | [PRD-014](./PRD-014-ret-rentabilidade-equipamento-obra.md) | Rentabilidade por Equipamento e Obra | Feature | ret |
@@ -124,6 +123,7 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 | [PRD-006](./PRD-006-ret-orcamentos_DONE.md) | Orçamentos | Feature | ret | 0.6.0 Quote |
 | [PRD-007](./PRD-007-ret-contas-pagar-receber_DONE.md) | Contas a Pagar e Receber | Feature | ret | 0.7.0 Cashflow |
 | [PRD-010](./PRD-010-all-manutencao-preventiva-horimetro_DONE.md) | Manutenção Preventiva por Horímetro | Feature | all | 0.8.0 Wrench |
+| [PRD-011](./PRD-011-ret-comprovante-assinado_DONE.md) | Comprovante Assinado pelo Cliente | Feature | ret | 0.9.0 Seal |
 
 ### 🔄 Em Andamento
 
@@ -188,12 +188,11 @@ Jun/2026  ───────────────────────�
           ├─ Fase 1 (Scaffold): kickoff Lovable (design system + shells)
           │
           ├─ Fase 2 (Frontend First) — Onda 1 ✅ + Onda 2 (features) ✅ mockadas:
-          │     PRD-001 → PRD-002 → PRD-005 → (PRD-000 spike) → PRD-003 → PRD-004 → PRD-006 → PRD-007 → PRD-010
-          │     → PRD-011 (restante da Onda 2, ainda pendente)
+          │     PRD-001 → PRD-002 → PRD-005 → (PRD-000 spike) → PRD-003 → PRD-004 → PRD-006 → PRD-007 → PRD-010 → PRD-011
           │
           ├─ Fase 3 (Validação): frontend navegável apresentado ao Leonardo
           │
-          └─ Fase 4 (Backend, se aprovado) — integrações provisórias (008, 009) + PRD-011 backend
+          └─ Fase 4 (Backend, se aprovado) — integrações provisórias (008, 009)
                 + Onda 3, a inteligência de custo/rentabilidade (012→013→014)
 ```
 
@@ -210,6 +209,7 @@ Jun/2026  ───────────────────────�
 | 0.6.0 | Quote | 2026-06-29 | PRD-006 | MINOR |
 | 0.7.0 | Cashflow | 2026-06-30 | PRD-007 | MINOR |
 | 0.8.0 | Wrench | 2026-07-01 | PRD-010 | MINOR |
+| 0.9.0 | Seal | 2026-07-01 | PRD-011 | MINOR |
 
 ---
 
@@ -283,5 +283,5 @@ Jun/2026  ───────────────────────�
 | Campo | Valor |
 |-------|-------|
 | **Data** | 2026-07-01 |
-| **Atualizado por** | Claude Code (reconciliação sobre export do Arquiteto, claude.ai) |
-| **Motivo** | Arquiteto documentou a Onda 3 completa (PRD-012 a PRD-014 — roadmap 100% documentado) via export que revertia o rastreamento de implementação; reconciliado para manter a nova documentação e restaurar o status real: 9/15 (60%) implementados, 0.8.0 Wrench |
+| **Atualizado por** | Claude Code via SDD |
+| **Motivo** | PRD-011 Comprovante Assinado pelo Cliente implementado → 0.9.0 Seal; 10/15 (67%) |

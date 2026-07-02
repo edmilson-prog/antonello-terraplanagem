@@ -5,6 +5,16 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.9.0] - 2026-07-01 - Seal
+
+### Added
+- Comprovante Assinado pelo Cliente (PRD-011): geração de comprovante a partir de uma OS fechada, com resumo do serviço (obra, período, equipamentos, horas ou metragem) — sem valores
+- Captura de assinatura do cliente em tela (canvas, mouse/toque/caneta) com nome do assinante, ou registro de recusa com motivo
+- Ciclo de status `pendente → assinado / recusado`; no máximo um comprovante por OS
+- `types` `Comprovante`, `StatusComprovante`; mocks com edge cases (pendente, assinado, recusado com motivo, OS por metro)
+- Nova rota `/admin/comprovantes` (lista + detalhe/assinatura); item "Comprovantes" na sidebar da retaguarda, logo após "Ordens de Serviço"
+- Botão "Gerar comprovante" / link "Ver comprovante" na tela de detalhe da OS, quando fechada
+
 ## [0.8.0] - 2026-07-01 - Wrench
 
 ### Added
