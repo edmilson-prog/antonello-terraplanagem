@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { HorimetroCapture } from "@/shared/components/horimetro-capture";
 import { SyncBadge } from "@/shared/components/sync-badge";
 import { StatusApontamentoBadge } from "@/features/apontamento/components/status-apontamento-badge";
+import { RegistrarAbastecimentoOperadorDialog } from "@/features/diesel/components/registrar-abastecimento-operador-dialog";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { finalizarApontamentoSchema } from "@/features/apontamento/apontamento-schema";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
@@ -21,6 +22,7 @@ export function ApontamentoDetalhe({ apontamentoId }: Props) {
   const [horimetroFinal, setHorimetroFinal] = useState("");
   const [fotoFinalUrl, setFotoFinalUrl] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [abastecimentoAberto, setAbastecimentoAberto] = useState(false);
 
   if (!apontamento) return <ApontamentoNaoEncontrado />;
 
@@ -83,6 +85,16 @@ export function ApontamentoDetalhe({ apontamentoId }: Props) {
           </div>
         ) : null}
       </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        onClick={() => setAbastecimentoAberto(true)}
+        className="w-full gap-2"
+      >
+        <Icon icon="lucide:fuel" className="h-4 w-4" />
+        Registrar abastecimento
+      </Button>
 
       <section className="space-y-3 rounded-xl border bg-card p-5 shadow-sm">
         <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
@@ -147,6 +159,13 @@ export function ApontamentoDetalhe({ apontamentoId }: Props) {
           </Button>
         </section>
       ) : null}
+
+      <RegistrarAbastecimentoOperadorDialog
+        open={abastecimentoAberto}
+        onOpenChange={setAbastecimentoAberto}
+        equipamentoId={apontamento.equipamento_id}
+        horimetroAtual={equipamento?.horimetro_atual}
+      />
     </div>
   );
 }
