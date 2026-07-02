@@ -11,7 +11,7 @@
 | **Versão Atual** | 0.8.0 (Wrench) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 15 (PRD-000 a PRD-014) |
-| **PRDs Documentados** | 12 — **Ondas 1 e 2 completas** (PRD-000 a PRD-011) |
+| **PRDs Documentados** | **15 — roadmap 100% documentado** (PRD-000 a PRD-014) |
 | **PRDs Implementados** | 9 (inclui o spike PRD-000) |
 
 ### Agentes do Workflow
@@ -48,15 +48,15 @@
 | ❌ Cancelado | 0 | 0% |
 | **Total** | **15** | **100%** |
 
-**Progresso de documentação:** 12/15 PRDs com documento escrito — **Ondas 1 e 2 completas** (PRD-000 a PRD-011). Onda 3 planejada.
+**Progresso de documentação:** **15/15 — roadmap 100% documentado** (PRD-000 a PRD-014). 9/15 implementados (60%) — restam 008, 009, 011, 012, 013, 014.
 
 ---
 
-## 🗺️ Roadmap Completo (por Onda)
+## 🗺️ Roadmap Completo (por Onda) — ✍️ 100% documentado
 
 > Legenda de documento: ✍️ escrito · 📋 planejado · Legenda de status: ⏳ pendente · 🔄 em andamento · ✅ implementado
 
-### Onda 1 — Fundação (MVP) — ✍️ documentação completa
+### Onda 1 — Fundação (MVP) — ✍️ completa
 
 O coração do sistema: campo aponta horas, central recebe, fatura.
 
@@ -69,9 +69,9 @@ O coração do sistema: campo aponta horas, central recebe, fatura.
 | 004 | `PRD-004-ret-faturamento-fechamento-os_DONE.md` | Feature | ret | Média | 003, 005 | feature | ✍️ | ✅ |
 | 005 | `PRD-005-ret-tabela-precos_DONE.md` | Feature | ret | Média | 001 | feature | ✍️ | ✅ |
 
-### Onda 2 — Estrutura — ✍️ documentação completa
+### Onda 2 — Estrutura — ✍️ completa
 
-Fecha o ciclo financeiro e adiciona automações. As **features (006, 007, 010, 011)** já foram mockadas na Fase 2; as **integrações reais (008, 009)** são **Fase 4** e dependem de provedor — documentadas como provisórias.
+Fecha o ciclo financeiro e adiciona automações. As **features (006, 007, 010)** já foram mockadas/implementadas na Fase 2; **011** ainda pendente. As **integrações reais (008, 009)** são **Fase 4** e dependem de provedor — documentadas como provisórias.
 
 | PRD | Arquivo | Tipo | Amb. | Prioridade | Depende de | Template | Doc | Status |
 |-----|---------|------|------|------------|------------|----------|-----|--------|
@@ -84,17 +84,17 @@ Fecha o ciclo financeiro e adiciona automações. As **features (006, 007, 010, 
 
 \* Integrações documentadas como **provisórias** (Fase 4 / provedor em aberto).
 
-### Onda 3 — Acabamento
+### Onda 3 — Acabamento — ✍️ completa
 
-A inteligência de negócio: o "porquê" do projeto — rentabilidade por máquina e por obra.
+A inteligência de negócio: o "porquê" do projeto — rentabilidade por máquina e por obra. **Camada analítica (Fase 4 / dados reais).**
 
 | PRD | Arquivo | Tipo | Amb. | Prioridade | Depende de | Template | Doc | Status |
 |-----|---------|------|------|------------|------------|----------|-----|--------|
-| 012 | `PRD-012-all-gestao-diesel-utilizacao.md` | Feature | all | Baixa | 001, 002 | feature | 📋 | ⏳ |
-| 013 | `PRD-013-ret-custo-hora-maquina.md` | Feature | ret | Baixa | 002, 012 | feature | 📋 | ⏳ |
-| 014 | `PRD-014-ret-rentabilidade-equipamento-obra.md` | Feature | ret | Baixa | 004, 013 | feature | 📋 | ⏳ |
+| 012 | `PRD-012-all-gestao-diesel-utilizacao.md` | Feature | all | Baixa | 001, 002 | feature | ✍️ | ⏳ |
+| 013 | `PRD-013-ret-custo-hora-maquina.md` | Feature | ret | Baixa | 002, 010, 012 | feature | ✍️ | ⏳ |
+| 014 | `PRD-014-ret-rentabilidade-equipamento-obra.md` | Feature | ret | Baixa | 004, 013 | feature | ✍️ | ⏳ |
 
-> **Nota sobre a Onda 3:** diesel/utilização (012) vem **antes** de custo (013) porque o custo real da hora-máquina depende do consumo de combustível. Rentabilidade (014) é a camada final: custo (013) cruzado com receita faturada (004).
+> **Pirâmide analítica:** diesel/utilização (012) → custo da hora-máquina (013) → rentabilidade por equipamento e obra (014).
 
 ---
 
@@ -107,6 +107,9 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 | [PRD-008](./PRD-008-ret-integracao-gateway-cobranca.md) | Integração — Gateway de Cobrança (provisório) | Integração | ret |
 | [PRD-009](./PRD-009-all-integracao-whatsapp-fechamento-os.md) | Integração — WhatsApp via n8n (provisório) | Integração | all |
 | [PRD-011](./PRD-011-ret-comprovante-assinado.md) | Comprovante Assinado pelo Cliente | Feature | ret |
+| [PRD-012](./PRD-012-all-gestao-diesel-utilizacao.md) | Gestão de Diesel e Utilização | Feature | all |
+| [PRD-013](./PRD-013-ret-custo-hora-maquina.md) | Custo Real da Hora-Máquina | Feature | ret |
+| [PRD-014](./PRD-014-ret-rentabilidade-equipamento-obra.md) | Rentabilidade por Equipamento e Obra | Feature | ret |
 
 ### ✅ Implementados
 
@@ -145,6 +148,15 @@ PRD-001 (cadastros) ──┬──────▶ PRD-003 (OS colaborativa) ─
        └──▶ PRD-005 (preços) ───────────────────────────────────┘
 ```
 
+Pirâmide analítica (Onda 3):
+
+```
+PRD-002 (horas) ──┐
+PRD-012 (diesel) ─┼──▶ PRD-013 (custo/hora) ──▶ PRD-014 (rentabilidade)
+PRD-010 (manut.) ─┘                                  ▲
+PRD-004 (receita) ───────────────────────────────────┘
+```
+
 ### Tabela de Dependências (completa)
 
 | PRD | Depende de | Bloqueia |
@@ -159,10 +171,10 @@ PRD-001 (cadastros) ──┬──────▶ PRD-003 (OS colaborativa) ─
 | PRD-007 | PRD-004 | PRD-008 |
 | PRD-008 | PRD-004, PRD-007 | — |
 | PRD-009 | PRD-003 | — |
-| PRD-010 | PRD-001, PRD-002 | — |
+| PRD-010 | PRD-001, PRD-002 | PRD-013 |
 | PRD-011 | PRD-003 | — |
 | PRD-012 | PRD-001, PRD-002 | PRD-013 |
-| PRD-013 | PRD-002, PRD-012 | PRD-014 |
+| PRD-013 | PRD-002, PRD-010, PRD-012 | PRD-014 |
 | PRD-014 | PRD-004, PRD-013 | — |
 
 ---
@@ -176,12 +188,12 @@ Jun/2026  ───────────────────────�
           ├─ Fase 1 (Scaffold): kickoff Lovable (design system + shells)
           │
           ├─ Fase 2 (Frontend First) — Onda 1 ✅ + Onda 2 (features) ✅ mockadas:
-          │     PRD-001 → PRD-002 → PRD-005 → (PRD-000 spike) → PRD-003 → PRD-004 → PRD-006 → PRD-007
-          │     → PRD-010, PRD-011 (restantes da Onda 2, ainda pendentes)
+          │     PRD-001 → PRD-002 → PRD-005 → (PRD-000 spike) → PRD-003 → PRD-004 → PRD-006 → PRD-007 → PRD-010
+          │     → PRD-011 (restante da Onda 2, ainda pendente)
           │
           ├─ Fase 3 (Validação): frontend navegável apresentado ao Leonardo
           │
-          └─ Fase 4 (Backend, se aprovado) — integrações provisórias (008, 009)
+          └─ Fase 4 (Backend, se aprovado) — integrações provisórias (008, 009) + PRD-011 backend
                 + Onda 3, a inteligência de custo/rentabilidade (012→013→014)
 ```
 
@@ -216,6 +228,7 @@ Jun/2026  ───────────────────────�
 | 2026-06-28 | **Sync offline-first decidido** (spike PRD-000 → [ADR-001](../adr/ADR-001-sync-offline-os-colaborativa.md)): Supabase Realtime + fila offline própria; apontamentos append-only; cabeçalho LWW por campo; fechar OS = retaguarda | Destrava o PRD-003; define o que o backend (Fase 4) entrega |
 | Jun/2026 | **Ondas 1 e 2 totalmente documentadas** (PRD-000 a PRD-011) | Onda 1 e features da Onda 2 (006, 007, 010, 011) mockáveis/implementadas; integrações (008, 009) provisórias |
 | Jun/2026 | Integrações **008/009 orquestradas/isoladas** (gateway; WhatsApp via n8n) | Trocar provedor = mudar fluxo, não o app |
+| Jun/2026 | **Roadmap 100% documentado** (PRD-000 a PRD-014) — Onda 3 (012–014) adicionada pelo Arquiteto | Todo o produto especificado; falta implementar 011 (Onda 2) e a Onda 3 completa |
 
 ### Riscos Identificados
 
@@ -223,6 +236,7 @@ Jun/2026  ───────────────────────�
 |-------|---------------|---------|-----------|
 | OS colaborativa **offline + sync em tempo real** com resolução de conflito | **Mitigado** | Alto | ✅ **Resolvido pelo spike PRD-000 → [ADR-001](../adr/ADR-001-sync-offline-os-colaborativa.md)** (Realtime + fila offline; append-only; LWW por campo; fechar = retaguarda). PoC confirmou a hipótese. |
 | Integrações da Onda 2 (gateway, WhatsApp) **não se mockam** de verdade | Média | Médio | Tratadas como Fase 4 e provisórias (008/009); spike antes da UI dependente (guia §3.5) |
+| Camada analítica (Onda 3) exige **dados reais** para ter valor | Média | Médio | Documentada como Fase 4; mock mostra o formato, não substitui dados reais |
 | OCR do horímetro por foto pode não ser viável no MVP | Média | Médio | Validar viabilidade; fallback de digitação manual (PRD-002) |
 | Migração de clientes do sistema antigo (Farol) | Baixa | Médio | Confirmar com o cliente; mocks preveem cadastro do zero |
 
@@ -238,6 +252,8 @@ Jun/2026  ───────────────────────�
 - [ ] **Provedor de WhatsApp:** Evolution API (não oficial) ou Meta Cloud API (oficial, com templates)?
 - [ ] **Operação offline** — quanto tempo o operador fica sem sinal em campo? (define a estratégia de fila)
 - [ ] **Frota real** — inconsistência nos áudios (≈15 equipamentos vs "três ou quatro"). Confirmar contagem.
+- [ ] Como calcular **depreciação** e o custo do **operador** no custo da hora-máquina (PRD-013)?
+- [ ] Rentabilidade por **competência** (faturado) ou **caixa** (recebido)? (PRD-014)
 - [ ] **Modelo comercial** do software — como o Leonardo paga/usa a plataforma?
 
 ---
@@ -267,5 +283,5 @@ Jun/2026  ───────────────────────�
 | Campo | Valor |
 |-------|-------|
 | **Data** | 2026-07-01 |
-| **Atualizado por** | Claude Code via SDD |
-| **Motivo** | PRD-010 Manutenção Preventiva por Horímetro implementado → 0.8.0 Wrench; 9/15 (60%) |
+| **Atualizado por** | Claude Code (reconciliação sobre export do Arquiteto, claude.ai) |
+| **Motivo** | Arquiteto documentou a Onda 3 completa (PRD-012 a PRD-014 — roadmap 100% documentado) via export que revertia o rastreamento de implementação; reconciliado para manter a nova documentação e restaurar o status real: 9/15 (60%) implementados, 0.8.0 Wrench |
