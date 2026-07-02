@@ -5,6 +5,17 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.8.0] - 2026-07-01 - Wrench
+
+### Added
+- Manutenção Preventiva por Horímetro (PRD-010): planos de manutenção por equipamento ou por tipo, com intervalo em horas
+- Cálculo de status derivado do horímetro atual (`em_dia` / `proxima` / `vencida`), com antecedência de 20h para "próxima"
+- Painel de alertas em `/admin/manutencao` listando equipamentos com manutenção próxima ou vencida
+- Registro de manutenção realizada (horímetro do momento + custo/observação opcionais), reiniciando o ciclo do plano
+- Indicador de manutenção visível no app do operador (seletor de equipamento e card de apontamento) — sem custo/valor
+- `types` `PlanoManutencao`, `RegistroManutencao`, `StatusManutencao`; mocks com equipamento vencido, próximo e em dia
+- Nova rota `/admin/manutencao` com abas Alertas e Planos; item "Manutenção" na sidebar da retaguarda
+
 ## [0.7.0] - 2026-06-30 - Cashflow
 
 ### Added

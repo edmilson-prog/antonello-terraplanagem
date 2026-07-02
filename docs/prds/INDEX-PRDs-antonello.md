@@ -8,11 +8,11 @@
 | **Cliente** | Leonardo Antonello |
 | **Repositório** | [a definir — repo único / monorepo] |
 | **Início** | Jun/2026 |
-| **Versão Atual** | 0.7.0 (Cashflow) |
+| **Versão Atual** | 0.8.0 (Wrench) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 15 (PRD-000 a PRD-014) |
 | **PRDs Documentados** | 12 — **Ondas 1 e 2 completas** (PRD-000 a PRD-011) |
-| **PRDs Implementados** | 8 (inclui o spike PRD-000) |
+| **PRDs Implementados** | 9 (inclui o spike PRD-000) |
 
 ### Agentes do Workflow
 
@@ -42,9 +42,9 @@
 
 | Status | Quantidade | Percentual |
 |--------|------------|------------|
-| ✅ Implementado | 8 | 53% |
+| ✅ Implementado | 9 | 60% |
 | 🔄 Em Andamento | 0 | 0% |
-| ⏳ Pendente | 7 | 47% |
+| ⏳ Pendente | 6 | 40% |
 | ❌ Cancelado | 0 | 0% |
 | **Total** | **15** | **100%** |
 
@@ -79,7 +79,7 @@ Fecha o ciclo financeiro e adiciona automações. As **features (006, 007, 010, 
 | 007 | `PRD-007-ret-contas-pagar-receber_DONE.md` | Feature | ret | Média | 004 | feature | ✍️ | ✅ |
 | 008 | `PRD-008-ret-integracao-gateway-cobranca.md` | Integração | ret | Média | 004, 007 | integration | ✍️* | ⏳ |
 | 009 | `PRD-009-all-integracao-whatsapp-fechamento-os.md` | Integração (n8n) | all | Média | 003 | integration | ✍️* | ⏳ |
-| 010 | `PRD-010-all-manutencao-preventiva-horimetro.md` | Feature | all | Baixa | 001, 002 | feature | ✍️ | ⏳ |
+| 010 | `PRD-010-all-manutencao-preventiva-horimetro_DONE.md` | Feature | all | Baixa | 001, 002 | feature | ✍️ | ✅ |
 | 011 | `PRD-011-ret-comprovante-assinado.md` | Feature | ret | Baixa | 003 | feature | ✍️ | ⏳ |
 
 \* Integrações documentadas como **provisórias** (Fase 4 / provedor em aberto).
@@ -106,7 +106,6 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 |-----|--------|------|----------|
 | [PRD-008](./PRD-008-ret-integracao-gateway-cobranca.md) | Integração — Gateway de Cobrança (provisório) | Integração | ret |
 | [PRD-009](./PRD-009-all-integracao-whatsapp-fechamento-os.md) | Integração — WhatsApp via n8n (provisório) | Integração | all |
-| [PRD-010](./PRD-010-all-manutencao-preventiva-horimetro.md) | Manutenção Preventiva por Horímetro | Feature | all |
 | [PRD-011](./PRD-011-ret-comprovante-assinado.md) | Comprovante Assinado pelo Cliente | Feature | ret |
 
 ### ✅ Implementados
@@ -121,6 +120,7 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 | [PRD-005](./PRD-005-ret-tabela-precos_DONE.md) | Tabela de Preços (hora-máquina + por metro) | Feature | ret | 0.3.0 Tariff |
 | [PRD-006](./PRD-006-ret-orcamentos_DONE.md) | Orçamentos | Feature | ret | 0.6.0 Quote |
 | [PRD-007](./PRD-007-ret-contas-pagar-receber_DONE.md) | Contas a Pagar e Receber | Feature | ret | 0.7.0 Cashflow |
+| [PRD-010](./PRD-010-all-manutencao-preventiva-horimetro_DONE.md) | Manutenção Preventiva por Horímetro | Feature | all | 0.8.0 Wrench |
 
 ### 🔄 Em Andamento
 
@@ -197,6 +197,7 @@ Jun/2026  ───────────────────────�
 | 0.5.0 | Invoice | 2026-06-29 | PRD-004 | MINOR |
 | 0.6.0 | Quote | 2026-06-29 | PRD-006 | MINOR |
 | 0.7.0 | Cashflow | 2026-06-30 | PRD-007 | MINOR |
+| 0.8.0 | Wrench | 2026-07-01 | PRD-010 | MINOR |
 
 ---
 
@@ -266,5 +267,5 @@ Jun/2026  ───────────────────────�
 | Campo | Valor |
 |-------|-------|
 | **Data** | 2026-07-01 |
-| **Atualizado por** | Claude Code via SDD (reconciliado com a exportação do Arquiteto) |
-| **Motivo** | PRD-008, PRD-010 e PRD-011 documentados pelo Arquiteto (✍️); reconciliado com o status real de implementação (PRD-000 a PRD-007 já implementados, 0.7.0 Cashflow) antes de iniciar o PRD-010 |
+| **Atualizado por** | Claude Code via SDD |
+| **Motivo** | PRD-010 Manutenção Preventiva por Horímetro implementado → 0.8.0 Wrench; 9/15 (60%) |
