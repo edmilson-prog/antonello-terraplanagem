@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { criarApontamentosStore, apontamentosDoOperador } from "./apontamentos-store";
+import { criarApontamentosStore, apontamentosDoOperador, apontamentoEmAndamentoDoOperador } from "./apontamentos-store";
 import type { Apontamento } from "@/shared/types";
 
 function seedBase(): Apontamento[] {
@@ -121,6 +121,13 @@ describe("apontamentosStore", () => {
     const store = criarApontamentosStore(seedBase());
     expect(apontamentosDoOperador(store.listar(), "op-001").map((a) => a.id)).toEqual(["a1"]);
     expect(apontamentosDoOperador(store.listar(), "op-002").map((a) => a.id)).toEqual(["a2"]);
+  });
+
+  it("apontamentoEmAndamentoDoOperador encontra o em_andamento do operador, ou null", () => {
+    const store = criarApontamentosStore(seedBase());
+    expect(apontamentoEmAndamentoDoOperador(store.listar(), "op-001")?.id).toBe("a1");
+    expect(apontamentoEmAndamentoDoOperador(store.listar(), "op-002")).toBeNull();
+    expect(apontamentoEmAndamentoDoOperador(store.listar(), "op-999")).toBeNull();
   });
 
   it("não muta a seed original", () => {

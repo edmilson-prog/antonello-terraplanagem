@@ -1,6 +1,7 @@
 export {
   apontamentosStore,
   apontamentosDoOperador,
+  apontamentoEmAndamentoDoOperador,
   OPERADOR_LOGADO_ID,
 } from "./apontamentos-store";
 export { calcularHoras } from "./calcular-horas";

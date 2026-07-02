@@ -123,3 +123,11 @@ export function apontamentosDoOperador(
 ): Apontamento[] {
   return lista.filter((a) => a.operador_id === operadorId);
 }
+
+// Apontamento em andamento do operador (premissa do domínio: no máximo 1 por vez).
+export function apontamentoEmAndamentoDoOperador(
+  lista: Apontamento[],
+  operadorId: string,
+): Apontamento | null {
+  return apontamentosDoOperador(lista, operadorId).find((a) => a.status === "em_andamento") ?? null;
+}
