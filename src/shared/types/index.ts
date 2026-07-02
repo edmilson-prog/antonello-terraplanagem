@@ -288,3 +288,26 @@ export interface RegistroManutencao {
   created_at: string;
   updated_at: string;
 }
+
+// Comprovante Assinado pelo Cliente (PRD-011) — deriva de uma OrdemServico
+// "fechada"; `resumo_servico` é um snapshot textual congelado no momento da
+// geração (obra, período, equipamentos, horas ou metragem), nunca recalculado
+// depois e nunca contendo preço/valor. Ciclo pendente → assinado | recusado
+// (ambos terminais). No máximo um Comprovante por OS (garantido pela store).
+export type StatusComprovante = "pendente" | "assinado" | "recusado";
+
+export interface Comprovante {
+  id: string;
+  numero: string; // "CMP-2026-0001"
+  os_id: string; // FK → OrdemServico
+  cliente_id: string; // FK → Cliente
+  resumo_servico: string; // snapshot textual — sem valores
+  assinante_nome: string | null;
+  assinatura_url: string | null; // data URL (mock) da assinatura capturada em tela
+  status: StatusComprovante;
+  motivo_recusa: string | null;
+  gerado_em: string; // ISO 8601
+  assinado_em: string | null;
+  created_at: string;
+  updated_at: string;
+}
