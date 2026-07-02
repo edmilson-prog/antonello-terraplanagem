@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -11,12 +11,16 @@ import { OrdemForm } from "@/features/ordem-servico/components/ordem-form";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { apontamentosDaOS, podeFecharOS, statusEfetivoOS } from "@/features/ordem-servico/derivacoes";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
+import { comprovantesStore } from "@/features/comprovantes/comprovantes-store";
+import { montarResumoServico } from "@/features/comprovantes/derivacoes";
+import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 
 export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   const ordem = ordensStore.useOrdem(ordemId);
   const apontamentos = apontamentosStore.useTodos();
   const [editando, setEditando] = useState(false);
   const [confirmarFechar, setConfirmarFechar] = useState(false);
+  const navigate = useNavigate();
 
   if (!ordem) return <OrdemNaoEncontradaAdmin />;
 
@@ -33,6 +37,24 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
     }
     toast.success(`OS ${r.ordem.numero} fechada.`);
     setConfirmarFechar(false);
+  };
+
+  const comprovante = comprovantesStore.useTodos().find((c) => c.os_id === ordemId);
+
+  const gerarComprovante = () => {
+    if (!ordem) return;
+    const resumo = montarResumoServico(ordem, apontamentos, equipamentosStore.getAll());
+    const r = comprovantesStore.gerar({
+      os_id: ordem.id,
+      cliente_id: ordem.cliente_id,
+      resumo_servico: resumo,
+    });
+    if (!r.ok) {
+      toast.error(r.motivo);
+      return;
+    }
+    toast.success(`Comprovante ${r.comprovante.numero} gerado.`);
+    navigate({ to: "/admin/comprovantes/$comprovanteId", params: { comprovanteId: r.comprovante.id } });
   };
 
   return (
@@ -81,6 +103,29 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
           {!podeFechar.pode ? (
             <p className="w-full text-xs text-destructive">{podeFechar.motivo}</p>
           ) : null}
+        </div>
+      ) : null}
+
+      {fechada ? (
+        <div className="flex flex-wrap gap-2">
+          {comprovante ? (
+            <Link
+              to="/admin/comprovantes/$comprovanteId"
+              params={{ comprovanteId: comprovante.id }}
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+            >
+              <Icon icon="lucide:external-link" className="h-4 w-4" />
+              Ver comprovante {comprovante.numero}
+            </Link>
+          ) : (
+            <Button
+              onClick={gerarComprovante}
+              className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary-hover"
+            >
+              <Icon icon="lucide:file-check-2" className="h-4 w-4" />
+              Gerar comprovante
+            </Button>
+          )}
         </div>
       ) : null}
 
