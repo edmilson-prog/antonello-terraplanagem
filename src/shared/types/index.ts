@@ -84,6 +84,8 @@ export interface Apontamento {
   foto_inicial_url: string | null; // evidência (mock nesta fase)
   foto_final_url: string | null;
   observacao: string | null;
+  modalidade: "seca" | "operada" | null; // capturado ao iniciar; base da tarifa no PRD-004
+  metros_executados: number | null; // capturado ao finalizar quando a OS é por_metro
   status: StatusApontamento;
   pendente_sync: boolean; // afford. de offline (só visual)
   iniciado_em: string; // ISO 8601

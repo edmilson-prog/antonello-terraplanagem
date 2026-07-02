@@ -15,6 +15,8 @@ function seedBase(): Apontamento[] {
       foto_inicial_url: null,
       foto_final_url: null,
       observacao: null,
+      modalidade: null,
+      metros_executados: null,
       status: "em_andamento",
       pendente_sync: false,
       iniciado_em: "2026-01-01T00:00:00.000Z",
@@ -33,6 +35,8 @@ function seedBase(): Apontamento[] {
       foto_inicial_url: null,
       foto_final_url: null,
       observacao: null,
+      modalidade: null,
+      metros_executados: null,
       status: "finalizado",
       pendente_sync: false,
       iniciado_em: "2026-01-01T00:00:00.000Z",
@@ -62,6 +66,14 @@ describe("apontamentosStore", () => {
     expect(novo.os_id).toBeNull();
   });
 
+  it("iniciar grava modalidade quando informada, e null quando omitida", () => {
+    const store = criarApontamentosStore([]);
+    const comModalidade = store.iniciar({ equipamento_id: "eq-9", horimetro_inicial: 10, modalidade: "seca" });
+    expect(comModalidade.modalidade).toBe("seca");
+    const semModalidade = store.iniciar({ equipamento_id: "eq-9", horimetro_inicial: 10 });
+    expect(semModalidade.modalidade).toBeNull();
+  });
+
   it("finalizar calcula horas e marca finalizado", () => {
     const store = criarApontamentosStore(seedBase());
     const r = store.finalizar("a1", { horimetro_final: 108.5 });
@@ -72,6 +84,18 @@ describe("apontamentosStore", () => {
       expect(r.apontamento.finalizado_em).not.toBeNull();
       expect(r.apontamento.pendente_sync).toBe(true);
     }
+  });
+
+  it("finalizar grava metros_executados quando informado, e mantém null quando omitido", () => {
+    const store = criarApontamentosStore(seedBase());
+    const r = store.finalizar("a1", { horimetro_final: 108.5, metros_executados: 12.5 });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.apontamento.metros_executados).toBe(12.5);
+
+    const store2 = criarApontamentosStore(seedBase());
+    const r2 = store2.finalizar("a1", { horimetro_final: 108.5 });
+    expect(r2.ok).toBe(true);
+    if (r2.ok) expect(r2.apontamento.metros_executados).toBeNull();
   });
 
   it("rejeita finalizar com final menor que inicial e não muta o registro", () => {

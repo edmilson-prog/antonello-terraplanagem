@@ -33,6 +33,23 @@ describe("iniciarApontamentoSchema", () => {
       }).success,
     ).toBe(false);
   });
+
+  it("aceita modalidade seca/operada e rejeita valor fora do enum", () => {
+    expect(
+      iniciarApontamentoSchema.safeParse({
+        equipamento_id: "eq-1",
+        horimetro_inicial: 100,
+        modalidade: "seca",
+      }).success,
+    ).toBe(true);
+    expect(
+      iniciarApontamentoSchema.safeParse({
+        equipamento_id: "eq-1",
+        horimetro_inicial: 100,
+        modalidade: "molhada",
+      }).success,
+    ).toBe(false);
+  });
 });
 
 describe("finalizarApontamentoSchema", () => {
@@ -40,5 +57,17 @@ describe("finalizarApontamentoSchema", () => {
     expect(finalizarApontamentoSchema.safeParse({ horimetro_final: 10 }).success).toBe(true);
     expect(finalizarApontamentoSchema.safeParse({ horimetro_final: -1 }).success).toBe(false);
     expect(finalizarApontamentoSchema.safeParse({ horimetro_final: Number.NaN }).success).toBe(false);
+  });
+
+  it("aceita metros_executados positivo e rejeita zero/negativo", () => {
+    expect(
+      finalizarApontamentoSchema.safeParse({ horimetro_final: 10, metros_executados: 12.5 }).success,
+    ).toBe(true);
+    expect(
+      finalizarApontamentoSchema.safeParse({ horimetro_final: 10, metros_executados: 0 }).success,
+    ).toBe(false);
+    expect(
+      finalizarApontamentoSchema.safeParse({ horimetro_final: 10, metros_executados: -1 }).success,
+    ).toBe(false);
   });
 });

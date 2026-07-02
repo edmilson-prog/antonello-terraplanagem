@@ -13,11 +13,13 @@ export interface IniciarInput {
   os_id?: string | null;
   observacao?: string | null;
   foto_inicial_url?: string | null;
+  modalidade?: "seca" | "operada" | null;
 }
 
 export interface FinalizarInput {
   horimetro_final: number;
   foto_final_url?: string | null;
+  metros_executados?: number | null;
 }
 
 export type FinalizarResultado =
@@ -63,6 +65,8 @@ export function criarApontamentosStore(seed: Apontamento[]): ApontamentosStore {
       foto_inicial_url: input.foto_inicial_url ?? null,
       foto_final_url: null,
       observacao: input.observacao?.trim() ? input.observacao.trim() : null,
+      modalidade: input.modalidade ?? null,
+      metros_executados: null,
       status: "em_andamento",
       pendente_sync: true,
       iniciado_em: agora,
@@ -88,6 +92,7 @@ export function criarApontamentosStore(seed: Apontamento[]): ApontamentosStore {
       horimetro_final: input.horimetro_final,
       horas_trabalhadas: calcularHoras(atual.horimetro_inicial, input.horimetro_final),
       foto_final_url: input.foto_final_url ?? atual.foto_final_url,
+      metros_executados: input.metros_executados ?? atual.metros_executados,
       status: "finalizado",
       pendente_sync: true,
       finalizado_em: agora,
