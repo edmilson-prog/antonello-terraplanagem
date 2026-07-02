@@ -61,7 +61,6 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
       modelo_cobranca: modelo,
       responsavel_id: null,
       observacao: `Gerado do orçamento ${orc.numero}`,
-      metragem_executada: ehPorMetro && itemMetro ? itemMetro.quantidade_estimada : null,
       diametro_broca_mm: ehPorMetro ? diametro : null,
     });
     orcamentosStore.vincularOS(orc.id, nova.id);

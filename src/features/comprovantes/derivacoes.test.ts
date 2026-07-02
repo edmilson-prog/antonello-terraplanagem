@@ -12,7 +12,6 @@ const os = (over: Partial<OrdemServico> = {}): OrdemServico => ({
   status: "fechada",
   responsavel_id: null,
   observacao: null,
-  metragem_executada: null,
   diametro_broca_mm: null,
   aberta_em: "2026-06-10T07:00:00.000Z",
   fechada_em: "2026-06-11T17:00:00.000Z",
@@ -33,6 +32,8 @@ const apontamento = (over: Partial<Apontamento> = {}): Apontamento => ({
   foto_inicial_url: null,
   foto_final_url: null,
   observacao: null,
+  modalidade: over.modalidade ?? null,
+  metros_executados: over.metros_executados ?? null,
   status: "finalizado",
   pendente_sync: false,
   iniciado_em: "2026-06-10T07:00:00.000Z",
@@ -79,11 +80,11 @@ describe("montarResumoServico", () => {
 
   it("mostra metragem e diâmetro para OS por metro", () => {
     const resumo = montarResumoServico(
-      os({ modelo_cobranca: "por_metro", metragem_executada: 30, diametro_broca_mm: 300 }),
-      [],
-      [],
+      os({ id: "os-x", modelo_cobranca: "por_metro", diametro_broca_mm: 300 }),
+      [apontamento({ id: "ap-m", os_id: "os-x", metros_executados: 30, equipamento_id: "eq-001" })],
+      [equipamento()],
     );
-    expect(resumo).toContain("Equipamentos: —");
+    expect(resumo).toContain("Equipamentos: Escavadeira Teste");
     expect(resumo).toContain("Metragem executada: 30 m (broca 300 mm)");
   });
 

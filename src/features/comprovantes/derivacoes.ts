@@ -1,4 +1,4 @@
-import { apontamentosDaOS, totalHorasOS } from "@/features/ordem-servico/derivacoes";
+import { apontamentosDaOS, totalHorasOS, totalMetragemOS } from "@/features/ordem-servico/derivacoes";
 import type { Apontamento, Equipamento, OrdemServico } from "@/shared/types";
 
 function formatDataCurta(iso: string): string {
@@ -30,7 +30,7 @@ export function montarResumoServico(
     linhas.push(`Total de horas: ${totalHorasOS(os.id, apontamentos)}h`);
   } else {
     linhas.push(
-      `Metragem executada: ${os.metragem_executada ?? 0} m (broca ${os.diametro_broca_mm ?? "—"} mm)`,
+      `Metragem executada: ${totalMetragemOS(os.id, apontamentos)} m (broca ${os.diametro_broca_mm ?? "—"} mm)`,
     );
   }
 
