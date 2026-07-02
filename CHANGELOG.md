@@ -5,6 +5,15 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.10.0] - 2026-07-02 - Fuel
+
+### Added
+- Gestão de Diesel e Utilização (PRD-012): registro de abastecimentos (equipamento, litros, horímetro) com custo opcional (R$/litro ou total) — retaguarda-only
+- Indicadores derivados de consumo médio (litros/hora) e utilização (horas trabalhadas no período) por equipamento, cruzando abastecimentos com apontamentos
+- Nova rota `/admin/diesel` com KPIs, gráfico de consumo por equipamento e histórico de abastecimentos; item "Diesel" na sidebar da retaguarda, logo após "Manutenção"
+- Ação secundária "Registrar abastecimento" na tela de detalhe do apontamento (`/app/apontamento/$id`) — apenas litros e horímetro, sem nenhum valor financeiro; sem novo item na bottom nav (permanece com 4 itens)
+- `types` `Abastecimento`; mocks com 8 registros cobrindo litros alto, custo só por total (sem preço/litro), e equipamentos sem nenhum abastecimento
+
 ## [0.9.0] - 2026-07-01 - Seal
 
 ### Added

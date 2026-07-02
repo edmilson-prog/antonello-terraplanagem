@@ -8,11 +8,11 @@
 | **Cliente** | Leonardo Antonello |
 | **Repositório** | [a definir — repo único / monorepo] |
 | **Início** | Jun/2026 |
-| **Versão Atual** | 0.9.0 (Seal) |
+| **Versão Atual** | 0.10.0 (Fuel) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 16 (PRD-000 a PRD-015) |
 | **PRDs Documentados** | **16 — roadmap 100% documentado** (PRD-000 a PRD-014) + **PRD-015** (pós-roadmap, home screens) |
-| **PRDs Implementados** | 10 (inclui o spike PRD-000) |
+| **PRDs Implementados** | 11 (inclui o spike PRD-000) |
 
 ### Agentes do Workflow
 
@@ -42,13 +42,13 @@
 
 | Status | Quantidade | Percentual |
 |--------|------------|------------|
-| ✅ Implementado | 10 | 63% |
+| ✅ Implementado | 11 | 69% |
 | 🔄 Em Andamento | 0 | 0% |
-| ⏳ Pendente | 6 | 37% |
+| ⏳ Pendente | 5 | 31% |
 | ❌ Cancelado | 0 | 0% |
 | **Total** | **16** | **100%** |
 
-**Progresso de documentação:** **16/16 — roadmap 100% documentado** (PRD-000 a PRD-014) + PRD-015 (pós-roadmap). 10/16 implementados (63%) — restam 008, 009, 012, 013, 014, 015.
+**Progresso de documentação:** **16/16 — roadmap 100% documentado** (PRD-000 a PRD-014) + PRD-015 (pós-roadmap). 11/16 implementados (69%) — restam 008, 009, 013, 014, 015.
 
 ---
 
@@ -90,7 +90,7 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 
 | PRD | Arquivo | Tipo | Amb. | Prioridade | Depende de | Template | Doc | Status |
 |-----|---------|------|------|------------|------------|----------|-----|--------|
-| 012 | `PRD-012-all-gestao-diesel-utilizacao.md` | Feature | all | Baixa | 001, 002 | feature | ✍️ | ⏳ |
+| 012 | `PRD-012-all-gestao-diesel-utilizacao_DONE.md` | Feature | all | Baixa | 001, 002 | feature | ✍️ | ✅ |
 | 013 | `PRD-013-ret-custo-hora-maquina.md` | Feature | ret | Baixa | 002, 010, 012 | feature | ✍️ | ⏳ |
 | 014 | `PRD-014-ret-rentabilidade-equipamento-obra.md` | Feature | ret | Baixa | 004, 013 | feature | ✍️ | ⏳ |
 
@@ -114,7 +114,6 @@ Telas de entrada dos dois ambientes, adicionadas depois do roadmap original de 1
 |-----|--------|------|----------|
 | [PRD-008](./PRD-008-ret-integracao-gateway-cobranca.md) | Integração — Gateway de Cobrança (provisório) | Integração | ret |
 | [PRD-009](./PRD-009-all-integracao-whatsapp-fechamento-os.md) | Integração — WhatsApp via n8n (provisório) | Integração | all |
-| [PRD-012](./PRD-012-all-gestao-diesel-utilizacao.md) | Gestão de Diesel e Utilização | Feature | all |
 | [PRD-013](./PRD-013-ret-custo-hora-maquina.md) | Custo Real da Hora-Máquina | Feature | ret |
 | [PRD-014](./PRD-014-ret-rentabilidade-equipamento-obra.md) | Rentabilidade por Equipamento e Obra | Feature | ret |
 | [PRD-015](./PRD-015-all-home-dashboard-inicio.md) | Home Screens — Dashboard (Retaguarda) + Início (Operador) | Feature | all |
@@ -133,6 +132,7 @@ Telas de entrada dos dois ambientes, adicionadas depois do roadmap original de 1
 | [PRD-007](./PRD-007-ret-contas-pagar-receber_DONE.md) | Contas a Pagar e Receber | Feature | ret | 0.7.0 Cashflow |
 | [PRD-010](./PRD-010-all-manutencao-preventiva-horimetro_DONE.md) | Manutenção Preventiva por Horímetro | Feature | all | 0.8.0 Wrench |
 | [PRD-011](./PRD-011-ret-comprovante-assinado_DONE.md) | Comprovante Assinado pelo Cliente | Feature | ret | 0.9.0 Seal |
+| [PRD-012](./PRD-012-all-gestao-diesel-utilizacao_DONE.md) | Gestão de Diesel e Utilização | Feature | all | 0.10.0 Fuel |
 
 ### 🔄 Em Andamento
 
@@ -198,7 +198,7 @@ Jun/2026  ───────────────────────�
           ├─ Fase 1 (Scaffold): kickoff Lovable (design system + shells)
           │
           ├─ Fase 2 (Frontend First) — Onda 1 ✅ + Onda 2 (features) ✅ mockadas:
-          │     PRD-001 → PRD-002 → PRD-005 → (PRD-000 spike) → PRD-003 → PRD-004 → PRD-006 → PRD-007 → PRD-010 → PRD-011
+          │     PRD-001 → PRD-002 → PRD-005 → (PRD-000 spike) → PRD-003 → PRD-004 → PRD-006 → PRD-007 → PRD-010 → PRD-011 → PRD-012
           │
           ├─ Fase 3 (Validação): frontend navegável apresentado ao Leonardo
           │
@@ -221,6 +221,7 @@ Jun/2026  ───────────────────────�
 | 0.7.0 | Cashflow | 2026-06-30 | PRD-007 | MINOR |
 | 0.8.0 | Wrench | 2026-07-01 | PRD-010 | MINOR |
 | 0.9.0 | Seal | 2026-07-01 | PRD-011 | MINOR |
+| 0.10.0 | Fuel | 2026-07-02 | PRD-012 | MINOR |
 
 ---
 
@@ -312,4 +313,4 @@ A **Fase 4 (backend)** gerará PRDs próprios quando o frontend for aprovado:
 |-------|-------|
 | **Data** | 2026-07-02 |
 | **Atualizado por** | Claude Code via SDD |
-| **Motivo** | Reconciliação pós-export do Arquiteto: incorporado PRD-015 (Home Screens, pós-roadmap) e a nota do patch "Retrofit"; restaurado o status real de implementação (10/16, 0.9.0 Seal) que o export do Arquiteto havia revertido para zero |
+| **Motivo** | PRD-012 Gestão de Diesel e Utilização implementado → 0.10.0 Fuel; 11/16 (69%) |
