@@ -5,6 +5,18 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.14.0] - 2026-07-03 - Compass
+
+### Added
+- Rentabilidade por Equipamento e Obra (PRD-014): painel retaguarda-only em `/admin/rentabilidade` — o topo da pirâmide analítica, cruza receita (Faturamento, PRD-004) com custo (custo/hora, PRD-013) em dois recortes
+- Recorte **por equipamento**: receita atribuída via itens `hora_maquina` do faturamento (por equipamento), custo via `custoHoraEquipamento` (PRD-013), margem em R$ e %, ranking por margem, gráfico de barras e diálogo de detalhamento (composição de receita e custo)
+- Recorte **por obra/OS**: receita = valor total do(s) faturamento(s) da OS, custo = soma do custo de cada equipamento usado na obra (custo/hora da companhia × horas específicas daquela OS), margem em R$ e %, ranking com destaque de prejuízo, gráfico e diálogo de detalhamento
+- Navegador de mês de competência (reaproveitado do PRD-013), sinalização de "custo incompleto" (equipamento sem componente de custo ativo, propagada à obra) e "prejuízo" (margem negativa), estados vazios distintos por período sem faturamento
+- Item "Rentabilidade" na sidebar da retaguarda, após "Custo da Hora" — último item do roadmap numerado (PRD-000 a PRD-014)
+
+### Changed
+- Seletor de mês (`SeletorMes`, `periodo-mensal.ts`) movido de `src/features/custo-hora/` para `src/shared/` — agora reaproveitado por `custo-hora` e `rentabilidade`
+
 ## [0.13.0] - 2026-07-02 - Meter
 
 ### Added

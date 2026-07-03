@@ -8,11 +8,11 @@
 | **Cliente** | Leonardo Antonello |
 | **Repositório** | [a definir — repo único / monorepo] |
 | **Início** | Jun/2026 |
-| **Versão Atual** | 0.13.0 (Meter) |
+| **Versão Atual** | 0.14.0 (Compass) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 16 (PRD-000 a PRD-015) |
 | **PRDs Documentados** | **16 — roadmap 100% documentado** (PRD-000 a PRD-014) + **PRD-015** (pós-roadmap, home screens) |
-| **PRDs Implementados** | 13 (inclui o spike PRD-000) |
+| **PRDs Implementados** | 14 (inclui o spike PRD-000) — **roadmap numerado 100% implementado**, restam só as integrações provisórias 008/009 (Fase 4) |
 
 ### Agentes do Workflow
 
@@ -42,13 +42,13 @@
 
 | Status | Quantidade | Percentual |
 |--------|------------|------------|
-| ✅ Implementado | 13 | 81% |
+| ✅ Implementado | 14 | 88% |
 | 🔄 Em Andamento | 0 | 0% |
-| ⏳ Pendente | 3 | 19% |
+| ⏳ Pendente | 2 | 12% |
 | ❌ Cancelado | 0 | 0% |
 | **Total** | **16** | **100%** |
 
-**Progresso de documentação:** **16/16 — roadmap 100% documentado** (PRD-000 a PRD-014) + PRD-015 (pós-roadmap). 13/16 implementados (81%) — restam 008, 009, 014.
+**Progresso de documentação:** **16/16 — roadmap 100% documentado** (PRD-000 a PRD-014) + PRD-015 (pós-roadmap). 14/16 implementados (88%) — restam só 008 e 009 (integrações provisórias, Fase 4).
 
 ---
 
@@ -92,9 +92,9 @@ A inteligência de negócio: o "porquê" do projeto — rentabilidade por máqui
 |-----|---------|------|------|------------|------------|----------|-----|--------|
 | 012 | `PRD-012-all-gestao-diesel-utilizacao_DONE.md` | Feature | all | Baixa | 001, 002 | feature | ✍️ | ✅ |
 | 013 | `PRD-013-ret-custo-hora-maquina_DONE.md` | Feature | ret | Baixa | 002, 010, 012 | feature | ✍️ | ✅ |
-| 014 | `PRD-014-ret-rentabilidade-equipamento-obra.md` | Feature | ret | Baixa | 004, 013 | feature | ✍️ | ⏳ |
+| 014 | `PRD-014-ret-rentabilidade-equipamento-obra_DONE.md` | Feature | ret | Baixa | 004, 013 | feature | ✍️ | ✅ |
 
-> **Pirâmide analítica:** diesel/utilização (012) → custo da hora-máquina (013) → rentabilidade por equipamento e obra (014).
+> **Pirâmide analítica — completa:** diesel/utilização (012) → custo da hora-máquina (013) → rentabilidade por equipamento e obra (014). Roadmap numerado (000–014) 100% implementado.
 
 ### Pós-Roadmap — home screens
 
@@ -114,7 +114,6 @@ Telas de entrada dos dois ambientes, adicionadas depois do roadmap original de 1
 |-----|--------|------|----------|
 | [PRD-008](./PRD-008-ret-integracao-gateway-cobranca.md) | Integração — Gateway de Cobrança (provisório) | Integração | ret |
 | [PRD-009](./PRD-009-all-integracao-whatsapp-fechamento-os.md) | Integração — WhatsApp via n8n (provisório) | Integração | all |
-| [PRD-014](./PRD-014-ret-rentabilidade-equipamento-obra.md) | Rentabilidade por Equipamento e Obra | Feature | ret |
 
 ### ✅ Implementados
 
@@ -133,6 +132,7 @@ Telas de entrada dos dois ambientes, adicionadas depois do roadmap original de 1
 | [PRD-012](./PRD-012-all-gestao-diesel-utilizacao_DONE.md) | Gestão de Diesel e Utilização | Feature | all | 0.10.0 Fuel |
 | [PRD-015](./PRD-015-all-home-dashboard-inicio_DONE.md) | Home Screens — Dashboard (Retaguarda) + Início (Operador) | Feature | all | 0.12.0 Cockpit |
 | [PRD-013](./PRD-013-ret-custo-hora-maquina_DONE.md) | Custo Real da Hora-Máquina | Feature | ret | 0.13.0 Meter |
+| [PRD-014](./PRD-014-ret-rentabilidade-equipamento-obra_DONE.md) | Rentabilidade por Equipamento e Obra | Feature | ret | 0.14.0 Compass |
 
 ### 🔄 Em Andamento
 
@@ -225,6 +225,7 @@ Jun/2026  ───────────────────────�
 | 0.11.0 | Retrofit | 2026-07-02 | Deltas pós-implementação dos PRD-002/003/004 (patches v2) | MINOR |
 | 0.12.0 | Cockpit | 2026-07-02 | PRD-015 (Home Screens — Dashboard retaguarda + Início operador) | MINOR |
 | 0.13.0 | Meter | 2026-07-02 | PRD-013 (Custo Real da Hora-Máquina — painel + componentes de custo) | MINOR |
+| 0.14.0 | Compass | 2026-07-03 | PRD-014 (Rentabilidade por Equipamento e Obra — topo da pirâmide analítica) | MINOR |
 
 ---
 
@@ -263,6 +264,7 @@ A **Fase 4 (backend)** gerará PRDs próprios quando o frontend for aprovado:
 | Jun/2026 | **PRD-015 (Home Screens) criado** pelo Arquiteto — promove o item "Dashboard retaguarda + Início operador" de "planejado" para PRD numerado | Substitui os placeholders de `/admin` e `/app` agregando dados das features já implementadas; sem contrato novo |
 | 2026-07-02 | **PRD-015 implementado** (v0.12.0 "Cockpit") — dashboard da retaguarda (6 widgets + filtro de período) e Início do operador, via Subagent-Driven Development (5 tasks + revisão final, 0 Critical/Important) | Placeholders de `/admin` e `/app` substituídos por telas reais; barreira financeira verificada transitivamente |
 | 2026-07-02 | **PRD-013 implementado** (v0.13.0 "Meter") — painel de custo/hora por equipamento (fixos + variáveis + diesel + manutenção ÷ horas) com margem vs. preço praticado, mockado antes da Fase 4 (a spec já sinalizava "painel mockável agora"), via Subagent-Driven Development (4 tasks + revisão final, 0 Critical/Important) | Onda 3 (camada analítica) avança: diesel (012, implementado) → custo/hora (013, implementado) → falta só rentabilidade (014) |
+| 2026-07-03 | **PRD-014 implementado** (v0.14.0 "Compass") — painel de rentabilidade por equipamento e por obra (receita do faturamento − custo do PRD-013), com ranking, margem em R$/%, sinalização de "custo incompleto" e "prejuízo", via Subagent-Driven Development (4 tasks + revisão final, 0 Critical/Important, 5 Minor não-bloqueantes). Seletor de mês promovido de `custo-hora` para `shared/` (reaproveitado pelas duas features) | Onda 3 (pirâmide analítica) completa: diesel (012) → custo/hora (013) → rentabilidade (014). Roadmap numerado (000–014) 100% implementado; restam só as integrações provisórias 008/009 (Fase 4) |
 
 ### Riscos Identificados
 
@@ -287,7 +289,7 @@ A **Fase 4 (backend)** gerará PRDs próprios quando o frontend for aprovado:
 - [ ] **Operação offline** — quanto tempo o operador fica sem sinal em campo? (define a estratégia de fila)
 - [ ] **Frota real** — inconsistência nos áudios (≈15 equipamentos vs "três ou quatro"). Confirmar contagem.
 - [ ] Como calcular **depreciação** e o custo do **operador** no custo da hora-máquina (PRD-013)? — o mock adotou convenção provisória (depreciação como valor fixo mensal informado; operador como valor variável por hora informado, sem fórmula própria); questão de negócio (como Leonardo de fato pensa esses custos) segue em aberto para quando houver dado real
-- [ ] Rentabilidade por **competência** (faturado) ou **caixa** (recebido)? (PRD-014)
+- [x] Rentabilidade por **competência** (faturado) ou **caixa** (recebido)? (PRD-014) — **Resolvido no mock:** nem um nem outro estritamente; conta qualquer `Faturamento` gerado (rascunho ou faturado), chaveado por `gerado_em`; caixa (recebido, PRD-007) fica fora. Validar com Leonardo se esse é o critério certo quando houver dado real.
 - [ ] **Modelo comercial** do software — como o Leonardo paga/usa a plataforma?
 
 ---
@@ -316,6 +318,6 @@ A **Fase 4 (backend)** gerará PRDs próprios quando o frontend for aprovado:
 
 | Campo | Valor |
 |-------|-------|
-| **Data** | 2026-07-02 |
+| **Data** | 2026-07-03 |
 | **Atualizado por** | Claude Code via SDD |
-| **Motivo** | PRD-013 (Custo Real da Hora-Máquina) implementado → 0.13.0 Meter; contagem de implementados 13/16 (81%) |
+| **Motivo** | PRD-014 (Rentabilidade por Equipamento e Obra) implementado → 0.14.0 Compass; contagem de implementados 14/16 (88%); roadmap numerado (000–014) 100% implementado, restam só 008/009 (Fase 4) |
