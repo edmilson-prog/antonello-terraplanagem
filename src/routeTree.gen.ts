@@ -18,6 +18,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as BlogTerraplanagemOuTerraplenagemRouteImport } from './routes/blog.terraplanagem-ou-terraplenagem'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
+import { Route as AdminRentabilidadeRouteImport } from './routes/admin.rentabilidade'
 import { Route as AdminPrecosRouteImport } from './routes/admin.precos'
 import { Route as AdminOperadoresRouteImport } from './routes/admin.operadores'
 import { Route as AdminManutencaoRouteImport } from './routes/admin.manutencao'
@@ -85,6 +86,11 @@ const AppPerfilRoute = AppPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
   getParentRoute: () => AppRoute,
+} as any)
+const AdminRentabilidadeRoute = AdminRentabilidadeRouteImport.update({
+  id: '/rentabilidade',
+  path: '/rentabilidade',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AdminPrecosRoute = AdminPrecosRouteImport.update({
   id: '/precos',
@@ -209,6 +215,7 @@ export interface FileRoutesByFullPath {
   '/admin/manutencao': typeof AdminManutencaoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
+  '/admin/rentabilidade': typeof AdminRentabilidadeRoute
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/admin/manutencao': typeof AdminManutencaoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
+  '/admin/rentabilidade': typeof AdminRentabilidadeRoute
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin': typeof AdminIndexRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/admin/manutencao': typeof AdminManutencaoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
+  '/admin/rentabilidade': typeof AdminRentabilidadeRoute
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
@@ -306,6 +315,7 @@ export interface FileRouteTypes {
     | '/admin/manutencao'
     | '/admin/operadores'
     | '/admin/precos'
+    | '/admin/rentabilidade'
     | '/app/perfil'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
@@ -336,6 +346,7 @@ export interface FileRouteTypes {
     | '/admin/manutencao'
     | '/admin/operadores'
     | '/admin/precos'
+    | '/admin/rentabilidade'
     | '/app/perfil'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin'
@@ -368,6 +379,7 @@ export interface FileRouteTypes {
     | '/admin/manutencao'
     | '/admin/operadores'
     | '/admin/precos'
+    | '/admin/rentabilidade'
     | '/app/perfil'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
@@ -461,6 +473,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/perfil'
       preLoaderRoute: typeof AppPerfilRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/admin/rentabilidade': {
+      id: '/admin/rentabilidade'
+      path: '/rentabilidade'
+      fullPath: '/admin/rentabilidade'
+      preLoaderRoute: typeof AdminRentabilidadeRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/admin/precos': {
       id: '/admin/precos'
@@ -620,6 +639,7 @@ interface AdminRouteChildren {
   AdminManutencaoRoute: typeof AdminManutencaoRoute
   AdminOperadoresRoute: typeof AdminOperadoresRoute
   AdminPrecosRoute: typeof AdminPrecosRoute
+  AdminRentabilidadeRoute: typeof AdminRentabilidadeRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminComprovantesComprovanteIdRoute: typeof AdminComprovantesComprovanteIdRoute
   AdminFaturamentoFaturamentoIdRoute: typeof AdminFaturamentoFaturamentoIdRoute
@@ -640,6 +660,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminManutencaoRoute: AdminManutencaoRoute,
   AdminOperadoresRoute: AdminOperadoresRoute,
   AdminPrecosRoute: AdminPrecosRoute,
+  AdminRentabilidadeRoute: AdminRentabilidadeRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminComprovantesComprovanteIdRoute: AdminComprovantesComprovanteIdRoute,
   AdminFaturamentoFaturamentoIdRoute: AdminFaturamentoFaturamentoIdRoute,

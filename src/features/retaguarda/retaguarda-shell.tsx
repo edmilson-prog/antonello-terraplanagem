@@ -14,6 +14,7 @@ import {
   Wrench,
   Fuel,
   Calculator,
+  TrendingUp,
   Menu,
   ChevronRight,
 } from "lucide-react";
@@ -44,6 +45,7 @@ const itens: NavItem[] = [
   { to: "/admin/faturamento", label: "Faturamento", icone: Receipt },
   { to: "/admin/financeiro", label: "Financeiro", icone: Wallet },
   { to: "/admin/custo-hora", label: "Custo da Hora", icone: Calculator },
+  { to: "/admin/rentabilidade", label: "Rentabilidade", icone: TrendingUp },
 ];
 
 function isActive(pathname: string, to: string) {
