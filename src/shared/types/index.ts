@@ -331,3 +331,23 @@ export interface Comprovante {
   created_at: string;
   updated_at: string;
 }
+
+// Custo Real da Hora-Máquina (PRD-013) — RETAGUARDA-ONLY (financeiro
+// estratégico). `ComponenteCusto` é o único contrato persistido: fixos
+// mensais (ex.: parcela FINAME, seguro) ou variáveis por hora (ex.: material
+// rodante, operador), configurados por equipamento. Diesel (PRD-012) e
+// manutenção (PRD-010) entram no custo por DERIVAÇÃO (nunca como
+// ComponenteCusto manual) — o custo/hora final é sempre calculado, nunca
+// persistido (ver features/custo-hora/derivacoes.ts).
+export type TipoComponenteCusto = "fixo_mensal" | "variavel_hora" | "diesel" | "manutencao";
+
+export interface ComponenteCusto {
+  id: string;
+  equipamento_id: string; // FK → Equipamento
+  descricao: string; // ex.: "Parcela FINAME", "Seguro", "Material rodante", "Operador"
+  tipo: TipoComponenteCusto; // configurável pelo usuário: só fixo_mensal | variavel_hora
+  valor: number; // R$ (mensal se fixo; por hora se variável)
+  ativo: boolean;
+  created_at: string;
+  updated_at: string;
+}

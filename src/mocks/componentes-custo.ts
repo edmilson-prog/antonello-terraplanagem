@@ -1,0 +1,101 @@
+import type { ComponenteCusto } from "@/shared/types";
+
+// 9 componentes cobrindo 4 equipamentos ativos com diesel/manutenção reais em
+// 2026-06 (eq-001, eq-002, eq-005, eq-006) — 1 fixo_mensal + 1 variavel_hora
+// cada. eq-003 fica de propósito SEM nenhum componente (edge case
+// "configuração incompleta" mesmo com horas > 0). eq-004 (status manutenção,
+// sem apontamento nem abastecimento em junho) cobre "sem horas no período" —
+// e também não tem componente, cobrindo as duas condições ao mesmo tempo.
+// cc-005 é inativo (edge case "1 inativo" — revisão de depreciação superada).
+export const componentesCusto: ComponenteCusto[] = [
+  {
+    id: "cc-001",
+    equipamento_id: "eq-001",
+    descricao: "Parcela FINAME",
+    tipo: "fixo_mensal",
+    valor: 4200,
+    ativo: true,
+    created_at: "2025-01-10T12:00:00.000Z",
+    updated_at: "2025-01-10T12:00:00.000Z",
+  },
+  {
+    id: "cc-002",
+    equipamento_id: "eq-001",
+    descricao: "Material rodante + operador",
+    tipo: "variavel_hora",
+    valor: 45,
+    ativo: true,
+    created_at: "2025-01-10T12:00:00.000Z",
+    updated_at: "2025-01-10T12:00:00.000Z",
+  },
+  {
+    id: "cc-003",
+    equipamento_id: "eq-002",
+    descricao: "Seguro",
+    tipo: "fixo_mensal",
+    valor: 380,
+    ativo: true,
+    created_at: "2025-02-05T12:00:00.000Z",
+    updated_at: "2025-02-05T12:00:00.000Z",
+  },
+  {
+    id: "cc-004",
+    equipamento_id: "eq-002",
+    descricao: "Operador",
+    tipo: "variavel_hora",
+    valor: 38,
+    ativo: true,
+    created_at: "2025-02-05T12:00:00.000Z",
+    updated_at: "2025-02-05T12:00:00.000Z",
+  },
+  {
+    id: "cc-005",
+    equipamento_id: "eq-002",
+    descricao: "Depreciação (revisão anterior)",
+    tipo: "fixo_mensal",
+    valor: 300,
+    ativo: false,
+    created_at: "2024-06-01T12:00:00.000Z",
+    updated_at: "2025-02-05T12:00:00.000Z",
+  },
+  {
+    id: "cc-006",
+    equipamento_id: "eq-005",
+    descricao: "Parcela FINAME",
+    tipo: "fixo_mensal",
+    valor: 3800,
+    ativo: true,
+    created_at: "2025-03-01T12:00:00.000Z",
+    updated_at: "2025-03-01T12:00:00.000Z",
+  },
+  {
+    id: "cc-007",
+    equipamento_id: "eq-005",
+    descricao: "Material rodante (pneus)",
+    tipo: "variavel_hora",
+    valor: 22,
+    ativo: true,
+    created_at: "2025-03-01T12:00:00.000Z",
+    updated_at: "2025-03-01T12:00:00.000Z",
+  },
+  {
+    id: "cc-008",
+    equipamento_id: "eq-006",
+    descricao: "Seguro",
+    tipo: "fixo_mensal",
+    valor: 350,
+    ativo: true,
+    created_at: "2025-04-18T12:00:00.000Z",
+    updated_at: "2025-04-18T12:00:00.000Z",
+  },
+  {
+    id: "cc-009",
+    equipamento_id: "eq-006",
+    descricao: "Operador",
+    tipo: "variavel_hora",
+    valor: 40,
+    ativo: true,
+    created_at: "2025-04-18T12:00:00.000Z",
+    updated_at: "2025-04-18T12:00:00.000Z",
+  },
+];
