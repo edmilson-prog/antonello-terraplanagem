@@ -7,6 +7,7 @@ import type { Apontamento } from "@/shared/types";
 // ap-009 em os-008 (sem preço), ap-010 em os-010 (sem fatura).
 // ap-011/ap-012 finalizados em OS por_metro (os-005/os-009) para alimentar a metragem derivada (PRD-003 patch);
 // demais finalizados carregam modalidade "operada" (PRD-002 patch).
+// ap-013 finalizado em eq-007/os-011, para o PRD-014 (rentabilidade).
 export const apontamentos: Apontamento[] = [
   {
     id: "ap-001",
@@ -248,5 +249,25 @@ export const apontamentos: Apontamento[] = [
     finalizado_em: "2026-06-16T17:00:00.000Z",
     created_at: "2026-06-16T08:00:00.000Z",
     updated_at: "2026-06-16T17:00:00.000Z",
+  },
+  {
+    id: "ap-013",
+    equipamento_id: "eq-007",
+    operador_id: "op-002",
+    os_id: "os-011",
+    horimetro_inicial: 9890,
+    horimetro_final: 9896,
+    horas_trabalhadas: 6,
+    foto_inicial_url: null,
+    foto_final_url: null,
+    observacao: "Escavação de vala para rede pluvial.",
+    modalidade: "operada",
+    metros_executados: null,
+    status: "finalizado",
+    pendente_sync: false,
+    iniciado_em: "2026-06-29T07:00:00.000Z",
+    finalizado_em: "2026-06-29T12:00:00.000Z",
+    created_at: "2026-06-29T07:00:00.000Z",
+    updated_at: "2026-06-29T12:00:00.000Z",
   },
 ];

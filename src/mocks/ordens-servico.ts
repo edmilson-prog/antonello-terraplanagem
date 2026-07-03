@@ -7,6 +7,7 @@ import type { OrdemServico } from "@/shared/types";
 // os-007..os-010 fechadas para o PRD-004 (faturamento): os-007 multi-equipamento,
 // os-008 equip. sem preço ativo, os-009 por_metro fechada, os-010 fechada sem fatura.
 // metragem_executada não vive mais no cabeçalho — é derivada dos apontamentos (ap-011/ap-012 em mocks/apontamentos.ts alimentam os-005/os-009).
+// os-011 fechada, usa eq-007 (retroescavadeira) — alimenta o PRD-014 (rentabilidade).
 export const ordensServico: OrdemServico[] = [
   {
     id: "os-001",
@@ -177,5 +178,22 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-06-15T07:30:00.000Z",
     updated_at: "2026-06-15T15:00:00.000Z",
+  },
+  {
+    id: "os-011",
+    numero: "OS-2026-0049",
+    cliente_id: "cl-003",
+    obra_nome: "Escavação de vala — rede pluvial",
+    endereco: "Rua Sete de Setembro, 450, centro",
+    modelo_cobranca: "hora_maquina",
+    status: "fechada",
+    responsavel_id: "op-002",
+    observacao: "Serviço pontual com a retroescavadeira.",
+    diametro_broca_mm: null,
+    aberta_em: "2026-06-29T07:00:00.000Z",
+    fechada_em: "2026-06-29T12:30:00.000Z",
+    pendente_sync: false,
+    created_at: "2026-06-29T07:00:00.000Z",
+    updated_at: "2026-06-29T12:30:00.000Z",
   },
 ];

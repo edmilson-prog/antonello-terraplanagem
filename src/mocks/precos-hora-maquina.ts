@@ -1,7 +1,9 @@
 import type { PrecoHoraMaquina } from "@/shared/types";
 
-// ~5 preços. Edge cases: mix equipamento/tipo, 1 inativo (phm-005),
-// 1 com seca === operada (phm-004), preços por tipo sem equipamento (phm-003/004).
+// ~6 preços. Edge cases: mix equipamento/tipo, 1 inativo (phm-005),
+// 1 com seca === operada (phm-004), preços por tipo sem equipamento (phm-003/004),
+// phm-006 cobre eq-007 (antes sem preço nenhum — cenário "receita com custo
+// incompleto" do PRD-014).
 export const precosHoraMaquina: PrecoHoraMaquina[] = [
   {
     id: "phm-001",
@@ -52,5 +54,15 @@ export const precosHoraMaquina: PrecoHoraMaquina[] = [
     ativo: false,
     created_at: "2024-08-20T12:00:00.000Z",
     updated_at: "2025-12-01T12:00:00.000Z",
+  },
+  {
+    id: "phm-006",
+    equipamento_id: "eq-007",
+    tipo_equipamento: null,
+    valor_hora_seca: 210,
+    valor_hora_operada: 260,
+    ativo: true,
+    created_at: "2026-06-28T12:00:00.000Z",
+    updated_at: "2026-06-28T12:00:00.000Z",
   },
 ];

@@ -4,6 +4,9 @@ import type { Faturamento } from "@/shared/types";
 // Coerência: quantidade/valor batem com apontamentos (PRD-002/003) × preços (PRD-005).
 // Edge cases: fat-001 single, fat-002 multi-equip + mobilização, fat-003 item sem preço,
 // fat-004 por metro. (os-010 fica SEM fatura → "Aguardando faturamento".)
+// fat-008 (os-011, eq-007): edge case do PRD-014 — equipamento com receita faturada
+// mas configuração de custo incompleta. Não usar fat-005/006/007: reservados por
+// mocks/contas-receber.ts como referências futuras.
 export const faturamentos: Faturamento[] = [
   {
     id: "fat-001",
@@ -138,5 +141,34 @@ export const faturamentos: Faturamento[] = [
     faturado_em: "2026-06-17T08:30:00.000Z",
     created_at: "2026-06-16T18:00:00.000Z",
     updated_at: "2026-06-17T08:30:00.000Z",
+  },
+  {
+    id: "fat-008",
+    numero: "FAT-2026-0005",
+    os_id: "os-011",
+    cliente_id: "cl-003",
+    modelo_cobranca: "hora_maquina",
+    itens: [
+      {
+        id: "fat-008:eq-007",
+        tipo: "hora_maquina",
+        descricao:
+          "Retroescavadeira JCB 3CX para serviços de fundação, vala e nivelamento fino em terreno urbano — 6 h operada",
+        origem_id: "eq-007",
+        hora_tipo: "operada",
+        quantidade: 6,
+        valor_unitario: 260,
+        valor_total: 1560,
+        sem_preco: false,
+      },
+    ],
+    desconto: 0,
+    valor_total: 1560,
+    observacao: null,
+    status: "faturado",
+    gerado_em: "2026-06-29T13:00:00.000Z",
+    faturado_em: "2026-06-29T14:00:00.000Z",
+    created_at: "2026-06-29T13:00:00.000Z",
+    updated_at: "2026-06-29T14:00:00.000Z",
   },
 ];
