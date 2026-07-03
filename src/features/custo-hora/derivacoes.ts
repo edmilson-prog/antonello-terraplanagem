@@ -108,9 +108,15 @@ export function custoHoraEquipamento(
   const variaveis = ativos.filter((c) => c.tipo === "variavel_hora");
 
   const custoFixoRateado = round2(fixos.reduce((soma, c) => soma + c.valor, 0));
-  const custoVariavel = round2(
-    variaveis.reduce((soma, c) => soma + c.valor, 0) * horasTrabalhadas,
-  );
+  // custo_variavel deriva da SOMA dos itens já arredondados (não de round2 sobre
+  // o agregado) para que o "Custo total" nunca divirja da soma visível das
+  // linhas do detalhamento quando houver 2+ componentes variavel_hora.
+  const itensVariaveis: DetalheItemCusto[] = variaveis.map((c) => ({
+    tipo: c.tipo,
+    descricao: c.descricao,
+    valor: round2(c.valor * horasTrabalhadas),
+  }));
+  const custoVariavel = round2(itensVariaveis.reduce((soma, item) => soma + item.valor, 0));
   const custoTotal = round2(custoDiesel + custoManutencao + custoFixoRateado + custoVariavel);
   const custoPorHora = horasTrabalhadas > 0 ? round2(custoTotal / horasTrabalhadas) : null;
 
@@ -121,11 +127,7 @@ export function custoHoraEquipamento(
 
   const detalhamento: DetalheItemCusto[] = [
     ...fixos.map((c) => ({ tipo: c.tipo, descricao: c.descricao, valor: c.valor })),
-    ...variaveis.map((c) => ({
-      tipo: c.tipo,
-      descricao: c.descricao,
-      valor: round2(c.valor * horasTrabalhadas),
-    })),
+    ...itensVariaveis,
     { tipo: "diesel", descricao: "Diesel", valor: custoDiesel },
     { tipo: "manutencao", descricao: "Manutenção", valor: custoManutencao },
   ];
