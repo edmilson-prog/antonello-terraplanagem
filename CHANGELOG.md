@@ -5,6 +5,16 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.13.0] - 2026-07-02 - Meter
+
+### Added
+- Custo Real da Hora-Máquina (PRD-013): painel retaguarda-only em `/admin/custo-hora` que calcula o custo por hora de cada equipamento — fixos mensais (parcela FINAME, seguro) + variáveis por hora (material rodante, operador) + diesel (PRD-012) + manutenção (PRD-010), tudo dividido pelas horas trabalhadas no mês
+- Detalhamento do custo por componente (sempre as 4 categorias, mesmo com valor zero) e comparação com o preço praticado (PRD-005), com a margem em R$ por hora
+- Configuração de componentes de custo por equipamento (fixo mensal ou variável por hora), com CRUD completo (cadastrar, editar, inativar, reativar)
+- Navegador de mês de competência (‹ Mês Ano ›), limitado a não ultrapassar o mês atual
+- Sinalização de "configuração incompleta" (nenhum componente ativo) e "sem horas no período" (evita divisão por zero) — condições independentes, exibidas separadamente
+- Item "Custo da Hora" na sidebar da retaguarda, após "Financeiro"
+
 ## [0.12.0] - 2026-07-02 - Cockpit
 
 ### Added
