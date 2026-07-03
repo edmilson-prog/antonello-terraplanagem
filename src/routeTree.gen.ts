@@ -23,6 +23,7 @@ import { Route as AdminOperadoresRouteImport } from './routes/admin.operadores'
 import { Route as AdminManutencaoRouteImport } from './routes/admin.manutencao'
 import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
 import { Route as AdminDieselRouteImport } from './routes/admin.diesel'
+import { Route as AdminCustoHoraRouteImport } from './routes/admin.custo-hora'
 import { Route as AdminClientesRouteImport } from './routes/admin.clientes'
 import { Route as AppOrdensIndexRouteImport } from './routes/app.ordens.index'
 import { Route as AppApontamentoIndexRouteImport } from './routes/app.apontamento.index'
@@ -108,6 +109,11 @@ const AdminEquipamentosRoute = AdminEquipamentosRouteImport.update({
 const AdminDieselRoute = AdminDieselRouteImport.update({
   id: '/diesel',
   path: '/diesel',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCustoHoraRoute = AdminCustoHoraRouteImport.update({
+  id: '/custo-hora',
+  path: '/custo-hora',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminClientesRoute = AdminClientesRouteImport.update({
@@ -197,6 +203,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/clientes': typeof AdminClientesRoute
+  '/admin/custo-hora': typeof AdminCustoHoraRoute
   '/admin/diesel': typeof AdminDieselRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/manutencao': typeof AdminManutencaoRoute
@@ -226,6 +233,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/clientes': typeof AdminClientesRoute
+  '/admin/custo-hora': typeof AdminCustoHoraRoute
   '/admin/diesel': typeof AdminDieselRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/manutencao': typeof AdminManutencaoRoute
@@ -258,6 +266,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/clientes': typeof AdminClientesRoute
+  '/admin/custo-hora': typeof AdminCustoHoraRoute
   '/admin/diesel': typeof AdminDieselRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
   '/admin/manutencao': typeof AdminManutencaoRoute
@@ -291,6 +300,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/sitemap.xml'
     | '/admin/clientes'
+    | '/admin/custo-hora'
     | '/admin/diesel'
     | '/admin/equipamentos'
     | '/admin/manutencao'
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/sitemap.xml'
     | '/admin/clientes'
+    | '/admin/custo-hora'
     | '/admin/diesel'
     | '/admin/equipamentos'
     | '/admin/manutencao'
@@ -351,6 +362,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/sitemap.xml'
     | '/admin/clientes'
+    | '/admin/custo-hora'
     | '/admin/diesel'
     | '/admin/equipamentos'
     | '/admin/manutencao'
@@ -485,6 +497,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDieselRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/custo-hora': {
+      id: '/admin/custo-hora'
+      path: '/custo-hora'
+      fullPath: '/admin/custo-hora'
+      preLoaderRoute: typeof AdminCustoHoraRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/clientes': {
       id: '/admin/clientes'
       path: '/clientes'
@@ -595,6 +614,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminClientesRoute: typeof AdminClientesRoute
+  AdminCustoHoraRoute: typeof AdminCustoHoraRoute
   AdminDieselRoute: typeof AdminDieselRoute
   AdminEquipamentosRoute: typeof AdminEquipamentosRoute
   AdminManutencaoRoute: typeof AdminManutencaoRoute
@@ -614,6 +634,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminClientesRoute: AdminClientesRoute,
+  AdminCustoHoraRoute: AdminCustoHoraRoute,
   AdminDieselRoute: AdminDieselRoute,
   AdminEquipamentosRoute: AdminEquipamentosRoute,
   AdminManutencaoRoute: AdminManutencaoRoute,
