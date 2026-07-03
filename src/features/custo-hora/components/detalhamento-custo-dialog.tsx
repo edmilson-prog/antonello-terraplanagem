@@ -8,7 +8,7 @@ import {
 import { formatBRL } from "@/features/retaguarda/format";
 import { formatHorimetro } from "@/shared/lib/format";
 import { TipoComponenteCustoBadge } from "@/features/custo-hora/labels";
-import { rotuloMes } from "@/features/custo-hora/periodo-mensal";
+import { rotuloMes } from "@/shared/lib/periodo-mensal";
 import type { CustoHoraEquipamento } from "@/features/custo-hora/derivacoes";
 
 interface Props {

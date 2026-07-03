@@ -4,9 +4,9 @@ import {
   mesAnterior,
   proximoMes,
   rotuloMes,
-} from "@/features/custo-hora/periodo-mensal";
+} from "@/shared/lib/periodo-mensal";
 
-describe("features/custo-hora/periodo-mensal", () => {
+describe("shared/lib/periodo-mensal", () => {
   describe("mesReferencia", () => {
     it("formata ano-mês com 2 dígitos", () => {
       expect(mesReferencia(new Date(2026, 6, 2))).toBe("2026-07");

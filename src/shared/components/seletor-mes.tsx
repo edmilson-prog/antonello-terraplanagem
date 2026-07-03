@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { mesAnterior, proximoMes, rotuloMes } from "@/features/custo-hora/periodo-mensal";
+import { mesAnterior, proximoMes, rotuloMes } from "@/shared/lib/periodo-mensal";
 
 interface Props {
   periodo: string;

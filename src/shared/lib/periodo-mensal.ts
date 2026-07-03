@@ -1,6 +1,7 @@
-// Mês de referência do painel de custo/hora — formato "YYYY-MM". Distinto do
-// PeriodoDashboard (hoje/semana/mês relativo, PRD-015): custos fixos são
-// mensais por natureza, então aqui o período é sempre um mês de competência.
+// Mês de referência do painel de custo/hora e de rentabilidade — formato
+// "YYYY-MM". Distinto do PeriodoDashboard (hoje/semana/mês relativo, PRD-015):
+// custos fixos são mensais por natureza, então aqui o período é sempre um mês
+// de competência.
 
 const MESES = [
   "Janeiro",

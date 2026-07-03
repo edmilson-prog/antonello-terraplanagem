@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/shared/components/page-header";
-import { SeletorMes } from "@/features/custo-hora/components/seletor-mes";
+import { SeletorMes } from "@/shared/components/seletor-mes";
 import { PainelCustoHora } from "@/features/custo-hora/components/painel-custo-hora";
 import { ComponenteCustoList } from "@/features/custo-hora/components/componente-custo-list";
-import { mesReferencia, mesAnterior } from "@/features/custo-hora/periodo-mensal";
+import { mesReferencia, mesAnterior } from "@/shared/lib/periodo-mensal";
 
 const MES_ATUAL = mesReferencia(new Date());
 const MES_PADRAO = mesAnterior(MES_ATUAL);
