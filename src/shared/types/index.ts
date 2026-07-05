@@ -351,3 +351,25 @@ export interface ComponenteCusto {
   created_at: string;
   updated_at: string;
 }
+
+// Gateway de Cobrança (PRD-008) — MVP mockado, multi-provedor via adapter.
+// CobrancaGateway é uma entidade lateral (não altera ContaReceber): referencia
+// conta_receber_id e espelha o valor da conta no momento da emissão. Nunca há
+// chamada de rede real nesta fase — linha_digitavel/pix_copia_cola são
+// strings simuladas geradas localmente (ver features/cobranca-gateway/derivacoes.ts).
+export type ProvedorGateway = "mercado_pago" | "asaas";
+export type StatusCobranca = "pendente" | "paga" | "cancelada";
+
+export interface CobrancaGateway {
+  id: string;
+  conta_receber_id: string; // FK → ContaReceber
+  provedor: ProvedorGateway;
+  status: StatusCobranca;
+  linha_digitavel: string | null; // null quando só PIX
+  pix_copia_cola: string;
+  valor: number; // espelha ContaReceber.valor no momento da emissão
+  emitida_em: string; // ISO 8601
+  paga_em: string | null;
+  created_at: string;
+  updated_at: string;
+}
