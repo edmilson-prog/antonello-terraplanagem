@@ -9,11 +9,20 @@ import { OrdemResumoCard } from "@/features/ordem-servico/components/ordem-resum
 import { ApontamentosDaOS } from "@/features/ordem-servico/components/apontamentos-da-os";
 import { OrdemForm } from "@/features/ordem-servico/components/ordem-form";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
-import { apontamentosDaOS, podeFecharOS, statusEfetivoOS } from "@/features/ordem-servico/derivacoes";
+import {
+  apontamentosDaOS,
+  podeFecharOS,
+  statusEfetivoOS,
+} from "@/features/ordem-servico/derivacoes";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { comprovantesStore } from "@/features/comprovantes/comprovantes-store";
 import { montarResumoServico } from "@/features/comprovantes/derivacoes";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
+import { clientesStore } from "@/features/clientes/clientes-store";
+import { avisosWhatsAppStore } from "@/features/aviso-whatsapp/avisos-whatsapp-store";
+import { avisoDaOS } from "@/features/aviso-whatsapp/derivacoes";
+import { PROVEDOR_WHATSAPP_LABEL, StatusAvisoBadge } from "@/features/aviso-whatsapp/labels";
+import { useProvedorWhatsAppAtivo } from "@/features/integracoes/use-provedor-whatsapp";
 
 export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   const ordem = ordensStore.useOrdem(ordemId);
@@ -21,6 +30,7 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   const [editando, setEditando] = useState(false);
   const [confirmarFechar, setConfirmarFechar] = useState(false);
   const navigate = useNavigate();
+  const { provedor: provedorWhatsAppAtivo } = useProvedorWhatsAppAtivo();
 
   if (!ordem) return <OrdemNaoEncontradaAdmin />;
 
@@ -37,9 +47,22 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
     }
     toast.success(`OS ${r.ordem.numero} fechada.`);
     setConfirmarFechar(false);
+
+    const cliente = clientesStore.getById(r.ordem.cliente_id);
+    if (cliente) {
+      const disparo = avisosWhatsAppStore.dispararAviso(r.ordem, cliente, provedorWhatsAppAtivo);
+      if (disparo.ok) {
+        toast.success(
+          `Aviso enviado ao cliente via ${PROVEDOR_WHATSAPP_LABEL[disparo.aviso.provedor]}.`,
+        );
+      } else if (disparo.aviso) {
+        toast.warning(disparo.motivo);
+      }
+    }
   };
 
   const comprovante = comprovantesStore.useTodos().find((c) => c.os_id === ordemId);
+  const aviso = avisoDaOS(ordem.id, avisosWhatsAppStore.useTodas());
 
   const gerarComprovante = () => {
     if (!ordem) return;
@@ -54,7 +77,10 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
       return;
     }
     toast.success(`Comprovante ${r.comprovante.numero} gerado.`);
-    navigate({ to: "/admin/comprovantes/$comprovanteId", params: { comprovanteId: r.comprovante.id } });
+    navigate({
+      to: "/admin/comprovantes/$comprovanteId",
+      params: { comprovanteId: r.comprovante.id },
+    });
   };
 
   return (
@@ -127,6 +153,24 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
             </Button>
           )}
         </div>
+      ) : null}
+
+      {fechada && aviso ? (
+        <section className="space-y-2 rounded-xl border bg-card p-4 text-sm">
+          <div className="flex items-center gap-2">
+            <StatusAvisoBadge status={aviso.status} />
+            <span className="text-xs text-muted-foreground">
+              via {PROVEDOR_WHATSAPP_LABEL[aviso.provedor]}
+            </span>
+          </div>
+          {aviso.status === "enviado" ? (
+            <p className="text-muted-foreground">{aviso.mensagem_preview}</p>
+          ) : (
+            <p className="text-destructive">
+              Cliente sem telefone válido cadastrado — atualize o cadastro para reenviar.
+            </p>
+          )}
+        </section>
       ) : null}
 
       <FormDialog
