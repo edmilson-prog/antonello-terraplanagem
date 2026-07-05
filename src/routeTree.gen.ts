@@ -22,6 +22,7 @@ import { Route as AdminRentabilidadeRouteImport } from './routes/admin.rentabili
 import { Route as AdminPrecosRouteImport } from './routes/admin.precos'
 import { Route as AdminOperadoresRouteImport } from './routes/admin.operadores'
 import { Route as AdminManutencaoRouteImport } from './routes/admin.manutencao'
+import { Route as AdminIntegracoesRouteImport } from './routes/admin.integracoes'
 import { Route as AdminEquipamentosRouteImport } from './routes/admin.equipamentos'
 import { Route as AdminDieselRouteImport } from './routes/admin.diesel'
 import { Route as AdminCustoHoraRouteImport } from './routes/admin.custo-hora'
@@ -105,6 +106,11 @@ const AdminOperadoresRoute = AdminOperadoresRouteImport.update({
 const AdminManutencaoRoute = AdminManutencaoRouteImport.update({
   id: '/manutencao',
   path: '/manutencao',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminIntegracoesRoute = AdminIntegracoesRouteImport.update({
+  id: '/integracoes',
+  path: '/integracoes',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminEquipamentosRoute = AdminEquipamentosRouteImport.update({
@@ -212,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/admin/custo-hora': typeof AdminCustoHoraRoute
   '/admin/diesel': typeof AdminDieselRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
+  '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/manutencao': typeof AdminManutencaoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
@@ -243,6 +250,7 @@ export interface FileRoutesByTo {
   '/admin/custo-hora': typeof AdminCustoHoraRoute
   '/admin/diesel': typeof AdminDieselRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
+  '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/manutencao': typeof AdminManutencaoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
@@ -277,6 +285,7 @@ export interface FileRoutesById {
   '/admin/custo-hora': typeof AdminCustoHoraRoute
   '/admin/diesel': typeof AdminDieselRoute
   '/admin/equipamentos': typeof AdminEquipamentosRoute
+  '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/manutencao': typeof AdminManutencaoRoute
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
@@ -312,6 +321,7 @@ export interface FileRouteTypes {
     | '/admin/custo-hora'
     | '/admin/diesel'
     | '/admin/equipamentos'
+    | '/admin/integracoes'
     | '/admin/manutencao'
     | '/admin/operadores'
     | '/admin/precos'
@@ -343,6 +353,7 @@ export interface FileRouteTypes {
     | '/admin/custo-hora'
     | '/admin/diesel'
     | '/admin/equipamentos'
+    | '/admin/integracoes'
     | '/admin/manutencao'
     | '/admin/operadores'
     | '/admin/precos'
@@ -376,6 +387,7 @@ export interface FileRouteTypes {
     | '/admin/custo-hora'
     | '/admin/diesel'
     | '/admin/equipamentos'
+    | '/admin/integracoes'
     | '/admin/manutencao'
     | '/admin/operadores'
     | '/admin/precos'
@@ -500,6 +512,13 @@ declare module '@tanstack/react-router' {
       path: '/manutencao'
       fullPath: '/admin/manutencao'
       preLoaderRoute: typeof AdminManutencaoRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/integracoes': {
+      id: '/admin/integracoes'
+      path: '/integracoes'
+      fullPath: '/admin/integracoes'
+      preLoaderRoute: typeof AdminIntegracoesRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/equipamentos': {
@@ -636,6 +655,7 @@ interface AdminRouteChildren {
   AdminCustoHoraRoute: typeof AdminCustoHoraRoute
   AdminDieselRoute: typeof AdminDieselRoute
   AdminEquipamentosRoute: typeof AdminEquipamentosRoute
+  AdminIntegracoesRoute: typeof AdminIntegracoesRoute
   AdminManutencaoRoute: typeof AdminManutencaoRoute
   AdminOperadoresRoute: typeof AdminOperadoresRoute
   AdminPrecosRoute: typeof AdminPrecosRoute
@@ -657,6 +677,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminCustoHoraRoute: AdminCustoHoraRoute,
   AdminDieselRoute: AdminDieselRoute,
   AdminEquipamentosRoute: AdminEquipamentosRoute,
+  AdminIntegracoesRoute: AdminIntegracoesRoute,
   AdminManutencaoRoute: AdminManutencaoRoute,
   AdminOperadoresRoute: AdminOperadoresRoute,
   AdminPrecosRoute: AdminPrecosRoute,
