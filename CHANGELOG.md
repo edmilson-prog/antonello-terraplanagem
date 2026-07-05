@@ -5,6 +5,15 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.16.0] - 2026-07-05 - Messenger
+
+### Added
+- Aviso ao Cliente por WhatsApp (PRD-009): MVP mockado, multi-provedor (Evolution API, Evolution GO, WhatsApp Cloud API/Meta, OpenWA) — dispara um aviso simulado ao cliente quando uma Ordem de Serviço é fechada na retaguarda
+- Nova entidade `AvisoWhatsApp` (lateral, não altera `OrdemServico`/`Cliente`), idempotente: no máximo um aviso por OS, validação de telefone do cliente antes do disparo
+- Nova seção na tela de detalhe da OS (retaguarda) exibindo o status do aviso (enviado / falha por telefone inválido), provedor usado e preview da mensagem
+- Nova seção "WhatsApp" na página "Integrações" (`/admin/integracoes`) com seletor de provedor padrão (persistido em `localStorage`), ao lado da seção de Gateway de Cobrança (PRD-008)
+- Tudo mockado (fase Frontend First) — nenhuma chamada de rede real, nenhuma credencial; spec documenta o formato real de cada provedor como referência para a Fase 4
+
 ## [0.15.0] - 2026-07-05 - Gateway
 
 ### Added
