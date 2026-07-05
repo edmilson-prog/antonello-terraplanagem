@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/shared/components/page-header";
 import { ContasReceberTab } from "@/features/financeiro/components/contas-receber-tab";
@@ -7,9 +8,11 @@ import { CaixaTab } from "@/features/financeiro/components/caixa-tab";
 import { DarBaixaReceberDialog } from "@/features/financeiro/components/dar-baixa-receber-dialog";
 import { DarBaixaPagarDialog } from "@/features/financeiro/components/dar-baixa-pagar-dialog";
 import { NovaContaPagarDialog } from "@/features/financeiro/components/nova-conta-pagar-dialog";
+import { EmitirCobrancaDialog } from "@/features/cobranca-gateway/components/emitir-cobranca-dialog";
 import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
 import { contasPagarStore } from "@/features/financeiro/contas-pagar-store";
-import type { ContaReceber, ContaPagar } from "@/shared/types";
+import { cobrancasStore } from "@/features/cobranca-gateway/cobrancas-store";
+import type { ContaReceber, ContaPagar, CobrancaGateway } from "@/shared/types";
 
 export function FinanceiroPage() {
   const contasReceber = contasReceberStore.useTodas();
@@ -18,6 +21,16 @@ export function FinanceiroPage() {
   const [contaReceberSelecionada, setContaReceberSelecionada] = useState<ContaReceber | null>(null);
   const [contaPagarSelecionada, setContaPagarSelecionada] = useState<ContaPagar | null>(null);
   const [novaContaAberta, setNovaContaAberta] = useState(false);
+  const [contaParaEmitirCobranca, setContaParaEmitirCobranca] = useState<ContaReceber | null>(null);
+
+  function handleSimularPagamento(cobranca: CobrancaGateway) {
+    const r = cobrancasStore.simularWebhookPago(cobranca.id);
+    if (r.ok) {
+      toast.success("Pagamento confirmado (simulado) — conta liquidada automaticamente.");
+    } else {
+      toast.error(r.motivo);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -36,6 +49,8 @@ export function FinanceiroPage() {
           <ContasReceberTab
             contasReceber={contasReceber}
             onDarBaixa={setContaReceberSelecionada}
+            onEmitirCobranca={setContaParaEmitirCobranca}
+            onSimularPagamento={handleSimularPagamento}
           />
         </TabsContent>
         <TabsContent value="pagar" className="mt-4">
@@ -61,6 +76,12 @@ export function FinanceiroPage() {
       <NovaContaPagarDialog
         open={novaContaAberta}
         onOpenChange={setNovaContaAberta}
+      />
+      <EmitirCobrancaDialog
+        conta={contaParaEmitirCobranca}
+        onOpenChange={(open) => {
+          if (!open) setContaParaEmitirCobranca(null);
+        }}
       />
     </div>
   );
