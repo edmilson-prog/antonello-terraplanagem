@@ -373,3 +373,23 @@ export interface CobrancaGateway {
   created_at: string;
   updated_at: string;
 }
+
+// Aviso ao Cliente por WhatsApp (PRD-009) — MVP mockado, multi-provedor via adapter.
+// AvisoWhatsApp é uma entidade lateral (não altera OrdemServico nem Cliente):
+// referencia os_id/cliente_id. Disparado ao fechar a OS (ver
+// features/ordem-servico/components/ordem-detalhe-retaguarda.tsx). Nunca há
+// chamada de rede real nesta fase — mensagem_preview é texto simulado,
+// sem valores (ver features/aviso-whatsapp/derivacoes.ts).
+export type ProvedorWhatsApp = "evolution_api" | "evolution_go" | "meta_cloud_api" | "openwa";
+export type StatusAvisoWhatsApp = "enviado" | "falha_telefone_invalido";
+
+export interface AvisoWhatsApp {
+  id: string;
+  os_id: string; // FK → OrdemServico
+  cliente_id: string; // FK → Cliente
+  provedor: ProvedorWhatsApp;
+  status: StatusAvisoWhatsApp;
+  mensagem_preview: string; // "" quando status = falha_telefone_invalido
+  enviado_em: string; // ISO 8601
+  created_at: string;
+}
