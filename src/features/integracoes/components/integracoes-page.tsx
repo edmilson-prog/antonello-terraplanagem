@@ -25,8 +25,8 @@ export function IntegracoesPage() {
           Gateway de Cobrança
         </h3>
         <p className="text-sm text-muted-foreground">
-          Provedor padrão sugerido ao emitir uma nova cobrança (boleto/PIX). Pode ser trocado a
-          cada emissão.
+          Provedor padrão sugerido ao emitir uma nova cobrança (boleto/PIX). Pode ser trocado a cada
+          emissão.
         </p>
         <div className="max-w-xs space-y-1.5">
           <Label htmlFor="provedor-gateway-ativo">Provedor padrão</Label>
