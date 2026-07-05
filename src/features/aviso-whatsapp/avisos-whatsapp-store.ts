@@ -44,7 +44,11 @@ export function criarAvisosWhatsAppStore(inicial: AvisoWhatsApp[]) {
       };
       itens = [falha, ...itens];
       notificar();
-      return { ok: false, motivo: "Cliente sem telefone válido — aviso não enviado.", aviso: falha };
+      return {
+        ok: false,
+        motivo: "Cliente sem telefone válido — aviso não enviado.",
+        aviso: falha,
+      };
     }
 
     const novo: AvisoWhatsApp = {
