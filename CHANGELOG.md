@@ -5,6 +5,16 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.15.0] - 2026-07-05 - Gateway
+
+### Added
+- Gateway de Cobrança (PRD-008): MVP mockado, multi-provedor (Mercado Pago + Asaas) — emissão simulada de cobrança (boleto/PIX) a partir de uma Conta a Receber (PRD-007) e simulação do webhook de pagamento, com baixa automática reaproveitando `contasReceberStore.darBaixaReceber`
+- Nova entidade `CobrancaGateway` (lateral, não altera `ContaReceber`), idempotente: sem duas cobranças pendentes simultâneas por conta, sem repagamento de cobrança já paga/cancelada
+- Nova aba "Cobrança" em Financeiro → A Receber: badge de status + provedor, botão "Emitir Cobrança" (sem cobrança ainda) ou "Simular Pagamento" (cobrança pendente)
+- Nova página "Integrações" (`/admin/integracoes`) com seletor de provedor padrão de gateway (persistido em `localStorage`), preparada para receber a configuração de WhatsApp do PRD-009
+- Item "Integrações" na sidebar da retaguarda, após "Rentabilidade"
+- Tudo mockado (fase Frontend First) — nenhuma chamada de rede real, nenhuma credencial; spec documenta o formato real de cada provedor como referência para a Fase 4
+
 ## [0.14.0] - 2026-07-03 - Compass
 
 ### Added
