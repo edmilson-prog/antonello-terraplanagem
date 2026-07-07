@@ -64,7 +64,7 @@ export interface RentabilidadeObra {
   composicao_custo: ComposicaoCustoObra[];
 }
 
-function periodoDoFaturamento(f: Faturamento): string {
+export function periodoDoFaturamento(f: Faturamento): string {
   return f.gerado_em.slice(0, 7);
 }
 
