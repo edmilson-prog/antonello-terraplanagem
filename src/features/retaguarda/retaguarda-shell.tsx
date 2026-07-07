@@ -15,6 +15,7 @@ import {
   Fuel,
   Calculator,
   TrendingUp,
+  LineChart,
   Plug,
   Menu,
   ChevronRight,
@@ -32,23 +33,59 @@ interface NavItem {
   icone: LucideIcon;
 }
 
-const itens: NavItem[] = [
-  { to: "/admin", label: "Dashboard", icone: LayoutDashboard },
-  { to: "/admin/ordens", label: "Ordens de Serviço", icone: FileText },
-  { to: "/admin/comprovantes", label: "Comprovantes", icone: FileCheck2 },
-  { to: "/admin/equipamentos", label: "Equipamentos", icone: Truck },
-  { to: "/admin/manutencao", label: "Manutenção", icone: Wrench },
-  { to: "/admin/diesel", label: "Diesel", icone: Fuel },
-  { to: "/admin/clientes", label: "Clientes", icone: Building2 },
-  { to: "/admin/operadores", label: "Operadores", icone: HardHat },
-  { to: "/admin/precos", label: "Preços", icone: Tags },
-  { to: "/admin/orcamentos", label: "Orçamentos", icone: FileSpreadsheet },
-  { to: "/admin/faturamento", label: "Faturamento", icone: Receipt },
-  { to: "/admin/financeiro", label: "Financeiro", icone: Wallet },
-  { to: "/admin/custo-hora", label: "Custo da Hora", icone: Calculator },
-  { to: "/admin/rentabilidade", label: "Rentabilidade", icone: TrendingUp },
-  { to: "/admin/integracoes", label: "Integrações", icone: Plug },
+interface NavGroup {
+  titulo: string | null;
+  itens: NavItem[];
+}
+
+const grupos: NavGroup[] = [
+  {
+    titulo: "Operação",
+    itens: [
+      { to: "/admin", label: "Dashboard", icone: LayoutDashboard },
+      { to: "/admin/ordens", label: "Ordens de Serviço", icone: FileText },
+      { to: "/admin/comprovantes", label: "Comprovantes", icone: FileCheck2 },
+    ],
+  },
+  {
+    titulo: "Cadastros",
+    itens: [
+      { to: "/admin/equipamentos", label: "Equipamentos", icone: Truck },
+      { to: "/admin/operadores", label: "Operadores", icone: HardHat },
+      { to: "/admin/clientes", label: "Clientes", icone: Building2 },
+    ],
+  },
+  {
+    titulo: "Comercial",
+    itens: [
+      { to: "/admin/precos", label: "Preços", icone: Tags },
+      { to: "/admin/orcamentos", label: "Orçamentos", icone: FileSpreadsheet },
+    ],
+  },
+  {
+    titulo: "Financeiro",
+    itens: [
+      { to: "/admin/faturamento", label: "Faturamento", icone: Receipt },
+      { to: "/admin/financeiro", label: "Financeiro", icone: Wallet },
+      { to: "/admin/custo-hora", label: "Custo da Hora", icone: Calculator },
+      { to: "/admin/rentabilidade", label: "Rentabilidade", icone: TrendingUp },
+      { to: "/admin/gerencial", label: "Painel Gerencial", icone: LineChart },
+    ],
+  },
+  {
+    titulo: "Frota",
+    itens: [
+      { to: "/admin/manutencao", label: "Manutenção", icone: Wrench },
+      { to: "/admin/diesel", label: "Diesel", icone: Fuel },
+    ],
+  },
+  {
+    titulo: null,
+    itens: [{ to: "/admin/integracoes", label: "Integrações", icone: Plug }],
+  },
 ];
+
+const todosItens: NavItem[] = grupos.flatMap((g) => g.itens);
 
 function isActive(pathname: string, to: string) {
   return to === "/admin" ? pathname === "/admin" : pathname.startsWith(to);
@@ -56,32 +93,43 @@ function isActive(pathname: string, to: string) {
 
 function NavList({ pathname, onSelect }: { pathname: string; onSelect?: () => void }) {
   return (
-    <ul className="space-y-1">
-      {itens.map((item) => {
-        const ativo = isActive(pathname, item.to);
-        const Icone = item.icone;
-        return (
-          <li key={item.to}>
-            <Link
-              to={item.to}
-              onClick={onSelect}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
-                ativo
-                  ? "bg-sidebar-accent text-sidebar-primary"
-                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground",
-              )}
-            >
-              <Icone className="h-4 w-4" />
-              <span>{item.label}</span>
-              {ativo ? (
-                <span className="ml-auto h-1.5 w-1.5 rounded-full bg-sidebar-primary" />
-              ) : null}
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+    <nav className="space-y-4">
+      {grupos.map((grupo, i) => (
+        <div key={grupo.titulo ?? `grupo-${i}`}>
+          {grupo.titulo ? (
+            <div className="px-3 pb-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-sidebar-foreground/40">
+              {grupo.titulo}
+            </div>
+          ) : null}
+          <ul className="space-y-1">
+            {grupo.itens.map((item) => {
+              const ativo = isActive(pathname, item.to);
+              const Icone = item.icone;
+              return (
+                <li key={item.to}>
+                  <Link
+                    to={item.to}
+                    onClick={onSelect}
+                    className={cn(
+                      "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
+                      ativo
+                        ? "bg-sidebar-accent text-sidebar-primary"
+                        : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground",
+                    )}
+                  >
+                    <Icone className="h-4 w-4" />
+                    <span>{item.label}</span>
+                    {ativo ? (
+                      <span className="ml-auto h-1.5 w-1.5 rounded-full bg-sidebar-primary" />
+                    ) : null}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </nav>
   );
 }
 
@@ -100,7 +148,7 @@ function Branding() {
 }
 
 function Breadcrumbs({ pathname }: { pathname: string }) {
-  const atual = itens.find((i) => isActive(pathname, i.to));
+  const atual = todosItens.find((i) => isActive(pathname, i.to));
   return (
     <nav aria-label="Trilha" className="flex items-center gap-2 text-sm">
       <span className="text-muted-foreground">Retaguarda</span>
