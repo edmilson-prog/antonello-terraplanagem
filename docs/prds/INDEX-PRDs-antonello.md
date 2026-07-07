@@ -8,11 +8,11 @@
 | **Cliente** | Leonardo Antonello |
 | **Repositório** | [a definir — repo único / monorepo] |
 | **Início** | Jun/2026 |
-| **Versão Atual** | 0.16.0 (Messenger) |
+| **Versão Atual** | 0.17.0 (Radar) |
 | **Fase Atual** | Frontend First (mockado) |
 | **PRDs no Roadmap** | 17 (PRD-000 a PRD-016) |
-| **PRDs Documentados** | **17 — roadmap 100% documentado** (PRD-000 a PRD-014) + **PRD-015** (pós-roadmap, home screens) + **PRD-016** (pós-roadmap, dashboard gerencial — proposto pelo Arquiteto, ⏳ aguardando implementação) |
-| **PRDs Implementados** | 16 (inclui o spike PRD-000) — **roadmap numerado 100% implementado** + integrações provisórias 008/009 (MVP mockado, Fase 4) também implementadas. Resta só o **PRD-016** (dashboard gerencial, ainda não implementado) |
+| **PRDs Documentados** | **17 — roadmap 100% documentado** (PRD-000 a PRD-014) + **PRD-015** (pós-roadmap, home screens) + **PRD-016** (pós-roadmap, dashboard gerencial — proposto pelo Arquiteto, ✅ implementado) |
+| **PRDs Implementados** | 17 (inclui o spike PRD-000) — **roadmap numerado 100% implementado** + integrações provisórias 008/009 (MVP mockado, Fase 4) + PRD-015 (home screens) + PRD-016 (dashboard gerencial) também implementados |
 
 ### Agentes do Workflow
 
@@ -42,13 +42,13 @@
 
 | Status | Quantidade | Percentual |
 |--------|------------|------------|
-| ✅ Implementado | 16 | 94% |
+| ✅ Implementado | 17 | 100% |
 | 🔄 Em Andamento | 0 | 0% |
-| ⏳ Pendente | 1 | 6% |
+| ⏳ Pendente | 0 | 0% |
 | ❌ Cancelado | 0 | 0% |
 | **Total** | **17** | **100%** |
 
-**Progresso de documentação:** **17/17 — roadmap 100% documentado** (PRD-000 a PRD-014) + PRD-015 + PRD-016 (pós-roadmap). 16/17 implementados (94%) — resta só o **PRD-016** (dashboard gerencial, proposto pelo Arquiteto em Jun/2026, ainda não implementado).
+**Progresso de documentação:** **17/17 — roadmap 100% documentado** (PRD-000 a PRD-014) + PRD-015 + PRD-016 (pós-roadmap). 17/17 implementados (100%) — o **PRD-016** (dashboard gerencial, proposto pelo Arquiteto em Jun/2026) foi implementado na v0.17.0 (Radar).
 
 ---
 
@@ -106,11 +106,11 @@ Telas de entrada dos dois ambientes, adicionadas depois do roadmap original de 1
 
 ### Pós-Roadmap — extensão analítica
 
-Painel gerencial consolidado (evolução de faturamento, receita × custo × margem, horas/utilização por equipamento, rankings) para decisão do proprietário — complementa o dashboard operacional (PRD-015). **Proposto e documentado pelo Arquiteto** (Jun/2026); ainda não implementado.
+Painel gerencial consolidado (evolução de faturamento, receita × custo × margem, horas/utilização por equipamento, rankings) para decisão do proprietário — complementa o dashboard operacional (PRD-015). **Proposto e documentado pelo Arquiteto** (Jun/2026); implementado na v0.17.0 (Radar).
 
 | PRD | Arquivo | Tipo | Amb. | Prioridade | Depende de | Template | Doc | Status |
 |-----|---------|------|------|------------|------------|----------|-----|--------|
-| 016 | `PRD-016-ret-dashboard-gerencial.md` | Feature | ret | Alta | 002, 004, 007, 012, 013, 014 | feature | ✍️ | ⏳ |
+| 016 | `PRD-016-ret-dashboard-gerencial_DONE.md` | Feature | ret | Alta | 002, 004, 007, 012, 013, 014 | feature | ✍️ | ✅ |
 
 ---
 
@@ -118,9 +118,7 @@ Painel gerencial consolidado (evolução de faturamento, receita × custo × mar
 
 ### ✍️ Documentados, ⏳ aguardando implementação
 
-| PRD | Título | Tipo | Ambiente |
-|-----|--------|------|----------|
-| [PRD-016](./PRD-016-ret-dashboard-gerencial.md) | Dashboard Gerencial (Analítico) | Feature | ret |
+_Nenhum — todos os PRDs documentados estão implementados._
 
 ### ✅ Implementados
 
@@ -142,6 +140,7 @@ Painel gerencial consolidado (evolução de faturamento, receita × custo × mar
 | [PRD-014](./PRD-014-ret-rentabilidade-equipamento-obra_DONE.md) | Rentabilidade por Equipamento e Obra | Feature | ret | 0.14.0 Compass |
 | [PRD-008](./PRD-008-ret-integracao-gateway-cobranca_DONE.md) | Integração — Gateway de Cobrança (MVP mockado, multi-provedor Mercado Pago + Asaas) | Integração | ret | 0.15.0 Gateway |
 | [PRD-009](./PRD-009-all-integracao-whatsapp-fechamento-os_DONE.md) | Integração — Aviso ao Cliente por WhatsApp (MVP mockado, multi-provedor) | Integração | all | 0.16.0 Messenger |
+| [PRD-016](./PRD-016-ret-dashboard-gerencial_DONE.md) | Dashboard Gerencial (Analítico) | Feature | ret | 0.17.0 Radar |
 
 ### 🔄 Em Andamento
 
@@ -215,7 +214,7 @@ Jun/2026  ───────────────────────�
           └─ Fase 4 (Backend, se aprovado) — Ondas 2 e 3 [✍️ completas]:
                 features (006, 007, 010, 011) implementadas; integrações (008, 009) implementadas como MVP mockado (v0.15.0/v0.16.0);
                 camada analítica: (002/010/012 + 004) → 013 → 014 implementada
-                + PRD-015 (home screens) implementado; PRD-016 (dashboard gerencial) ainda pendente
+                + PRD-015 (home screens) implementado; PRD-016 (dashboard gerencial) implementado (v0.17.0 Radar)
 ```
 
 ### Histórico de Versões do App
@@ -239,6 +238,7 @@ Jun/2026  ───────────────────────�
 | 0.14.0 | Compass | 2026-07-03 | PRD-014 (Rentabilidade por Equipamento e Obra — topo da pirâmide analítica) | MINOR |
 | 0.15.0 | Gateway | 2026-07-05 | PRD-008 (Gateway de Cobrança — MVP mockado, multi-provedor Mercado Pago + Asaas) | MINOR |
 | 0.16.0 | Messenger | 2026-07-05 | PRD-009 (Aviso ao Cliente por WhatsApp — MVP mockado, multi-provedor Evolution API/Evolution GO/Meta Cloud API/OpenWA) | MINOR |
+| 0.17.0 | Radar | 2026-07-06 | PRD-016 (Dashboard Gerencial — painel analítico consolidado: evolução, receita × custo × margem, horas/utilização, rankings de margem, pipeline; meta mensal; sidebar reagrupada) | MINOR |
 
 ---
 

@@ -344,11 +344,11 @@ Tipos: **Added**, **Changed**, **Deprecated**, **Removed**, **Fixed**, **Securit
 
 | Campo | Valor |
 |-------|-------|
-| **Status** | ⏳ PENDENTE |
-| **Data de Implementação** | - |
-| **Versão do App** | - |
-| **Implementado por** | - |
-| **Observações** | - |
+| **Status** | ✅ IMPLEMENTADO |
+| **Data de Implementação** | 2026-07-06 |
+| **Versão do App** | 0.17.0 (Radar) |
+| **Implementado por** | Claude Code CLI |
+| **Observações** | Meta mensal de faturamento incluída nesta entrega (decisão do usuário, PRD listava como escopo futuro). Regime: competência (faturado). Sidebar reagrupada em seções junto com esta entrega. Utilização/consumo diesel mostra "sem dados" para o histórico Jan-Mai (mocks de abastecimento não foram retroalimentados, só ordens/apontamentos/faturamento). |
 
 ---
 

@@ -5,6 +5,19 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.17.0] - 2026-07-06 - Radar
+
+### Added
+- Dashboard Gerencial (PRD-016): painel retaguarda-only em `/admin/gerencial` que consolida evolução de faturamento (com meta mensal de referência), receita × custo × margem, horas e utilização/consumo por equipamento, rankings de margem (equipamentos e obras, com prejuízo destacado) e pipeline executado → faturado → recebido, tudo derivado dos services existentes (004/007/012/013/014), sem nenhuma regra de custo/margem nova
+- Filtro de período (mês / trimestre / ano / personalizado), com últimos 12 meses como padrão de abertura, e comparativo de variação % contra o período anterior
+- Dois KPIs de topo comparados contra o período anterior: "Faturado no período" e "Margem no período (hora-máquina)", ambos com variação %
+- Meta mensal de faturamento configurável (mockada via `localStorage`), exibida como linha de referência no gráfico de evolução
+- Item "Painel Gerencial" na sidebar da retaguarda, no grupo Financeiro
+
+### Changed
+- Sidebar da retaguarda reorganizada em grupos (Operação, Cadastros, Comercial, Financeiro, Frota), conforme sempre previsto no `CLAUDE.md` — antes era uma lista plana de 15 itens
+- Mocks de ordens de serviço, apontamentos e faturamentos enriquecidos com histórico de Jan a Mai/2026 (eq-001 e eq-002), necessário para o gráfico de evolução mensal
+
 ## [0.16.0] - 2026-07-05 - Messenger
 
 ### Added
