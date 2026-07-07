@@ -168,7 +168,7 @@ export function RetaguardaShell() {
         </header>
 
         <main className="flex-1">
-          <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-8 md:py-8">
+          <div className="w-full px-4 py-6 md:px-8 md:py-8">
             <Outlet />
           </div>
         </main>
