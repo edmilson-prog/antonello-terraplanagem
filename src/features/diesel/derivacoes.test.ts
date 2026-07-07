@@ -36,7 +36,10 @@ describe("features/diesel/derivacoes", () => {
 
   describe("apontamentosFinalizadosDoEquipamento", () => {
     it("filtra só apontamentos finalizados do equipamento", () => {
-      const result = apontamentosFinalizadosDoEquipamento(apontamentos, "eq-002");
+      const result = apontamentosFinalizadosDoEquipamento(apontamentos, "eq-002", {
+        de: "2026-06-01",
+        ate: "2026-06-30",
+      });
       expect(result).toHaveLength(2);
       expect(result.every((a) => a.status === "finalizado")).toBe(true);
     });
@@ -53,7 +56,14 @@ describe("features/diesel/derivacoes", () => {
     });
 
     it("soma horas dos apontamentos finalizados de eq-002", () => {
-      expect(totalHoras(apontamentosFinalizadosDoEquipamento(apontamentos, "eq-002"))).toBe(28);
+      expect(
+        totalHoras(
+          apontamentosFinalizadosDoEquipamento(apontamentos, "eq-002", {
+            de: "2026-06-01",
+            ate: "2026-06-30",
+          }),
+        ),
+      ).toBe(28);
     });
 
     it("retorna 0 para listas vazias", () => {
@@ -94,7 +104,10 @@ describe("features/diesel/derivacoes", () => {
   });
 
   describe("indicadoresPorEquipamento", () => {
-    const indicadores = indicadoresPorEquipamento(equipamentos, abastecimentos, apontamentos);
+    const indicadores = indicadoresPorEquipamento(equipamentos, abastecimentos, apontamentos, {
+      de: "2026-06-01",
+      ate: "2026-06-30",
+    });
 
     it("gera um indicador por equipamento ativo (exclui eq-008, inativo)", () => {
       expect(indicadores).toHaveLength(7);
