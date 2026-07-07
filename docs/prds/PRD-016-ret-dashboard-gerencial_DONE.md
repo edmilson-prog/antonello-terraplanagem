@@ -348,7 +348,7 @@ Tipos: **Added**, **Changed**, **Deprecated**, **Removed**, **Fixed**, **Securit
 | **Data de Implementação** | 2026-07-06 |
 | **Versão do App** | 0.17.0 (Radar) |
 | **Implementado por** | Claude Code CLI |
-| **Observações** | Meta mensal de faturamento incluída nesta entrega (decisão do usuário, PRD listava como escopo futuro). Regime: competência (faturado). Sidebar reagrupada em seções junto com esta entrega. Utilização/consumo diesel mostra "sem dados" para o histórico Jan-Mai (mocks de abastecimento não foram retroalimentados, só ordens/apontamentos/faturamento). |
+| **Observações** | Meta mensal de faturamento incluída nesta entrega (decisão do usuário, PRD listava como escopo futuro). Regime: competência (faturado). Sidebar reagrupada em seções junto com esta entrega. Utilização/consumo diesel mostra "sem dados" para o histórico Jan-Mai (mocks de abastecimento não foram retroalimentados, só ordens/apontamentos/faturamento). Verificação estática completa (tsc 0 erros, build ok, 418 testes, prop-trace dos 8 componentes filhos); o click-through visual no navegador (`/admin/gerencial`, troca de período, breakpoints 375/768px, tema claro/escuro) foi deferido para validação do controlador, fora deste subagente. |
 
 ---
 
