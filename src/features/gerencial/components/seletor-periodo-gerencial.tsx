@@ -41,17 +41,12 @@ export function SeletorPeriodoGerencial({ periodo, mesMaisRecente, onChange }: P
           {opcao.label}
         </button>
       ))}
-      <div className="flex items-center gap-1.5">
-        <span
-          className={
-            periodo.tipo === "personalizado"
-              ? "rounded-full border border-primary bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground"
-              : "rounded-full border border-border bg-surface/50 px-3 py-1.5 text-xs font-medium text-muted-foreground"
-          }
-        >
-          Personalizado
+      <div className="flex items-center gap-1.5 opacity-60">
+        <span className="rounded-full border border-border bg-surface/50 px-3 py-1.5 text-xs font-medium text-muted-foreground">
+          Personalizado (em breve)
         </span>
         <Select
+          disabled
           value={periodo.mesInicio}
           onValueChange={(mesInicio) =>
             onChange({ tipo: "personalizado", mesInicio, mesFim: periodo.mesFim })

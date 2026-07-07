@@ -30,6 +30,10 @@ import type {
 // só reorganizando por mês/período. Ver nota no plano sobre a diferença entre
 // serieMensalFaturamento (faturamento total, RF-001) e serieMensalCustoMargem
 // (receita/custo/margem só do que é atribuível a um equipamento, RF-002).
+// Além do escopo, os dois grupos também bucketizam por campo de data diferente:
+// serieMensalFaturamento usa faturado_em, enquanto serieMensalCustoMargem e as
+// duas funções de ranking usam gerado_em (via periodoDoFaturamento) — hoje
+// sempre o mesmo mês nos mocks, mas não necessariamente em dados reais.
 
 export interface PontoFaturamentoMensal {
   mes: string;
