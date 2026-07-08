@@ -1,6 +1,8 @@
 // A1 — OCR do horímetro. Absorve o que antes vivia em src/shared/lib/ocr.ts
 // (mesmo comportamento — nenhuma regressão de UX no HorimetroCapture).
 
+import { comDelay } from "@/features/ia/delay";
+
 interface LeituraHorimetroOpts {
   /** valor base plausível (ex.: horímetro atual do equipamento) */
   base?: number;
@@ -17,7 +19,7 @@ export async function lerHorimetro(
   opts: LeituraHorimetroOpts = {},
 ): Promise<number> {
   const { base, delayMs = 1200, simularFalha = false } = opts;
-  await new Promise((resolve) => setTimeout(resolve, delayMs));
+  await comDelay(null, delayMs);
   if (simularFalha) {
     throw new Error("Não foi possível ler o horímetro da foto.");
   }

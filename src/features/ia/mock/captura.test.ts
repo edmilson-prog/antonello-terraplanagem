@@ -7,6 +7,11 @@ describe("lerHorimetro", () => {
     expect(valor).toBe(1500.4);
   });
 
+  it("rounds a base value to one decimal place", async () => {
+    const valor = await lerHorimetro(new Blob(), { base: 8432.04, delayMs: 0 });
+    expect(valor).toBe(8432.0);
+  });
+
   it("returns a fixed plausible value when no base is given", async () => {
     const valor = await lerHorimetro(new Blob(), { delayMs: 0 });
     expect(valor).toBe(1234.5);

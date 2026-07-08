@@ -101,7 +101,7 @@ export function HorimetroCapture({
         ) : null}
       </div>
       {ocrErro ? <p className="text-xs text-destructive">{ocrErro}</p> : null}
-      {ocrAviso ? <p className="text-xs text-amber-600 dark:text-amber-400">{ocrAviso}</p> : null}
+      {ocrAviso ? <p className="text-xs text-secondary">{ocrAviso}</p> : null}
       {error ? <p className="text-xs text-destructive">{error}</p> : null}
     </div>
   );
