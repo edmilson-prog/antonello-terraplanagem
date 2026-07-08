@@ -5,6 +5,16 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.19.0] - 2026-07-07 - Copilot
+
+### Added
+- Suíte de IA Embarcada (PRD-019): camada de IA plugável (`src/features/ia/`) com providers mockados e determinísticos, cobrindo as 12 features do PRD em 4 grupos
+- Captura inteligente em campo: OCR do horímetro consolidado na camada de IA (A1), detecção de anomalias em apontamentos com badge e confirmação na retaguarda (A2), apontamento por voz no fluxo de iniciar/finalizar (A3), OCR de cupom de abastecimento respeitando a barreira financeira (A4)
+- Inteligência analítica: card de insight em linguagem natural no painel gerencial (B5), alerta de manutenção preditiva por anomalia de consumo de diesel (B6), barra "Perguntar à IA" no header da retaguarda com 9 perguntas de exemplo (B7), previsão de caixa 30/60/90 dias e risco de inadimplência por cliente em Financeiro e Gerencial (B8)
+- Inteligência comercial: sugestão de itens de orçamento com IA a partir de obras semelhantes do histórico (C9), redação automática de observações de OS/faturamento e revisão do resumo do comprovante antes de gerar (C10)
+- Atendimento e operação: página de configuração e simulador de conversa do chatbot WhatsApp para clientes (D11), copiloto de alocação de frota como aba de sugestão na abertura de nova OS (D12)
+- Tudo mockado (fase Frontend First) — nenhuma chamada de rede real, nenhum provider de IA real; toda saída numérica deriva de funções/stores já existentes (RF-002)
+
 ## [0.18.0] - 2026-07-07 - Beacon
 
 ### Added
