@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { OrcamentoItemRow } from "@/features/orcamentos/components/orcamento-item-row";
 import { AdicionarItemOrcamento } from "@/features/orcamentos/components/adicionar-item-orcamento";
+import { SugestaoOrcamentoDialog } from "@/features/ia/components/sugestao-orcamento-dialog";
 import { StatusOrcamentoBadge } from "@/features/orcamentos/labels";
 import { orcamentosStore } from "@/features/orcamentos/orcamentos-store";
 import { aplicarHoraTipo, temPendencia } from "@/features/orcamentos/calculo";
@@ -198,7 +199,18 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
           </div>
         )}
 
-        {editavel ? <AdicionarItemOrcamento onAdicionar={(item) => setItens([...orc.itens, item])} /> : null}
+        {editavel ? (
+          <div className="space-y-2">
+            <div className="flex justify-end">
+              <SugestaoOrcamentoDialog
+                clienteId={orc.cliente_id}
+                modeloCobranca={inferirModelo(orc.itens)}
+                onConfirmar={(novos) => setItens([...orc.itens, ...novos])}
+              />
+            </div>
+            <AdicionarItemOrcamento onAdicionar={(item) => setItens([...orc.itens, item])} />
+          </div>
+        ) : null}
       </section>
 
       <section className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
