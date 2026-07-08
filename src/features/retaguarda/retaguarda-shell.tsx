@@ -19,6 +19,7 @@ import {
   Plug,
   Menu,
   ChevronRight,
+  MessageCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { HazardStripe } from "@/shared/components/hazard-stripe";
@@ -82,7 +83,10 @@ const grupos: NavGroup[] = [
   },
   {
     titulo: null,
-    itens: [{ to: "/admin/integracoes", label: "Integrações", icone: Plug }],
+    itens: [
+      { to: "/admin/integracoes", label: "Integrações", icone: Plug },
+      { to: "/admin/ia/chatbot", label: "Chatbot IA", icone: MessageCircle },
+    ],
   },
 ];
 

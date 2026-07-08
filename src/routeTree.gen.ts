@@ -40,6 +40,7 @@ import { Route as AppApontamentoNovoRouteImport } from './routes/app.apontamento
 import { Route as AppApontamentoApontamentoIdRouteImport } from './routes/app.apontamento.$apontamentoId'
 import { Route as AdminOrdensOrdemIdRouteImport } from './routes/admin.ordens.$ordemId'
 import { Route as AdminOrcamentosOrcamentoIdRouteImport } from './routes/admin.orcamentos.$orcamentoId'
+import { Route as AdminIaChatbotRouteImport } from './routes/admin.ia.chatbot'
 import { Route as AdminFaturamentoFaturamentoIdRouteImport } from './routes/admin.faturamento.$faturamentoId'
 import { Route as AdminComprovantesComprovanteIdRouteImport } from './routes/admin.comprovantes.$comprovanteId'
 
@@ -201,6 +202,11 @@ const AdminOrcamentosOrcamentoIdRoute =
     path: '/orcamentos/$orcamentoId',
     getParentRoute: () => AdminRoute,
   } as any)
+const AdminIaChatbotRoute = AdminIaChatbotRouteImport.update({
+  id: '/ia/chatbot',
+  path: '/ia/chatbot',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminFaturamentoFaturamentoIdRoute =
   AdminFaturamentoFaturamentoIdRouteImport.update({
     id: '/faturamento/$faturamentoId',
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AppIndexRoute
   '/admin/comprovantes/$comprovanteId': typeof AdminComprovantesComprovanteIdRoute
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
+  '/admin/ia/chatbot': typeof AdminIaChatbotRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
   '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
@@ -269,6 +276,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppIndexRoute
   '/admin/comprovantes/$comprovanteId': typeof AdminComprovantesComprovanteIdRoute
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
+  '/admin/ia/chatbot': typeof AdminIaChatbotRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
   '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
@@ -305,6 +313,7 @@ export interface FileRoutesById {
   '/app/': typeof AppIndexRoute
   '/admin/comprovantes/$comprovanteId': typeof AdminComprovantesComprovanteIdRoute
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
+  '/admin/ia/chatbot': typeof AdminIaChatbotRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
   '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
@@ -342,6 +351,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/admin/comprovantes/$comprovanteId'
     | '/admin/faturamento/$faturamentoId'
+    | '/admin/ia/chatbot'
     | '/admin/orcamentos/$orcamentoId'
     | '/admin/ordens/$ordemId'
     | '/app/apontamento/$apontamentoId'
@@ -375,6 +385,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/admin/comprovantes/$comprovanteId'
     | '/admin/faturamento/$faturamentoId'
+    | '/admin/ia/chatbot'
     | '/admin/orcamentos/$orcamentoId'
     | '/admin/ordens/$ordemId'
     | '/app/apontamento/$apontamentoId'
@@ -410,6 +421,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/admin/comprovantes/$comprovanteId'
     | '/admin/faturamento/$faturamentoId'
+    | '/admin/ia/chatbot'
     | '/admin/orcamentos/$orcamentoId'
     | '/admin/ordens/$ordemId'
     | '/app/apontamento/$apontamentoId'
@@ -652,6 +664,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrcamentosOrcamentoIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/ia/chatbot': {
+      id: '/admin/ia/chatbot'
+      path: '/ia/chatbot'
+      fullPath: '/admin/ia/chatbot'
+      preLoaderRoute: typeof AdminIaChatbotRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/faturamento/$faturamentoId': {
       id: '/admin/faturamento/$faturamentoId'
       path: '/faturamento/$faturamentoId'
@@ -683,6 +702,7 @@ interface AdminRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   AdminComprovantesComprovanteIdRoute: typeof AdminComprovantesComprovanteIdRoute
   AdminFaturamentoFaturamentoIdRoute: typeof AdminFaturamentoFaturamentoIdRoute
+  AdminIaChatbotRoute: typeof AdminIaChatbotRoute
   AdminOrcamentosOrcamentoIdRoute: typeof AdminOrcamentosOrcamentoIdRoute
   AdminOrdensOrdemIdRoute: typeof AdminOrdensOrdemIdRoute
   AdminComprovantesIndexRoute: typeof AdminComprovantesIndexRoute
@@ -706,6 +726,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   AdminComprovantesComprovanteIdRoute: AdminComprovantesComprovanteIdRoute,
   AdminFaturamentoFaturamentoIdRoute: AdminFaturamentoFaturamentoIdRoute,
+  AdminIaChatbotRoute: AdminIaChatbotRoute,
   AdminOrcamentosOrcamentoIdRoute: AdminOrcamentosOrcamentoIdRoute,
   AdminOrdensOrdemIdRoute: AdminOrdensOrdemIdRoute,
   AdminComprovantesIndexRoute: AdminComprovantesIndexRoute,
