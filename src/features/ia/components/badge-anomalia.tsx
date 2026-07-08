@@ -17,6 +17,7 @@ export function BadgeAnomalia({ motivo, severidade }: BadgeAnomaliaProps) {
           : "bg-secondary/10 text-secondary",
       )}
     >
+      <Icon icon="lucide:sparkles" className="h-3 w-3" />
       <Icon icon="lucide:alert-triangle" className="h-3 w-3" />
       Anomalia
     </span>
