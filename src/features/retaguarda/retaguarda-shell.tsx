@@ -23,6 +23,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { HazardStripe } from "@/shared/components/hazard-stripe";
 import { ThemeToggle } from "@/shared/components/theme-toggle";
+import { PerguntarIABar } from "@/features/ia/components/perguntar-ia-bar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -200,6 +201,8 @@ export function RetaguardaShell() {
             </Sheet>
 
             <Breadcrumbs pathname={pathname} />
+
+            <PerguntarIABar />
 
             <div className="ml-auto flex items-center gap-2">
               <ThemeToggle />
