@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { abastecimentosStore } from "@/features/diesel/abastecimentos-store";
+import { CupomCaptureButton } from "@/features/ia/components/cupom-capture-button";
 import type { Equipamento } from "@/shared/types";
 
 interface RegistrarAbastecimentoDialogProps {
@@ -130,6 +131,17 @@ export function RegistrarAbastecimentoDialog({
             />
           </div>
         </div>
+        <CupomCaptureButton
+          onLeitura={(litrosLidos, valorLido) => {
+            setLitros(String(litrosLidos));
+            if (valorLido != null) {
+              setCustoTotal(String(valorLido));
+              if (litrosLidos > 0) {
+                setPrecoLitro((valorLido / litrosLidos).toFixed(2));
+              }
+            }
+          }}
+        />
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
             <Label htmlFor="diesel-preco">Preço/litro (R$) — opcional</Label>

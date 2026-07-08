@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HorimetroCapture } from "@/shared/components/horimetro-capture";
+import { CupomCaptureButton } from "@/features/ia/components/cupom-capture-button";
 import { abastecimentosStore } from "@/features/diesel/abastecimentos-store";
 import { abastecimentoOperadorSchema } from "@/features/diesel/abastecimento-schema";
 import { OPERADOR_LOGADO_ID } from "@/features/apontamento/apontamentos-store";
@@ -94,6 +95,12 @@ export function RegistrarAbastecimentoOperadorDialog({
             value={litros}
             onChange={(e) => {
               setLitros(e.target.value);
+              setErro(null);
+            }}
+          />
+          <CupomCaptureButton
+            onLeitura={(litrosLidos) => {
+              setLitros(String(litrosLidos));
               setErro(null);
             }}
           />

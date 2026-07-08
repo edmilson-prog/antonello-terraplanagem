@@ -2,6 +2,7 @@
 // (mesmo comportamento — nenhuma regressão de UX no HorimetroCapture).
 
 import { comDelay } from "@/features/ia/delay";
+import { round2 } from "@/features/faturamento/calculo";
 
 interface LeituraHorimetroOpts {
   /** valor base plausível (ex.: horímetro atual do equipamento) */
@@ -47,4 +48,30 @@ export async function transcreverVoz(
     return String(Math.round(base * 10) / 10);
   }
   return FRASE_OBSERVACAO_SIMULADA;
+}
+
+// A4 — OCR de cupom de abastecimento. litros é operacional (visível nos dois
+// ambientes); valor é RETAGUARDA-ONLY — o dialog do operador nunca lê o
+// segundo campo do retorno (barreira aplicada no consumidor, RNF-003).
+const IA_CUPOM_LITROS_SIMULADO = 95.4;
+const IA_CUPOM_VALOR_LITRO_SIMULADO = 6.29;
+
+export interface LeituraCupom {
+  litros: number;
+  valor: number | null;
+}
+
+export async function lerCupomAbastecimento(
+  _arquivo: File | Blob,
+  opts: { delayMs?: number; simularFalha?: boolean } = {},
+): Promise<LeituraCupom> {
+  const { delayMs = 1200, simularFalha = false } = opts;
+  await comDelay(null, delayMs);
+  if (simularFalha) {
+    throw new Error("Não foi possível ler o cupom.");
+  }
+  return {
+    litros: IA_CUPOM_LITROS_SIMULADO,
+    valor: round2(IA_CUPOM_LITROS_SIMULADO * IA_CUPOM_VALOR_LITRO_SIMULADO),
+  };
 }

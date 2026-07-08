@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lerHorimetro, transcreverVoz } from "@/features/ia/mock/captura";
+import { lerCupomAbastecimento, lerHorimetro, transcreverVoz } from "@/features/ia/mock/captura";
 
 describe("lerHorimetro", () => {
   it("returns a value close to the given base", async () => {
@@ -33,5 +33,19 @@ describe("transcreverVoz", () => {
   it("returns a numeric string close to the given horimetro base", async () => {
     const texto = await transcreverVoz("horimetro", { delayMs: 0, horimetroBase: 850.2 });
     expect(texto).toBe("850.2");
+  });
+});
+
+describe("lerCupomAbastecimento", () => {
+  it("returns plausible litros and valor", async () => {
+    const leitura = await lerCupomAbastecimento(new Blob(), { delayMs: 0 });
+    expect(leitura.litros).toBe(95.4);
+    expect(leitura.valor).toBe(600.07);
+  });
+
+  it("throws when simularFalha is set", async () => {
+    await expect(
+      lerCupomAbastecimento(new Blob(), { delayMs: 0, simularFalha: true }),
+    ).rejects.toThrow("Não foi possível ler o cupom.");
   });
 });
