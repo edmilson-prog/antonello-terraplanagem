@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { detectarAnomalias, gerarInsight } from "@/features/ia/mock/analitico";
-import type { Apontamento } from "@/shared/types";
+import { alertasConsumoAnomalo, detectarAnomalias, gerarInsight } from "@/features/ia/mock/analitico";
+import type { Apontamento, Equipamento } from "@/shared/types";
+import type { IndicadorDieselEquipamento } from "@/features/diesel/derivacoes";
 
 function apontamento(overrides: Partial<Apontamento>): Apontamento {
   return {
@@ -76,5 +77,50 @@ describe("gerarInsight", () => {
       { delayMs: 0 },
     );
     expect(insight.texto).toContain("sem comparação");
+  });
+});
+
+function equipamento(id: string): Equipamento {
+  return {
+    id,
+    nome: id,
+    tipo: "escavadeira",
+    capacidade: "18 toneladas",
+    horimetro_atual: 1000,
+    identificador: null,
+    status: "disponivel",
+    ativo: true,
+    created_at: "2026-01-01T00:00:00.000Z",
+    updated_at: "2026-01-01T00:00:00.000Z",
+  };
+}
+
+function indicador(id: string, consumo: number, qtd = 3): IndicadorDieselEquipamento {
+  return {
+    equipamento: equipamento(id),
+    litros_periodo: consumo * 10,
+    horas_periodo: 10,
+    consumo_medio_l_h: consumo,
+    qtd_abastecimentos: qtd,
+  };
+}
+
+describe("alertasConsumoAnomalo", () => {
+  it("flags an equipamento whose consumo is 30%+ above the fleet average", () => {
+    const indicadores = [indicador("eq-1", 10), indicador("eq-2", 10), indicador("eq-3", 16)];
+    const alertas = alertasConsumoAnomalo(indicadores);
+    expect(alertas).toHaveLength(1);
+    expect(alertas[0]).toMatchObject({ equipamento_id: "eq-3", consumo_medio_l_h: 16 });
+    expect(alertas[0].percentual_acima).toBeGreaterThanOrEqual(30);
+  });
+
+  it("returns nothing when fewer than 2 equipamentos have enough data", () => {
+    const indicadores = [indicador("eq-1", 10), { ...indicador("eq-2", 30), qtd_abastecimentos: 1 }];
+    expect(alertasConsumoAnomalo(indicadores)).toEqual([]);
+  });
+
+  it("returns nothing when no equipamento is above the threshold", () => {
+    const indicadores = [indicador("eq-1", 10), indicador("eq-2", 10.5), indicador("eq-3", 9.8)];
+    expect(alertasConsumoAnomalo(indicadores)).toEqual([]);
   });
 });

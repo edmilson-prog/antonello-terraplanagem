@@ -1,7 +1,8 @@
 import type { Apontamento } from "@/shared/types";
-import type { AnomaliaApontamento, InsightGerencial } from "@/features/ia/types";
+import type { AlertaConsumoAnomalo, AnomaliaApontamento, InsightGerencial } from "@/features/ia/types";
 import { comDelay } from "@/features/ia/delay";
 import { formatBRL } from "@/features/retaguarda/format";
+import type { IndicadorDieselEquipamento } from "@/features/diesel/derivacoes";
 
 const LIMITE_HORAS_APONTAMENTO_UNICO = 16;
 const LIMITE_HORAS_EQUIPAMENTO_DIA = 14;
@@ -95,4 +96,33 @@ export async function gerarInsight(
     `Margem no período: ${formatBRL(contexto.margemAtual)} (${variacaoTexto(contexto.margemAtual, contexto.margemAnterior)}).`,
   ].join(" ");
   return comDelay({ texto, gerado_em: new Date().toISOString() }, opts.delayMs ?? 1200);
+}
+
+// B6 — manutenção preditiva por anomalia de CONSUMO, distinta do alerta
+// preventivo por horas (features/manutencao/derivacoes.ts). Sem histórico
+// suficiente (< 2 equipamentos com >= 2 abastecimentos), não arrisca alerta
+// falso — retorna lista vazia (edge case do PRD).
+const LIMITE_PERCENTUAL_ACIMA_MEDIA = 30;
+const MINIMO_EQUIPAMENTOS_COM_DADO = 2;
+
+export function alertasConsumoAnomalo(
+  indicadores: IndicadorDieselEquipamento[],
+): AlertaConsumoAnomalo[] {
+  const comDado = indicadores.filter(
+    (i): i is IndicadorDieselEquipamento & { consumo_medio_l_h: number } =>
+      i.consumo_medio_l_h != null && i.qtd_abastecimentos >= 2,
+  );
+  if (comDado.length < MINIMO_EQUIPAMENTOS_COM_DADO) return [];
+
+  const media = comDado.reduce((soma, i) => soma + i.consumo_medio_l_h, 0) / comDado.length;
+  const limite = media * (1 + LIMITE_PERCENTUAL_ACIMA_MEDIA / 100);
+
+  return comDado
+    .filter((i) => i.consumo_medio_l_h > limite)
+    .map((i) => ({
+      equipamento_id: i.equipamento.id,
+      consumo_medio_l_h: i.consumo_medio_l_h,
+      media_frota_l_h: Math.round(media * 10) / 10,
+      percentual_acima: Math.round(((i.consumo_medio_l_h - media) / media) * 100),
+    }));
 }
