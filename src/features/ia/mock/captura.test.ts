@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lerHorimetro } from "@/features/ia/mock/captura";
+import { lerHorimetro, transcreverVoz } from "@/features/ia/mock/captura";
 
 describe("lerHorimetro", () => {
   it("returns a value close to the given base", async () => {
@@ -21,5 +21,17 @@ describe("lerHorimetro", () => {
     await expect(lerHorimetro(new Blob(), { delayMs: 0, simularFalha: true })).rejects.toThrow(
       "Não foi possível ler o horímetro da foto.",
     );
+  });
+});
+
+describe("transcreverVoz", () => {
+  it("returns a plausible observação phrase", async () => {
+    const texto = await transcreverVoz("observacao", { delayMs: 0 });
+    expect(texto).toBe("Serviço executado sem intercorrências.");
+  });
+
+  it("returns a numeric string close to the given horimetro base", async () => {
+    const texto = await transcreverVoz("horimetro", { delayMs: 0, horimetroBase: 850.2 });
+    expect(texto).toBe("850.2");
   });
 });

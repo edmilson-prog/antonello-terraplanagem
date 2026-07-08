@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HorimetroCapture } from "@/shared/components/horimetro-capture";
+import { MicrofoneIABotao } from "@/features/ia/components/microfone-ia-button";
 import { SyncBadge } from "@/shared/components/sync-badge";
 import { StatusApontamentoBadge } from "@/features/apontamento/components/status-apontamento-badge";
 import { RegistrarAbastecimentoOperadorDialog } from "@/features/diesel/components/registrar-abastecimento-operador-dialog";
@@ -152,17 +153,29 @@ export function ApontamentoDetalhe({ apontamentoId }: Props) {
           <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
             Finalizar apontamento
           </h3>
-          <HorimetroCapture
-            label="Horímetro final *"
-            value={horimetroFinal}
-            onChange={(v) => {
-              setHorimetroFinal(v);
-              setErro(null);
-            }}
-            ocrBase={apontamento.horimetro_inicial}
-            onFotoCapturada={setFotoFinalUrl}
-            error={erro ?? undefined}
-          />
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <HorimetroCapture
+                label="Horímetro final *"
+                value={horimetroFinal}
+                onChange={(v) => {
+                  setHorimetroFinal(v);
+                  setErro(null);
+                }}
+                ocrBase={apontamento.horimetro_inicial}
+                onFotoCapturada={setFotoFinalUrl}
+                error={erro ?? undefined}
+              />
+            </div>
+            <MicrofoneIABotao
+              campo="horimetro"
+              horimetroBase={apontamento.horimetro_inicial}
+              onResultado={(v) => {
+                setHorimetroFinal(v);
+                setErro(null);
+              }}
+            />
+          </div>
           {exigeMetros ? (
             <div className="space-y-1.5">
               <Label htmlFor="metros_executados">Metragem executada (m) *</Label>

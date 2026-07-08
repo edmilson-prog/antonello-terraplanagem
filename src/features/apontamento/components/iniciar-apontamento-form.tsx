@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { HorimetroCapture } from "@/shared/components/horimetro-capture";
+import { MicrofoneIABotao } from "@/features/ia/components/microfone-ia-button";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { planosManutencaoStore } from "@/features/manutencao/planos-manutencao-store";
 import { registrosManutencaoStore } from "@/features/manutencao/registros-manutencao-store";
@@ -198,14 +199,18 @@ export function IniciarApontamentoForm({ osIdInicial }: { osIdInicial?: string }
             control={control}
             name="observacao"
             render={({ field }) => (
-              <Textarea
-                id="observacao"
-                rows={3}
-                placeholder="Algo relevante sobre o serviço?"
-                value={field.value ?? ""}
-                onChange={field.onChange}
-                aria-invalid={!!errors.observacao}
-              />
+              <div className="flex items-start gap-2">
+                <Textarea
+                  id="observacao"
+                  rows={3}
+                  placeholder="Algo relevante sobre o serviço?"
+                  value={field.value ?? ""}
+                  onChange={field.onChange}
+                  aria-invalid={!!errors.observacao}
+                  className="flex-1"
+                />
+                <MicrofoneIABotao campo="observacao" onResultado={field.onChange} />
+              </div>
             )}
           />
           {errors.observacao ? (

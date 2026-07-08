@@ -25,3 +25,26 @@ export async function lerHorimetro(
   }
   return base != null ? Math.round(base * 10) / 10 : IA_HORIMETRO_VALOR_SIMULADO;
 }
+
+// A3 — apontamento por voz. Sem captura real de áudio nesta fase (não exige
+// permissão de microfone do navegador): o botão simula o ciclo completo
+// gravar → transcrever, e o texto/valor retornado é sempre determinístico.
+const FRASE_OBSERVACAO_SIMULADA = "Serviço executado sem intercorrências.";
+
+interface TranscricaoOpts {
+  delayMs?: number;
+  horimetroBase?: number;
+}
+
+export async function transcreverVoz(
+  campo: "observacao" | "horimetro",
+  opts: TranscricaoOpts = {},
+): Promise<string> {
+  const { delayMs = 1500, horimetroBase } = opts;
+  await comDelay(null, delayMs);
+  if (campo === "horimetro") {
+    const base = horimetroBase ?? IA_HORIMETRO_VALOR_SIMULADO;
+    return String(Math.round(base * 10) / 10);
+  }
+  return FRASE_OBSERVACAO_SIMULADA;
+}
