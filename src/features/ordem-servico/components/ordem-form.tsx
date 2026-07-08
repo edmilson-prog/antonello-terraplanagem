@@ -21,6 +21,8 @@ import { operadoresStore } from "@/features/operadores/operadores-store";
 import { GerarTextoBotao } from "@/features/ia/components/gerar-texto-botao";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { SugestaoAlocacaoPainel } from "@/features/ia/components/sugestao-alocacao-painel";
 import type { ModeloCobranca, OrdemServico } from "@/shared/types";
 
 const SEM_RESPONSAVEL = "sem-responsavel";
@@ -87,7 +89,7 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
     onSuccess();
   };
 
-  return (
+  const formulario = (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor="cliente_id">Cliente *</Label>
@@ -223,5 +225,22 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
         </Button>
       </div>
     </form>
+  );
+
+  if (inicial) return formulario;
+
+  return (
+    <Tabs defaultValue="dados">
+      <TabsList>
+        <TabsTrigger value="dados">Dados da OS</TabsTrigger>
+        <TabsTrigger value="sugestao">Sugestão de IA</TabsTrigger>
+      </TabsList>
+      <TabsContent value="dados" className="mt-4">
+        {formulario}
+      </TabsContent>
+      <TabsContent value="sugestao" className="mt-4">
+        <SugestaoAlocacaoPainel modeloCobranca={modelo} />
+      </TabsContent>
+    </Tabs>
   );
 }

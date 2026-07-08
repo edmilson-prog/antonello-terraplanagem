@@ -7,6 +7,10 @@ import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
 import { statusEfetivoOS } from "@/features/ordem-servico/derivacoes";
 import { comDelay } from "@/features/ia/delay";
+import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
+import { abastecimentosStore } from "@/features/diesel/abastecimentos-store";
+import { indicadoresPorEquipamento } from "@/features/diesel/derivacoes";
+import type { SugestaoAlocacao } from "@/features/ia/types";
 
 export async function responderChatbotCliente(
   mensagem: string,
@@ -49,4 +53,43 @@ export async function responderChatbotCliente(
   }
 
   return comDelay("Não entendi sua mensagem — vou encaminhar sua mensagem para um atendente humano.", delayMs);
+}
+
+// D12 — copiloto de alocação de frota. "Porte" não tem um heurístico confiável
+// no schema atual (capacidade é texto livre); a ordenação usa disponibilidade
+// (sem apontamento em_andamento) × utilização recente (menor uso primeiro) —
+// sugestão, nunca decisão automática (RNF-001).
+export async function sugerirAlocacao(
+  contexto: { modeloCobranca: "hora_maquina" | "por_metro" },
+  opts: { delayMs?: number } = {},
+): Promise<SugestaoAlocacao[]> {
+  const delayMs = opts.delayMs ?? 1200;
+  if (contexto.modeloCobranca !== "hora_maquina") {
+    return comDelay([], delayMs);
+  }
+
+  const equipamentosAtivos = equipamentosStore.getAll().filter((e) => e.ativo);
+  const apontamentos = apontamentosStore.listar();
+  const idsOcupados = new Set(
+    apontamentos.filter((a) => a.status === "em_andamento").map((a) => a.equipamento_id),
+  );
+  const indicadores = indicadoresPorEquipamento(equipamentosAtivos, abastecimentosStore.listar(), apontamentos);
+
+  const candidatos = equipamentosAtivos
+    .filter((e) => !idsOcupados.has(e.id))
+    .map((e) => ({
+      equipamento: e,
+      horasPeriodo: indicadores.find((i) => i.equipamento.id === e.id)?.horas_periodo ?? 0,
+    }))
+    .sort((a, b) => a.horasPeriodo - b.horasPeriodo)
+    .slice(0, 3);
+
+  const sugestoes: SugestaoAlocacao[] = candidatos.map((c) => ({
+    equipamento_id: c.equipamento.id,
+    justificativa:
+      c.horasPeriodo > 0
+        ? `Disponível — ${c.horasPeriodo}h no histórico recente (menor utilização entre os disponíveis).`
+        : "Disponível — sem apontamento em andamento e sem histórico recente de utilização.",
+  }));
+  return comDelay(sugestoes, delayMs);
 }
