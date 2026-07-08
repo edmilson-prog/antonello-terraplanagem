@@ -177,6 +177,12 @@ describe("avaliarRiscoClientes", () => {
     expect(riscos).toEqual([{ cliente_id: "cli-1", nivel: "alto", motivo: "2 contas vencidas — Obras Silva" }]);
   });
 
+  it("flags a cliente with exactly 1 overdue conta as medio risco", () => {
+    const contas = [conta({ id: "cr-1", cliente_id: "cli-1", vencimento: "2026-06-01" })];
+    const riscos = avaliarRiscoClientes(contas, [cliente("cli-1", "Obras Silva")], { hojeISO: "2026-07-01" });
+    expect(riscos).toEqual([{ cliente_id: "cli-1", nivel: "medio", motivo: "1 conta vencida — Obras Silva" }]);
+  });
+
   it("does not flag a cliente with no overdue contas", () => {
     const contas = [conta({ cliente_id: "cli-1", vencimento: "2026-08-01" })];
     expect(avaliarRiscoClientes(contas, [cliente("cli-1", "Obras Silva")], { hojeISO: "2026-07-01" })).toEqual([]);
