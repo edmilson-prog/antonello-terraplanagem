@@ -135,14 +135,12 @@ function NavList({ pathname, onSelect }: { pathname: string; onSelect?: () => vo
 
 function Branding() {
   return (
-    <div className="flex items-center gap-3 px-3 py-4">
-      <div className="hazard-stripe h-9 w-9 rounded-md border border-sidebar-border" />
-      <div className="leading-tight">
-        <div className="font-display text-base font-bold text-sidebar-foreground">Antonello</div>
-        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-sidebar-foreground/60">
-          Terraplanagem
-        </div>
-      </div>
+    <div className="flex items-center justify-center px-3 py-4">
+      <img
+        src="/logo-antonello.png"
+        alt="Antonello Terraplanagem"
+        className="h-[3.3rem] w-auto object-contain"
+      />
     </div>
   );
 }
