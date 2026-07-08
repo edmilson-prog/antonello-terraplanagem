@@ -15,11 +15,11 @@ begin
     for update;
 
   if not found or not v_operador.ativo then
-    raise exception 'Operador não encontrado ou inativo';
+    return jsonb_build_object('erro', 'Operador não encontrado ou inativo');
   end if;
 
   if v_operador.bloqueado_ate is not null and v_operador.bloqueado_ate > now() then
-    raise exception 'Muitas tentativas — tente novamente mais tarde';
+    return jsonb_build_object('erro', 'Muitas tentativas — tente novamente mais tarde');
   end if;
 
   if extensions.crypt(p_pin, v_operador.pin_hash) <> v_operador.pin_hash then
@@ -30,7 +30,7 @@ begin
             else bloqueado_ate
           end
       where id = p_operador_id;
-    raise exception 'PIN incorreto';
+    return jsonb_build_object('erro', 'PIN incorreto');
   end if;
 
   update public.operadores
