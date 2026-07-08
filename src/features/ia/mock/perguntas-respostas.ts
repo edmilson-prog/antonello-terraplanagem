@@ -16,9 +16,13 @@ import { planosManutencaoStore } from "@/features/manutencao/planos-manutencao-s
 import { precoHoraMaquinaStore } from "@/features/precos/precos-hora-maquina-store";
 import { statusEfetivoOS } from "@/features/ordem-servico/derivacoes";
 import { alertasManutencao } from "@/features/manutencao/derivacoes";
-import { indicadoresPorEquipamento } from "@/features/diesel/derivacoes";
+import { apontamentosFinalizadosDoEquipamento, indicadoresPorEquipamento, totalHoras } from "@/features/diesel/derivacoes";
 import { contaVencida, resumoCaixa } from "@/features/financeiro/derivacoes";
-import { rankingEquipamentosPorMargem, serieMensalFaturamento } from "@/features/gerencial/derivacoes";
+import {
+  horasPorEquipamentoNoPeriodo,
+  rankingEquipamentosPorMargem,
+  serieMensalFaturamento,
+} from "@/features/gerencial/derivacoes";
 import { periodoTerminandoEm } from "@/features/gerencial/periodo-gerencial";
 import { dataReferenciaOperacional } from "@/features/dashboard-operacional/derivacoes";
 import { mesReferencia, rotuloMes } from "@/shared/lib/periodo-mensal";
@@ -66,6 +70,8 @@ function encontraEquipamentoNaPergunta(pergunta: string) {
   return equipamentosStore.getAll().find((e) => {
     const partes = e.nome.toLowerCase().split(" ");
     return partes.some((_, i) => {
+      const palavrasRestantes = partes.length - i;
+      if (palavrasRestantes < 2 && i !== 0) return false;
       const sufixo = partes.slice(i).join(" ");
       return sufixo.length >= 4 && pergunta.includes(sufixo);
     });
@@ -75,12 +81,9 @@ function encontraEquipamentoNaPergunta(pergunta: string) {
 function respostaEquipamentoHoras(pergunta: string): RespostaAssistente | null {
   const encontrado = encontraEquipamentoNaPergunta(pergunta);
   if (!encontrado) return null;
-  const total = apontamentosStore
-    .listar()
-    .filter((a) => a.equipamento_id === encontrado.id && a.status === "finalizado" && a.horas_trabalhadas != null)
-    .reduce((soma, a) => soma + (a.horas_trabalhadas ?? 0), 0);
+  const total = totalHoras(apontamentosFinalizadosDoEquipamento(apontamentosStore.listar(), encontrado.id));
   return {
-    resposta: `${encontrado.nome} já trabalhou ${formatHorimetro(Math.round(total * 10) / 10)} no total (apontamentos finalizados).`,
+    resposta: `${encontrado.nome} já trabalhou ${formatHorimetro(total)} no total (apontamentos finalizados).`,
     fonte_rota: "/admin/equipamentos",
     fonte_rotulo: "Equipamentos",
   };
@@ -187,10 +190,9 @@ function respostaMaisConsomeDiesel(pergunta: string): RespostaAssistente | null 
 function respostaHorasFrotaMes(pergunta: string): RespostaAssistente | null {
   if (!pergunta.includes("frota") || !pergunta.includes("hora")) return null;
   const mes = mesReferencia(referenciaAtual());
-  const total = apontamentosStore
-    .listar()
-    .filter((a) => a.status === "finalizado" && a.horas_trabalhadas != null && (a.finalizado_em ?? "").slice(0, 7) === mes)
-    .reduce((soma, a) => soma + (a.horas_trabalhadas ?? 0), 0);
+  const periodo = periodoTerminandoEm("mes", mes);
+  const porEquipamento = horasPorEquipamentoNoPeriodo(equipamentosStore.getAll(), apontamentosStore.listar(), periodo);
+  const total = porEquipamento.reduce((soma, e) => soma + e.horas, 0);
   return {
     resposta: `A frota trabalhou ${formatHorimetro(Math.round(total * 10) / 10)} em ${rotuloMes(mes)}.`,
     fonte_rota: "/admin/gerencial",
