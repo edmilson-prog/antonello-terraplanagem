@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { sugerirOrcamento } from "@/features/ia/mock/comercial";
+import { gerarTexto, sugerirOrcamento } from "@/features/ia/mock/comercial";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
+import type { OrdemServico } from "@/shared/types";
 
 describe("sugerirOrcamento", () => {
   it("returns no items and a clear justificativa when there is no similar obra", () => {
@@ -38,5 +39,30 @@ describe("sugerirOrcamento", () => {
     expect(sugestao.itens.length).toBeGreaterThan(0);
     expect(sugestao.itens[0]).toMatchObject({ tipo: "hora_maquina", origem_id: equipamento.id, quantidade_estimada: 10 });
     expect(sugestao.justificativa).toContain("cliente");
+  });
+});
+
+describe("gerarTexto", () => {
+  it("wraps montarResumoServico's real derivation with an IA framing, never inventing numbers", async () => {
+    const os: OrdemServico = {
+      id: "os-1",
+      numero: "OS-2026-0001",
+      cliente_id: "cli-1",
+      obra_nome: "Loteamento Vista Alegre",
+      endereco: null,
+      modelo_cobranca: "hora_maquina",
+      status: "em_andamento",
+      responsavel_id: null,
+      observacao: null,
+      diametro_broca_mm: null,
+      aberta_em: "2026-06-01T00:00:00.000Z",
+      fechada_em: null,
+      pendente_sync: false,
+      created_at: "2026-06-01T00:00:00.000Z",
+      updated_at: "2026-06-01T00:00:00.000Z",
+    };
+    const texto = await gerarTexto(os, [], [], { delayMs: 0 });
+    expect(texto).toContain("Loteamento Vista Alegre");
+    expect(texto).not.toMatch(/R\$/);
   });
 });

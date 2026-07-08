@@ -3,8 +3,10 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
+import { GerarTextoBotao } from "@/features/ia/components/gerar-texto-botao";
 import { OrdemResumoCard } from "@/features/ordem-servico/components/ordem-resumo-card";
 import { ApontamentosDaOS } from "@/features/ordem-servico/components/apontamentos-da-os";
 import { OrdemForm } from "@/features/ordem-servico/components/ordem-form";
@@ -29,6 +31,7 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   const apontamentos = apontamentosStore.useTodos();
   const [editando, setEditando] = useState(false);
   const [confirmarFechar, setConfirmarFechar] = useState(false);
+  const [resumoParaComprovante, setResumoParaComprovante] = useState<string | null>(null);
   const navigate = useNavigate();
   const { provedor: provedorWhatsAppAtivo } = useProvedorWhatsAppAtivo();
 
@@ -64,18 +67,23 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   const comprovante = comprovantesStore.useTodos().find((c) => c.os_id === ordemId);
   const aviso = avisoDaOS(ordem.id, avisosWhatsAppStore.useTodas());
 
-  const gerarComprovante = () => {
+  const abrirRevisaoComprovante = () => {
     if (!ordem) return;
-    const resumo = montarResumoServico(ordem, apontamentos, equipamentosStore.getAll());
+    setResumoParaComprovante(montarResumoServico(ordem, apontamentos, equipamentosStore.getAll()));
+  };
+
+  const confirmarGeracaoComprovante = () => {
+    if (!ordem || resumoParaComprovante == null) return;
     const r = comprovantesStore.gerar({
       os_id: ordem.id,
       cliente_id: ordem.cliente_id,
-      resumo_servico: resumo,
+      resumo_servico: resumoParaComprovante,
     });
     if (!r.ok) {
       toast.error(r.motivo);
       return;
     }
+    setResumoParaComprovante(null);
     toast.success(`Comprovante ${r.comprovante.numero} gerado.`);
     navigate({
       to: "/admin/comprovantes/$comprovanteId",
@@ -145,7 +153,7 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
             </Link>
           ) : (
             <Button
-              onClick={gerarComprovante}
+              onClick={abrirRevisaoComprovante}
               className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary-hover"
             >
               <Icon icon="lucide:file-check-2" className="h-4 w-4" />
@@ -194,6 +202,39 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
         confirmLabel="Fechar OS"
         onConfirm={fechar}
       />
+
+      <FormDialog
+        open={resumoParaComprovante != null}
+        onOpenChange={(open) => {
+          if (!open) setResumoParaComprovante(null);
+        }}
+        titulo="Revisar comprovante antes de gerar"
+        descricao="O resumo abaixo vem dos apontamentos reais desta OS — edite se precisar."
+      >
+        <div className="space-y-3">
+          <div className="flex justify-end">
+            <GerarTextoBotao
+              os={ordem}
+              apontamentos={daOS}
+              equipamentos={equipamentosStore.getAll()}
+              onGerado={setResumoParaComprovante}
+            />
+          </div>
+          <Textarea
+            rows={6}
+            value={resumoParaComprovante ?? ""}
+            onChange={(e) => setResumoParaComprovante(e.target.value)}
+          />
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="outline" onClick={() => setResumoParaComprovante(null)}>
+              Cancelar
+            </Button>
+            <Button type="button" onClick={confirmarGeracaoComprovante}>
+              Confirmar e gerar comprovante
+            </Button>
+          </div>
+        </div>
+      </FormDialog>
     </div>
   );
 }

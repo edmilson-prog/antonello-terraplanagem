@@ -18,6 +18,9 @@ import { ordemSchema, type OrdemFormValues } from "@/features/ordem-servico/orde
 import { MODELO_LABEL } from "@/features/ordem-servico/labels";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { operadoresStore } from "@/features/operadores/operadores-store";
+import { GerarTextoBotao } from "@/features/ia/components/gerar-texto-botao";
+import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
+import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import type { ModeloCobranca, OrdemServico } from "@/shared/types";
 
 const SEM_RESPONSAVEL = "sem-responsavel";
@@ -32,12 +35,15 @@ interface Props {
 export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
   const clientes = clientesStore.useAll().filter((c) => c.ativo);
   const operadores = operadoresStore.useAll().filter((o) => o.ativo);
+  const apontamentos = apontamentosStore.useTodos();
+  const equipamentos = equipamentosStore.useAll();
 
   const {
     register,
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<OrdemFormValues>({
     resolver: zodResolver(ordemSchema),
@@ -190,7 +196,17 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
       ) : null}
 
       <div className="space-y-1.5">
-        <Label htmlFor="observacao">Observação</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="observacao">Observação</Label>
+          {inicial ? (
+            <GerarTextoBotao
+              os={inicial}
+              apontamentos={apontamentos.filter((a) => a.os_id === inicial.id)}
+              equipamentos={equipamentos}
+              onGerado={(texto) => setValue("observacao", texto)}
+            />
+          ) : null}
+        </div>
         <Textarea id="observacao" rows={3} placeholder="opcional" {...register("observacao")} />
       </div>
 

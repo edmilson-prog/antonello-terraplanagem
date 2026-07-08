@@ -8,7 +8,9 @@ import { precoFundacaoStore } from "@/features/precos/precos-fundacao-store";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { totalMetragemOS } from "@/features/ordem-servico/derivacoes";
 import { comDelay } from "@/features/ia/delay";
+import { montarResumoServico } from "@/features/comprovantes/derivacoes";
 import type { SugestaoOrcamento, SugestaoOrcamentoItem } from "@/features/ia/types";
+import type { Apontamento, Equipamento, OrdemServico } from "@/shared/types";
 
 export interface ContextoSugestaoOrcamento {
   clienteId: string;
@@ -102,4 +104,18 @@ export async function sugerirOrcamento(
     },
     delayMs,
   );
+}
+
+// C10 — redação automática. Reaproveita montarResumoServico (011) — a MESMA
+// derivação usada no comprovante — em vez de inventar um segundo cálculo de
+// resumo (RF-002). Nunca inclui R$: montarResumoServico já não inclui.
+export async function gerarTexto(
+  os: OrdemServico,
+  apontamentos: Apontamento[],
+  equipamentos: Equipamento[],
+  opts: { delayMs?: number } = {},
+): Promise<string> {
+  const resumo = montarResumoServico(os, apontamentos, equipamentos);
+  const texto = `${resumo}\n\nGerado por IA — revise antes de salvar.`;
+  return comDelay(texto, opts.delayMs ?? 1200);
 }

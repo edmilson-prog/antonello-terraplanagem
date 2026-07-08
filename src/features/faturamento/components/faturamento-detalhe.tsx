@@ -22,6 +22,8 @@ import { clientesStore } from "@/features/clientes/clientes-store";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { precoHoraMaquinaStore } from "@/features/precos/precos-hora-maquina-store";
 import { precoMobilizacaoStore } from "@/features/precos/precos-mobilizacao-store";
+import { GerarTextoBotao } from "@/features/ia/components/gerar-texto-botao";
+import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { formatBRL } from "@/features/retaguarda/format";
 import { formatDataHora } from "@/shared/lib/format";
 import type { FaturamentoItem } from "@/shared/types";
@@ -31,6 +33,7 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
   const equipamentos = equipamentosStore.useAll();
   const precosHM = precoHoraMaquinaStore.useAll();
   const mobilizacoes = precoMobilizacaoStore.useAll().filter((m) => m.ativo);
+  const apontamentos = apontamentosStore.useTodos();
   const [confirmar, setConfirmar] = useState(false);
   const [mobSelecionada, setMobSelecionada] = useState("");
 
@@ -213,9 +216,19 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
               </div>
             </div>
             <div className="space-y-1">
-              <label className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-                Observação
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
+                  Observação
+                </label>
+                {os ? (
+                  <GerarTextoBotao
+                    os={os}
+                    apontamentos={apontamentos.filter((a) => a.os_id === os.id)}
+                    equipamentos={equipamentos}
+                    onGerado={(texto) => faturamentosStore.atualizar(fat.id, { observacao: texto })}
+                  />
+                ) : null}
+              </div>
               <Textarea
                 value={fat.observacao ?? ""}
                 placeholder="Notas internas sobre este faturamento"
