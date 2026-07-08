@@ -25,6 +25,8 @@ import { GraficoHorasEquipamento } from "@/features/gerencial/components/grafico
 import { GraficoUtilizacaoDiesel } from "@/features/gerencial/components/grafico-utilizacao-diesel";
 import { RankingMargem } from "@/features/gerencial/components/ranking-margem";
 import { PipelineConsolidadoCard } from "@/features/gerencial/components/pipeline-consolidado-card";
+import { CardInsight } from "@/features/ia/components/card-insight";
+import { gerarInsight } from "@/features/ia/mock/analitico";
 import { brl } from "@/features/retaguarda/format";
 
 // Mês mais recente com dado real (não `new Date()` — a fase mockada tem uma
@@ -110,6 +112,11 @@ export function GerencialPage() {
           onChange={setPeriodo}
         />
       </div>
+
+      <CardInsight
+        vazio={totalAtual === 0 && margemAtual === 0}
+        gerar={() => gerarInsight({ totalAtual, totalAnterior, margemAtual, margemAnterior })}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <NumeroChaveCard

@@ -1,5 +1,7 @@
 import type { Apontamento } from "@/shared/types";
-import type { AnomaliaApontamento } from "@/features/ia/types";
+import type { AnomaliaApontamento, InsightGerencial } from "@/features/ia/types";
+import { comDelay } from "@/features/ia/delay";
+import { formatBRL } from "@/features/retaguarda/format";
 
 const LIMITE_HORAS_APONTAMENTO_UNICO = 16;
 const LIMITE_HORAS_EQUIPAMENTO_DIA = 14;
@@ -66,4 +68,31 @@ export function detectarAnomalias(apontamentos: Apontamento[]): AnomaliaApontame
   }
 
   return anomalias;
+}
+
+// B5 — insight gerencial em linguagem natural. Template determinístico sobre
+// números já calculados pela página (gerencial/derivacoes.ts) — nenhum
+// cálculo de margem/faturamento novo (RF-002).
+export interface ContextoInsightGerencial {
+  totalAtual: number;
+  totalAnterior: number;
+  margemAtual: number;
+  margemAnterior: number;
+}
+
+function variacaoTexto(atual: number, anterior: number): string {
+  if (anterior === 0) return "sem comparação — período anterior sem dados";
+  const percentual = Math.round(((atual - anterior) / anterior) * 1000) / 10;
+  return percentual >= 0 ? `alta de ${percentual}%` : `queda de ${Math.abs(percentual)}%`;
+}
+
+export async function gerarInsight(
+  contexto: ContextoInsightGerencial,
+  opts: { delayMs?: number } = {},
+): Promise<InsightGerencial> {
+  const texto = [
+    `Faturamento no período: ${formatBRL(contexto.totalAtual)} (${variacaoTexto(contexto.totalAtual, contexto.totalAnterior)} em relação ao período anterior).`,
+    `Margem no período: ${formatBRL(contexto.margemAtual)} (${variacaoTexto(contexto.margemAtual, contexto.margemAnterior)}).`,
+  ].join(" ");
+  return comDelay({ texto, gerado_em: new Date().toISOString() }, opts.delayMs ?? 1200);
 }

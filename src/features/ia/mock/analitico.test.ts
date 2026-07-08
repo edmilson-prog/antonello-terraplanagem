@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectarAnomalias } from "@/features/ia/mock/analitico";
+import { detectarAnomalias, gerarInsight } from "@/features/ia/mock/analitico";
 import type { Apontamento } from "@/shared/types";
 
 function apontamento(overrides: Partial<Apontamento>): Apontamento {
@@ -56,5 +56,25 @@ describe("detectarAnomalias", () => {
 
   it("returns nothing for a normal, isolated apontamento", () => {
     expect(detectarAnomalias([apontamento({})])).toEqual([]);
+  });
+});
+
+describe("gerarInsight", () => {
+  it("references the real faturamento and margem numbers with their variação", async () => {
+    const insight = await gerarInsight(
+      { totalAtual: 11000, totalAnterior: 10000, margemAtual: 5500, margemAnterior: 5000 },
+      { delayMs: 0 },
+    );
+    expect(insight.texto).toContain("R$ 11.000,00");
+    expect(insight.texto).toContain("alta de 10%");
+    expect(insight.texto).toContain("R$ 5.500,00");
+  });
+
+  it("handles a zero anterior period without a broken percentage", async () => {
+    const insight = await gerarInsight(
+      { totalAtual: 1000, totalAnterior: 0, margemAtual: 500, margemAnterior: 0 },
+      { delayMs: 0 },
+    );
+    expect(insight.texto).toContain("sem comparação");
   });
 });
