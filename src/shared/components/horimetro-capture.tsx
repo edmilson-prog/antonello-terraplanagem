@@ -31,6 +31,7 @@ export function HorimetroCapture({
   const fileRef = useRef<HTMLInputElement>(null);
   const [lendo, setLendo] = useState(false);
   const [ocrErro, setOcrErro] = useState<string | null>(null);
+  const [ocrAviso, setOcrAviso] = useState<string | null>(null);
 
   async function aoSelecionarFoto(ev: ChangeEvent<HTMLInputElement>) {
     const arquivo = ev.target.files?.[0];
@@ -38,8 +39,14 @@ export function HorimetroCapture({
     if (!arquivo) return;
     setLendo(true);
     setOcrErro(null);
+    setOcrAviso(null);
     try {
       const valorLido = await lerHorimetroDaFoto(arquivo, { base: ocrBase });
+      if (ocrBase != null && valorLido < ocrBase) {
+        setOcrAviso(
+          `O valor lido (${valorLido}) é menor que o horímetro atual do equipamento (${ocrBase}) — confira antes de confirmar.`,
+        );
+      }
       onChange(String(valorLido));
       onFotoCapturada?.(URL.createObjectURL(arquivo));
     } catch {
@@ -94,6 +101,7 @@ export function HorimetroCapture({
         ) : null}
       </div>
       {ocrErro ? <p className="text-xs text-destructive">{ocrErro}</p> : null}
+      {ocrAviso ? <p className="text-xs text-amber-600 dark:text-amber-400">{ocrAviso}</p> : null}
       {error ? <p className="text-xs text-destructive">{error}</p> : null}
     </div>
   );
