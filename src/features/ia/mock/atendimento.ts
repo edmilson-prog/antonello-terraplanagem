@@ -18,16 +18,6 @@ export async function responderChatbotCliente(
   const ordensDoCliente = ordensStore.listar().filter((o) => o.cliente_id === clienteId);
   const apontamentos = apontamentosStore.listar();
 
-  if (["status", "andamento", "obra"].some((p) => texto.includes(p))) {
-    const emAndamento = ordensDoCliente.find((o) => statusEfetivoOS(o, apontamentos) !== "fechada");
-    return comDelay(
-      emAndamento
-        ? `Sua obra "${emAndamento.obra_nome}" (${emAndamento.numero}) está em andamento.`
-        : "Não encontramos nenhuma obra em andamento no seu cadastro no momento.",
-      delayMs,
-    );
-  }
-
   if (["segunda via", "2ª via", "2a via", "boleto", "cobrança", "cobranca"].some((p) => texto.includes(p))) {
     const contas = contasReceberStore.listar().filter((c) => c.cliente_id === clienteId && c.status === "aberta");
     return comDelay(
@@ -44,6 +34,16 @@ export async function responderChatbotCliente(
       fechada
         ? `A obra "${fechada.obra_nome}" (${fechada.numero}) já foi finalizada. Pode confirmar o recebimento do serviço respondendo "confirmado"?`
         : "Ainda não encontramos uma obra finalizada no seu cadastro para confirmar.",
+      delayMs,
+    );
+  }
+
+  if (["status", "andamento", "obra"].some((p) => texto.includes(p))) {
+    const emAndamento = ordensDoCliente.find((o) => statusEfetivoOS(o, apontamentos) !== "fechada");
+    return comDelay(
+      emAndamento
+        ? `Sua obra "${emAndamento.obra_nome}" (${emAndamento.numero}) está em andamento.`
+        : "Não encontramos nenhuma obra em andamento no seu cadastro no momento.",
       delayMs,
     );
   }
