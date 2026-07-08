@@ -3,9 +3,16 @@ import { StatusApontamentoBadge } from "@/features/apontamento/components/status
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { operadoresStore } from "@/features/operadores/operadores-store";
 import { formatHorimetro } from "@/shared/lib/format";
+import { BadgeAnomalia } from "@/features/ia/components/badge-anomalia";
+import { detectarAnomalias } from "@/features/ia/mock/analitico";
+import { anomaliaRevisoesStore } from "@/features/ia/anomalia-revisoes-store";
+import { Button } from "@/components/ui/button";
 import type { Apontamento } from "@/shared/types";
 
 export function ApontamentosDaOS({ apontamentos }: { apontamentos: Apontamento[] }) {
+  const confirmadas = anomaliaRevisoesStore.useConfirmadas();
+  const anomalias = detectarAnomalias(apontamentos);
+
   if (apontamentos.length === 0) {
     return <p className="text-sm text-muted-foreground">Sem apontamentos ainda.</p>;
   }
@@ -14,6 +21,8 @@ export function ApontamentosDaOS({ apontamentos }: { apontamentos: Apontamento[]
       {apontamentos.map((a) => {
         const equip = equipamentosStore.getById(a.equipamento_id);
         const op = operadoresStore.getById(a.operador_id);
+        const anomalia = anomalias.find((x) => x.apontamento_id === a.id);
+        const mostrarAnomalia = anomalia && !confirmadas.has(a.id);
         return (
           <li key={a.id} className="rounded-lg border bg-surface/40 p-3">
             <div className="flex items-start justify-between gap-2">
@@ -37,6 +46,20 @@ export function ApontamentosDaOS({ apontamentos }: { apontamentos: Apontamento[]
             {a.pendente_sync ? (
               <div className="mt-2">
                 <SyncBadge />
+              </div>
+            ) : null}
+            {mostrarAnomalia ? (
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <BadgeAnomalia motivo={anomalia.motivo} severidade={anomalia.severidade} />
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 px-2 text-xs"
+                  onClick={() => anomaliaRevisoesStore.confirmarOk(a.id)}
+                >
+                  Confirmar ok
+                </Button>
               </div>
             ) : null}
           </li>
