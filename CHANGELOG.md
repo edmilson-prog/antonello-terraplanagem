@@ -5,6 +5,18 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.18.0] - 2026-07-07 - Beacon
+
+### Added
+- Painel Operacional (PRD-019): segunda aba no Dashboard (`/admin`), ao lado da "Visão geral" existente (inalterada) — visão "comando central" com mapa real (Leaflet + OpenStreetMap, coordenadas fictícias dos equipamentos, cor por status), cards de OS abertas/horas apontadas/executado/faturado/recebido com mini-gráfico de tendência dos últimos 7 dias, gráfico de contas a receber por cliente (vencida × a vencer) e tabela de manutenção preditiva (horas restantes por horímetro)
+- Atalhos rápidos na aba Operacional: Nova O.S., Novo cliente, Gerar relatório de rentabilidade
+- Badge de variação % (vs mês anterior) nos 3 cards financeiros, reaproveitando `variacaoPercentual` (PRD-016)
+- Traçado decorativo (mais "movimento") nas mini-tendências dos cards financeiros/horas e no gráfico de OS abertas — pedido explícito do usuário para uma visualização mais rica; isolado numa função pura e determinística que nunca altera os números reais exibidos
+- Tudo derivado das funções já existentes (002/004/007/010/015) — nenhuma regra de custo, margem ou faturamento nova
+
+### Changed
+- `/admin` (Dashboard) reorganizado em abas ("Visão geral" / "Operacional"); comportamento e visual da Visão geral permanecem idênticos ao PRD-015
+
 ## [0.17.0] - 2026-07-06 - Radar
 
 ### Added
