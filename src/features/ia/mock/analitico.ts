@@ -1,8 +1,10 @@
-import type { Apontamento } from "@/shared/types";
-import type { AlertaConsumoAnomalo, AnomaliaApontamento, InsightGerencial } from "@/features/ia/types";
+import type { Apontamento, Cliente, ContaReceber } from "@/shared/types";
+import type { AlertaConsumoAnomalo, AnomaliaApontamento, InsightGerencial, PrevisaoCaixaPeriodo, RiscoCliente } from "@/features/ia/types";
 import { comDelay } from "@/features/ia/delay";
 import { formatBRL } from "@/features/retaguarda/format";
 import type { IndicadorDieselEquipamento } from "@/features/diesel/derivacoes";
+import { contaVencida } from "@/features/financeiro/derivacoes";
+import { round2 } from "@/features/faturamento/calculo";
 
 const LIMITE_HORAS_APONTAMENTO_UNICO = 16;
 const LIMITE_HORAS_EQUIPAMENTO_DIA = 14;
@@ -125,4 +127,49 @@ export function alertasConsumoAnomalo(
       media_frota_l_h: Math.round(media * 10) / 10,
       percentual_acima: Math.round(((i.consumo_medio_l_h - media) / media) * 100),
     }));
+}
+
+// B8 — previsão de caixa e risco de inadimplência. Ambas são agregações
+// puras sobre ContaReceber já existente (PRD-007) — nenhuma regra de
+// cobrança nova. "Estimativa — base histórica limitada" é comunicado na UI
+// (previsao-caixa-card.tsx), não aqui.
+function somaAteDias(contasAbertas: ContaReceber[], hojeISO: string, dias: number): number {
+  const limite = new Date(`${hojeISO}T00:00:00.000Z`);
+  limite.setUTCDate(limite.getUTCDate() + dias);
+  const limiteISO = limite.toISOString().slice(0, 10);
+  return round2(contasAbertas.filter((c) => c.vencimento <= limiteISO).reduce((soma, c) => soma + c.valor, 0));
+}
+
+export function preverCaixa(
+  contasReceber: ContaReceber[],
+  opts: { hojeISO?: string } = {},
+): PrevisaoCaixaPeriodo[] {
+  const hojeISO = opts.hojeISO ?? new Date().toISOString().slice(0, 10);
+  const abertas = contasReceber.filter((c) => c.status === "aberta");
+  return [30, 60, 90].map((dias) => ({
+    dias: dias as 30 | 60 | 90,
+    valor_previsto: somaAteDias(abertas, hojeISO, dias),
+  }));
+}
+
+export function avaliarRiscoClientes(
+  contasReceber: ContaReceber[],
+  clientes: Cliente[],
+  opts: { hojeISO?: string } = {},
+): RiscoCliente[] {
+  const hojeISO = opts.hojeISO ?? new Date().toISOString().slice(0, 10);
+  const clientesComConta = [...new Set(contasReceber.map((c) => c.cliente_id))];
+  const riscos: RiscoCliente[] = [];
+  for (const clienteId of clientesComConta) {
+    const vencidas = contasReceber.filter((c) => c.cliente_id === clienteId && contaVencida(c, hojeISO)).length;
+    if (vencidas === 0) continue;
+    const nivel = vencidas >= 2 ? "alto" : "medio";
+    const nome = clientes.find((c) => c.id === clienteId)?.nome ?? "cliente";
+    riscos.push({
+      cliente_id: clienteId,
+      nivel,
+      motivo: `${vencidas} conta${vencidas > 1 ? "s" : ""} vencida${vencidas > 1 ? "s" : ""} — ${nome}`,
+    });
+  }
+  return riscos.sort((a, b) => (a.nivel === b.nivel ? 0 : a.nivel === "alto" ? -1 : 1));
 }

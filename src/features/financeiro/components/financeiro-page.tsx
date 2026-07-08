@@ -12,11 +12,14 @@ import { EmitirCobrancaDialog } from "@/features/cobranca-gateway/components/emi
 import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
 import { contasPagarStore } from "@/features/financeiro/contas-pagar-store";
 import { cobrancasStore } from "@/features/cobranca-gateway/cobrancas-store";
+import { PrevisaoCaixaCard } from "@/features/ia/components/previsao-caixa-card";
+import { clientesStore } from "@/features/clientes/clientes-store";
 import type { ContaReceber, ContaPagar, CobrancaGateway } from "@/shared/types";
 
 export function FinanceiroPage() {
   const contasReceber = contasReceberStore.useTodas();
   const contasPagar = contasPagarStore.useTodas();
+  const clientes = clientesStore.useAll();
 
   const [contaReceberSelecionada, setContaReceberSelecionada] = useState<ContaReceber | null>(null);
   const [contaPagarSelecionada, setContaPagarSelecionada] = useState<ContaPagar | null>(null);
@@ -38,6 +41,8 @@ export function FinanceiroPage() {
         titulo="Financeiro"
         descricao="Contas a receber, a pagar e visão de caixa"
       />
+
+      <PrevisaoCaixaCard contasReceber={contasReceber} clientes={clientes} />
 
       <Tabs defaultValue="receber">
         <TabsList>

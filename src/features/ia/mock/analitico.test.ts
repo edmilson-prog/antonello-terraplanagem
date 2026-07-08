@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { alertasConsumoAnomalo, detectarAnomalias, gerarInsight } from "@/features/ia/mock/analitico";
-import type { Apontamento, Equipamento } from "@/shared/types";
+import { alertasConsumoAnomalo, avaliarRiscoClientes, detectarAnomalias, gerarInsight, preverCaixa } from "@/features/ia/mock/analitico";
+import type { Apontamento, Cliente, ContaReceber, Equipamento } from "@/shared/types";
 import type { IndicadorDieselEquipamento } from "@/features/diesel/derivacoes";
 
 function apontamento(overrides: Partial<Apontamento>): Apontamento {
@@ -122,5 +122,63 @@ describe("alertasConsumoAnomalo", () => {
   it("returns nothing when no equipamento is above the threshold", () => {
     const indicadores = [indicador("eq-1", 10), indicador("eq-2", 10.5), indicador("eq-3", 9.8)];
     expect(alertasConsumoAnomalo(indicadores)).toEqual([]);
+  });
+});
+
+function conta(overrides: Partial<ContaReceber>): ContaReceber {
+  return {
+    id: "cr-1",
+    faturamento_id: "fat-1",
+    cliente_id: "cli-1",
+    valor: 1000,
+    vencimento: "2026-07-20",
+    status: "aberta",
+    recebido_em: null,
+    forma_recebimento: null,
+    created_at: "2026-06-20T00:00:00.000Z",
+    updated_at: "2026-06-20T00:00:00.000Z",
+    ...overrides,
+  };
+}
+
+function cliente(id: string, nome: string): Cliente {
+  return { id, nome, documento: null, telefone: null, ativo: true, created_at: "2026-01-01T00:00:00.000Z", updated_at: "2026-01-01T00:00:00.000Z" };
+}
+
+describe("preverCaixa", () => {
+  it("buckets open contas by due date into 30/60/90 day windows", () => {
+    const contas = [
+      conta({ id: "cr-1", valor: 1000, vencimento: "2026-07-10" }),
+      conta({ id: "cr-2", valor: 2000, vencimento: "2026-08-15" }),
+      conta({ id: "cr-3", valor: 500, vencimento: "2026-10-01" }),
+    ];
+    const previsao = preverCaixa(contas, { hojeISO: "2026-07-01" });
+    expect(previsao).toEqual([
+      { dias: 30, valor_previsto: 1000 },
+      { dias: 60, valor_previsto: 3000 },
+      { dias: 90, valor_previsto: 3000 },
+    ]);
+  });
+
+  it("ignores already-liquidated contas", () => {
+    const contas = [conta({ status: "liquidada", vencimento: "2026-07-05" })];
+    const previsao = preverCaixa(contas, { hojeISO: "2026-07-01" });
+    expect(previsao.every((p) => p.valor_previsto === 0)).toBe(true);
+  });
+});
+
+describe("avaliarRiscoClientes", () => {
+  it("flags a cliente with 2+ overdue contas as alto risco", () => {
+    const contas = [
+      conta({ id: "cr-1", cliente_id: "cli-1", vencimento: "2026-06-01" }),
+      conta({ id: "cr-2", cliente_id: "cli-1", vencimento: "2026-06-10" }),
+    ];
+    const riscos = avaliarRiscoClientes(contas, [cliente("cli-1", "Obras Silva")], { hojeISO: "2026-07-01" });
+    expect(riscos).toEqual([{ cliente_id: "cli-1", nivel: "alto", motivo: "2 contas vencidas — Obras Silva" }]);
+  });
+
+  it("does not flag a cliente with no overdue contas", () => {
+    const contas = [conta({ cliente_id: "cli-1", vencimento: "2026-08-01" })];
+    expect(avaliarRiscoClientes(contas, [cliente("cli-1", "Obras Silva")], { hojeISO: "2026-07-01" })).toEqual([]);
   });
 });

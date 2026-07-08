@@ -26,7 +26,10 @@ import { GraficoUtilizacaoDiesel } from "@/features/gerencial/components/grafico
 import { RankingMargem } from "@/features/gerencial/components/ranking-margem";
 import { PipelineConsolidadoCard } from "@/features/gerencial/components/pipeline-consolidado-card";
 import { CardInsight } from "@/features/ia/components/card-insight";
+import { PrevisaoCaixaCard } from "@/features/ia/components/previsao-caixa-card";
 import { gerarInsight } from "@/features/ia/mock/analitico";
+import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
+import { clientesStore } from "@/features/clientes/clientes-store";
 import { brl } from "@/features/retaguarda/format";
 
 // Mês mais recente com dado real (não `new Date()` — a fase mockada tem uma
@@ -58,6 +61,8 @@ export function GerencialPage() {
   const registrosManutencao = registrosManutencaoStore.useTodos();
   const apontamentos = apontamentosStore.useTodos();
   const precosHoraMaquina = precoHoraMaquinaStore.useAll();
+  const contasReceber = contasReceberStore.useTodas();
+  const clientes = clientesStore.useAll();
 
   const totalAtual = useMemo(
     () => serieMensalFaturamento(meses, faturamentos).reduce((s, p) => s + p.faturado, 0),
@@ -149,6 +154,8 @@ export function GerencialPage() {
       </div>
 
       <PipelineConsolidadoCard periodo={periodo} />
+
+      <PrevisaoCaixaCard contasReceber={contasReceber} clientes={clientes} />
     </div>
   );
 }
