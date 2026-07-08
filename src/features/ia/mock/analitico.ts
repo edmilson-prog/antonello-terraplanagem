@@ -137,7 +137,11 @@ function somaAteDias(contasAbertas: ContaReceber[], hojeISO: string, dias: numbe
   const limite = new Date(`${hojeISO}T00:00:00.000Z`);
   limite.setUTCDate(limite.getUTCDate() + dias);
   const limiteISO = limite.toISOString().slice(0, 10);
-  return round2(contasAbertas.filter((c) => c.vencimento <= limiteISO).reduce((soma, c) => soma + c.valor, 0));
+  return round2(
+    contasAbertas
+      .filter((c) => c.vencimento >= hojeISO && c.vencimento <= limiteISO)
+      .reduce((soma, c) => soma + c.valor, 0),
+  );
 }
 
 export function preverCaixa(

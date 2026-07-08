@@ -165,6 +165,12 @@ describe("preverCaixa", () => {
     const previsao = preverCaixa(contas, { hojeISO: "2026-07-01" });
     expect(previsao.every((p) => p.valor_previsto === 0)).toBe(true);
   });
+
+  it("excludes already-overdue contas from the cash-flow projection (they're risk, not incoming cash)", () => {
+    const contas = [conta({ id: "cr-1", valor: 1000, vencimento: "2026-06-15" })];
+    const previsao = preverCaixa(contas, { hojeISO: "2026-07-01" });
+    expect(previsao.every((p) => p.valor_previsto === 0)).toBe(true);
+  });
 });
 
 describe("avaliarRiscoClientes", () => {
