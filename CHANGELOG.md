@@ -5,6 +5,21 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.20.0] - 2026-07-08 - Ignition
+
+### Added
+- Backend real no Supabase: schema completo (23 tabelas) espelhando `src/shared/types/index.ts`, com RLS habilitada em todas.
+- Autenticação da retaguarda (recepção/proprietário) via Supabase Auth (e-mail+senha), com perfil em `usuarios_retaguarda` e guarda de rota em `/admin/*`.
+- Autenticação do operador por PIN (4 primeiros dígitos do CPF), sem passar pelo Supabase Auth — token opaco validado por função Postgres `SECURITY DEFINER` (`login_operador`/`logout_operador`), com guarda de rota dedicada em `/app/entrar`.
+- Script `scripts/mocks-to-seed.ts` que gera `supabase/seed.sql` a partir dos mocks existentes — os dados mockados agora também populam o banco real.
+
+### Changed
+- `OPERADOR_LOGADO_ID` (placeholder hardcoded desde a Fase 2) substituído pela sessão real do operador em 7 arquivos.
+- `CLAUDE.md`: fase do projeto sai de "Frontend First (mockado)" para Fase 4 (backend real).
+
+### Removed
+- `src/shared/hooks/use-mock-session.ts` e o tipo `SessaoMock` — substituídos pela sessão real (Supabase Auth para retaguarda, token opaco para operador).
+
 ## [0.19.0] - 2026-07-07 - Copilot
 
 ### Added

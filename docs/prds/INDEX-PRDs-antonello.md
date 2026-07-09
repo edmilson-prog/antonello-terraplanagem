@@ -8,11 +8,11 @@
 | **Cliente** | Leonardo Antonello |
 | **Repositório** | [a definir — repo único / monorepo] |
 | **Início** | Jun/2026 |
-| **Versão Atual** | 0.17.0 (Radar) |
-| **Fase Atual** | Frontend First (mockado) |
-| **PRDs no Roadmap** | 17 (PRD-000 a PRD-016) |
-| **PRDs Documentados** | **17 — roadmap 100% documentado** (PRD-000 a PRD-014) + **PRD-015** (pós-roadmap, home screens) + **PRD-016** (pós-roadmap, dashboard gerencial — proposto pelo Arquiteto, ✅ implementado) |
-| **PRDs Implementados** | 17 (inclui o spike PRD-000) — **roadmap numerado 100% implementado** + integrações provisórias 008/009 (MVP mockado, Fase 4) + PRD-015 (home screens) + PRD-016 (dashboard gerencial) também implementados |
+| **Versão Atual** | 0.20.0 (Ignition) |
+| **Fase Atual** | Fase 4 (Backend) — em andamento |
+| **PRDs no Roadmap** | 20 números (PRD-000 a PRD-019) — **21 documentos** ao todo: o número **PRD-019** foi atribuído, por descuido, a dois PRDs distintos (`PRD-019-ret-painel-operacional`, v0.18.0 "Beacon", e `PRD-019-all-ia-suite-embarcada`, v0.19.0 "Copilot") — colisão preservada como histórico real, ver nota em "Decisões Importantes" |
+| **PRDs Documentados** | **21/21 documentados**: roadmap original (PRD-000 a PRD-014) + **PRD-015** (pós-roadmap, home screens) + **PRD-016** (pós-roadmap, dashboard gerencial) + **PRD-017/PRD-018** (pós-roadmap, backend real: auth + schema/migrations/seed — Fase 4) + **PRD-019 ×2** (painel operacional + suíte de IA embarcada) |
+| **PRDs Implementados** | **21/21 (100%)** — roadmap numerado (000–014) 100% implementado + integrações provisórias 008/009 (MVP mockado, Fase 4) + PRD-015 (home screens) + PRD-016 (dashboard gerencial) + **PRD-017/018** (auth real + schema/RLS/seed — primeiro backend real do projeto) + **PRD-019 ×2** (painel operacional e suíte de IA embarcada) também implementados |
 
 ### Agentes do Workflow
 
@@ -42,13 +42,13 @@
 
 | Status | Quantidade | Percentual |
 |--------|------------|------------|
-| ✅ Implementado | 17 | 100% |
+| ✅ Implementado | 21 | 100% |
 | 🔄 Em Andamento | 0 | 0% |
 | ⏳ Pendente | 0 | 0% |
 | ❌ Cancelado | 0 | 0% |
-| **Total** | **17** | **100%** |
+| **Total** | **21** | **100%** |
 
-**Progresso de documentação:** **17/17 — roadmap 100% documentado** (PRD-000 a PRD-014) + PRD-015 + PRD-016 (pós-roadmap). 17/17 implementados (100%) — o **PRD-016** (dashboard gerencial, proposto pelo Arquiteto em Jun/2026) foi implementado na v0.17.0 (Radar).
+**Progresso de documentação:** **21/21 — roadmap 100% documentado** (PRD-000 a PRD-014) + PRD-015 + PRD-016 + PRD-017/018 (backend real) + PRD-019 ×2 (painel operacional e suíte de IA), todos pós-roadmap. 21/21 implementados (100%) — os mais recentes: **PRD-019** (suíte de IA embarcada, v0.19.0 "Copilot", precedida pelo painel operacional v0.18.0 "Beacon", também numerado 019 por descuido) e **PRD-017/018** (primeiro backend real do projeto, v0.20.0 "Ignition").
 
 ---
 
@@ -112,6 +112,26 @@ Painel gerencial consolidado (evolução de faturamento, receita × custo × mar
 |-----|---------|------|------|------------|------------|----------|-----|--------|
 | 016 | `PRD-016-ret-dashboard-gerencial_DONE.md` | Feature | ret | Alta | 002, 004, 007, 012, 013, 014 | feature | ✍️ | ✅ |
 
+### Pós-Roadmap — backend real (Fase 4)
+
+Primeiros PRDs da **Fase 4 (backend)**: autenticação real (retaguarda via Supabase Auth; operador via PIN + token opaco) e o schema completo no Supabase (23 tabelas, RLS, mock→seed) — destrava a conexão mock→real das próximas ondas, feature a feature.
+
+| PRD | Arquivo | Tipo | Amb. | Prioridade | Depende de | Template | Doc | Status |
+|-----|---------|------|------|------------|------------|----------|-----|--------|
+| 017 | `PRD-017-ret-auth-real-rls_DONE.md` | Feature (backend) | ret | Alta | — | feature | ✍️ | ✅ |
+| 018 | `PRD-018-all-schema-migrations-seed_DONE.md` | Feature (backend) | all | Alta | 017 | feature | ✍️ | ✅ |
+
+### Pós-Roadmap — suíte de IA embarcada / painel operacional
+
+Duas entregas pós-roadmap que, por descuido, dividem o mesmo número **019** (ver nota em "Decisões Importantes"): o painel operacional (segunda aba do Dashboard) e a suíte one-shot de 12 features de IA mockadas sobre as features já implementadas.
+
+| PRD | Arquivo | Tipo | Amb. | Prioridade | Depende de | Template | Doc | Status |
+|-----|---------|------|------|------------|------------|----------|-----|--------|
+| 019 | `PRD-019-ret-painel-operacional_DONE.md` | Feature | ret | Alta | 002, 004, 007, 010, 015 | feature | ✍️ | ✅ |
+| 019* | `PRD-019-all-ia-suite-embarcada_DONE.md` | Feature (suíte one-shot) | all | Alta | 002, 003, 004, 006, 007, 010, 011, 012, 013, 014, 016 | feature | ✍️ | ✅ |
+
+\* Numeração colidida com a linha acima — ver nota em "Decisões Importantes".
+
 ---
 
 ## Catálogo por Status
@@ -141,6 +161,10 @@ _Nenhum — todos os PRDs documentados estão implementados._
 | [PRD-008](./PRD-008-ret-integracao-gateway-cobranca_DONE.md) | Integração — Gateway de Cobrança (MVP mockado, multi-provedor Mercado Pago + Asaas) | Integração | ret | 0.15.0 Gateway |
 | [PRD-009](./PRD-009-all-integracao-whatsapp-fechamento-os_DONE.md) | Integração — Aviso ao Cliente por WhatsApp (MVP mockado, multi-provedor) | Integração | all | 0.16.0 Messenger |
 | [PRD-016](./PRD-016-ret-dashboard-gerencial_DONE.md) | Dashboard Gerencial (Analítico) | Feature | ret | 0.17.0 Radar |
+| [PRD-019](./PRD-019-ret-painel-operacional_DONE.md) | Painel Operacional (Dashboard Secundário — mapa, sparklines, contas a receber, manutenção preditiva) | Feature | ret | 0.18.0 Beacon |
+| [PRD-019](./PRD-019-all-ia-suite-embarcada_DONE.md) | Suíte de IA Embarcada (12 features, one-shot) | Feature (suíte) | all | 0.19.0 Copilot |
+| [PRD-017](./PRD-017-ret-auth-real-rls_DONE.md) | Auth Real + Perfis + RLS (Supabase Auth + PIN/token opaco do operador) | Feature (backend) | ret | 0.20.0 Ignition |
+| [PRD-018](./PRD-018-all-schema-migrations-seed_DONE.md) | Schema + Migrations + Mock→Seed | Feature (backend) | all | 0.20.0 Ignition |
 
 ### 🔄 Em Andamento
 
@@ -195,6 +219,10 @@ PRD-004 (receita) ────────────────────�
 | PRD-014 | PRD-004, PRD-013 | PRD-016 |
 | PRD-015 | PRD-002, PRD-003, PRD-004, PRD-007, PRD-010, PRD-012 | — |
 | PRD-016 | PRD-002, PRD-004, PRD-007, PRD-012, PRD-013, PRD-014 | — |
+| PRD-017 | — | PRD-018 |
+| PRD-018 | PRD-017 | — |
+| PRD-019 (painel operacional) | PRD-002, PRD-004, PRD-007, PRD-010, PRD-015 | — |
+| PRD-019 (suíte de IA) | PRD-002, PRD-003, PRD-004, PRD-006, PRD-007, PRD-010, PRD-011, PRD-012, PRD-013, PRD-014, PRD-016 | — |
 
 ---
 
@@ -211,10 +239,12 @@ Jun/2026  ───────────────────────�
           │
           ├─ Fase 3 (Validação): frontend navegável apresentado ao Leonardo
           │
-          └─ Fase 4 (Backend, se aprovado) — Ondas 2 e 3 [✍️ completas]:
+          └─ Fase 4 (Backend) — em andamento — Ondas 2 e 3 [✍️ completas]:
                 features (006, 007, 010, 011) implementadas; integrações (008, 009) implementadas como MVP mockado (v0.15.0/v0.16.0);
                 camada analítica: (002/010/012 + 004) → 013 → 014 implementada
                 + PRD-015 (home screens) implementado; PRD-016 (dashboard gerencial) implementado (v0.17.0 Radar)
+                + PRD-019 painel operacional (v0.18.0 Beacon) e suíte de IA embarcada (v0.19.0 Copilot) implementados
+                + PRD-017/018 (auth real + schema/RLS/seed reais no Supabase) implementados (v0.20.0 Ignition) — primeiro backend real do projeto
 ```
 
 ### Histórico de Versões do App
@@ -239,21 +269,22 @@ Jun/2026  ───────────────────────�
 | 0.15.0 | Gateway | 2026-07-05 | PRD-008 (Gateway de Cobrança — MVP mockado, multi-provedor Mercado Pago + Asaas) | MINOR |
 | 0.16.0 | Messenger | 2026-07-05 | PRD-009 (Aviso ao Cliente por WhatsApp — MVP mockado, multi-provedor Evolution API/Evolution GO/Meta Cloud API/OpenWA) | MINOR |
 | 0.17.0 | Radar | 2026-07-06 | PRD-016 (Dashboard Gerencial — painel analítico consolidado: evolução, receita × custo × margem, horas/utilização, rankings de margem, pipeline; meta mensal; sidebar reagrupada) | MINOR |
+| 0.18.0 | Beacon | 2026-07-07 | PRD-019 — Painel Operacional (segunda aba do Dashboard: mapa Leaflet/OpenStreetMap com pins de equipamento, cards com sparkline de 7 dias, contas a receber por cliente, manutenção preditiva por horímetro) | MINOR |
+| 0.19.0 | Copilot | 2026-07-07 | PRD-019 — Suíte de IA Embarcada (12 features de IA mockadas em 4 grupos: captura inteligente em campo, inteligência analítica, comercial, atendimento/operação — camada plugável `src/features/ia/`) | MINOR |
+| 0.20.0 | Ignition | 2026-07-08 | PRD-017/018 (Backend real: schema completo — 23 tabelas com RLS — auth real da retaguarda via Supabase Auth e-mail+senha, auth do operador por PIN + token opaco/`SECURITY DEFINER`, script `mocks-to-seed.ts`) | MINOR |
 
 ---
 
 ## Próximos PRDs Planejados (a numerar quando chegar a hora)
 
-A **Fase 4 (backend)** gerará PRDs próprios quando o frontend for aprovado:
+A **Fase 4 (backend)** já começou (PRD-017/018, v0.20.0 "Ignition" — auth real + schema/RLS/seed) e seguirá gerando PRDs próprios, feature a feature:
 
 | # | Título Provisório | Tipo | Fase | Gate / Observação |
 |---|-------------------|------|------|-------------------|
-| 017 | **Auth real + perfis + RLS** (Supabase Auth) | Feature (backend) | Fase 4 | **Primeiro da Fase 4** — pré-requisito de todo backend; as políticas finas dependem do **ADR do spike** (PRD-000), por isso não é escrito agora |
-| 018 | Schema + migrations + **mock→seed** | Feature (backend) | Fase 4 | Após auth; converte os mocks em `seed.sql` |
-| 0xx | Backend por feature (conexão mock→real, por onda) | Feature (backend) | Fase 4 | Ordem do grafo; backend da OS (003) **só após o ADR** |
+| 0xx | Backend por feature (conexão mock→real, por onda) | Feature (backend) | Fase 4 | Ordem do grafo; backend da OS (003) **só após o ADR** (já resolvido, PRD-000/ADR-001). As telas continuam lendo `src/mocks/*` até cada feature migrar na sua onda |
 | 0xx | Notificação interna de alertas (manutenção → retaguarda) | Integração | Fase 4+ | Automação própria — distinta do PRD-009 (aviso ao cliente) |
 
-> **Regra:** não escrever esses PRDs antes de seus gates (aprovação do frontend / ADR do spike / provedor definido). Escrever antes = especular = retrabalho. Os itens "Dashboard retaguarda + Início operador" e "Dashboard gerencial" que estavam nesta lista foram promovidos a **PRD-015** e **PRD-016** (ver seções "Pós-Roadmap" acima); por isso Auth e Schema foram renumerados de `0xx` para **017**/**018**.
+> **Regra:** não escrever esses PRDs antes de seus gates (provedor definido / feature de origem estável). Escrever antes = especular = retrabalho. Os itens "Dashboard retaguarda + Início operador" e "Dashboard gerencial" que estavam nesta lista foram promovidos a **PRD-015** e **PRD-016** (ver seções "Pós-Roadmap" acima); **Auth real (017)** e **Schema/seed (018)** — também renumerados de `0xx` para 017/018 nesta lista — já foram implementados (v0.20.0 "Ignition") e saíram desta tabela de planejados.
 
 ---
 
@@ -282,6 +313,10 @@ A **Fase 4 (backend)** gerará PRDs próprios quando o frontend for aprovado:
 | 2026-07-05 | **PRD-008 implementado** (v0.15.0 "Gateway") — MVP mockado do gateway de cobrança, multi-provedor (Mercado Pago + Asaas), emissão simulada de cobrança + webhook de pagamento com baixa automática, via Subagent-Driven Development (4 tasks + revisão final, 0 Critical/Important) | Integrações da Onda 2 avançam: resta só o PRD-009 |
 | 2026-07-05 | **PRD-009 implementado** (v0.16.0 "Messenger") — MVP mockado do aviso ao cliente por WhatsApp, multi-provedor (Evolution API, Evolution GO, WhatsApp Cloud API/Meta, OpenWA), via Subagent-Driven Development (4 tasks + revisão final, 0 Critical/Important, 4 Minor cosméticos/herdados) | Roadmap numerado (000–014) + integrações provisórias (008/009) 100% implementados. Resta só o PRD-016 (dashboard gerencial, proposto) |
 | 2026-07-05 | **Reconciliação deste índice com o rascunho do Arquiteto** — incorporado: PRD-016 (dashboard gerencial, pendente), renumeração 017/018 (Auth/Schema), status real de implementação de 008/009. A correção documental pendente do PRD-010 (`_DONE_PATCH`, docs-only — distingue o alerta interno de manutenção do aviso ao cliente do PRD-009) já estava refletida narrativamente neste índice e foi commitada nesta reconciliação. Rascunho original do Arquiteto preservado em `INDEX-PRDs-antonello.ARQUITETO-DRAFT-2026-07-04.md` para referência | Sincroniza a visão do Arquiteto (claude.ai) com o estado real do repositório, sem perder o histórico real de implementação |
+| 2026-07-07 | **PRD-019 (Painel Operacional) implementado** (v0.18.0 "Beacon") — segunda aba "Operacional" no Dashboard da retaguarda (mapa Leaflet/OpenStreetMap, cards com sparkline, contas a receber por cliente, manutenção preditiva), sem alterar a aba "Visão geral" (PRD-015) | Este PRD reutilizou por descuido o número **019**, já também usado pela Suíte de IA Embarcada (linha abaixo) — colisão de numeração preservada como histórico real, sem renumeração retroativa dos arquivos já fechados |
+| 2026-07-07 | **PRD-019 (Suíte de IA Embarcada) implementado** (v0.19.0 "Copilot") — 12 features de IA mockadas (camada plugável `src/features/ia/`), entregues via Protocolo One-Shot em execução única, 0 Critical/Important na revisão | Roadmap + pós-roadmap 100% implementados na numeração (à parte da colisão do 019); IA embarcada cobre captura de campo, analítica, comercial e atendimento, com barreira financeira mantida em `/app/*` |
+| 2026-07-08 | **PRD-017/018 implementados** (v0.20.0 "Ignition") — primeiro backend real do projeto: schema completo (23 tabelas) com RLS habilitada em todo o Supabase, autenticação real da retaguarda (Supabase Auth e-mail+senha) e do operador (PIN de 4 dígitos + token opaco validado por função Postgres `SECURITY DEFINER`, decisão motivada pelo uso de JWT Signing Keys assimétricas no projeto — inviabiliza assinar JWT customizado), e script `scripts/mocks-to-seed.ts` gerando `supabase/seed.sql` a partir dos mocks existentes | Marca a virada de fase: `CLAUDE.md` sai de "Frontend First (mockado)" para **Fase 4 (Backend) — em andamento**; a maior parte das features continua lendo `src/mocks/*` até a conexão mock→real de cada uma, por onda |
+| 2026-07-08 | **Reconciliação deste índice** (Task 16 do plano de PRD-017/018) — incorporado o PRD-019 (que havia ficado fora deste índice por decisão explícita do usuário no fechamento anterior, ver `PRD-019-all-ia-suite-embarcada_DONE.md`) junto com os novos PRD-017/018, num único commit | Índice volta a refletir o estado real de implementação do repositório, sem lacunas entre PRDs fechados e o índice |
 
 ### Riscos Identificados
 
@@ -335,6 +370,6 @@ A **Fase 4 (backend)** gerará PRDs próprios quando o frontend for aprovado:
 
 | Campo | Valor |
 |-------|-------|
-| **Data** | 2026-07-05 |
-| **Atualizado por** | Claude Code (reconciliação com o rascunho do Arquiteto) |
-| **Motivo** | PRD-008 (v0.15.0 Gateway) e PRD-009 (v0.16.0 Messenger) implementados e refletidos; PRD-016 (Dashboard Gerencial) incorporado do rascunho do Arquiteto como pendente; numeração de "Próximos PRDs Planejados" ajustada (017 Auth, 018 Schema); correção documental do PRD-010 (`_DONE_PATCH`, docs-only) commitada |
+| **Data** | 2026-07-08 |
+| **Atualizado por** | Claude Code (Task 16 — fechamento PRD-017/018 + reconciliação do gap do PRD-019) |
+| **Motivo** | PRD-017 (Auth Real + Perfis + RLS) e PRD-018 (Schema + Migrations + Mock→Seed) implementados e documentados (v0.20.0 "Ignition") — primeiro backend real do projeto, virada de fase no `CLAUDE.md`. Catch-up do PRD-019 (Suíte de IA Embarcada, v0.19.0 "Copilot"), deixado fora deste índice por decisão explícita do usuário no fechamento anterior. Colisão de numeração do PRD-019 com o PRD-019 (Painel Operacional, v0.18.0 "Beacon", já existente) documentada como histórico real, sem renumeração retroativa dos arquivos `_DONE` já fechados |

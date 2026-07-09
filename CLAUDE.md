@@ -16,12 +16,12 @@ Plataforma de gestão (retaguarda web + app de campo) para uma empresa de terrap
 
 ## Status Atual do Projeto
 
-> ⚠️ **FASE ATUAL:** Frontend First (mockado)
+> ⚠️ **FASE ATUAL:** Fase 4 (Backend) — em andamento
 
-- NÃO criar tabelas no Supabase.
-- NÃO conectar backend real.
-- Todos os dados vêm de `src/mocks/`.
-- O backend (Supabase + n8n) só será implementado **após aprovação do projeto**.
+- Schema, RLS e autenticação real já existem no Supabase (PRD-017/018, v0.20.0 "Ignition").
+- A maior parte das features **ainda lê `src/mocks/`** — a conexão mock→real de cada feature
+  acontece incrementalmente, PRD a PRD ("conexão mock→real, por onda").
+- n8n e integrações externas (WhatsApp, gateway de cobrança) seguem mockadas.
 
 ## Os Dois Ambientes (Surfaces)
 
