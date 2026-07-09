@@ -3,6 +3,7 @@ import { OperadorShell } from "@/features/operador/operador-shell";
 import { lerSessaoOperador } from "@/features/auth/operador-session";
 
 export const Route = createFileRoute("/app")({
+  ssr: false,
   beforeLoad: ({ location }) => {
     if (location.pathname === "/app/entrar") return;
     if (!lerSessaoOperador()) {
