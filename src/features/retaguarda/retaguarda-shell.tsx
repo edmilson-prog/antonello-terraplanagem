@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard,
   FileText,
@@ -28,6 +28,7 @@ import { PerguntarIABar } from "@/features/ia/components/perguntar-ia-bar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 
 interface NavItem {
   to: string;
@@ -164,6 +165,15 @@ function Breadcrumbs({ pathname }: { pathname: string }) {
 export function RetaguardaShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [aberto, setAberto] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (!data.session) {
+        navigate({ to: "/login" });
+      }
+    });
+  }, [navigate]);
 
   return (
     <div className="flex min-h-screen w-full bg-background">

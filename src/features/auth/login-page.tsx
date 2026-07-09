@@ -1,57 +1,47 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { HardHat, Building2, Briefcase } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { Building2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HazardStripe } from "@/shared/components/hazard-stripe";
-import { gravarSessao, rotaPorPerfil } from "@/shared/hooks/use-mock-session";
-import type { Perfil } from "@/shared/types";
-import { cn } from "@/lib/utils";
-
-interface OpcaoPerfil {
-  perfil: Perfil;
-  titulo: string;
-  descricao: string;
-  icone: LucideIcon;
-}
-
-const opcoes: OpcaoPerfil[] = [
-  {
-    perfil: "operador",
-    titulo: "Operador",
-    descricao: "Acesso ao app de campo",
-    icone: HardHat,
-  },
-  {
-    perfil: "recepcao",
-    titulo: "Recepção",
-    descricao: "Retaguarda do escritório",
-    icone: Building2,
-  },
-  {
-    perfil: "proprietario",
-    titulo: "Proprietário",
-    descricao: "Acesso completo, inclusive financeiro",
-    icone: Briefcase,
-  },
-];
-
-const nomePorPerfil: Record<Perfil, string> = {
-  operador: "José Carlos",
-  recepcao: "Ana Recepção",
-  proprietario: "Sr. Antonello",
-};
+import { supabase } from "@/lib/supabase";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const [perfil, setPerfil] = useState<Perfil>("recepcao");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [entrando, setEntrando] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
 
-  function entrar(e: React.FormEvent) {
+  async function entrar(e: React.FormEvent) {
     e.preventDefault();
-    gravarSessao({ perfil, nome: nomePorPerfil[perfil] });
-    navigate({ to: rotaPorPerfil(perfil) });
+    setErro(null);
+    setEntrando(true);
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: senha });
+    if (error || !data.session) {
+      setEntrando(false);
+      setErro("E-mail ou senha incorretos.");
+      return;
+    }
+
+    const { data: perfil } = await supabase
+      .from("usuarios_retaguarda")
+      .select("id")
+      .eq("id", data.session.user.id)
+      .maybeSingle();
+
+    if (!perfil) {
+      await supabase.auth.signOut();
+      setEntrando(false);
+      setErro("Conta não configurada — fale com o proprietário.");
+      return;
+    }
+
+    toast.success("Bem-vindo!");
+    navigate({ to: "/admin" });
   }
 
   return (
@@ -62,14 +52,12 @@ export function LoginPage() {
         <div className="space-y-6 p-6 md:p-8">
           <div className="space-y-2 text-center">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <HardHat className="h-6 w-6" />
+              <Building2 className="h-6 w-6" />
             </div>
             <h1 className="font-display text-2xl font-bold text-card-foreground">
-              Antonello Terraplanagem — Gestão de Obras
+              Antonello Terraplanagem — Retaguarda
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Plataforma de gestão — entre com seu perfil
-            </p>
+            <p className="text-sm text-muted-foreground">Acesso da recepção e do proprietário</p>
           </div>
 
           <form onSubmit={entrar} className="space-y-5">
@@ -79,8 +67,10 @@ export function LoginPage() {
                 id="email"
                 type="email"
                 placeholder="seu@email.com"
-                defaultValue="demo@antonello.com.br"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
+                required
               />
             </div>
 
@@ -90,63 +80,27 @@ export function LoginPage() {
                 id="senha"
                 type="password"
                 placeholder="••••••••"
-                defaultValue="demo"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
                 autoComplete="current-password"
+                required
               />
             </div>
 
-            <fieldset className="space-y-2">
-              <legend className="text-sm font-medium text-foreground">Entrar como</legend>
-              <div className="grid gap-2">
-                {opcoes.map((op) => {
-                  const Icone = op.icone;
-                  const selecionado = perfil === op.perfil;
-                  return (
-                    <button
-                      key={op.perfil}
-                      type="button"
-                      onClick={() => setPerfil(op.perfil)}
-                      className={cn(
-                        "flex items-center gap-3 rounded-md border p-3 text-left transition-colors",
-                        selecionado
-                          ? "border-primary bg-primary/10"
-                          : "border-border bg-surface/40 hover:border-primary/40",
-                      )}
-                      aria-pressed={selecionado}
-                    >
-                      <div
-                        className={cn(
-                          "flex h-9 w-9 items-center justify-center rounded-md",
-                          selecionado
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-background text-muted-foreground",
-                        )}
-                      >
-                        <Icone className="h-5 w-5" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-sm font-semibold text-foreground">{op.titulo}</div>
-                        <div className="text-xs text-muted-foreground">{op.descricao}</div>
-                      </div>
-                      <div
-                        className={cn(
-                          "h-4 w-4 rounded-full border-2",
-                          selecionado ? "border-primary bg-primary" : "border-border",
-                        )}
-                      />
-                    </button>
-                  );
-                })}
-              </div>
-            </fieldset>
+            {erro ? <p className="text-sm text-destructive">{erro}</p> : null}
 
-            <Button type="submit" size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary-hover">
-              Entrar
+            <Button
+              type="submit"
+              size="lg"
+              disabled={entrando}
+              className="w-full bg-primary text-primary-foreground hover:bg-primary-hover"
+            >
+              {entrando ? "Entrando..." : "Entrar"}
             </Button>
           </form>
 
           <p className="text-center font-mono text-[11px] uppercase tracking-[0.15em] text-foreground-faint">
-            Acesso de demonstração · sem backend
+            Operador de campo? Use o app pelo celular da obra.
           </p>
         </div>
       </div>
