@@ -17,6 +17,9 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 - `OPERADOR_LOGADO_ID` (placeholder hardcoded desde a Fase 2) substituído pela sessão real do operador em 7 arquivos.
 - `CLAUDE.md`: fase do projeto sai de "Frontend First (mockado)" para Fase 4 (backend real).
 
+### Security
+- Migration `20260708100009_security_hardening.sql`: revoga o grant padrão de `SELECT` de `anon` nas 22 tabelas de `public` que não são `operadores` (defesa-em-profundidade — a RLS já bloqueava a leitura) e adiciona `alter default privileges` para blindar tabelas futuras contra o mesmo grant.
+
 ### Removed
 - `src/shared/hooks/use-mock-session.ts` e o tipo `SessaoMock` — substituídos pela sessão real (Supabase Auth para retaguarda, token opaco para operador).
 
