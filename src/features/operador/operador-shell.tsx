@@ -1,10 +1,8 @@
-import { useEffect } from "react";
-import { Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { Home, ClipboardList, FileText, User } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { HazardStripe } from "@/shared/components/hazard-stripe";
 import { ThemeToggle } from "@/shared/components/theme-toggle";
-import { lerSessaoOperador } from "@/features/auth/operador-session";
 import { cn } from "@/lib/utils";
 
 /*
@@ -35,14 +33,7 @@ const titulos: { prefixo: string; titulo: string }[] = [
 
 export function OperadorShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const navigate = useNavigate();
   const titulo = titulos.find((t) => pathname.startsWith(t.prefixo))?.titulo ?? "Antonello";
-
-  useEffect(() => {
-    if (pathname !== "/app/entrar" && !lerSessaoOperador()) {
-      navigate({ to: "/app/entrar" });
-    }
-  }, [pathname, navigate]);
 
   if (pathname === "/app/entrar") {
     return <Outlet />;
