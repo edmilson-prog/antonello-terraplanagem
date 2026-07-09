@@ -1,7 +1,11 @@
 import { z } from "zod";
 
 export const equipamentoSchema = z.object({
-  nome: z.string().trim().min(2, "Informe o nome do equipamento"),
+  nome: z
+    .string()
+    .trim()
+    .min(2, "Informe o nome do equipamento")
+    .transform((v) => v.toUpperCase()),
   tipo: z.enum([
     "escavadeira",
     "carregadeira",

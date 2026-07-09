@@ -14,7 +14,6 @@ import { PageHeader } from "@/shared/components/page-header";
 import { DataList, type Column } from "@/shared/components/data-list";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
 import { formatHorimetro } from "@/shared/lib/format";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import {
@@ -31,7 +30,8 @@ import { cn } from "@/lib/utils";
 
 export function EquipamentosPage() {
   const todos = equipamentosStore.useAll();
-  const { isLoading, error, retry } = useMockResource(todos);
+  const { isLoading, error } = equipamentosStore.useEstado();
+  const retry = equipamentosStore.retry;
 
   const [q, setQ] = useState("");
   const [filtroTipo, setFiltroTipo] = useState<TipoEquipamento | "todos">("todos");
@@ -68,15 +68,27 @@ export function EquipamentosPage() {
     setFormAberto(true);
   };
 
-  const confirmarInativar = () => {
+  const confirmarInativar = async () => {
     if (!inativando) return;
-    equipamentosStore.setAtivo(inativando.id, false);
-    toast.success("Equipamento inativado.");
+    try {
+      await equipamentosStore.setAtivo(inativando.id, false);
+      toast.success("Equipamento inativado.");
+    } catch (err) {
+      toast.error(
+        `Falha ao inativar o equipamento${err instanceof Error ? `: ${err.message}` : ""}`,
+      );
+    }
     setInativando(null);
   };
-  const reativar = (e: Equipamento) => {
-    equipamentosStore.setAtivo(e.id, true);
-    toast.success("Equipamento reativado.");
+  const reativar = async (e: Equipamento) => {
+    try {
+      await equipamentosStore.setAtivo(e.id, true);
+      toast.success("Equipamento reativado.");
+    } catch (err) {
+      toast.error(
+        `Falha ao reativar o equipamento${err instanceof Error ? `: ${err.message}` : ""}`,
+      );
+    }
   };
 
   const columns: Column<Equipamento>[] = [

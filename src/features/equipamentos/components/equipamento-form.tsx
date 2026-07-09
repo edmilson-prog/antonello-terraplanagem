@@ -45,7 +45,7 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
     },
   });
 
-  const onSubmit = (values: EquipamentoFormValues) => {
+  const onSubmit = async (values: EquipamentoFormValues) => {
     const payload = {
       nome: values.nome,
       tipo: values.tipo,
@@ -55,21 +55,38 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
       status: values.status,
       ativo: values.ativo,
     };
-    if (inicial) {
-      equipamentosStore.update(inicial.id, payload);
-      toast.success("Equipamento atualizado.");
-    } else {
-      equipamentosStore.create(payload);
-      toast.success("Equipamento cadastrado.");
+    try {
+      if (inicial) {
+        await equipamentosStore.update(inicial.id, payload);
+        toast.success("Equipamento atualizado.");
+      } else {
+        await equipamentosStore.create(payload);
+        toast.success("Equipamento cadastrado.");
+      }
+      onSuccess();
+    } catch (err) {
+      const detalhe = err instanceof Error ? `: ${err.message}` : "";
+      toast.error(
+        (inicial ? "Falha ao atualizar o equipamento" : "Falha ao cadastrar o equipamento") +
+          detalhe,
+      );
     }
-    onSuccess();
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor="nome">Nome *</Label>
-        <Input id="nome" {...register("nome")} aria-invalid={!!errors.nome} />
+        <Input
+          id="nome"
+          className="uppercase"
+          {...register("nome", {
+            onChange: (e) => {
+              e.target.value = e.target.value.toUpperCase();
+            },
+          })}
+          aria-invalid={!!errors.nome}
+        />
         {errors.nome ? <p className="text-xs text-destructive">{errors.nome.message}</p> : null}
       </div>
 
