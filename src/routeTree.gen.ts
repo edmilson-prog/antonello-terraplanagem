@@ -18,6 +18,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as BlogTerraplanagemOuTerraplenagemRouteImport } from './routes/blog.terraplanagem-ou-terraplenagem'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
+import { Route as AppEntrarRouteImport } from './routes/app.entrar'
 import { Route as AdminRentabilidadeRouteImport } from './routes/admin.rentabilidade'
 import { Route as AdminPrecosRouteImport } from './routes/admin.precos'
 import { Route as AdminOperadoresRouteImport } from './routes/admin.operadores'
@@ -88,6 +89,11 @@ const BlogTerraplanagemOuTerraplenagemRoute =
 const AppPerfilRoute = AppPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEntrarRoute = AppEntrarRouteImport.update({
+  id: '/entrar',
+  path: '/entrar',
   getParentRoute: () => AppRoute,
 } as any)
 const AdminRentabilidadeRoute = AdminRentabilidadeRouteImport.update({
@@ -236,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
+  '/app/entrar': typeof AppEntrarRoute
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
@@ -270,6 +277,7 @@ export interface FileRoutesByTo {
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
+  '/app/entrar': typeof AppEntrarRoute
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin': typeof AdminIndexRoute
@@ -307,6 +315,7 @@ export interface FileRoutesById {
   '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
+  '/app/entrar': typeof AppEntrarRoute
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
@@ -345,6 +354,7 @@ export interface FileRouteTypes {
     | '/admin/operadores'
     | '/admin/precos'
     | '/admin/rentabilidade'
+    | '/app/entrar'
     | '/app/perfil'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
@@ -379,6 +389,7 @@ export interface FileRouteTypes {
     | '/admin/operadores'
     | '/admin/precos'
     | '/admin/rentabilidade'
+    | '/app/entrar'
     | '/app/perfil'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin'
@@ -415,6 +426,7 @@ export interface FileRouteTypes {
     | '/admin/operadores'
     | '/admin/precos'
     | '/admin/rentabilidade'
+    | '/app/entrar'
     | '/app/perfil'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
@@ -508,6 +520,13 @@ declare module '@tanstack/react-router' {
       path: '/perfil'
       fullPath: '/app/perfil'
       preLoaderRoute: typeof AppPerfilRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/entrar': {
+      id: '/app/entrar'
+      path: '/entrar'
+      fullPath: '/app/entrar'
+      preLoaderRoute: typeof AppEntrarRouteImport
       parentRoute: typeof AppRoute
     }
     '/admin/rentabilidade': {
@@ -739,6 +758,7 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppRouteChildren {
+  AppEntrarRoute: typeof AppEntrarRoute
   AppPerfilRoute: typeof AppPerfilRoute
   AppIndexRoute: typeof AppIndexRoute
   AppApontamentoApontamentoIdRoute: typeof AppApontamentoApontamentoIdRoute
@@ -749,6 +769,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppEntrarRoute: AppEntrarRoute,
   AppPerfilRoute: AppPerfilRoute,
   AppIndexRoute: AppIndexRoute,
   AppApontamentoApontamentoIdRoute: AppApontamentoApontamentoIdRoute,

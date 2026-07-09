@@ -7,13 +7,13 @@ import { useMockResource } from "@/shared/hooks/use-mock-resource";
 import {
   apontamentosStore,
   apontamentosDoOperador,
-  OPERADOR_LOGADO_ID,
 } from "@/features/apontamento/apontamentos-store";
+import { getOperadorLogadoId } from "@/features/auth/operador-session";
 import { ApontamentoCard } from "@/features/apontamento/components/apontamento-card";
 
 export function ApontamentosPage() {
   const todos = apontamentosStore.useTodos();
-  const meus = apontamentosDoOperador(todos, OPERADOR_LOGADO_ID);
+  const meus = apontamentosDoOperador(todos, getOperadorLogadoId());
   const { isLoading, error, retry } = useMockResource(meus);
 
   const emAndamento = meus.filter((a) => a.status === "em_andamento");

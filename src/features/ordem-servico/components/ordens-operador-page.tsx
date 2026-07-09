@@ -7,7 +7,8 @@ import { SyncBadge } from "@/shared/components/sync-badge";
 import { StatusOSBadge, STATUS_OS_LABEL } from "@/features/ordem-servico/labels";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { ordensDoOperador, statusEfetivoOS } from "@/features/ordem-servico/derivacoes";
-import { apontamentosStore, OPERADOR_LOGADO_ID } from "@/features/apontamento/apontamentos-store";
+import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
+import { getOperadorLogadoId } from "@/features/auth/operador-session";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import type { StatusOS } from "@/shared/types";
 import { cn } from "@/lib/utils";
@@ -27,7 +28,7 @@ export function OrdensOperadorPage() {
   const [filtro, setFiltro] = useState<FiltroId>("todas");
 
   const minhas = useMemo(
-    () => ordensDoOperador(todas, apontamentos, OPERADOR_LOGADO_ID),
+    () => ordensDoOperador(todas, apontamentos, getOperadorLogadoId()),
     [todas, apontamentos],
   );
 

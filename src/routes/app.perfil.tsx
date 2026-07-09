@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { encerrarSessao, lerSessao } from "@/shared/hooks/use-mock-session";
+import { supabase } from "@/lib/supabase";
+import { encerrarSessaoOperador, lerSessaoOperador } from "@/features/auth/operador-session";
 
 export const Route = createFileRoute("/app/perfil")({
   head: () => ({
@@ -19,11 +20,14 @@ export const Route = createFileRoute("/app/perfil")({
 
 function AppPerfil() {
   const navigate = useNavigate();
-  const sessao = typeof window !== "undefined" ? lerSessao() : null;
+  const sessao = typeof window !== "undefined" ? lerSessaoOperador() : null;
 
-  function sair() {
-    encerrarSessao();
-    navigate({ to: "/login" });
+  async function sair() {
+    if (sessao) {
+      await supabase.rpc("logout_operador", { p_token: sessao.token });
+    }
+    encerrarSessaoOperador();
+    navigate({ to: "/app/entrar" });
   }
 
   return (
@@ -35,10 +39,10 @@ function AppPerfil() {
           </div>
           <div>
             <div className="font-display text-lg font-bold text-card-foreground">
-              {sessao?.nome ?? "Operador"}
+              {sessao?.operadorNome ?? "Operador"}
             </div>
             <div className="font-mono text-[11px] uppercase tracking-[0.15em] text-foreground-faint">
-              Perfil: {sessao?.perfil ?? "operador"}
+              Perfil: operador
             </div>
           </div>
         </div>

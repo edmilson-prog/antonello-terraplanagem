@@ -46,11 +46,6 @@ export interface Cliente {
   updated_at: string;
 }
 
-export interface SessaoMock {
-  perfil: Perfil;
-  nome: string;
-}
-
 export interface FaturamentoMes {
   mes: string; // "2025-01"
   rotulo: string; // "Jan"

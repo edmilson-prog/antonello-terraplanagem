@@ -1,11 +1,8 @@
 import { useSyncExternalStore } from "react";
 import { apontamentos as apontamentosIniciais } from "@/mocks/apontamentos";
 import { calcularHoras } from "@/features/apontamento/calcular-horas";
+import { getOperadorLogadoId } from "@/features/auth/operador-session";
 import type { Apontamento } from "@/shared/types";
-
-// Operador "logado" (mock). A sessão (SessaoMock) não guarda operador_id nesta
-// fase; quando o backend autenticado existir, isto vem da sessão real.
-export const OPERADOR_LOGADO_ID = "op-001";
 
 export interface IniciarInput {
   equipamento_id: string;
@@ -57,7 +54,7 @@ export function criarApontamentosStore(seed: Apontamento[]): ApontamentosStore {
     const novo: Apontamento = {
       id: crypto.randomUUID(),
       equipamento_id: input.equipamento_id,
-      operador_id: OPERADOR_LOGADO_ID,
+      operador_id: getOperadorLogadoId(),
       os_id: input.os_id ?? null,
       horimetro_inicial: input.horimetro_inicial,
       horimetro_final: null,

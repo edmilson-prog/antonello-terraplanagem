@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { criarApontamentosStore, apontamentosDoOperador, apontamentoEmAndamentoDoOperador } from "./apontamentos-store";
+import { gravarSessaoOperador } from "@/features/auth/operador-session";
 import type { Apontamento } from "@/shared/types";
 
 function seedBase(): Apontamento[] {
@@ -48,6 +49,15 @@ function seedBase(): Apontamento[] {
 }
 
 describe("apontamentosStore", () => {
+  beforeEach(() => {
+    gravarSessaoOperador({
+      token: "t",
+      operadorId: "op-001",
+      operadorNome: "Teste",
+      expiraEm: new Date(Date.now() + 1000).toISOString(),
+    });
+  });
+
   it("iniciar cria um apontamento em andamento no topo da lista", () => {
     const store = criarApontamentosStore([]);
     const novo = store.iniciar({ equipamento_id: "eq-9", horimetro_inicial: 10 });

@@ -23,10 +23,8 @@ import { statusEquipamento } from "@/features/manutencao/derivacoes";
 import { ManutencaoIndicador } from "@/features/manutencao/components/manutencao-indicador";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { ordensDoOperador } from "@/features/ordem-servico/derivacoes";
-import {
-  apontamentosStore,
-  OPERADOR_LOGADO_ID,
-} from "@/features/apontamento/apontamentos-store";
+import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
+import { getOperadorLogadoId } from "@/features/auth/operador-session";
 import {
   iniciarApontamentoSchema,
   type IniciarApontamentoValues,
@@ -40,7 +38,7 @@ export function IniciarApontamentoForm({ osIdInicial }: { osIdInicial?: string }
   const planos = planosManutencaoStore.useAll();
   const registros = registrosManutencaoStore.useTodos();
   const apontamentos = apontamentosStore.useTodos();
-  const ordens = ordensDoOperador(ordensStore.useTodas(), apontamentos, OPERADOR_LOGADO_ID).filter(
+  const ordens = ordensDoOperador(ordensStore.useTodas(), apontamentos, getOperadorLogadoId()).filter(
     (o) => o.status !== "fechada",
   );
   const [fotoInicialUrl, setFotoInicialUrl] = useState<string | null>(null);

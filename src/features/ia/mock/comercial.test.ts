@@ -1,11 +1,22 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, beforeEach } from "vitest";
 import { gerarTexto, sugerirOrcamento } from "@/features/ia/mock/comercial";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
+import { gravarSessaoOperador } from "@/features/auth/operador-session";
 import type { OrdemServico } from "@/shared/types";
 
 describe("sugerirOrcamento", () => {
+  beforeEach(() => {
+    gravarSessaoOperador({
+      token: "t",
+      operadorId: "op-001",
+      operadorNome: "Teste",
+      expiraEm: new Date(Date.now() + 1000).toISOString(),
+    });
+  });
+
+
   it("returns no items and a clear justificativa when there is no similar obra", () => {
     return sugerirOrcamento(
       { clienteId: "cliente-inexistente-xyz", modeloCobranca: "hora_maquina" },

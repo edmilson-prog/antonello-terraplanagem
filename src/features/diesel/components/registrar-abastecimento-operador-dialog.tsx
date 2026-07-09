@@ -8,7 +8,7 @@ import { HorimetroCapture } from "@/shared/components/horimetro-capture";
 import { CupomCaptureButton } from "@/features/ia/components/cupom-capture-button";
 import { abastecimentosStore } from "@/features/diesel/abastecimentos-store";
 import { abastecimentoOperadorSchema } from "@/features/diesel/abastecimento-schema";
-import { OPERADOR_LOGADO_ID } from "@/features/apontamento/apontamentos-store";
+import { getOperadorLogadoId } from "@/features/auth/operador-session";
 
 interface RegistrarAbastecimentoOperadorDialogProps {
   open: boolean;
@@ -59,7 +59,7 @@ export function RegistrarAbastecimentoOperadorDialog({
       equipamento_id: equipamentoId,
       litros: parsed.data.litros,
       horimetro: parsed.data.horimetro,
-      operador_id: OPERADOR_LOGADO_ID,
+      operador_id: getOperadorLogadoId(),
       local: local.trim() || null,
     });
     setSalvando(false);

@@ -10,8 +10,8 @@ import {
   apontamentosStore,
   apontamentosDoOperador,
   apontamentoEmAndamentoDoOperador,
-  OPERADOR_LOGADO_ID,
 } from "@/features/apontamento/apontamentos-store";
+import { getOperadorLogadoId } from "@/features/auth/operador-session";
 import { ApontamentoCard } from "@/features/apontamento/components/apontamento-card";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { ordensDoOperador, statusEfetivoOS } from "@/features/ordem-servico/derivacoes";
@@ -52,15 +52,16 @@ export function InicioOperadorPage() {
     );
   }
 
-  const emAndamento = apontamentoEmAndamentoDoOperador(todosApontamentos, OPERADOR_LOGADO_ID);
+  const operadorLogadoId = getOperadorLogadoId();
+  const emAndamento = apontamentoEmAndamentoDoOperador(todosApontamentos, operadorLogadoId);
   const equipamentoEmAndamento = emAndamento
     ? equipamentosStore.getById(emAndamento.equipamento_id)
     : undefined;
 
-  const minhasOrdens = ordensDoOperador(todasOrdens, todosApontamentos, OPERADOR_LOGADO_ID);
+  const minhasOrdens = ordensDoOperador(todasOrdens, todosApontamentos, operadorLogadoId);
   const ordensAtivas = minhasOrdens.filter((o) => statusEfetivoOS(o, todosApontamentos) !== "fechada");
 
-  const meusApontamentos = apontamentosDoOperador(todosApontamentos, OPERADOR_LOGADO_ID);
+  const meusApontamentos = apontamentosDoOperador(todosApontamentos, operadorLogadoId);
   const pendentesSync =
     meusApontamentos.filter((a) => a.pendente_sync).length +
     minhasOrdens.filter((o) => o.pendente_sync).length;
