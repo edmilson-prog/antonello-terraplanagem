@@ -1,9 +1,11 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { exigirUsuarioRetaguarda } from "../_shared/retaguarda-auth.ts";
-import { wahaFetch, WAHA_SESSION } from "../_shared/waha-client.ts";
+import { corsHeaders, wahaFetch, WAHA_SESSION } from "../_shared/waha-client.ts";
 
 Deno.serve(async (req: Request) => {
-  const jsonHeaders = { "Content-Type": "application/json" };
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  const jsonHeaders = { "Content-Type": "application/json", ...corsHeaders };
 
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ ok: false, motivo: "metodo_nao_suportado" }), {
@@ -15,7 +17,17 @@ Deno.serve(async (req: Request) => {
   const auth = await exigirUsuarioRetaguarda(req);
   if (!auth.ok) return auth.response;
 
-  const { chatId, text } = (await req.json()) as { chatId?: string; text?: string };
+  let chatId: string | undefined;
+  let text: string | undefined;
+  try {
+    ({ chatId, text } = (await req.json()) as { chatId?: string; text?: string });
+  } catch {
+    return new Response(JSON.stringify({ ok: false, motivo: "corpo_invalido" }), {
+      status: 400,
+      headers: jsonHeaders,
+    });
+  }
+
   if (!chatId || !text) {
     return new Response(JSON.stringify({ ok: false, motivo: "parametros_invalidos" }), {
       status: 400,

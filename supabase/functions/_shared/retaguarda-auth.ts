@@ -1,4 +1,5 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { corsHeaders } from "./waha-client.ts";
 
 export async function exigirUsuarioRetaguarda(
   req: Request,
@@ -9,7 +10,7 @@ export async function exigirUsuarioRetaguarda(
       ok: false,
       response: new Response(JSON.stringify({ ok: false, motivo: "sem_autenticacao" }), {
         status: 401,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       }),
     };
   }
@@ -26,7 +27,7 @@ export async function exigirUsuarioRetaguarda(
       ok: false,
       response: new Response(JSON.stringify({ ok: false, motivo: "token_invalido" }), {
         status: 401,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       }),
     };
   }
@@ -43,7 +44,7 @@ export async function exigirUsuarioRetaguarda(
       ok: false,
       response: new Response(JSON.stringify({ ok: false, motivo: "acesso_negado" }), {
         status: 403,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       }),
     };
   }

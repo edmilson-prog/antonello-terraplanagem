@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { exigirUsuarioRetaguarda } from "../_shared/retaguarda-auth.ts";
-import { wahaFetch, WAHA_SESSION } from "../_shared/waha-client.ts";
+import { corsHeaders, wahaFetch, WAHA_SESSION } from "../_shared/waha-client.ts";
 
 interface StatusWaha {
   status?: string;
@@ -10,24 +10,31 @@ interface StatusWaha {
 async function buscarStatusSessao(): Promise<StatusWaha> {
   const resp = await wahaFetch(`/api/sessions/${WAHA_SESSION}`);
   if (!resp.ok) return { status: "STOPPED" };
-  return (await resp.json()) as StatusWaha;
+  try {
+    return (await resp.json()) as StatusWaha;
+  } catch {
+    return { status: "STOPPED" };
+  }
 }
 
-async function iniciarSessao(): Promise<void> {
+async function iniciarSessao(): Promise<boolean> {
   const criar = await wahaFetch("/api/sessions", {
     method: "POST",
     body: JSON.stringify({ name: WAHA_SESSION, start: true }),
   });
-  if (criar.ok) return;
-  await wahaFetch(`/api/sessions/${WAHA_SESSION}/start`, { method: "POST" });
+  if (criar.ok) return true;
+  const start = await wahaFetch(`/api/sessions/${WAHA_SESSION}/start`, { method: "POST" });
+  return start.ok;
 }
 
 Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
   const auth = await exigirUsuarioRetaguarda(req);
   if (!auth.ok) return auth.response;
 
   const url = new URL(req.url);
-  const jsonHeaders = { "Content-Type": "application/json" };
+  const jsonHeaders = { "Content-Type": "application/json", ...corsHeaders };
 
   if (req.method === "GET" && url.searchParams.get("qr") === "1") {
     const statusBody = await buscarStatusSessao();
@@ -44,7 +51,15 @@ Deno.serve(async (req: Request) => {
         headers: jsonHeaders,
       });
     }
-    const qrBody = (await qrResp.json()) as { value?: string };
+    let qrBody: { value?: string };
+    try {
+      qrBody = (await qrResp.json()) as { value?: string };
+    } catch {
+      return new Response(JSON.stringify({ ok: false, motivo: "falha_ao_obter_qr" }), {
+        status: 502,
+        headers: jsonHeaders,
+      });
+    }
     return new Response(JSON.stringify({ qr: `data:image/png;base64,${qrBody.value ?? ""}` }), {
       headers: jsonHeaders,
     });
@@ -58,13 +73,32 @@ Deno.serve(async (req: Request) => {
   }
 
   if (req.method === "POST") {
-    const { action } = (await req.json()) as { action?: string };
+    let action: string | undefined;
+    try {
+      ({ action } = (await req.json()) as { action?: string });
+    } catch {
+      return new Response(JSON.stringify({ ok: false, motivo: "corpo_invalido" }), {
+        status: 400,
+        headers: jsonHeaders,
+      });
+    }
+
     if (action === "start") {
-      await iniciarSessao();
+      const sucesso = await iniciarSessao();
+      if (!sucesso) {
+        return new Response(JSON.stringify({ ok: false, motivo: "falha_ao_iniciar_sessao" }), {
+          headers: jsonHeaders,
+        });
+      }
       return new Response(JSON.stringify({ ok: true }), { headers: jsonHeaders });
     }
     if (action === "logout") {
-      await wahaFetch(`/api/sessions/${WAHA_SESSION}/logout`, { method: "POST" });
+      const resp = await wahaFetch(`/api/sessions/${WAHA_SESSION}/logout`, { method: "POST" });
+      if (!resp.ok) {
+        return new Response(JSON.stringify({ ok: false, motivo: "falha_ao_desconectar" }), {
+          headers: jsonHeaders,
+        });
+      }
       return new Response(JSON.stringify({ ok: true }), { headers: jsonHeaders });
     }
     return new Response(JSON.stringify({ ok: false, motivo: "acao_invalida" }), {
