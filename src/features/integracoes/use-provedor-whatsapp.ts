@@ -3,8 +3,14 @@ import { useEffect, useState } from "react";
 import type { ProvedorWhatsApp } from "@/shared/types";
 
 const STORAGE_KEY = "antonello.integracoes.whatsapp_ativo";
-const PADRAO: ProvedorWhatsApp = "evolution_api";
-const VALIDOS: ProvedorWhatsApp[] = ["evolution_api", "evolution_go", "meta_cloud_api", "openwa"];
+const PADRAO: ProvedorWhatsApp = "waha";
+const VALIDOS: ProvedorWhatsApp[] = [
+  "evolution_api",
+  "evolution_go",
+  "meta_cloud_api",
+  "openwa",
+  "waha",
+];
 
 function getInicial(): ProvedorWhatsApp {
   if (typeof window === "undefined") return PADRAO;
