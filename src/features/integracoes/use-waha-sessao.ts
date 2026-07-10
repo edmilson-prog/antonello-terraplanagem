@@ -12,6 +12,11 @@ interface RespostaQr {
   qr: string;
 }
 
+interface RespostaAcao {
+  ok: boolean;
+  motivo?: string;
+}
+
 export function useWahaSessao() {
   const [status, setStatus] = useState<StatusSessaoWaha>("STOPPED");
   const [numero, setNumero] = useState<string | null>(null);
@@ -46,17 +51,32 @@ export function useWahaSessao() {
   }, [status, buscarStatus]);
 
   const conectar = useCallback(async () => {
-    await supabase.functions.invoke("waha-sessao", { body: { action: "start" } });
+    const { data: inicio, error: erroInicio } = await supabase.functions.invoke<RespostaAcao>(
+      "waha-sessao",
+      { body: { action: "start" } },
+    );
+    if (erroInicio || inicio?.ok === false) {
+      setErro("Não foi possível iniciar a sessão. Tente novamente.");
+      return;
+    }
     const { data } = await supabase.functions.invoke<RespostaQr>("waha-sessao?qr=1", {
       method: "GET",
     });
     if (data) setQr(data.qr);
+    setErro(null);
     await buscarStatus();
   }, [buscarStatus]);
 
   const desconectar = useCallback(async () => {
-    await supabase.functions.invoke("waha-sessao", { body: { action: "logout" } });
+    const { data, error } = await supabase.functions.invoke<RespostaAcao>("waha-sessao", {
+      body: { action: "logout" },
+    });
+    if (error || data?.ok === false) {
+      setErro("Não foi possível desconectar. Tente novamente.");
+      return;
+    }
     setQr(null);
+    setErro(null);
     await buscarStatus();
   }, [buscarStatus]);
 

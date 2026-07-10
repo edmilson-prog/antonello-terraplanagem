@@ -10,6 +10,16 @@ const STATUS_LABEL: Record<StatusSessaoWaha, string> = {
   FAILED: "Falha na conexão",
 };
 
+// Verde: conectado. Âmbar: em progresso (iniciando / aguardando QR) — normal
+// durante a primeira conexão. Vermelho: parado ou falha.
+const STATUS_DOT_CLASS: Record<StatusSessaoWaha, string> = {
+  STOPPED: "bg-destructive",
+  STARTING: "bg-primary",
+  SCAN_QR_CODE: "bg-primary",
+  WORKING: "bg-secondary",
+  FAILED: "bg-destructive",
+};
+
 export function PainelConexaoWaha() {
   const { status, numero, qr, carregando, erro, conectar, desconectar } = useWahaSessao();
 
@@ -24,13 +34,7 @@ export function PainelConexaoWaha() {
   return (
     <div className="space-y-3 rounded-lg border border-dashed p-4">
       <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-        <span
-          className={
-            status === "WORKING"
-              ? "h-2 w-2 rounded-full bg-secondary"
-              : "h-2 w-2 rounded-full bg-destructive"
-          }
-        />
+        <span className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASS[status]}`} />
         {STATUS_LABEL[status]}
         {numero ? <span className="text-muted-foreground">— {numero}</span> : null}
       </div>
