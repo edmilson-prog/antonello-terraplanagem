@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { avisoDaOS, montarMensagemAviso } from "./derivacoes";
+import { avisoDaOS, montarMensagemAviso, telefoneParaChatId } from "./derivacoes";
 import type { AvisoWhatsApp, Cliente, OrdemServico } from "@/shared/types";
 
 const os: OrdemServico = {
@@ -60,5 +60,15 @@ describe("avisoDaOS", () => {
 
   it("retorna null quando a OS não tem aviso", () => {
     expect(avisoDaOS("os-inexistente", avisos)).toBeNull();
+  });
+});
+
+describe("telefoneParaChatId", () => {
+  it("remove formatação e prefixa o DDI 55", () => {
+    expect(telefoneParaChatId("(44) 99111-0000")).toBe("5544991110000@c.us");
+  });
+
+  it("funciona com telefone já só de dígitos", () => {
+    expect(telefoneParaChatId("44999990000")).toBe("5544999990000@c.us");
   });
 });
