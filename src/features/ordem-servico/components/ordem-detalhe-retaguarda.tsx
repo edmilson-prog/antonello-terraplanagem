@@ -25,7 +25,6 @@ import { clientesStore } from "@/features/clientes/clientes-store";
 import { avisosWhatsAppStore } from "@/features/aviso-whatsapp/avisos-whatsapp-store";
 import { avisoDaOS } from "@/features/aviso-whatsapp/derivacoes";
 import { PROVEDOR_WHATSAPP_LABEL, StatusAvisoBadge } from "@/features/aviso-whatsapp/labels";
-import { useProvedorWhatsAppAtivo } from "@/features/integracoes/use-provedor-whatsapp";
 
 export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   const ordem = ordensStore.useOrdem(ordemId);
@@ -35,7 +34,6 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   const [confirmarFechar, setConfirmarFechar] = useState(false);
   const [resumoParaComprovante, setResumoParaComprovante] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { provedor: provedorWhatsAppAtivo } = useProvedorWhatsAppAtivo();
 
   if (isLoading) {
     return (
@@ -83,7 +81,7 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
 
     const cliente = clientesStore.getById(r.ordem.cliente_id);
     if (cliente) {
-      const disparo = avisosWhatsAppStore.dispararAviso(r.ordem, cliente, provedorWhatsAppAtivo);
+      const disparo = await avisosWhatsAppStore.dispararAviso(r.ordem, cliente);
       if (disparo.ok) {
         toast.success(
           `Aviso enviado ao cliente via ${PROVEDOR_WHATSAPP_LABEL[disparo.aviso.provedor]}.`,
