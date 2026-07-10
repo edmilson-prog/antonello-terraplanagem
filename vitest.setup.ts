@@ -1,12 +1,18 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 import { equipamentos as equipamentosFixture } from "./src/mocks/equipamentos";
+import { clientes as clientesFixture } from "./src/mocks/clientes";
 
-// Impede que stores respaldados pelo Supabase (ex.: equipamentosStore) façam
-// chamadas de rede reais durante os testes unitários — eles rodariam contra o
-// projeto de produção, seriam lentos e quebrariam sob RLS/anon sem sessão.
+// Impede que stores respaldados pelo Supabase (ex.: equipamentosStore,
+// clientesStore) façam chamadas de rede reais durante os testes unitários —
+// elas rodariam contra o projeto de produção, seriam lentas e quebrariam sob
+// RLS/anon sem sessão. Cada tabela suportada tem seu próprio fixture em
+// memória, seedado a partir do mock correspondente em src/mocks/.
 vi.mock("./src/lib/supabase", () => {
-  let equipamentos = equipamentosFixture.map((e) => ({ ...e }));
+  const tabelas: Record<string, Record<string, unknown>[]> = {
+    equipamentos: equipamentosFixture.map((e) => ({ ...e })),
+    clientes: clientesFixture.map((c) => ({ ...c })),
+  };
 
   class FakeQueryBuilder implements PromiseLike<{ data: unknown; error: null }> {
     private op: "select" | "insert" | "update" = "select";
@@ -22,9 +28,12 @@ vi.mock("./src/lib/supabase", () => {
       return this;
     }
     eq(_column: string, value: string) {
-      if (this.op === "update" && this.table === "equipamentos") {
-        equipamentos = equipamentos.map((e) =>
-          e.id === value ? { ...e, ...this.payload, updated_at: new Date().toISOString() } : e,
+      const linhas = tabelas[this.table];
+      if (this.op === "update" && linhas) {
+        tabelas[this.table] = linhas.map((item) =>
+          item.id === value
+            ? { ...item, ...this.payload, updated_at: new Date().toISOString() }
+            : item,
         );
       }
       return this;
@@ -47,26 +56,31 @@ vi.mock("./src/lib/supabase", () => {
       return this;
     }
     then<TResult1, TResult2 = never>(
-      onfulfilled?: ((value: { data: unknown; error: null }) => TResult1 | PromiseLike<TResult1>) | null,
+      onfulfilled?:
+        | ((value: { data: unknown; error: null }) => TResult1 | PromiseLike<TResult1>)
+        | null,
     ): PromiseLike<TResult1 | TResult2> {
       let data: unknown = null;
-      if (this.table === "equipamentos") {
+      const linhas = tabelas[this.table];
+      if (linhas) {
         if (this.op === "insert") {
           const novo = {
-            id: `eq-teste-${equipamentos.length + 1}`,
+            id: `${this.table}-teste-${linhas.length + 1}`,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             ...this.payload,
           };
-          equipamentos = [...equipamentos, novo as (typeof equipamentos)[number]];
+          tabelas[this.table] = [...linhas, novo];
           data = this.isSingle ? novo : [novo];
         } else if (this.op === "update") {
           data = null;
         } else {
-          data = equipamentos;
+          data = linhas;
         }
       }
-      return Promise.resolve(onfulfilled ? onfulfilled({ data, error: null }) : ({ data, error: null } as never));
+      return Promise.resolve(
+        onfulfilled ? onfulfilled({ data, error: null }) : ({ data, error: null } as never),
+      );
     }
   }
 

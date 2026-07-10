@@ -6,10 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { clientesStore } from "@/features/clientes/clientes-store";
-import {
-  clienteSchema,
-  type ClienteFormValues,
-} from "@/features/clientes/cliente-schema";
+import { clienteSchema, type ClienteFormValues } from "@/features/clientes/cliente-schema";
 import type { Cliente } from "@/shared/types";
 
 interface Props {
@@ -34,28 +31,44 @@ export function ClienteForm({ inicial, onSuccess, onCancel }: Props) {
     },
   });
 
-  const onSubmit = (values: ClienteFormValues) => {
+  const onSubmit = async (values: ClienteFormValues) => {
     const payload = {
       nome: values.nome,
       documento: values.documento?.trim() ? values.documento.replace(/\D/g, "") : null,
       telefone: values.telefone?.trim() ? values.telefone.trim() : null,
       ativo: values.ativo,
     };
-    if (inicial) {
-      clientesStore.update(inicial.id, payload);
-      toast.success("Cliente atualizado.");
-    } else {
-      clientesStore.create(payload);
-      toast.success("Cliente cadastrado.");
+    try {
+      if (inicial) {
+        await clientesStore.update(inicial.id, payload);
+        toast.success("Cliente atualizado.");
+      } else {
+        await clientesStore.create(payload);
+        toast.success("Cliente cadastrado.");
+      }
+      onSuccess();
+    } catch (err) {
+      const detalhe = err instanceof Error ? `: ${err.message}` : "";
+      toast.error(
+        (inicial ? "Falha ao atualizar o cliente" : "Falha ao cadastrar o cliente") + detalhe,
+      );
     }
-    onSuccess();
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor="nome">Nome / razão social *</Label>
-        <Input id="nome" {...register("nome")} aria-invalid={!!errors.nome} />
+        <Input
+          id="nome"
+          className="uppercase"
+          {...register("nome", {
+            onChange: (e) => {
+              e.target.value = e.target.value.toUpperCase();
+            },
+          })}
+          aria-invalid={!!errors.nome}
+        />
         {errors.nome ? <p className="text-xs text-destructive">{errors.nome.message}</p> : null}
       </div>
 

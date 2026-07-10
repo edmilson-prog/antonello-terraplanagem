@@ -5,7 +5,7 @@ import type { Equipamento } from "@/shared/types";
 export const equipamentos: Equipamento[] = [
   {
     id: "eq-001",
-    nome: "Escavadeira Hidráulica Caterpillar 320D",
+    nome: "ESCAVADEIRA HIDRÁULICA CATERPILLAR 320D",
     tipo: "escavadeira",
     capacidade: "18 toneladas",
     horimetro_atual: 8432,
@@ -17,7 +17,7 @@ export const equipamentos: Equipamento[] = [
   },
   {
     id: "eq-002",
-    nome: "Escavadeira 10t",
+    nome: "ESCAVADEIRA 10T",
     tipo: "escavadeira",
     capacidade: "10 toneladas",
     horimetro_atual: 5120,
@@ -29,7 +29,7 @@ export const equipamentos: Equipamento[] = [
   },
   {
     id: "eq-003",
-    nome: "Mini Escavadeira 5t",
+    nome: "MINI ESCAVADEIRA 5T",
     tipo: "escavadeira",
     capacidade: "5 toneladas",
     horimetro_atual: 2310.5,
@@ -41,7 +41,7 @@ export const equipamentos: Equipamento[] = [
   },
   {
     id: "eq-004",
-    nome: "Carregadeira de Rodas",
+    nome: "CARREGADEIRA DE RODAS",
     tipo: "carregadeira",
     capacidade: "2,5 m³",
     horimetro_atual: 6740,
@@ -53,7 +53,7 @@ export const equipamentos: Equipamento[] = [
   },
   {
     id: "eq-005",
-    nome: "Caminhão Caçamba Basculante",
+    nome: "CAMINHÃO CAÇAMBA BASCULANTE",
     tipo: "caminhao_cacamba",
     capacidade: "12 m³",
     horimetro_atual: 12890,
@@ -65,7 +65,7 @@ export const equipamentos: Equipamento[] = [
   },
   {
     id: "eq-006",
-    nome: "Trator de Esteira D6",
+    nome: "TRATOR DE ESTEIRA D6",
     tipo: "trator_esteira",
     capacidade: "20 toneladas",
     horimetro_atual: 4205,
@@ -77,7 +77,7 @@ export const equipamentos: Equipamento[] = [
   },
   {
     id: "eq-007",
-    nome: "Retroescavadeira JCB 3CX para serviços de fundação, vala e nivelamento fino em terreno urbano",
+    nome: "RETROESCAVADEIRA JCB 3CX PARA SERVIÇOS DE FUNDAÇÃO, VALA E NIVELAMENTO FINO EM TERRENO URBANO",
     tipo: "retroescavadeira",
     capacidade: "8 toneladas",
     horimetro_atual: 9876.5,
@@ -89,7 +89,7 @@ export const equipamentos: Equipamento[] = [
   },
   {
     id: "eq-008",
-    nome: "Escavadeira Antiga (desativada)",
+    nome: "ESCAVADEIRA ANTIGA (DESATIVADA)",
     tipo: "escavadeira",
     capacidade: "15 toneladas",
     horimetro_atual: 21030,

@@ -1,25 +1,25 @@
 -- Gerado por scripts/mocks-to-seed.ts a partir de src/mocks/*.ts. Não editar à mão.
 
 insert into public.equipamentos (id, nome, tipo, capacidade, horimetro_atual, identificador, status, ativo, created_at, updated_at) values
-  ('6f0644c0-d416-5875-921f-aca44840f4c2', 'Escavadeira Hidráulica Caterpillar 320D', 'escavadeira', '18 toneladas', 8432, 'PAT-0001', 'em_uso', true, '2024-01-10T12:00:00.000Z', '2025-11-02T09:30:00.000Z'),
-  ('febb45d8-fb55-5ff4-a78e-cd67aa88cdd2', 'Escavadeira 10t', 'escavadeira', '10 toneladas', 5120, 'PAT-0002', 'disponivel', true, '2024-02-15T12:00:00.000Z', '2025-10-20T14:00:00.000Z'),
-  ('53920999-908b-5e9e-a43a-9fcb5788daf8', 'Mini Escavadeira 5t', 'escavadeira', '5 toneladas', 2310.5, null, 'disponivel', true, '2024-03-01T12:00:00.000Z', '2025-09-12T08:15:00.000Z'),
-  ('d92588a5-44a5-5a07-b7ea-11d495debfd6', 'Carregadeira de Rodas', 'carregadeira', '2,5 m³', 6740, 'PAT-0004', 'manutencao', true, '2024-01-22T12:00:00.000Z', '2026-05-30T16:45:00.000Z'),
-  ('0fcd91bc-73d5-5b72-8765-b44e0f3d2357', 'Caminhão Caçamba Basculante', 'caminhao_cacamba', '12 m³', 12890, 'MER-5821', 'em_uso', true, '2023-11-05T12:00:00.000Z', '2026-06-01T10:00:00.000Z'),
-  ('70dba23d-2424-5c1b-8013-6537d5f36278', 'Trator de Esteira D6', 'trator_esteira', '20 toneladas', 4205, 'PAT-0006', 'disponivel', true, '2024-04-18T12:00:00.000Z', '2025-12-01T11:20:00.000Z'),
-  ('3e0aee6e-e4b8-59e8-ac6a-39f6f0d989b6', 'Retroescavadeira JCB 3CX para serviços de fundação, vala e nivelamento fino em terreno urbano', 'retroescavadeira', '8 toneladas', 9876.5, 'PAT-0007', 'disponivel', true, '2024-05-09T12:00:00.000Z', '2026-04-15T13:30:00.000Z'),
-  ('689042e9-deed-5b04-9128-994166e7eed7', 'Escavadeira Antiga (desativada)', 'escavadeira', '15 toneladas', 21030, 'PAT-0008', 'disponivel', false, '2021-07-30T12:00:00.000Z', '2025-08-10T09:00:00.000Z');
+  ('6f0644c0-d416-5875-921f-aca44840f4c2', 'ESCAVADEIRA HIDRÁULICA CATERPILLAR 320D', 'escavadeira', '18 toneladas', 8432, 'PAT-0001', 'em_uso', true, '2024-01-10T12:00:00.000Z', '2025-11-02T09:30:00.000Z'),
+  ('febb45d8-fb55-5ff4-a78e-cd67aa88cdd2', 'ESCAVADEIRA 10T', 'escavadeira', '10 toneladas', 5120, 'PAT-0002', 'disponivel', true, '2024-02-15T12:00:00.000Z', '2025-10-20T14:00:00.000Z'),
+  ('53920999-908b-5e9e-a43a-9fcb5788daf8', 'MINI ESCAVADEIRA 5T', 'escavadeira', '5 toneladas', 2310.5, null, 'disponivel', true, '2024-03-01T12:00:00.000Z', '2025-09-12T08:15:00.000Z'),
+  ('d92588a5-44a5-5a07-b7ea-11d495debfd6', 'CARREGADEIRA DE RODAS', 'carregadeira', '2,5 m³', 6740, 'PAT-0004', 'manutencao', true, '2024-01-22T12:00:00.000Z', '2026-05-30T16:45:00.000Z'),
+  ('0fcd91bc-73d5-5b72-8765-b44e0f3d2357', 'CAMINHÃO CAÇAMBA BASCULANTE', 'caminhao_cacamba', '12 m³', 12890, 'MER-5821', 'em_uso', true, '2023-11-05T12:00:00.000Z', '2026-06-01T10:00:00.000Z'),
+  ('70dba23d-2424-5c1b-8013-6537d5f36278', 'TRATOR DE ESTEIRA D6', 'trator_esteira', '20 toneladas', 4205, 'PAT-0006', 'disponivel', true, '2024-04-18T12:00:00.000Z', '2025-12-01T11:20:00.000Z'),
+  ('3e0aee6e-e4b8-59e8-ac6a-39f6f0d989b6', 'RETROESCAVADEIRA JCB 3CX PARA SERVIÇOS DE FUNDAÇÃO, VALA E NIVELAMENTO FINO EM TERRENO URBANO', 'retroescavadeira', '8 toneladas', 9876.5, 'PAT-0007', 'disponivel', true, '2024-05-09T12:00:00.000Z', '2026-04-15T13:30:00.000Z'),
+  ('689042e9-deed-5b04-9128-994166e7eed7', 'ESCAVADEIRA ANTIGA (DESATIVADA)', 'escavadeira', '15 toneladas', 21030, 'PAT-0008', 'disponivel', false, '2021-07-30T12:00:00.000Z', '2025-08-10T09:00:00.000Z');
 insert into public.operadores (id, nome, telefone, cpf, pin_hash, ativo, created_at, updated_at) values
-  ('2afcc491-6813-50c6-ba65-169c23b15921', 'José Carlos da Silva', '44999990001', '12345678909', extensions.crypt('1234', extensions.gen_salt('bf')), true, '2024-01-10T12:00:00.000Z', '2024-01-10T12:00:00.000Z'),
-  ('c646e766-009e-50c3-bbce-6522959886d7', 'Antônio Pereira', '44999990002', '98765432100', extensions.crypt('9876', extensions.gen_salt('bf')), true, '2024-02-01T12:00:00.000Z', '2024-02-01T12:00:00.000Z'),
-  ('5331cbfb-f932-57ad-ac56-8f52410ea002', 'Marcos Vinícius Rodrigues de Oliveira', null, '11122233396', extensions.crypt('1112', extensions.gen_salt('bf')), true, '2024-03-12T12:00:00.000Z', '2024-03-12T12:00:00.000Z'),
-  ('6858069f-f8d6-5946-b1c9-f1764591c2aa', 'Reinaldo Souza', '44988887777', '44455566619', extensions.crypt('4445', extensions.gen_salt('bf')), false, '2023-09-20T12:00:00.000Z', '2025-06-15T12:00:00.000Z'),
-  ('1d148949-9241-5efe-bb9e-3cdc8849899d', 'Paulo Henrique Gomes', '44991234567', '78912345664', extensions.crypt('7891', extensions.gen_salt('bf')), true, '2024-06-05T12:00:00.000Z', '2024-06-05T12:00:00.000Z');
+  ('2afcc491-6813-50c6-ba65-169c23b15921', 'JOSÉ CARLOS DA SILVA', '44999990001', '12345678909', extensions.crypt('1234', extensions.gen_salt('bf')), true, '2024-01-10T12:00:00.000Z', '2024-01-10T12:00:00.000Z'),
+  ('c646e766-009e-50c3-bbce-6522959886d7', 'ANTÔNIO PEREIRA', '44999990002', '98765432100', extensions.crypt('9876', extensions.gen_salt('bf')), true, '2024-02-01T12:00:00.000Z', '2024-02-01T12:00:00.000Z'),
+  ('5331cbfb-f932-57ad-ac56-8f52410ea002', 'MARCOS VINÍCIUS RODRIGUES DE OLIVEIRA', null, '11122233396', extensions.crypt('1112', extensions.gen_salt('bf')), true, '2024-03-12T12:00:00.000Z', '2024-03-12T12:00:00.000Z'),
+  ('6858069f-f8d6-5946-b1c9-f1764591c2aa', 'REINALDO SOUZA', '44988887777', '44455566619', extensions.crypt('4445', extensions.gen_salt('bf')), false, '2023-09-20T12:00:00.000Z', '2025-06-15T12:00:00.000Z'),
+  ('1d148949-9241-5efe-bb9e-3cdc8849899d', 'PAULO HENRIQUE GOMES', '44991234567', '78912345664', extensions.crypt('7891', extensions.gen_salt('bf')), true, '2024-06-05T12:00:00.000Z', '2024-06-05T12:00:00.000Z');
 insert into public.clientes (id, nome, documento, telefone, ativo, created_at, updated_at) values
-  ('4007405d-e023-5e6e-bf20-84c052bb768d', 'Construtora Horizonte Ltda.', '11222333000181', '4432210000', true, '2024-01-15T12:00:00.000Z', '2024-01-15T12:00:00.000Z'),
-  ('c741138a-3b1a-5c59-963b-82f2161a6b78', 'Incorporadora Vale Verde', null, '44991110000', true, '2024-02-20T12:00:00.000Z', '2024-02-20T12:00:00.000Z'),
-  ('19337334-82e7-5acf-892c-04ec2def39ad', 'Prefeitura Municipal de São Pedro do Ivaí — Secretaria de Obras e Infraestrutura', null, null, true, '2024-03-30T12:00:00.000Z', '2024-03-30T12:00:00.000Z'),
-  ('85b5f0b4-ddac-59e2-9bf2-51c49684be44', 'João da Silva Construções ME', '52998224725', '44999998888', false, '2023-12-01T12:00:00.000Z', '2025-05-10T12:00:00.000Z');
+  ('4007405d-e023-5e6e-bf20-84c052bb768d', 'CONSTRUTORA HORIZONTE LTDA.', '11222333000181', '4432210000', true, '2024-01-15T12:00:00.000Z', '2024-01-15T12:00:00.000Z'),
+  ('c741138a-3b1a-5c59-963b-82f2161a6b78', 'INCORPORADORA VALE VERDE', null, '44991110000', true, '2024-02-20T12:00:00.000Z', '2024-02-20T12:00:00.000Z'),
+  ('19337334-82e7-5acf-892c-04ec2def39ad', 'PREFEITURA MUNICIPAL DE SÃO PEDRO DO IVAÍ — SECRETARIA DE OBRAS E INFRAESTRUTURA', null, null, true, '2024-03-30T12:00:00.000Z', '2024-03-30T12:00:00.000Z'),
+  ('85b5f0b4-ddac-59e2-9bf2-51c49684be44', 'JOÃO DA SILVA CONSTRUÇÕES ME', '52998224725', '44999998888', false, '2023-12-01T12:00:00.000Z', '2025-05-10T12:00:00.000Z');
 insert into public.precos_hora_maquina (id, equipamento_id, tipo_equipamento, valor_hora_seca, valor_hora_operada, ativo, created_at, updated_at) values
   ('a487d6c5-4e94-5d7a-b96d-4fffc82ab9c4', '6f0644c0-d416-5875-921f-aca44840f4c2', null, 280, 360, true, '2025-01-15T12:00:00.000Z', '2026-03-10T09:00:00.000Z'),
   ('c865338f-bc6a-5b76-a629-027d85d2b5d9', 'febb45d8-fb55-5ff4-a78e-cd67aa88cdd2', null, 220, 290, true, '2025-01-15T12:00:00.000Z', '2026-03-10T09:00:00.000Z'),

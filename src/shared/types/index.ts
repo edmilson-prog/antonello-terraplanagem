@@ -41,9 +41,21 @@ export interface Cliente {
   nome: string;
   documento: string | null; // CPF/CNPJ (opcional nesta fase)
   telefone: string | null;
+  tipo_pessoa?: "PF" | "PJ" | null;
   ativo: boolean;
   created_at: string;
   updated_at: string;
+  // Snapshot importado do ERP legado (FarolTI) — congelado no momento da
+  // importação, não recalculado ao vivo pelo sistema. Opcionais/null para
+  // clientes cadastrados diretamente na plataforma (sem histórico no legado).
+  cli_codigo_legado?: number | null;
+  legado_frequencia_os?: number | null;
+  legado_ltv?: number | null;
+  legado_ticket_medio?: number | null;
+  legado_primeira_os?: string | null; // date (YYYY-MM-DD)
+  legado_ultima_os?: string | null; // date (YYYY-MM-DD)
+  legado_recencia_dias?: number | null;
+  legado_curva_abc?: "A" | "B" | "C" | null;
 }
 
 export interface FaturamentoMes {
@@ -218,13 +230,7 @@ export interface Orcamento {
 // Financeiro (PRD-007) — contas a pagar e a receber. Só retaguarda;
 // NUNCA importado/renderizado em /app/*.
 export type StatusConta = "aberta" | "liquidada";
-export type FormaRecebimento =
-  | "dinheiro"
-  | "pix"
-  | "transferencia"
-  | "boleto"
-  | "cheque"
-  | "outro";
+export type FormaRecebimento = "dinheiro" | "pix" | "transferencia" | "boleto" | "cheque" | "outro";
 export type CategoriaDespesa = "diesel" | "manutencao" | "folha" | "fornecedor" | "outro";
 
 export interface ContaReceber {

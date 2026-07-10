@@ -20,15 +20,32 @@ import {
   Menu,
   ChevronRight,
   MessageCircle,
+  LogOut,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { toast } from "sonner";
 import { HazardStripe } from "@/shared/components/hazard-stripe";
 import { ThemeToggle } from "@/shared/components/theme-toggle";
 import { PerguntarIABar } from "@/features/ia/components/perguntar-ia-bar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
+import { useUsuarioRetaguarda } from "@/features/auth/usuario-retaguarda";
+
+const PERFIL_LABEL: Record<string, string> = {
+  proprietario: "Proprietário",
+  recepcao: "Recepção",
+  operador: "Operador",
+};
 
 interface NavItem {
   to: string;
@@ -166,6 +183,7 @@ export function RetaguardaShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [aberto, setAberto] = useState(false);
   const navigate = useNavigate();
+  const usuario = useUsuarioRetaguarda();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -175,15 +193,21 @@ export function RetaguardaShell() {
     });
   }, [navigate]);
 
+  async function sair() {
+    await supabase.auth.signOut();
+    toast.success("Sessão encerrada.");
+    navigate({ to: "/login" });
+  }
+
   return (
-    <div className="flex min-h-screen w-full bg-background">
+    <div className="flex h-screen w-full overflow-hidden bg-background">
       {/* Sidebar desktop */}
       <aside className="hidden w-64 shrink-0 flex-col border-r bg-sidebar md:flex">
         <Branding />
         <div className="px-3 pb-4">
           <HazardStripe className="rounded-full" />
         </div>
-        <div className="flex-1 overflow-y-auto px-3">
+        <div className="flex-1 overflow-y-auto px-3 scrollbar-hide">
           <NavList pathname={pathname} />
         </div>
         <div className="border-t border-sidebar-border px-3 py-3 text-[11px] text-sidebar-foreground/50">
@@ -191,7 +215,7 @@ export function RetaguardaShell() {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
         <header className="sticky top-0 z-20 border-b bg-background/95 backdrop-blur">
           <HazardStripe />
           <div className="flex items-center gap-3 px-4 py-3 md:px-8">
@@ -220,12 +244,37 @@ export function RetaguardaShell() {
 
             <div className="ml-auto flex items-center gap-2">
               <ThemeToggle />
-              <div className="hidden h-9 items-center gap-2 rounded-full border bg-surface px-3 sm:flex">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
-                  A
-                </div>
-                <span className="text-xs font-medium text-foreground">Recepção</span>
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    className="hidden h-9 items-center gap-2 rounded-full border bg-surface px-3 outline-none transition-colors hover:bg-sidebar-accent sm:flex"
+                  >
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[11px] font-bold text-primary-foreground">
+                      {(usuario?.nome ?? "?").charAt(0).toUpperCase()}
+                    </div>
+                    <span className="text-xs font-medium text-foreground">
+                      {usuario?.nome ?? "Carregando..."}
+                    </span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="font-medium text-foreground">{usuario?.nome ?? "—"}</div>
+                    <div className="text-xs font-normal text-muted-foreground">
+                      {usuario ? (PERFIL_LABEL[usuario.perfil] ?? usuario.perfil) : ""}
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onSelect={sair}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sair
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </header>

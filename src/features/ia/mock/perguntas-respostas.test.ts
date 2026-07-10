@@ -10,7 +10,7 @@ describe("responderPergunta", () => {
 
   it("answers hours worked by a named equipamento", async () => {
     const r = await responderPergunta("Quantas horas a Caterpillar 320D já trabalhou?");
-    expect(r.resposta).toContain("Caterpillar 320D");
+    expect(r.resposta).toContain("CATERPILLAR 320D");
     expect(r.fonte_rota).toBe("/admin/equipamentos");
   });
 

@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Building2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HazardStripe } from "@/shared/components/hazard-stripe";
+import { ThemeToggle } from "@/shared/components/theme-toggle";
 import { supabase } from "@/lib/supabase";
 
 export function LoginPage() {
@@ -45,63 +45,125 @@ export function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
-      <div className="w-full max-w-md overflow-hidden rounded-xl border bg-card shadow-lg">
-        <HazardStripe />
+    <main className="flex min-h-screen w-full bg-asphalt">
+      {/* Painel de marca — asfalto fixo (não segue o toggle); tablet e desktop.
+          A logo "preto" já traz fundo escuro embutido idêntico ao bg-asphalt,
+          então as bordas do PNG quadrado se fundem ao painel. */}
+      <aside className="relative hidden w-1/2 flex-col items-center justify-center overflow-hidden bg-asphalt md:flex">
+        <HazardStripe className="absolute inset-x-0 top-0" />
 
-        <div className="space-y-6 p-6 md:p-8">
-          <div className="space-y-2 text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Building2 className="h-6 w-6" />
-            </div>
-            <h1 className="font-display text-2xl font-bold text-card-foreground">
-              Antonello Terraplanagem — Retaguarda
-            </h1>
-            <p className="text-sm text-muted-foreground">Acesso da recepção e do proprietário</p>
+        <div className="flex flex-col items-center gap-8 px-12 text-center">
+          <img
+            src="/logo-antonello-preto.png"
+            alt="Antonello Terraplanagem"
+            className="w-[20rem] max-w-full select-none object-contain"
+          />
+          <div className="space-y-4">
+            <p className="mx-auto max-w-sm text-balance text-base leading-relaxed text-sidebar-foreground/85">
+              Horas de máquina, ordens de serviço e faturamento em um só lugar — com a rentabilidade
+              de cada equipamento e cada obra sempre à vista.
+            </p>
+            <p className="font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-primary">
+              Gestão de Terraplanagem
+            </p>
           </div>
+        </div>
 
-          <form onSubmit={entrar} className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                required
-              />
+        <HazardStripe className="absolute inset-x-0 bottom-0" />
+      </aside>
+
+      {/* Painel do formulário — tom concreto claro FIXO (via .theme-light):
+          NÃO segue o toggle de tema, para manter o contraste do split-screen. */}
+      <div className="theme-light flex w-full flex-1 flex-col bg-background text-foreground md:w-1/2">
+        <div className="flex items-center justify-between px-4 py-4 md:px-8">
+          {/* Logo "branco" traz fundo creme embutido idêntico ao bg-background,
+              então se funde ao painel no header compacto do mobile. */}
+          <img
+            src="/logo-antonello-branco.png"
+            alt="Antonello Terraplanagem"
+            className="h-12 w-auto select-none object-contain md:hidden"
+          />
+          {/* Toggle mantido: não muda a cor desta tela (painéis são fixos), mas
+              persiste a preferência de tema do usuário para quando entrar em /admin,
+              atendendo à regra de tema claro/escuro obrigatório em toda a aplicação. */}
+          <div className="ml-auto">
+            <ThemeToggle />
+          </div>
+        </div>
+
+        <div className="flex flex-1 items-center justify-center px-4 py-6">
+          <div className="w-full max-w-sm space-y-8">
+            <div className="space-y-3">
+              <HazardStripe className="h-1.5 w-12 rounded-full" />
+              <div className="space-y-1">
+                <h1 className="font-display text-3xl font-bold tracking-tight text-foreground">
+                  Entrar na retaguarda
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Acesso da recepção e do proprietário.
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="senha">Senha</Label>
-              <Input
-                id="senha"
-                type="password"
-                placeholder="••••••••"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                autoComplete="current-password"
-                required
-              />
-            </div>
+            <form onSubmit={entrar} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="email">E-mail</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  inputMode="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  autoFocus
+                  required
+                  aria-invalid={erro ? true : undefined}
+                  aria-describedby={erro ? "login-erro" : undefined}
+                  className="h-11"
+                />
+              </div>
 
-            {erro ? <p className="text-sm text-destructive">{erro}</p> : null}
+              <div className="space-y-2">
+                <Label htmlFor="senha">Senha</Label>
+                <Input
+                  id="senha"
+                  type="password"
+                  placeholder="••••••••"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                  aria-invalid={erro ? true : undefined}
+                  aria-describedby={erro ? "login-erro" : undefined}
+                  className="h-11"
+                />
+              </div>
 
-            <Button
-              type="submit"
-              size="lg"
-              disabled={entrando}
-              className="w-full bg-primary text-primary-foreground hover:bg-primary-hover"
-            >
-              {entrando ? "Entrando..." : "Entrar"}
-            </Button>
-          </form>
+              {erro ? (
+                <p
+                  id="login-erro"
+                  role="alert"
+                  className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive"
+                >
+                  {erro}
+                </p>
+              ) : null}
 
-          <p className="text-center font-mono text-[11px] uppercase tracking-[0.15em] text-foreground-faint">
-            Operador de campo? Use o app pelo celular da obra.
-          </p>
+              <Button
+                type="submit"
+                size="lg"
+                disabled={entrando}
+                className="h-11 w-full bg-primary text-base font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover"
+              >
+                {entrando ? "Entrando..." : "Entrar"}
+              </Button>
+            </form>
+
+            <p className="border-t border-border pt-5 text-center font-mono text-[11px] uppercase tracking-[0.15em] text-foreground-faint">
+              Operador de campo? O apontamento é feito pelo app, no celular da obra.
+            </p>
+          </div>
         </div>
       </div>
     </main>

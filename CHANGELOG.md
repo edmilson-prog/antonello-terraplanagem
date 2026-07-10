@@ -5,6 +5,23 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.21.0] - 2026-07-10 - Ledger
+
+### Added
+- Importação completa dos 1066 clientes reais extraídos do ERP legado (FarolTI/`Gerencial.fdb`) para o Supabase, incluindo o histórico comercial (LTV, ticket médio, frequência de OS, curva ABC, primeira/última OS, recência) em novas colunas `legado_*` de `clientes` — snapshot congelado do legado, não recalculado ao vivo.
+- Página de detalhe do cliente (`/admin/clientes/:id`), acessível clicando no nome na listagem: dados básicos, histórico do ERP legado (quando existir) e edição inline (sem modal).
+- Paginação na listagem de Clientes, com seletor de itens por página (20/50/100).
+- Logout na retaguarda: dropdown no badge do usuário (canto superior direito) com nome/perfil reais e opção "Sair".
+- Tela de login em split-screen, com as duas variações do logo (fundo escuro/claro) e painel do formulário sempre no tema claro.
+
+### Changed
+- Store de `clientes` migrada de mock para Supabase real (mesmo padrão já aplicado a `equipamentos`), incluindo leitura anônima restrita a `id, nome` para o app do operador exibir o cliente na OS.
+- Nomes de clientes, equipamentos e operadores normalizados para uppercase — no banco (dado existente) e ao digitar nos formulários de cadastro.
+- Sidebar da retaguarda fixa (não rola mais junto com o conteúdo da página) e sem barra de rolagem visível.
+
+### Security
+- Nova policy `clientes_anon_select_ativos` + grant de coluna restrito a `id, nome` para o papel `anon` em `clientes` (mesma defesa em profundidade já usada em `operadores`) — CPF/CNPJ e telefone continuam fora do alcance do app do operador.
+
 ## [0.20.0] - 2026-07-08 - Ignition
 
 ### Added

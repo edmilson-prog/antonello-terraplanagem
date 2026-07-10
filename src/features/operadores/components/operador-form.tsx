@@ -6,10 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { operadoresStore } from "@/features/operadores/operadores-store";
-import {
-  operadorSchema,
-  type OperadorFormValues,
-} from "@/features/operadores/operador-schema";
+import { operadorSchema, type OperadorFormValues } from "@/features/operadores/operador-schema";
 import type { Operador } from "@/shared/types";
 
 interface Props {
@@ -53,7 +50,16 @@ export function OperadorForm({ inicial, onSuccess, onCancel }: Props) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor="nome">Nome *</Label>
-        <Input id="nome" {...register("nome")} aria-invalid={!!errors.nome} />
+        <Input
+          id="nome"
+          className="uppercase"
+          {...register("nome", {
+            onChange: (e) => {
+              e.target.value = e.target.value.toUpperCase();
+            },
+          })}
+          aria-invalid={!!errors.nome}
+        />
         {errors.nome ? <p className="text-xs text-destructive">{errors.nome.message}</p> : null}
       </div>
 

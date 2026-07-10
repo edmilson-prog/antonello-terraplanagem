@@ -164,6 +164,50 @@
   --sidebar-ring: #FFB300;
 }
 
+/*
+ * Escopo de tema claro FIXO (concreto).
+ * Força a paleta clara em uma subárvore, independentemente do toggle global
+ * (classe .dark no <html>). Como uma custom property resolve pelo ancestral mais
+ * próximo que a declara, redeclarar aqui vence o .dark para todos os descendentes.
+ * Análogo ao bg-asphalt (escuro fixo): usado no painel do formulário do login
+ * para preservar o contraste do split-screen mesmo com o app em modo escuro.
+ * As cores continuam centralizadas nos tokens — os componentes nunca as hardcodam.
+ */
+.theme-light {
+  --background: #F4EFE6;
+  --surface: #E8E2D5;
+  --card: #FFFFFF;
+  --card-foreground: #1B1912;
+  --popover: #FFFFFF;
+  --popover-foreground: #1B1912;
+
+  --foreground: #1B1912;
+  --muted-foreground: #5A554A;
+  --foreground-faint: #8C8678;
+
+  --primary: #FFB300;
+  --primary-foreground: #1B1912;
+  --primary-hover: #E09600;
+
+  --secondary: #A2622F;
+  --secondary-foreground: #F4EFE6;
+  --secondary-soft: #C07B43;
+
+  --muted: #E8E2D5;
+  --steel: #717A82;
+  --steel-soft: #9AA1A8;
+
+  --accent: #F4EFE6;
+  --accent-foreground: #1B1912;
+
+  --destructive: #B0341B;
+  --destructive-foreground: #F4EFE6;
+
+  --border: #D6CDBC;
+  --input: #D6CDBC;
+  --ring: #FFB300;
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
@@ -189,4 +233,13 @@
     var(--color-primary) 0 14px,
     var(--color-asphalt) 14px 28px
   );
+}
+
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
