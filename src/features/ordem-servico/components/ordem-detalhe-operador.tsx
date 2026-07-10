@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { OrdemResumoCard } from "@/features/ordem-servico/components/ordem-resumo-card";
 import { ApontamentosDaOS } from "@/features/ordem-servico/components/apontamentos-da-os";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
@@ -9,8 +10,31 @@ import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 
 export function OrdemDetalheOperador({ ordemId }: { ordemId: string }) {
   const ordem = ordensStore.useOrdem(ordemId);
+  const { isLoading, error } = ordensStore.useEstado();
   const apontamentos = apontamentosStore.useTodos();
   const navigate = useNavigate();
+
+  if (isLoading) {
+    return (
+      <div className="space-y-5">
+        <Skeleton className="h-6 w-32" />
+        <Skeleton className="h-32 w-full rounded-xl" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-4 text-center">
+        <Icon icon="lucide:triangle-alert" className="mx-auto h-8 w-8 text-destructive" />
+        <p className="text-sm text-muted-foreground">{error.message}</p>
+        <Button variant="outline" onClick={ordensStore.retry} className="gap-2">
+          <Icon icon="lucide:rotate-cw" className="h-4 w-4" />
+          Tentar novamente
+        </Button>
+      </div>
+    );
+  }
 
   if (!ordem) return <OrdemNaoEncontrada />;
 

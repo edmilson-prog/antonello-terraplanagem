@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { criarOrcamentosStore } from "@/features/orcamentos/orcamentos-store";
-import type { Orcamento, OrcamentoItem } from "@/shared/types";
+import { orcamentosStore } from "@/features/orcamentos/orcamentos-store";
+import type { OrcamentoItem } from "@/shared/types";
+
+// orcamentosStore agora é o singleton real (Supabase, fake em vitest.setup.ts) —
+// não existe mais o factory criarOrcamentosStore. Cada teste cria seu próprio
+// orçamento via .criar() para não depender do estado dos outros testes no
+// mesmo arquivo (o fake acumula estado entre os `it()` do arquivo).
 
 const item = (over: Partial<OrcamentoItem> = {}): OrcamentoItem => ({
   id: crypto.randomUUID(),
@@ -15,85 +20,86 @@ const item = (over: Partial<OrcamentoItem> = {}): OrcamentoItem => ({
   ...over,
 });
 
-const base = (over: Partial<Orcamento> = {}): Orcamento => ({
-  id: "orc-x",
-  numero: "ORC-2026-0001",
-  cliente_id: "cl-001",
-  descricao_obra: "Obra teste",
-  itens: [],
-  desconto: 0,
-  valor_total: 0,
-  validade: "2026-07-30",
-  observacao: null,
-  status: "rascunho",
-  os_id: null,
-  enviado_em: null,
-  decidido_em: null,
-  created_at: "2026-06-01T12:00:00.000Z",
-  updated_at: "2026-06-01T12:00:00.000Z",
-  ...over,
-});
+function criarBase() {
+  return orcamentosStore.criar({
+    cliente_id: "cl-001",
+    descricao_obra: "Obra teste orcamentos-store",
+    validade: "2026-08-30",
+  });
+}
 
 describe("criar", () => {
-  it("cria rascunho com número, itens vazios e total zero", () => {
-    const store = criarOrcamentosStore([]);
-    const novo = store.criar({ cliente_id: "cl-002", descricao_obra: "Nova obra", validade: "2026-08-01" });
+  it("cria rascunho com número, itens vazios e total zero", async () => {
+    const novo = await criarBase();
     expect(novo.status).toBe("rascunho");
-    expect(novo.numero).toBe("ORC-2026-0001");
+    expect(novo.numero).toMatch(/^ORC-\d{4}-\d{4}$/);
     expect(novo.itens).toEqual([]);
     expect(novo.valor_total).toBe(0);
-    expect(novo.validade).toBe("2026-08-01");
-    expect(store.listar()).toHaveLength(1);
+    expect(novo.validade).toBe("2026-08-30");
   });
 });
 
 describe("atualizar", () => {
-  it("recalcula o total ao trocar itens e desconto", () => {
-    const store = criarOrcamentosStore([base()]);
-    store.atualizar("orc-x", { itens: [item(), item({ valor_total: 850, tipo: "mobilizacao", hora_tipo: null })], desconto: 100 });
-    expect(store.obter("orc-x")?.valor_total).toBe(4350); // 3600 + 850 − 100
+  it("recalcula o total ao trocar itens e desconto", async () => {
+    const orc = await criarBase();
+    await orcamentosStore.atualizar(orc.id, {
+      itens: [item(), item({ valor_total: 850, tipo: "mobilizacao", hora_tipo: null })],
+      desconto: 100,
+    });
+    expect(orcamentosStore.obter(orc.id)?.valor_total).toBe(4350); // 3600 + 850 − 100
   });
 });
 
 describe("enviar", () => {
-  it("bloqueia orçamento vazio", () => {
-    const store = criarOrcamentosStore([base()]);
-    const r = store.enviar("orc-x");
+  it("bloqueia orçamento vazio", async () => {
+    const orc = await criarBase();
+    const r = await orcamentosStore.enviar(orc.id);
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.motivo).toMatch(/vazio/i);
   });
-  it("envia rascunho com itens", () => {
-    const store = criarOrcamentosStore([base({ itens: [item()], valor_total: 3600 })]);
-    const r = store.enviar("orc-x");
+
+  it("envia rascunho com itens", async () => {
+    const orc = await criarBase();
+    await orcamentosStore.atualizar(orc.id, { itens: [item()] });
+    const r = await orcamentosStore.enviar(orc.id);
     expect(r.ok).toBe(true);
-    expect(store.obter("orc-x")?.status).toBe("enviado");
-    expect(store.obter("orc-x")?.enviado_em).not.toBeNull();
+    expect(orcamentosStore.obter(orc.id)?.status).toBe("enviado");
+    expect(orcamentosStore.obter(orc.id)?.enviado_em).not.toBeNull();
   });
 });
 
 describe("aprovar / recusar", () => {
-  it("aprova a partir de enviado", () => {
-    const store = criarOrcamentosStore([base({ status: "enviado", itens: [item()], valor_total: 3600 })]);
-    const r = store.aprovar("orc-x");
+  it("aprova a partir de enviado", async () => {
+    const orc = await criarBase();
+    await orcamentosStore.atualizar(orc.id, { itens: [item()] });
+    await orcamentosStore.enviar(orc.id);
+    const r = await orcamentosStore.aprovar(orc.id);
     expect(r.ok).toBe(true);
-    expect(store.obter("orc-x")?.status).toBe("aprovado");
-    expect(store.obter("orc-x")?.decidido_em).not.toBeNull();
+    expect(orcamentosStore.obter(orc.id)?.status).toBe("aprovado");
+    expect(orcamentosStore.obter(orc.id)?.decidido_em).not.toBeNull();
   });
-  it("recusa a partir de enviado", () => {
-    const store = criarOrcamentosStore([base({ status: "enviado", itens: [item()], valor_total: 3600 })]);
-    expect(store.recusar("orc-x").ok).toBe(true);
-    expect(store.obter("orc-x")?.status).toBe("recusado");
+
+  it("recusa a partir de enviado", async () => {
+    const orc = await criarBase();
+    await orcamentosStore.atualizar(orc.id, { itens: [item()] });
+    await orcamentosStore.enviar(orc.id);
+    const r = await orcamentosStore.recusar(orc.id);
+    expect(r.ok).toBe(true);
+    expect(orcamentosStore.obter(orc.id)?.status).toBe("recusado");
   });
-  it("bloqueia decidir um rascunho", () => {
-    const store = criarOrcamentosStore([base({ itens: [item()] })]);
-    expect(store.aprovar("orc-x").ok).toBe(false);
+
+  it("bloqueia decidir um rascunho", async () => {
+    const orc = await criarBase();
+    await orcamentosStore.atualizar(orc.id, { itens: [item()] });
+    const r = await orcamentosStore.aprovar(orc.id);
+    expect(r.ok).toBe(false);
   });
 });
 
 describe("vincularOS", () => {
-  it("grava o os_id", () => {
-    const store = criarOrcamentosStore([base({ status: "aprovado", itens: [item()], valor_total: 3600 })]);
-    store.vincularOS("orc-x", "os-123");
-    expect(store.obter("orc-x")?.os_id).toBe("os-123");
+  it("grava o os_id", async () => {
+    const orc = await criarBase();
+    await orcamentosStore.vincularOS(orc.id, "os-123");
+    expect(orcamentosStore.obter(orc.id)?.os_id).toBe("os-123");
   });
 });
