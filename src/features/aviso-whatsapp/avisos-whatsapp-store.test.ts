@@ -1,27 +1,30 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { criarAvisosWhatsAppStore } from "./avisos-whatsapp-store";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { avisosWhatsAppStore } from "./avisos-whatsapp-store";
+import { supabase } from "@/lib/supabase";
 import type { Cliente, OrdemServico } from "@/shared/types";
 
-const os: OrdemServico = {
-  id: "os-x",
-  numero: "OS-2026-0099",
-  cliente_id: "cl-x",
-  obra_nome: "Obra Teste",
-  endereco: null,
-  modelo_cobranca: "hora_maquina",
-  status: "fechada",
-  responsavel_id: null,
-  observacao: null,
-  diametro_broca_mm: null,
-  aberta_em: "2026-07-01T00:00:00.000Z",
-  fechada_em: "2026-07-02T00:00:00.000Z",
-  pendente_sync: false,
-  created_at: "2026-07-01T00:00:00.000Z",
-  updated_at: "2026-07-02T00:00:00.000Z",
-};
+function criarOS(id: string): OrdemServico {
+  return {
+    id,
+    numero: `OS-TESTE-${id}`,
+    cliente_id: "cl-teste",
+    obra_nome: "Obra Teste Aviso",
+    endereco: null,
+    modelo_cobranca: "hora_maquina",
+    status: "fechada",
+    responsavel_id: null,
+    observacao: null,
+    diametro_broca_mm: null,
+    aberta_em: "2026-07-01T00:00:00.000Z",
+    fechada_em: "2026-07-02T00:00:00.000Z",
+    pendente_sync: false,
+    created_at: "2026-07-01T00:00:00.000Z",
+    updated_at: "2026-07-02T00:00:00.000Z",
+  };
+}
 
 const clienteComTelefone: Cliente = {
-  id: "cl-x",
+  id: "cl-teste",
   nome: "Cliente Teste",
   documento: null,
   telefone: "44999990000",
@@ -30,41 +33,50 @@ const clienteComTelefone: Cliente = {
   updated_at: "2026-01-01T00:00:00.000Z",
 };
 
-const clienteSemTelefone: Cliente = { ...clienteComTelefone, id: "cl-y", telefone: null };
+const clienteSemTelefone: Cliente = { ...clienteComTelefone, id: "cl-teste-sem-tel", telefone: null };
 
-describe("criarAvisosWhatsAppStore", () => {
-  let store: ReturnType<typeof criarAvisosWhatsAppStore>;
-
+describe("avisosWhatsAppStore", () => {
   beforeEach(() => {
-    store = criarAvisosWhatsAppStore([]);
+    vi.mocked(supabase.functions.invoke).mockReset();
+    vi.mocked(supabase.functions.invoke).mockResolvedValue({ data: { ok: true }, error: null });
   });
 
-  it("listar começa vazio", () => {
-    expect(store.listar()).toHaveLength(0);
+  it("cliente sem telefone válido: grava falha_telefone_invalido sem chamar a edge function", async () => {
+    const os = criarOS("os-teste-sem-tel");
+    const r = await avisosWhatsAppStore.dispararAviso(os, clienteSemTelefone);
+    expect(r.ok).toBe(false);
+    expect(r.aviso?.status).toBe("falha_telefone_invalido");
+    expect(supabase.functions.invoke).not.toHaveBeenCalled();
   });
 
-  it("dispararAviso com telefone válido cria aviso 'enviado' com mensagem preenchida", () => {
-    const r = store.dispararAviso(os, clienteComTelefone, "evolution_api");
+  it("telefone válido e envio ok: grava enviado com a mensagem", async () => {
+    const os = criarOS("os-teste-ok");
+    const r = await avisosWhatsAppStore.dispararAviso(os, clienteComTelefone);
     expect(r.ok).toBe(true);
     if (r.ok) {
       expect(r.aviso.status).toBe("enviado");
-      expect(r.aviso.provedor).toBe("evolution_api");
+      expect(r.aviso.provedor).toBe("waha");
       expect(r.aviso.mensagem_preview.length).toBeGreaterThan(0);
     }
   });
 
-  it("dispararAviso sem telefone válido cria aviso 'falha_telefone_invalido' e retorna ok:false", () => {
-    const r = store.dispararAviso(os, clienteSemTelefone, "meta_cloud_api");
+  it("edge function reporta sessão desconectada: grava falha_sessao_desconectada", async () => {
+    vi.mocked(supabase.functions.invoke).mockResolvedValue({
+      data: { ok: false, motivo: "sessao_desconectada" },
+      error: null,
+    });
+    const os = criarOS("os-teste-sessao");
+    const r = await avisosWhatsAppStore.dispararAviso(os, clienteComTelefone);
     expect(r.ok).toBe(false);
-    expect(store.listar()).toHaveLength(1);
-    expect(store.listar()[0].status).toBe("falha_telefone_invalido");
-    expect(store.listar()[0].mensagem_preview).toBe("");
+    expect(r.aviso?.status).toBe("falha_sessao_desconectada");
   });
 
-  it("dispararAviso duas vezes para a mesma OS bloqueia a segunda chamada (idempotência)", () => {
-    store.dispararAviso(os, clienteComTelefone, "evolution_api");
-    const r2 = store.dispararAviso(os, clienteComTelefone, "evolution_api");
+  it("segunda chamada pra mesma OS é bloqueada sem chamar a edge function de novo", async () => {
+    const os = criarOS("os-teste-dedup");
+    await avisosWhatsAppStore.dispararAviso(os, clienteComTelefone);
+    vi.mocked(supabase.functions.invoke).mockClear();
+    const r2 = await avisosWhatsAppStore.dispararAviso(os, clienteComTelefone);
     expect(r2.ok).toBe(false);
-    expect(store.listar()).toHaveLength(1);
+    expect(supabase.functions.invoke).not.toHaveBeenCalled();
   });
 });

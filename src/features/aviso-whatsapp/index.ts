@@ -1,8 +1,5 @@
-export {
-  avisosWhatsAppStore,
-  criarAvisosWhatsAppStore,
-} from "@/features/aviso-whatsapp/avisos-whatsapp-store";
-export { avisoDaOS, montarMensagemAviso } from "@/features/aviso-whatsapp/derivacoes";
+export { avisosWhatsAppStore } from "@/features/aviso-whatsapp/avisos-whatsapp-store";
+export { avisoDaOS, montarMensagemAviso, telefoneParaChatId } from "@/features/aviso-whatsapp/derivacoes";
 export {
   PROVEDOR_WHATSAPP_LABEL,
   STATUS_AVISO_LABEL,
