@@ -31,6 +31,7 @@ export interface Operador {
   id: string;
   nome: string;
   telefone: string | null;
+  cpf: string;
   ativo: boolean;
   created_at: string;
   updated_at: string;

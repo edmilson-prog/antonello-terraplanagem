@@ -1129,6 +1129,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      criar_operador: {
+        Args: { p_ativo?: boolean; p_cpf: string; p_nome: string; p_telefone: string | null };
+        Returns: Json;
+      };
       is_retaguarda: { Args: never; Returns: boolean };
       login_operador: {
         Args: { p_operador_id: string; p_pin: string };
