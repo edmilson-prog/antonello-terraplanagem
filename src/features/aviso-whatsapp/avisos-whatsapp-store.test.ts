@@ -39,6 +39,23 @@ const clienteSemTelefone: Cliente = {
   telefone: null,
 };
 
+// Builder falso usado só no teste de falha de insert — imita o formato que o
+// supabase-js real retorna quando o insert falha (data: null, error preenchido),
+// sem depender do fake harness do vitest.setup.ts (que sempre resolve error: null).
+type ResultadoFrom = ReturnType<typeof supabase.from>;
+
+function criarBuilderComErroDeInsert(mensagemErro: string): ResultadoFrom {
+  const builder = {
+    insert: () => builder,
+    select: () => builder,
+    single: () => builder,
+    returns: () => builder,
+    then: (resolve: (valor: { data: null; error: { message: string } }) => unknown) =>
+      Promise.resolve(resolve({ data: null, error: { message: mensagemErro } })),
+  };
+  return builder as unknown as ResultadoFrom;
+}
+
 describe("avisosWhatsAppStore", () => {
   beforeEach(() => {
     vi.mocked(supabase.functions.invoke).mockReset();
@@ -82,5 +99,19 @@ describe("avisosWhatsAppStore", () => {
     const r2 = await avisosWhatsAppStore.dispararAviso(os, clienteComTelefone);
     expect(r2.ok).toBe(false);
     expect(supabase.functions.invoke).not.toHaveBeenCalled();
+  });
+
+  it("falha ao gravar o aviso no banco: retorna { ok: false } em vez de lançar", async () => {
+    const os = criarOS("os-teste-insert-falha");
+    const fromEspiao = vi
+      .spyOn(supabase, "from")
+      .mockReturnValueOnce(criarBuilderComErroDeInsert("insert falhou (teste)"));
+
+    await expect(avisosWhatsAppStore.dispararAviso(os, clienteComTelefone)).resolves.toEqual({
+      ok: false,
+      motivo: "Não foi possível registrar o aviso. Tente novamente.",
+    });
+
+    fromEspiao.mockRestore();
   });
 });

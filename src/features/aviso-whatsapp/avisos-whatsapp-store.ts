@@ -80,62 +80,72 @@ async function dispararAviso(os: OrdemServico, cliente: Cliente): Promise<Result
 
   const agora = new Date().toISOString();
 
-  if (!cliente.telefone) {
-    const falha = await inserirAviso({
+  try {
+    if (!cliente.telefone) {
+      const falha = await inserirAviso({
+        os_id: os.id,
+        cliente_id: cliente.id,
+        provedor: "waha",
+        status: "falha_telefone_invalido",
+        mensagem_preview: "",
+        enviado_em: agora,
+      });
+      return {
+        ok: false,
+        motivo: "Cliente sem telefone válido — aviso não enviado.",
+        aviso: falha,
+      };
+    }
+
+    const mensagem = montarMensagemAviso(os, cliente);
+    const chatId = telefoneParaChatId(cliente.telefone);
+
+    const { data: resultadoEnvio, error: erroInvoke } = await supabase.functions.invoke<{
+      ok: boolean;
+      motivo?: string;
+    }>("waha-enviar-texto", { body: { chatId, text: mensagem } });
+
+    if (erroInvoke || !resultadoEnvio?.ok) {
+      const status =
+        resultadoEnvio?.motivo === "sessao_desconectada"
+          ? "falha_sessao_desconectada"
+          : "falha_envio";
+      const falha = await inserirAviso({
+        os_id: os.id,
+        cliente_id: cliente.id,
+        provedor: "waha",
+        status,
+        mensagem_preview: "",
+        enviado_em: agora,
+      });
+      return {
+        ok: false,
+        motivo:
+          status === "falha_sessao_desconectada"
+            ? "Sessão do WhatsApp desconectada — reconecte em Integrações."
+            : "Falha ao enviar a mensagem via WhatsApp.",
+        aviso: falha,
+      };
+    }
+
+    const enviado = await inserirAviso({
       os_id: os.id,
       cliente_id: cliente.id,
       provedor: "waha",
-      status: "falha_telefone_invalido",
-      mensagem_preview: "",
+      status: "enviado",
+      mensagem_preview: mensagem,
       enviado_em: agora,
     });
+    return { ok: true, aviso: enviado };
+  } catch {
+    // inserirAviso lança se o insert no Supabase falhar (rede, constraint UNIQUE(os_id)
+    // numa corrida de dedup, etc.) — nunca deixamos isso escapar como promise rejeitada,
+    // o chamador (fechar da OS) já mostrou o toast de sucesso e só sabe tratar resultado.
     return {
       ok: false,
-      motivo: "Cliente sem telefone válido — aviso não enviado.",
-      aviso: falha,
+      motivo: "Não foi possível registrar o aviso. Tente novamente.",
     };
   }
-
-  const mensagem = montarMensagemAviso(os, cliente);
-  const chatId = telefoneParaChatId(cliente.telefone);
-
-  const { data: resultadoEnvio, error: erroInvoke } = await supabase.functions.invoke<{
-    ok: boolean;
-    motivo?: string;
-  }>("waha-enviar-texto", { body: { chatId, text: mensagem } });
-
-  if (erroInvoke || !resultadoEnvio?.ok) {
-    const status =
-      resultadoEnvio?.motivo === "sessao_desconectada"
-        ? "falha_sessao_desconectada"
-        : "falha_envio";
-    const falha = await inserirAviso({
-      os_id: os.id,
-      cliente_id: cliente.id,
-      provedor: "waha",
-      status,
-      mensagem_preview: "",
-      enviado_em: agora,
-    });
-    return {
-      ok: false,
-      motivo:
-        status === "falha_sessao_desconectada"
-          ? "Sessão do WhatsApp desconectada — reconecte em Integrações."
-          : "Falha ao enviar a mensagem via WhatsApp.",
-      aviso: falha,
-    };
-  }
-
-  const enviado = await inserirAviso({
-    os_id: os.id,
-    cliente_id: cliente.id,
-    provedor: "waha",
-    status: "enviado",
-    mensagem_preview: mensagem,
-    enviado_em: agora,
-  });
-  return { ok: true, aviso: enviado };
 }
 
 export const avisosWhatsAppStore = {
