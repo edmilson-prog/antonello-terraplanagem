@@ -74,10 +74,7 @@ async function inserirAviso(
   return data;
 }
 
-async function dispararAviso(
-  os: OrdemServico,
-  cliente: Cliente,
-): Promise<ResultadoDispararAviso> {
+async function dispararAviso(os: OrdemServico, cliente: Cliente): Promise<ResultadoDispararAviso> {
   const jaExiste = itens.find((a) => a.os_id === os.id);
   if (jaExiste) return { ok: false, motivo: "Aviso já disparado para esta OS." };
 
@@ -108,9 +105,10 @@ async function dispararAviso(
   }>("waha-enviar-texto", { body: { chatId, text: mensagem } });
 
   if (erroInvoke || !resultadoEnvio?.ok) {
-    const status = resultadoEnvio?.motivo === "sessao_desconectada"
-      ? "falha_sessao_desconectada"
-      : "falha_envio";
+    const status =
+      resultadoEnvio?.motivo === "sessao_desconectada"
+        ? "falha_sessao_desconectada"
+        : "falha_envio";
     const falha = await inserirAviso({
       os_id: os.id,
       cliente_id: cliente.id,
