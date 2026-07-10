@@ -4,6 +4,7 @@ import { equipamentos as equipamentosFixture } from "./src/mocks/equipamentos";
 import { clientes as clientesFixture } from "./src/mocks/clientes";
 import { ordensServico as ordensFixture } from "./src/mocks/ordens-servico";
 import { orcamentos as orcamentosFixture } from "./src/mocks/orcamentos";
+import { avisosWhatsApp as avisosWhatsAppFixture } from "./src/mocks/avisos-whatsapp";
 
 // Impede que stores respaldados pelo Supabase (ex.: equipamentosStore,
 // clientesStore, ordensStore, orcamentosStore) façam chamadas de rede reais
@@ -21,6 +22,7 @@ vi.mock("./src/lib/supabase", () => {
     orcamento_itens: orcamentosFixture.flatMap((o) =>
       o.itens.map((item) => ({ ...item, orcamento_id: o.id })),
     ),
+    avisos_whatsapp: avisosWhatsAppFixture.map((a) => ({ ...a })),
   };
 
   class FakeQueryBuilder implements PromiseLike<{ data: unknown; error: null }> {
@@ -115,6 +117,9 @@ vi.mock("./src/lib/supabase", () => {
   return {
     supabase: {
       from: (table: string) => new FakeQueryBuilder(table),
+      functions: {
+        invoke: vi.fn().mockResolvedValue({ data: { ok: true }, error: null }),
+      },
     },
   };
 });
