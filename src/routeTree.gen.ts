@@ -21,7 +21,6 @@ import { Route as AppPerfilRouteImport } from './routes/app.perfil'
 import { Route as AppEntrarRouteImport } from './routes/app.entrar'
 import { Route as AdminRentabilidadeRouteImport } from './routes/admin.rentabilidade'
 import { Route as AdminPrecosRouteImport } from './routes/admin.precos'
-import { Route as AdminOperadoresRouteImport } from './routes/admin.operadores'
 import { Route as AdminManutencaoRouteImport } from './routes/admin.manutencao'
 import { Route as AdminIntegracoesRouteImport } from './routes/admin.integracoes'
 import { Route as AdminGerencialRouteImport } from './routes/admin.gerencial'
@@ -32,6 +31,7 @@ import { Route as AppOrdensIndexRouteImport } from './routes/app.ordens.index'
 import { Route as AppApontamentoIndexRouteImport } from './routes/app.apontamento.index'
 import { Route as AdminOrdensIndexRouteImport } from './routes/admin.ordens.index'
 import { Route as AdminOrcamentosIndexRouteImport } from './routes/admin.orcamentos.index'
+import { Route as AdminOperadoresIndexRouteImport } from './routes/admin.operadores.index'
 import { Route as AdminFinanceiroIndexRouteImport } from './routes/admin.financeiro.index'
 import { Route as AdminFaturamentoIndexRouteImport } from './routes/admin.faturamento.index'
 import { Route as AdminComprovantesIndexRouteImport } from './routes/admin.comprovantes.index'
@@ -41,6 +41,7 @@ import { Route as AppApontamentoNovoRouteImport } from './routes/app.apontamento
 import { Route as AppApontamentoApontamentoIdRouteImport } from './routes/app.apontamento.$apontamentoId'
 import { Route as AdminOrdensOrdemIdRouteImport } from './routes/admin.ordens.$ordemId'
 import { Route as AdminOrcamentosOrcamentoIdRouteImport } from './routes/admin.orcamentos.$orcamentoId'
+import { Route as AdminOperadoresOperadorIdRouteImport } from './routes/admin.operadores.$operadorId'
 import { Route as AdminIaChatbotRouteImport } from './routes/admin.ia.chatbot'
 import { Route as AdminFaturamentoFaturamentoIdRouteImport } from './routes/admin.faturamento.$faturamentoId'
 import { Route as AdminComprovantesComprovanteIdRouteImport } from './routes/admin.comprovantes.$comprovanteId'
@@ -107,11 +108,6 @@ const AdminPrecosRoute = AdminPrecosRouteImport.update({
   path: '/precos',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminOperadoresRoute = AdminOperadoresRouteImport.update({
-  id: '/operadores',
-  path: '/operadores',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminManutencaoRoute = AdminManutencaoRouteImport.update({
   id: '/manutencao',
   path: '/manutencao',
@@ -162,6 +158,11 @@ const AdminOrcamentosIndexRoute = AdminOrcamentosIndexRouteImport.update({
   path: '/orcamentos/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminOperadoresIndexRoute = AdminOperadoresIndexRouteImport.update({
+  id: '/operadores/',
+  path: '/operadores/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminFinanceiroIndexRoute = AdminFinanceiroIndexRouteImport.update({
   id: '/financeiro/',
   path: '/financeiro/',
@@ -209,6 +210,12 @@ const AdminOrcamentosOrcamentoIdRoute =
     path: '/orcamentos/$orcamentoId',
     getParentRoute: () => AdminRoute,
   } as any)
+const AdminOperadoresOperadorIdRoute =
+  AdminOperadoresOperadorIdRouteImport.update({
+    id: '/operadores/$operadorId',
+    path: '/operadores/$operadorId',
+    getParentRoute: () => AdminRoute,
+  } as any)
 const AdminIaChatbotRoute = AdminIaChatbotRouteImport.update({
   id: '/ia/chatbot',
   path: '/ia/chatbot',
@@ -244,7 +251,6 @@ export interface FileRoutesByFullPath {
   '/admin/gerencial': typeof AdminGerencialRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/manutencao': typeof AdminManutencaoRoute
-  '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
   '/app/entrar': typeof AppEntrarRoute
@@ -256,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/admin/comprovantes/$comprovanteId': typeof AdminComprovantesComprovanteIdRoute
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
+  '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
   '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
@@ -265,6 +272,7 @@ export interface FileRoutesByFullPath {
   '/admin/comprovantes/': typeof AdminComprovantesIndexRoute
   '/admin/faturamento/': typeof AdminFaturamentoIndexRoute
   '/admin/financeiro/': typeof AdminFinanceiroIndexRoute
+  '/admin/operadores/': typeof AdminOperadoresIndexRoute
   '/admin/orcamentos/': typeof AdminOrcamentosIndexRoute
   '/admin/ordens/': typeof AdminOrdensIndexRoute
   '/app/apontamento/': typeof AppApontamentoIndexRoute
@@ -280,7 +288,6 @@ export interface FileRoutesByTo {
   '/admin/gerencial': typeof AdminGerencialRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/manutencao': typeof AdminManutencaoRoute
-  '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
   '/app/entrar': typeof AppEntrarRoute
@@ -292,6 +299,7 @@ export interface FileRoutesByTo {
   '/admin/comprovantes/$comprovanteId': typeof AdminComprovantesComprovanteIdRoute
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
+  '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
   '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
@@ -301,6 +309,7 @@ export interface FileRoutesByTo {
   '/admin/comprovantes': typeof AdminComprovantesIndexRoute
   '/admin/faturamento': typeof AdminFaturamentoIndexRoute
   '/admin/financeiro': typeof AdminFinanceiroIndexRoute
+  '/admin/operadores': typeof AdminOperadoresIndexRoute
   '/admin/orcamentos': typeof AdminOrcamentosIndexRoute
   '/admin/ordens': typeof AdminOrdensIndexRoute
   '/app/apontamento': typeof AppApontamentoIndexRoute
@@ -319,7 +328,6 @@ export interface FileRoutesById {
   '/admin/gerencial': typeof AdminGerencialRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
   '/admin/manutencao': typeof AdminManutencaoRoute
-  '/admin/operadores': typeof AdminOperadoresRoute
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
   '/app/entrar': typeof AppEntrarRoute
@@ -331,6 +339,7 @@ export interface FileRoutesById {
   '/admin/comprovantes/$comprovanteId': typeof AdminComprovantesComprovanteIdRoute
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
+  '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
   '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
@@ -340,6 +349,7 @@ export interface FileRoutesById {
   '/admin/comprovantes/': typeof AdminComprovantesIndexRoute
   '/admin/faturamento/': typeof AdminFaturamentoIndexRoute
   '/admin/financeiro/': typeof AdminFinanceiroIndexRoute
+  '/admin/operadores/': typeof AdminOperadoresIndexRoute
   '/admin/orcamentos/': typeof AdminOrcamentosIndexRoute
   '/admin/ordens/': typeof AdminOrdensIndexRoute
   '/app/apontamento/': typeof AppApontamentoIndexRoute
@@ -359,7 +369,6 @@ export interface FileRouteTypes {
     | '/admin/gerencial'
     | '/admin/integracoes'
     | '/admin/manutencao'
-    | '/admin/operadores'
     | '/admin/precos'
     | '/admin/rentabilidade'
     | '/app/entrar'
@@ -371,6 +380,7 @@ export interface FileRouteTypes {
     | '/admin/comprovantes/$comprovanteId'
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
+    | '/admin/operadores/$operadorId'
     | '/admin/orcamentos/$orcamentoId'
     | '/admin/ordens/$ordemId'
     | '/app/apontamento/$apontamentoId'
@@ -380,6 +390,7 @@ export interface FileRouteTypes {
     | '/admin/comprovantes/'
     | '/admin/faturamento/'
     | '/admin/financeiro/'
+    | '/admin/operadores/'
     | '/admin/orcamentos/'
     | '/admin/ordens/'
     | '/app/apontamento/'
@@ -395,7 +406,6 @@ export interface FileRouteTypes {
     | '/admin/gerencial'
     | '/admin/integracoes'
     | '/admin/manutencao'
-    | '/admin/operadores'
     | '/admin/precos'
     | '/admin/rentabilidade'
     | '/app/entrar'
@@ -407,6 +417,7 @@ export interface FileRouteTypes {
     | '/admin/comprovantes/$comprovanteId'
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
+    | '/admin/operadores/$operadorId'
     | '/admin/orcamentos/$orcamentoId'
     | '/admin/ordens/$ordemId'
     | '/app/apontamento/$apontamentoId'
@@ -416,6 +427,7 @@ export interface FileRouteTypes {
     | '/admin/comprovantes'
     | '/admin/faturamento'
     | '/admin/financeiro'
+    | '/admin/operadores'
     | '/admin/orcamentos'
     | '/admin/ordens'
     | '/app/apontamento'
@@ -433,7 +445,6 @@ export interface FileRouteTypes {
     | '/admin/gerencial'
     | '/admin/integracoes'
     | '/admin/manutencao'
-    | '/admin/operadores'
     | '/admin/precos'
     | '/admin/rentabilidade'
     | '/app/entrar'
@@ -445,6 +456,7 @@ export interface FileRouteTypes {
     | '/admin/comprovantes/$comprovanteId'
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
+    | '/admin/operadores/$operadorId'
     | '/admin/orcamentos/$orcamentoId'
     | '/admin/ordens/$ordemId'
     | '/app/apontamento/$apontamentoId'
@@ -454,6 +466,7 @@ export interface FileRouteTypes {
     | '/admin/comprovantes/'
     | '/admin/faturamento/'
     | '/admin/financeiro/'
+    | '/admin/operadores/'
     | '/admin/orcamentos/'
     | '/admin/ordens/'
     | '/app/apontamento/'
@@ -555,13 +568,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPrecosRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/operadores': {
-      id: '/admin/operadores'
-      path: '/operadores'
-      fullPath: '/admin/operadores'
-      preLoaderRoute: typeof AdminOperadoresRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/manutencao': {
       id: '/admin/manutencao'
       path: '/manutencao'
@@ -632,6 +638,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrcamentosIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/operadores/': {
+      id: '/admin/operadores/'
+      path: '/operadores'
+      fullPath: '/admin/operadores/'
+      preLoaderRoute: typeof AdminOperadoresIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/financeiro/': {
       id: '/admin/financeiro/'
       path: '/financeiro'
@@ -695,6 +708,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrcamentosOrcamentoIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/operadores/$operadorId': {
+      id: '/admin/operadores/$operadorId'
+      path: '/operadores/$operadorId'
+      fullPath: '/admin/operadores/$operadorId'
+      preLoaderRoute: typeof AdminOperadoresOperadorIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/ia/chatbot': {
       id: '/admin/ia/chatbot'
       path: '/ia/chatbot'
@@ -733,7 +753,6 @@ interface AdminRouteChildren {
   AdminGerencialRoute: typeof AdminGerencialRoute
   AdminIntegracoesRoute: typeof AdminIntegracoesRoute
   AdminManutencaoRoute: typeof AdminManutencaoRoute
-  AdminOperadoresRoute: typeof AdminOperadoresRoute
   AdminPrecosRoute: typeof AdminPrecosRoute
   AdminRentabilidadeRoute: typeof AdminRentabilidadeRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -741,12 +760,14 @@ interface AdminRouteChildren {
   AdminComprovantesComprovanteIdRoute: typeof AdminComprovantesComprovanteIdRoute
   AdminFaturamentoFaturamentoIdRoute: typeof AdminFaturamentoFaturamentoIdRoute
   AdminIaChatbotRoute: typeof AdminIaChatbotRoute
+  AdminOperadoresOperadorIdRoute: typeof AdminOperadoresOperadorIdRoute
   AdminOrcamentosOrcamentoIdRoute: typeof AdminOrcamentosOrcamentoIdRoute
   AdminOrdensOrdemIdRoute: typeof AdminOrdensOrdemIdRoute
   AdminClientesIndexRoute: typeof AdminClientesIndexRoute
   AdminComprovantesIndexRoute: typeof AdminComprovantesIndexRoute
   AdminFaturamentoIndexRoute: typeof AdminFaturamentoIndexRoute
   AdminFinanceiroIndexRoute: typeof AdminFinanceiroIndexRoute
+  AdminOperadoresIndexRoute: typeof AdminOperadoresIndexRoute
   AdminOrcamentosIndexRoute: typeof AdminOrcamentosIndexRoute
   AdminOrdensIndexRoute: typeof AdminOrdensIndexRoute
 }
@@ -758,7 +779,6 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminGerencialRoute: AdminGerencialRoute,
   AdminIntegracoesRoute: AdminIntegracoesRoute,
   AdminManutencaoRoute: AdminManutencaoRoute,
-  AdminOperadoresRoute: AdminOperadoresRoute,
   AdminPrecosRoute: AdminPrecosRoute,
   AdminRentabilidadeRoute: AdminRentabilidadeRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -766,12 +786,14 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminComprovantesComprovanteIdRoute: AdminComprovantesComprovanteIdRoute,
   AdminFaturamentoFaturamentoIdRoute: AdminFaturamentoFaturamentoIdRoute,
   AdminIaChatbotRoute: AdminIaChatbotRoute,
+  AdminOperadoresOperadorIdRoute: AdminOperadoresOperadorIdRoute,
   AdminOrcamentosOrcamentoIdRoute: AdminOrcamentosOrcamentoIdRoute,
   AdminOrdensOrdemIdRoute: AdminOrdensOrdemIdRoute,
   AdminClientesIndexRoute: AdminClientesIndexRoute,
   AdminComprovantesIndexRoute: AdminComprovantesIndexRoute,
   AdminFaturamentoIndexRoute: AdminFaturamentoIndexRoute,
   AdminFinanceiroIndexRoute: AdminFinanceiroIndexRoute,
+  AdminOperadoresIndexRoute: AdminOperadoresIndexRoute,
   AdminOrcamentosIndexRoute: AdminOrcamentosIndexRoute,
   AdminOrdensIndexRoute: AdminOrdensIndexRoute,
 }
