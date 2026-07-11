@@ -1,37 +1,27 @@
-import { useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PageHeader } from "@/shared/components/page-header";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
-import { StatusAtivo } from "@/shared/components/status-ativo";
-import { KpiCard } from "@/features/dashboard/components/kpi-card";
-import { formatData, formatDataHora, formatDocumento, formatTelefone } from "@/shared/lib/format";
-import { formatBRL } from "@/features/retaguarda/format";
+import { formatDataHora } from "@/shared/lib/format";
 import { idMockDoCliente } from "@/shared/lib/cliente-mock-id";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { ClienteForm } from "@/features/clientes/components/cliente-form";
+import { ClienteHero } from "@/features/clientes/components/cliente-hero";
+import { ClienteKpis } from "@/features/clientes/components/cliente-kpis";
+import { OrdensClienteCard } from "@/features/clientes/components/ordens-cliente-card";
+import { ContasReceberCard } from "@/features/clientes/components/contas-receber-card";
+import { DadosCadastraisClienteCard } from "@/features/clientes/components/dados-cadastrais-cliente-card";
+import { OrcamentosClienteCard } from "@/features/clientes/components/orcamentos-cliente-card";
+import { RecebimentosClienteCard } from "@/features/clientes/components/recebimentos-cliente-card";
+import { FaroltiSnapshotCard } from "@/features/clientes/components/farolti-snapshot-card";
+import { showcaseDoCliente } from "@/features/clientes/cliente-showcase-data";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
-import { StatusOSBadge } from "@/features/ordem-servico/labels";
 import { orcamentosStore } from "@/features/orcamentos/orcamentos-store";
-import { StatusOrcamentoBadge } from "@/features/orcamentos/labels";
-import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
-import { StatusFaturamentoBadge } from "@/features/faturamento/labels";
-import { comprovantesStore } from "@/features/comprovantes/comprovantes-store";
-import { StatusComprovanteBadge } from "@/features/comprovantes/labels";
-
-const TIPO_PESSOA_LABEL: Record<string, string> = {
-  PF: "Pessoa física",
-  PJ: "Pessoa jurídica",
-};
-
-const CURVA_LABEL: Record<string, string> = {
-  A: "A — maior faturamento",
-  B: "B — faturamento intermediário",
-  C: "C — menor faturamento",
-};
+import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
+import { contaVencida } from "@/features/financeiro/derivacoes";
 
 export function ClienteDetalhe({ clienteId }: { clienteId: string }) {
   const cliente = clientesStore.useCliente(clienteId);
@@ -39,11 +29,37 @@ export function ClienteDetalhe({ clienteId }: { clienteId: string }) {
   const [editando, setEditando] = useState(false);
   const [inativando, setInativando] = useState(false);
 
+  const showcase = useMemo(() => showcaseDoCliente(clienteId), [clienteId]);
+
   const idMock = idMockDoCliente(clienteId);
   const osDoCliente = ordensStore.useTodas().filter((o) => o.cliente_id === idMock);
   const orcamentosDoCliente = orcamentosStore.useTodos().filter((o) => o.cliente_id === idMock);
-  const faturamentosDoCliente = faturamentosStore.useTodos().filter((f) => f.cliente_id === idMock);
-  const comprovantesDoCliente = comprovantesStore.useTodos().filter((c) => c.cliente_id === idMock);
+  const contasDoCliente = contasReceberStore.useTodas().filter((c) => c.cliente_id === idMock);
+
+  const osAtivas = osDoCliente.filter((o) => o.status !== "fechada").length;
+  const orcamentosAbertos = orcamentosDoCliente.filter(
+    (o) => o.status !== "aprovado" && o.status !== "recusado",
+  ).length;
+
+  const agoraISO = new Date().toISOString().slice(0, 10);
+  const abertas = contasDoCliente.filter((c) => c.status === "aberta");
+  const saldoReceber = abertas.reduce((s, c) => s + c.valor, 0);
+  const vencidas = abertas.filter((c) => contaVencida(c, agoraISO)).length;
+  const saldoRodape = `${abertas.length} título(s) · ${vencidas} vencido(s)`;
+
+  const ordensView = osDoCliente.map((o, i) => ({
+    id: o.id,
+    numero: o.numero,
+    obraNome: o.obra_nome,
+    status: o.status,
+    ...showcase.porOS[i % showcase.porOS.length],
+  }));
+
+  const ultimaOS = osDoCliente.length
+    ? formatDataHora(
+        [...osDoCliente].sort((a, b) => b.aberta_em.localeCompare(a.aberta_em))[0].aberta_em,
+      )
+    : showcase.ultimaOS;
 
   const voltar = (
     <Link
@@ -122,44 +138,9 @@ export function ClienteDetalhe({ clienteId }: { clienteId: string }) {
     setInativando(false);
   };
 
-  const temHistoricoLegado = cliente.cli_codigo_legado != null;
-
   return (
     <div className="space-y-6">
       {voltar}
-
-      <PageHeader
-        titulo={cliente.nome}
-        descricao={cliente.tipo_pessoa ? TIPO_PESSOA_LABEL[cliente.tipo_pessoa] : undefined}
-        acoes={
-          <div className="flex items-center gap-2">
-            <StatusAtivo ativo={cliente.ativo} />
-            {!editando ? (
-              <>
-                <Button variant="outline" onClick={() => setEditando(true)} className="gap-1.5">
-                  <Icon icon="lucide:pencil" className="h-4 w-4" />
-                  Editar
-                </Button>
-                {cliente.ativo ? (
-                  <Button
-                    variant="outline"
-                    onClick={() => setInativando(true)}
-                    className="gap-1.5 text-destructive hover:text-destructive"
-                  >
-                    <Icon icon="lucide:ban" className="h-4 w-4" />
-                    Inativar
-                  </Button>
-                ) : (
-                  <Button variant="outline" onClick={reativar} className="gap-1.5">
-                    <Icon icon="lucide:rotate-ccw" className="h-4 w-4" />
-                    Reativar
-                  </Button>
-                )}
-              </>
-            ) : null}
-          </div>
-        }
-      />
 
       {editando ? (
         <section className="rounded-xl border bg-card p-5 shadow-sm">
@@ -173,212 +154,43 @@ export function ClienteDetalhe({ clienteId }: { clienteId: string }) {
           />
         </section>
       ) : (
-        <section className="rounded-xl border bg-card p-5 shadow-sm">
-          <dl className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <dt className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-                Documento
-              </dt>
-              <dd className="mt-1 font-mono text-sm text-card-foreground">
-                {formatDocumento(cliente.documento ?? null)}
-              </dd>
+        <div className="space-y-4">
+          <ClienteHero
+            cliente={cliente}
+            recorrente={showcase.recorrente}
+            ultimaOS={ultimaOS}
+            onEditar={() => setEditando(true)}
+            onInativar={() => setInativando(true)}
+            onReativar={reativar}
+          />
+          <ClienteKpis
+            kpis={showcase.kpis}
+            osAtivas={osAtivas}
+            orcamentosAbertos={orcamentosAbertos}
+            saldoReceber={saldoReceber}
+            saldoRodape={saldoRodape}
+          />
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
+            <div className="space-y-4">
+              <OrdensClienteCard ordens={ordensView} />
+              <ContasReceberCard contas={contasDoCliente} />
             </div>
-            <div>
-              <dt className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-                Telefone
-              </dt>
-              <dd className="mt-1 font-mono text-sm text-card-foreground">
-                {formatTelefone(cliente.telefone ?? null)}
-              </dd>
+            <div className="space-y-4">
+              <DadosCadastraisClienteCard cliente={cliente} cadastrais={showcase.cadastrais} />
+              <OrcamentosClienteCard orcamentos={orcamentosDoCliente} />
+              <RecebimentosClienteCard recebimentos={showcase.recebimentos} />
             </div>
-            <div>
-              <dt className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-                Cliente desde
-              </dt>
-              <dd className="mt-1 text-sm text-card-foreground">
-                {formatDataHora(cliente.created_at)}
-              </dd>
-            </div>
-          </dl>
-        </section>
-      )}
-
-      <section className="space-y-4">
-        <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-          Atividade no sistema
-        </h3>
-        <div className="grid gap-4 lg:grid-cols-2">
-          <SecaoAtividade
-            titulo="Ordens de Serviço"
-            icone="lucide:file-text"
-            quantidade={osDoCliente.length}
-            vazio="Nenhuma OS registrada para este cliente."
-          >
-            {osDoCliente.map((o) => (
-              <li key={o.id}>
-                <Link
-                  to="/admin/ordens/$ordemId"
-                  params={{ ordemId: o.id }}
-                  className="-mx-1 flex items-center justify-between gap-3 rounded px-1 py-2.5 text-sm hover:bg-muted/40"
-                >
-                  <span className="flex min-w-0 items-center gap-3">
-                    <span className="font-mono text-xs text-foreground-faint">{o.numero}</span>
-                    <span className="truncate text-card-foreground">{o.obra_nome}</span>
-                  </span>
-                  <span className="flex shrink-0 items-center gap-3">
-                    <StatusOSBadge status={o.status} />
-                    <Icon icon="lucide:chevron-right" className="h-4 w-4 text-muted-foreground" />
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </SecaoAtividade>
-
-          <SecaoAtividade
-            titulo="Orçamentos"
-            icone="lucide:file-spreadsheet"
-            quantidade={orcamentosDoCliente.length}
-            vazio="Nenhum orçamento registrado para este cliente."
-          >
-            {orcamentosDoCliente.map((o) => (
-              <li key={o.id}>
-                <Link
-                  to="/admin/orcamentos/$orcamentoId"
-                  params={{ orcamentoId: o.id }}
-                  className="-mx-1 flex items-center justify-between gap-3 rounded px-1 py-2.5 text-sm hover:bg-muted/40"
-                >
-                  <span className="flex min-w-0 items-center gap-3">
-                    <span className="font-mono text-xs text-foreground-faint">{o.numero}</span>
-                    <span className="truncate text-card-foreground">{o.descricao_obra}</span>
-                  </span>
-                  <span className="flex shrink-0 items-center gap-3">
-                    <span className="font-mono text-xs text-card-foreground">
-                      {formatBRL(o.valor_total)}
-                    </span>
-                    <StatusOrcamentoBadge status={o.status} />
-                    <Icon icon="lucide:chevron-right" className="h-4 w-4 text-muted-foreground" />
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </SecaoAtividade>
-
-          <SecaoAtividade
-            titulo="Faturamento"
-            icone="lucide:receipt"
-            quantidade={faturamentosDoCliente.length}
-            vazio="Nenhum faturamento registrado para este cliente."
-          >
-            {faturamentosDoCliente.map((f) => (
-              <li key={f.id}>
-                <Link
-                  to="/admin/faturamento/$faturamentoId"
-                  params={{ faturamentoId: f.id }}
-                  className="-mx-1 flex items-center justify-between gap-3 rounded px-1 py-2.5 text-sm hover:bg-muted/40"
-                >
-                  <span className="flex min-w-0 items-center gap-3">
-                    <span className="font-mono text-xs text-foreground-faint">{f.numero}</span>
-                  </span>
-                  <span className="flex shrink-0 items-center gap-3">
-                    <span className="font-mono text-xs text-card-foreground">
-                      {formatBRL(f.valor_total)}
-                    </span>
-                    <StatusFaturamentoBadge status={f.status} />
-                    <Icon icon="lucide:chevron-right" className="h-4 w-4 text-muted-foreground" />
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </SecaoAtividade>
-
-          <SecaoAtividade
-            titulo="Comprovantes"
-            icone="lucide:file-check-2"
-            quantidade={comprovantesDoCliente.length}
-            vazio="Nenhum comprovante registrado para este cliente."
-          >
-            {comprovantesDoCliente.map((c) => (
-              <li key={c.id}>
-                <Link
-                  to="/admin/comprovantes/$comprovanteId"
-                  params={{ comprovanteId: c.id }}
-                  className="-mx-1 flex items-center justify-between gap-3 rounded px-1 py-2.5 text-sm hover:bg-muted/40"
-                >
-                  <span className="flex min-w-0 items-center gap-3">
-                    <span className="font-mono text-xs text-foreground-faint">{c.numero}</span>
-                    <span className="truncate text-card-foreground">{c.resumo_servico}</span>
-                  </span>
-                  <span className="flex shrink-0 items-center gap-3">
-                    <StatusComprovanteBadge status={c.status} />
-                    <Icon icon="lucide:chevron-right" className="h-4 w-4 text-muted-foreground" />
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </SecaoAtividade>
+          </div>
+          <FaroltiSnapshotCard cliente={cliente} origemMigracao={showcase.origemMigracao} />
+          <div className="mt-2 flex items-start gap-2.5 rounded-lg border border-dashed px-4 py-3 text-[12.5px] text-foreground-faint">
+            <Icon icon="lucide:info" className="mt-0.5 h-4 w-4 shrink-0 text-primary/70" />
+            <span>
+              O snapshot do ERP legado (FarolTI) é <b>congelado</b> na importação; o restante da
+              página é ao vivo. Recebimentos são dados de exemplo nesta fase.
+            </span>
+          </div>
         </div>
-      </section>
-
-      {temHistoricoLegado ? (
-        <section className="space-y-4">
-          <div>
-            <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-              Histórico no ERP legado (FarolTI)
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              Snapshot importado no cadastro (código {cliente.cli_codigo_legado}) — não é
-              recalculado ao vivo pelo sistema.
-            </p>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <KpiCard
-              rotulo="Faturado (LTV)"
-              valor={cliente.legado_ltv != null ? formatBRL(cliente.legado_ltv) : "—"}
-              icone="lucide:wallet"
-            />
-            <KpiCard
-              rotulo="Ticket médio"
-              valor={
-                cliente.legado_ticket_medio != null ? formatBRL(cliente.legado_ticket_medio) : "—"
-              }
-              icone="lucide:receipt"
-            />
-            <KpiCard
-              rotulo="OS realizadas"
-              valor={
-                cliente.legado_frequencia_os != null ? String(cliente.legado_frequencia_os) : "—"
-              }
-              icone="lucide:file-text"
-            />
-            <KpiCard
-              rotulo="Curva ABC"
-              valor={cliente.legado_curva_abc ?? "—"}
-              descricao={
-                cliente.legado_curva_abc ? CURVA_LABEL[cliente.legado_curva_abc] : undefined
-              }
-              icone="lucide:trending-up"
-            />
-            <KpiCard
-              rotulo="Primeira OS"
-              valor={formatData(cliente.legado_primeira_os ?? null)}
-              icone="lucide:calendar"
-            />
-            <KpiCard
-              rotulo="Última OS"
-              valor={formatData(cliente.legado_ultima_os ?? null)}
-              icone="lucide:calendar-clock"
-            />
-            <KpiCard
-              rotulo="Recência"
-              valor={
-                cliente.legado_recencia_dias != null ? `${cliente.legado_recencia_dias} dias` : "—"
-              }
-              descricao="Desde a última OS"
-              icone="lucide:history"
-            />
-          </div>
-        </section>
-      ) : null}
+      )}
 
       <ConfirmDialog
         open={inativando}
@@ -389,37 +201,6 @@ export function ClienteDetalhe({ clienteId }: { clienteId: string }) {
         destrutivo
         onConfirm={confirmarInativar}
       />
-    </div>
-  );
-}
-
-function SecaoAtividade({
-  titulo,
-  icone,
-  quantidade,
-  vazio,
-  children,
-}: {
-  titulo: string;
-  icone: string;
-  quantidade: number;
-  vazio: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="rounded-xl border bg-card p-5 shadow-sm">
-      <div className="mb-3 flex items-center justify-between">
-        <h4 className="flex items-center gap-2 font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-          <Icon icon={icone} className="h-4 w-4" />
-          {titulo}
-        </h4>
-        <span className="font-mono text-xs text-muted-foreground">{quantidade}</span>
-      </div>
-      {quantidade === 0 ? (
-        <p className="py-6 text-center text-sm text-muted-foreground">{vazio}</p>
-      ) : (
-        <ul className="divide-y divide-border">{children}</ul>
-      )}
     </div>
   );
 }
