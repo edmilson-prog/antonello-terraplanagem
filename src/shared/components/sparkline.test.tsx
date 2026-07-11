@@ -15,5 +15,6 @@ describe("Sparkline", () => {
   it("não quebra com lista vazia", () => {
     const { container } = render(<Sparkline pontos={[]} />);
     expect(container.querySelector("svg")).not.toBeNull();
+    expect(container.querySelector("polyline")).toBeNull();
   });
 });
