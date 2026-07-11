@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CardSecao } from "@/features/operadores/components/card-secao";
+import { CardSecao } from "@/shared/components/card-secao";
 import type { ShowcaseApontamento } from "@/features/operadores/operador-showcase-data";
 
 export function ApontamentosRecentesCard({

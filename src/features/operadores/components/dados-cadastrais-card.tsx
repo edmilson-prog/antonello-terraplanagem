@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Icon } from "@iconify/react";
 import { formatTelefone } from "@/shared/lib/format";
-import { CardSecao } from "@/features/operadores/components/card-secao";
+import { CardSecao } from "@/shared/components/card-secao";
 import type { ShowcaseCadastrais } from "@/features/operadores/operador-showcase-data";
 
 export function DadosCadastraisCard({

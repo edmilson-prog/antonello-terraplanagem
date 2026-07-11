@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import { CardSecao } from "@/features/operadores/components/card-secao";
+import { CardSecao } from "@/shared/components/card-secao";
 import type { ShowcaseEquip } from "@/features/operadores/operador-showcase-data";
 
 export function EquipamentosHabilitadosCard({ equipamentos }: { equipamentos: ShowcaseEquip[] }) {

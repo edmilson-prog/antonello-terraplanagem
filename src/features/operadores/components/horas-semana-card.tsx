@@ -1,4 +1,4 @@
-import { CardSecao } from "@/features/operadores/components/card-secao";
+import { CardSecao } from "@/shared/components/card-secao";
 import type { ShowcaseSemana } from "@/features/operadores/operador-showcase-data";
 
 export function HorasSemanaCard({ semana }: { semana: ShowcaseSemana }) {
