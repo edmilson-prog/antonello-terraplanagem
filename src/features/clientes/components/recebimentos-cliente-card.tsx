@@ -2,11 +2,7 @@ import { Icon } from "@iconify/react";
 import { CardSecao } from "@/shared/components/card-secao";
 import type { ClienteRecebimento } from "@/features/clientes/cliente-showcase-data";
 
-export function RecebimentosClienteCard({
-  recebimentos,
-}: {
-  recebimentos: ClienteRecebimento[];
-}) {
+export function RecebimentosClienteCard({ recebimentos }: { recebimentos: ClienteRecebimento[] }) {
   return (
     <CardSecao titulo="Recebimentos" icone="lucide:banknote" bodyClassName="p-2">
       <ul>

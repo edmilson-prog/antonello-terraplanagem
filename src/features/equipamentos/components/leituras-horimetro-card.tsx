@@ -10,11 +10,7 @@ import {
 import { CardSecao } from "@/shared/components/card-secao";
 import type { EquipamentoLeitura } from "@/features/equipamentos/equipamento-showcase-data";
 
-export function LeiturasHorimetroCard({
-  leituras,
-}: {
-  leituras: EquipamentoLeitura[];
-}) {
+export function LeiturasHorimetroCard({ leituras }: { leituras: EquipamentoLeitura[] }) {
   return (
     <CardSecao titulo="Leituras de horímetro" icone="lucide:gauge">
       <Table>

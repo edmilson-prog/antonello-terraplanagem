@@ -130,7 +130,11 @@ export function showcaseDoEquipamento(id: string): EquipamentoShowcase {
     },
     receitaMes: {
       rotulo: "Receita no mês",
-      valor: receita.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }),
+      valor: receita.toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+        maximumFractionDigits: 0,
+      }),
       icone: "lucide:banknote",
       rodape: "faturamento estimado",
       trendPct: intBetween(3, 12),
@@ -163,7 +167,10 @@ export function showcaseDoEquipamento(id: string): EquipamentoShowcase {
     descricao: "Uso geral em terraplenagem",
   };
 
-  const barras = Array.from({ length: 8 }, (_, i) => ({ label: `S${i + 1}`, pct: intBetween(50, 92) }));
+  const barras = Array.from({ length: 8 }, (_, i) => ({
+    label: `S${i + 1}`,
+    pct: intBetween(50, 92),
+  }));
   const picoIdx = barras.reduce((maxI, b, i, arr) => (b.pct > arr[maxI].pct ? i : maxI), 0);
   const utilizacaoSemana: EquipamentoSemana = {
     barras,

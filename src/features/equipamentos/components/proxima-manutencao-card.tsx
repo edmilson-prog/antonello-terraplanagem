@@ -72,7 +72,11 @@ export function ProximaManutencaoCard({ equipamento }: { equipamento: Equipament
   const vencida = status === "vencida";
 
   return (
-    <CardSecao titulo="Próxima manutenção" icone="lucide:calendar-clock" bodyClassName="space-y-3 p-4">
+    <CardSecao
+      titulo="Próxima manutenção"
+      icone="lucide:calendar-clock"
+      bodyClassName="space-y-3 p-4"
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-foreground">{plano.descricao}</p>

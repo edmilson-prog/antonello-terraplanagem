@@ -1,7 +1,10 @@
 import { Icon } from "@iconify/react";
 import { Sparkline } from "@/shared/components/sparkline";
 import { formatBRL } from "@/features/retaguarda/format";
-import type { ClienteKpiItem, ClienteShowcaseKpis } from "@/features/clientes/cliente-showcase-data";
+import type {
+  ClienteKpiItem,
+  ClienteShowcaseKpis,
+} from "@/features/clientes/cliente-showcase-data";
 
 export interface ClienteKpisProps {
   kpis: ClienteShowcaseKpis;
@@ -11,7 +14,13 @@ export interface ClienteKpisProps {
   saldoRodape: string;
 }
 
-export function ClienteKpis({ kpis, osAtivas, orcamentosAbertos, saldoReceber, saldoRodape }: ClienteKpisProps) {
+export function ClienteKpis({
+  kpis,
+  osAtivas,
+  orcamentosAbertos,
+  saldoReceber,
+  saldoRodape,
+}: ClienteKpisProps) {
   const itens: ClienteKpiItem[] = [
     kpis.faturado,
     { ...kpis.saldoReceber, valor: formatBRL(saldoReceber), rodape: saldoRodape },

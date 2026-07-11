@@ -66,10 +66,18 @@ const RUAS_POOL = [
   "Rua Sete de Setembro, 310",
   "Rua Bento Gonçalves, 45",
 ];
-const CIDADES_POOL = ["Santo Ângelo — RS", "Frederico Westphalen — RS", "Palmeira das Missões — RS"];
+const CIDADES_POOL = [
+  "Santo Ângelo — RS",
+  "Frederico Westphalen — RS",
+  "Palmeira das Missões — RS",
+];
 const CONTATO_NOME_POOL = ["Carlos Eduardo", "Fernanda Lima", "Roberto Costa", "Juliana Mendes"];
 const CONTATO_PAPEL_POOL = ["Engenheiro responsável", "Comprador", "Sócio"];
-const RECEBIMENTO_ICONE_POOL = ["lucide:smartphone-nfc", "lucide:arrow-left-right", "lucide:barcode"];
+const RECEBIMENTO_ICONE_POOL = [
+  "lucide:smartphone-nfc",
+  "lucide:arrow-left-right",
+  "lucide:barcode",
+];
 const RECEBIMENTO_TITULO_POOL = ["PIX recebido", "TED recebida", "Boleto compensado"];
 
 function hashString(texto: string): number {
@@ -93,7 +101,11 @@ function mulberry32(seed: number): () => number {
 }
 
 function brl(valor: number): string {
-  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+  return valor.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 0,
+  });
 }
 
 export function showcaseDoCliente(id: string): ClienteShowcase {

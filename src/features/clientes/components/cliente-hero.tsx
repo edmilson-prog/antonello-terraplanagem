@@ -85,7 +85,10 @@ export function ClienteHero({
               </a>
             </Button>
           ) : null}
-          <Button asChild className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary-hover">
+          <Button
+            asChild
+            className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary-hover"
+          >
             <Link to="/admin/orcamentos">
               <Icon icon="lucide:file-plus" className="h-4 w-4" />
               Novo orçamento

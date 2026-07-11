@@ -20,7 +20,8 @@ export function FichaTecnicaCard({
         <span className="font-mono">{ficha.ano}</span>
       </Drow>
       <Drow icone="lucide:weight" rotulo="Capacidade">
-        {equipamento.capacidade} · <small className="text-muted-foreground">{ficha.descricao}</small>
+        {equipamento.capacidade} ·{" "}
+        <small className="text-muted-foreground">{ficha.descricao}</small>
       </Drow>
       <Drow icone="lucide:hash" rotulo="Placa / patrimônio">
         <span className="font-mono">{equipamento.identificador ?? "—"}</span>

@@ -27,8 +27,8 @@ export function FaroltiSnapshotCard({
             Histórico no ERP legado (FarolTI)
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            Snapshot importado no cadastro (código {cliente.cli_codigo_legado}) — não é
-            recalculado ao vivo pelo sistema.
+            Snapshot importado no cadastro (código {cliente.cli_codigo_legado}) — não é recalculado
+            ao vivo pelo sistema.
           </p>
         </div>
         <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-steel/40 bg-steel/15 px-2.5 py-0.5 text-xs font-medium text-foreground">
@@ -44,9 +44,7 @@ export function FaroltiSnapshotCard({
         />
         <Celula
           rotulo="Ticket médio"
-          valor={
-            cliente.legado_ticket_medio != null ? formatBRL(cliente.legado_ticket_medio) : "—"
-          }
+          valor={cliente.legado_ticket_medio != null ? formatBRL(cliente.legado_ticket_medio) : "—"}
         />
         <Celula
           rotulo="OS realizadas"

@@ -79,7 +79,10 @@ export function EquipamentoHero({
             <Icon icon="lucide:pencil" className="h-4 w-4" />
             Editar
           </Button>
-          <Button asChild className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary-hover">
+          <Button
+            asChild
+            className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary-hover"
+          >
             <Link to="/admin/manutencao">
               <Icon icon="lucide:wrench" className="h-4 w-4" />
               Registrar manutenção
