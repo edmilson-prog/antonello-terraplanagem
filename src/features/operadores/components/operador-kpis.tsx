@@ -33,7 +33,9 @@ function KpiCard({ kpi }: { kpi: ShowcaseKpiItem }) {
 
       <div className="mt-3 font-display text-3xl font-bold text-foreground">
         {kpi.valor}
-        {ehHoras ? <span className="ml-0.5 text-base font-semibold text-muted-foreground">h</span> : null}
+        {ehHoras ? (
+          <span className="ml-0.5 text-base font-semibold text-muted-foreground">h</span>
+        ) : null}
       </div>
 
       <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">

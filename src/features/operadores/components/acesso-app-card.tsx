@@ -32,7 +32,11 @@ function AppInfo({ rotulo, valor, mono }: { rotulo: string; valor: string; mono?
       <dt className="font-display text-[10px] font-semibold uppercase tracking-widest text-foreground-faint">
         {rotulo}
       </dt>
-      <dd className={mono ? "mt-1 font-mono text-[13px] text-foreground" : "mt-1 text-[13px] text-foreground"}>
+      <dd
+        className={
+          mono ? "mt-1 font-mono text-[13px] text-foreground" : "mt-1 text-[13px] text-foreground"
+        }
+      >
         {valor}
       </dd>
     </div>

@@ -7,7 +7,10 @@ export function HorasSemanaCard({ semana }: { semana: ShowcaseSemana }) {
     <CardSecao titulo="Horas por semana" icone="lucide:bar-chart-3" bodyClassName="p-4">
       <div className="flex h-24 items-end gap-2">
         {semana.barras.map((b) => (
-          <div key={b.label} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
+          <div
+            key={b.label}
+            className="flex h-full flex-1 flex-col items-center justify-end gap-1.5"
+          >
             <div
               className={
                 b.pct === picoPct

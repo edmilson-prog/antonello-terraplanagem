@@ -4,7 +4,11 @@ import type { ShowcaseEquip } from "@/features/operadores/operador-showcase-data
 
 export function EquipamentosHabilitadosCard({ equipamentos }: { equipamentos: ShowcaseEquip[] }) {
   return (
-    <CardSecao titulo="Equipamentos habilitados" icone="lucide:wrench" bodyClassName="flex flex-wrap gap-2 p-4">
+    <CardSecao
+      titulo="Equipamentos habilitados"
+      icone="lucide:wrench"
+      bodyClassName="flex flex-wrap gap-2 p-4"
+    >
       {equipamentos.map((eq) => (
         <span
           key={eq.nome}

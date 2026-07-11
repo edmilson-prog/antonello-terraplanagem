@@ -14,14 +14,16 @@ export function DadosCadastraisCard({
   return (
     <CardSecao titulo="Dados cadastrais" icone="lucide:contact" bodyClassName="px-4 py-1.5">
       <Drow icone="lucide:id-card" rotulo="CNH">
-        Categoria {cadastrais.cnhCategoria} · <small className="text-muted-foreground">válida até {cadastrais.cnhValidade}</small>
+        Categoria {cadastrais.cnhCategoria} ·{" "}
+        <small className="text-muted-foreground">válida até {cadastrais.cnhValidade}</small>
       </Drow>
       <Drow icone="lucide:cake" rotulo="Nascimento">
         <span className="font-mono">{cadastrais.nascimento}</span> ·{" "}
         <small className="text-muted-foreground">{cadastrais.idade}</small>
       </Drow>
       <Drow icone="lucide:briefcase" rotulo="Vínculo">
-        {cadastrais.vinculo} · <small className="text-muted-foreground">admissão {cadastrais.admissao}</small>
+        {cadastrais.vinculo} ·{" "}
+        <small className="text-muted-foreground">admissão {cadastrais.admissao}</small>
       </Drow>
       <Drow icone="lucide:phone" rotulo="Telefone">
         <span className="font-mono">{formatTelefone(telefone)}</span>
