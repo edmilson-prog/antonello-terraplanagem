@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { operadoresStore } from "@/features/operadores/operadores-store";
+import { ApontamentosRecentesCard } from "@/features/operadores/components/apontamentos-recentes-card";
 import { OperadorForm } from "@/features/operadores/components/operador-form";
 import { OperadorHero } from "@/features/operadores/components/operador-hero";
 import { OperadorKpis } from "@/features/operadores/components/operador-kpis";
@@ -119,7 +120,16 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
             onReativar={reativar}
           />
           <OperadorKpis kpis={showcase.kpis} />
-          {/* Grid (apontamentos/OS + cadastrais/horas/equipamentos/app) e nota — próximas tasks. */}
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
+            <div className="space-y-4">
+              <ApontamentosRecentesCard apontamentos={showcase.apontamentos} />
+              {/* OS vinculadas — próxima task */}
+            </div>
+            <div className="space-y-4">
+              {/* Cadastrais, horas/semana, equipamentos, app — próximas tasks */}
+            </div>
+          </div>
+          {/* Nota rodapé — task final */}
         </div>
       )}
 
