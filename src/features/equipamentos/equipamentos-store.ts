@@ -56,7 +56,12 @@ const useEquipamento = (id: string) =>
     () => getById(id),
     () => getById(id),
   );
-const useEstado = () => useSyncExternalStore(inscrever, () => estado, () => estado);
+const useEstado = () =>
+  useSyncExternalStore(
+    inscrever,
+    () => estado,
+    () => estado,
+  );
 
 const create = async (dados: NovoEquipamento): Promise<Equipamento> => {
   const { data, error } = await supabase

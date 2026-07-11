@@ -2,34 +2,39 @@ import type { ReactNode } from "react";
 import { Icon } from "@iconify/react";
 import { formatTelefone } from "@/shared/lib/format";
 import { CardSecao } from "@/shared/components/card-secao";
-import type { ShowcaseCadastrais } from "@/features/operadores/operador-showcase-data";
+import type { Cliente } from "@/shared/types";
+import type { ClienteCadastrais } from "@/features/clientes/cliente-showcase-data";
 
-export function DadosCadastraisCard({
+export function DadosCadastraisClienteCard({
+  cliente,
   cadastrais,
-  telefone,
 }: {
-  cadastrais: ShowcaseCadastrais;
-  telefone: string | null;
+  cliente: Cliente;
+  cadastrais: ClienteCadastrais;
 }) {
   return (
     <CardSecao titulo="Dados cadastrais" icone="lucide:contact" bodyClassName="px-4 py-1.5">
-      <Drow icone="lucide:id-card" rotulo="CNH">
-        Categoria {cadastrais.cnhCategoria} ·{" "}
-        <small className="text-muted-foreground">válida até {cadastrais.cnhValidade}</small>
+      <Drow icone="lucide:building" rotulo="Razão social">
+        {cliente.nome}
       </Drow>
-      <Drow icone="lucide:cake" rotulo="Nascimento">
-        <span className="font-mono">{cadastrais.nascimento}</span> ·{" "}
-        <small className="text-muted-foreground">{cadastrais.idade}</small>
+      <Drow icone="lucide:badge" rotulo="Nome fantasia">
+        {cadastrais.fantasia}
       </Drow>
-      <Drow icone="lucide:briefcase" rotulo="Vínculo">
-        {cadastrais.vinculo} ·{" "}
-        <small className="text-muted-foreground">admissão {cadastrais.admissao}</small>
+      <Drow icone="lucide:layers" rotulo="Segmento">
+        {cadastrais.segmento}
+      </Drow>
+      <Drow icone="lucide:mail" rotulo="E-mail">
+        {cadastrais.email}
       </Drow>
       <Drow icone="lucide:phone" rotulo="Telefone">
-        <span className="font-mono">{formatTelefone(telefone)}</span>
+        <span className="font-mono">{formatTelefone(cliente.telefone)}</span>
       </Drow>
-      <Drow icone="lucide:map-pin" rotulo="Base">
-        {cadastrais.base}
+      <Drow icone="lucide:map-pin" rotulo="Endereço">
+        {cadastrais.endereco}
+      </Drow>
+      <Drow icone="lucide:user" rotulo="Contato">
+        {cadastrais.contatoNome} ·{" "}
+        <small className="text-muted-foreground">{cadastrais.contatoPapel}</small>
       </Drow>
     </CardSecao>
   );

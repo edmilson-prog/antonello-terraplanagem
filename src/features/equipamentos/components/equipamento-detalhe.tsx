@@ -1,21 +1,30 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PageHeader } from "@/shared/components/page-header";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
-import { formatDataHora, formatHorimetro } from "@/shared/lib/format";
+import { formatHorimetro } from "@/shared/lib/format";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { EquipamentoForm } from "@/features/equipamentos/components/equipamento-form";
-import { EquipamentoStatusBadge, InativoBadge, TIPO_LABEL } from "@/features/equipamentos/labels";
+import { EquipamentoHero } from "@/features/equipamentos/components/equipamento-hero";
+import { EquipamentoKpis } from "@/features/equipamentos/components/equipamento-kpis";
+import { LeiturasHorimetroCard } from "@/features/equipamentos/components/leituras-horimetro-card";
+import { ManutencoesCard } from "@/features/equipamentos/components/manutencoes-card";
+import { FichaTecnicaCard } from "@/features/equipamentos/components/ficha-tecnica-card";
+import { CustoHoraCard } from "@/features/equipamentos/components/custo-hora-card";
+import { ProximaManutencaoCard } from "@/features/equipamentos/components/proxima-manutencao-card";
+import { UtilizacaoSemanaCard } from "@/features/equipamentos/components/utilizacao-semana-card";
+import { showcaseDoEquipamento } from "@/features/equipamentos/equipamento-showcase-data";
 
 export function EquipamentoDetalhe({ equipamentoId }: { equipamentoId: string }) {
   const equipamento = equipamentosStore.useEquipamento(equipamentoId);
   const { isLoading, error } = equipamentosStore.useEstado();
   const [editando, setEditando] = useState(false);
   const [inativando, setInativando] = useState(false);
+
+  const showcase = useMemo(() => showcaseDoEquipamento(equipamentoId), [equipamentoId]);
 
   const voltar = (
     <Link
@@ -96,46 +105,14 @@ export function EquipamentoDetalhe({ equipamentoId }: { equipamentoId: string })
     setInativando(false);
   };
 
+  const kpis = {
+    ...showcase.kpis,
+    horimetro: { ...showcase.kpis.horimetro, valor: formatHorimetro(equipamento.horimetro_atual) },
+  };
+
   return (
     <div className="space-y-6">
       {voltar}
-
-      <PageHeader
-        titulo={equipamento.nome}
-        descricao={equipamento.identificador ?? undefined}
-        acoes={
-          <div className="flex items-center gap-2">
-            {equipamento.ativo ? (
-              <EquipamentoStatusBadge status={equipamento.status} />
-            ) : (
-              <InativoBadge />
-            )}
-            {!editando ? (
-              <>
-                <Button variant="outline" onClick={() => setEditando(true)} className="gap-1.5">
-                  <Icon icon="lucide:pencil" className="h-4 w-4" />
-                  Editar
-                </Button>
-                {equipamento.ativo ? (
-                  <Button
-                    variant="outline"
-                    onClick={() => setInativando(true)}
-                    className="gap-1.5 text-destructive hover:text-destructive"
-                  >
-                    <Icon icon="lucide:ban" className="h-4 w-4" />
-                    Inativar
-                  </Button>
-                ) : (
-                  <Button variant="outline" onClick={reativar} className="gap-1.5">
-                    <Icon icon="lucide:rotate-ccw" className="h-4 w-4" />
-                    Reativar
-                  </Button>
-                )}
-              </>
-            ) : null}
-          </div>
-        }
-      />
 
       {editando ? (
         <section className="rounded-xl border bg-card p-5 shadow-sm">
@@ -149,46 +126,36 @@ export function EquipamentoDetalhe({ equipamentoId }: { equipamentoId: string })
           />
         </section>
       ) : (
-        <section className="rounded-xl border bg-card p-5 shadow-sm">
-          <dl className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <dt className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-                Tipo
-              </dt>
-              <dd className="mt-1 text-sm text-card-foreground">{TIPO_LABEL[equipamento.tipo]}</dd>
+        <div className="space-y-4">
+          <EquipamentoHero
+            equipamento={equipamento}
+            marcaModelo={showcase.fichaTecnica.marcaModelo}
+            ano={showcase.fichaTecnica.ano}
+            onEditar={() => setEditando(true)}
+            onInativar={() => setInativando(true)}
+            onReativar={reativar}
+          />
+          <EquipamentoKpis kpis={kpis} />
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
+            <div className="space-y-4">
+              <LeiturasHorimetroCard leituras={showcase.leiturasHorimetro} />
+              <ManutencoesCard equipamento={equipamento} />
             </div>
-            <div>
-              <dt className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-                Capacidade
-              </dt>
-              <dd className="mt-1 text-sm text-card-foreground">{equipamento.capacidade}</dd>
+            <div className="space-y-4">
+              <FichaTecnicaCard equipamento={equipamento} ficha={showcase.fichaTecnica} />
+              <CustoHoraCard equipamento={equipamento} />
+              <ProximaManutencaoCard equipamento={equipamento} />
+              <UtilizacaoSemanaCard semana={showcase.utilizacaoSemana} />
             </div>
-            <div>
-              <dt className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-                Horímetro atual
-              </dt>
-              <dd className="mt-1 font-mono text-sm text-card-foreground">
-                {formatHorimetro(equipamento.horimetro_atual)}
-              </dd>
-            </div>
-            <div>
-              <dt className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-                Identificador
-              </dt>
-              <dd className="mt-1 font-mono text-sm text-card-foreground">
-                {equipamento.identificador ?? "—"}
-              </dd>
-            </div>
-            <div>
-              <dt className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-                Na frota desde
-              </dt>
-              <dd className="mt-1 text-sm text-card-foreground">
-                {formatDataHora(equipamento.created_at)}
-              </dd>
-            </div>
-          </dl>
-        </section>
+          </div>
+          <div className="mt-6 flex items-start gap-2.5 rounded-lg border border-dashed px-4 py-3 text-[12.5px] text-foreground-faint">
+            <Icon icon="lucide:building-2" className="mt-0.5 h-4 w-4 shrink-0 text-primary/70" />
+            <span>
+              Custo-hora, receita e custos de manutenção aparecem por ser a <b>retaguarda</b>. No
+              app de campo o equipamento nunca exibe valores.
+            </span>
+          </div>
+        </div>
       )}
 
       <ConfirmDialog

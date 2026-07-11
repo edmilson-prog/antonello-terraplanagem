@@ -1,5 +1,5 @@
 import { Icon } from "@iconify/react";
-import { CardPill, CardSecao } from "@/features/operadores/components/card-secao";
+import { CardPill, CardSecao } from "@/shared/components/card-secao";
 import { StatusOSBadge } from "@/features/ordem-servico/labels";
 import type { ShowcaseOrdem } from "@/features/operadores/operador-showcase-data";
 

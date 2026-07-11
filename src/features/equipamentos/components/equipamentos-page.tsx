@@ -122,8 +122,7 @@ export function EquipamentosPage() {
     },
     {
       header: "Status",
-      cell: (e) =>
-        e.ativo ? <EquipamentoStatusBadge status={e.status} /> : <InativoBadge />,
+      cell: (e) => (e.ativo ? <EquipamentoStatusBadge status={e.status} /> : <InativoBadge />),
     },
   ];
 
@@ -201,7 +200,10 @@ export function EquipamentosPage() {
           className="pl-9"
         />
       </div>
-      <Select value={filtroTipo} onValueChange={(v) => setFiltroTipo(v as TipoEquipamento | "todos")}>
+      <Select
+        value={filtroTipo}
+        onValueChange={(v) => setFiltroTipo(v as TipoEquipamento | "todos")}
+      >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Tipo" />
         </SelectTrigger>

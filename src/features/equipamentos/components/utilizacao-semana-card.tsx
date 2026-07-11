@@ -1,10 +1,10 @@
 import { CardSecao } from "@/shared/components/card-secao";
-import type { ShowcaseSemana } from "@/features/operadores/operador-showcase-data";
+import type { EquipamentoSemana } from "@/features/equipamentos/equipamento-showcase-data";
 
-export function HorasSemanaCard({ semana }: { semana: ShowcaseSemana }) {
+export function UtilizacaoSemanaCard({ semana }: { semana: EquipamentoSemana }) {
   const picoPct = Math.max(...semana.barras.map((b) => b.pct));
   return (
-    <CardSecao titulo="Horas por semana" icone="lucide:bar-chart-3" bodyClassName="p-4">
+    <CardSecao titulo="Utilização por semana" icone="lucide:bar-chart-3" bodyClassName="p-4">
       <div className="flex h-24 items-end gap-2">
         {semana.barras.map((b) => (
           <div
