@@ -1,17 +1,14 @@
-import { useState, type ReactNode } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PageHeader } from "@/shared/components/page-header";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
-import { StatusAtivo } from "@/shared/components/status-ativo";
-import { formatDataHora, formatDocumento, formatTelefone } from "@/shared/lib/format";
 import { operadoresStore } from "@/features/operadores/operadores-store";
 import { OperadorForm } from "@/features/operadores/components/operador-form";
-import { ordensStore } from "@/features/ordem-servico/ordens-store";
-import { StatusOSBadge } from "@/features/ordem-servico/labels";
+import { OperadorHero } from "@/features/operadores/components/operador-hero";
+import { showcaseDoOperador } from "@/features/operadores/operador-showcase-data";
 
 export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
   const operador = operadoresStore.useOperador(operadorId);
@@ -19,12 +16,12 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
   const [editando, setEditando] = useState(false);
   const [inativando, setInativando] = useState(false);
 
-  const osDoOperador = ordensStore.useTodas().filter((o) => o.responsavel_id === operadorId);
+  const showcase = useMemo(() => showcaseDoOperador(operadorId), [operadorId]);
 
   const voltar = (
     <Link
       to="/admin/operadores"
-      className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
+      className="mb-4 inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
     >
       <Icon icon="lucide:arrow-left" className="h-4 w-4" />
       Operadores
@@ -33,17 +30,19 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
 
   if (isLoading) {
     return (
-      <div className="space-y-5">
+      <div>
         {voltar}
-        <Skeleton className="h-9 w-64" />
-        <Skeleton className="h-32 w-full rounded-xl" />
+        <div className="space-y-4">
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <Skeleton className="h-24 w-full rounded-xl" />
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="space-y-5">
+      <div>
         {voltar}
         <div
           role="alert"
@@ -95,40 +94,8 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div>
       {voltar}
-
-      <PageHeader
-        titulo={operador.nome}
-        acoes={
-          <div className="flex items-center gap-2">
-            <StatusAtivo ativo={operador.ativo} />
-            {!editando ? (
-              <>
-                <Button variant="outline" onClick={() => setEditando(true)} className="gap-1.5">
-                  <Icon icon="lucide:pencil" className="h-4 w-4" />
-                  Editar
-                </Button>
-                {operador.ativo ? (
-                  <Button
-                    variant="outline"
-                    onClick={() => setInativando(true)}
-                    className="gap-1.5 text-destructive hover:text-destructive"
-                  >
-                    <Icon icon="lucide:ban" className="h-4 w-4" />
-                    Inativar
-                  </Button>
-                ) : (
-                  <Button variant="outline" onClick={reativar} className="gap-1.5">
-                    <Icon icon="lucide:rotate-ccw" className="h-4 w-4" />
-                    Reativar
-                  </Button>
-                )}
-              </>
-            ) : null}
-          </div>
-        }
-      />
 
       {editando ? (
         <section className="rounded-xl border bg-card p-5 shadow-sm">
@@ -142,66 +109,18 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
           />
         </section>
       ) : (
-        <section className="rounded-xl border bg-card p-5 shadow-sm">
-          <dl className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <dt className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-                CPF
-              </dt>
-              <dd className="mt-1 font-mono text-sm text-card-foreground">
-                {formatDocumento(operador.cpf)}
-              </dd>
-            </div>
-            <div>
-              <dt className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-                Telefone
-              </dt>
-              <dd className="mt-1 font-mono text-sm text-card-foreground">
-                {formatTelefone(operador.telefone)}
-              </dd>
-            </div>
-            <div>
-              <dt className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-                Operador desde
-              </dt>
-              <dd className="mt-1 text-sm text-card-foreground">
-                {formatDataHora(operador.created_at)}
-              </dd>
-            </div>
-          </dl>
-        </section>
+        <div className="space-y-4">
+          <OperadorHero
+            operador={operador}
+            ultimaAtividade={showcase.acessoApp.ultimoAcesso}
+            onEditar={() => setEditando(true)}
+            onInativar={() => setInativando(true)}
+            onReativar={reativar}
+          />
+          {/* Seções seguintes entram nas próximas tasks:
+              KPIs, grid (apontamentos/OS + cadastrais/horas/equipamentos/app), nota rodapé. */}
+        </div>
       )}
-
-      <section className="space-y-4">
-        <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-          Atividade no sistema
-        </h3>
-        <SecaoAtividade
-          titulo="Ordens de Serviço"
-          icone="lucide:file-text"
-          quantidade={osDoOperador.length}
-          vazio="Nenhuma OS registrada com este operador como responsável."
-        >
-          {osDoOperador.map((o) => (
-            <li key={o.id}>
-              <Link
-                to="/admin/ordens/$ordemId"
-                params={{ ordemId: o.id }}
-                className="-mx-1 flex items-center justify-between gap-3 rounded px-1 py-2.5 text-sm hover:bg-muted/40"
-              >
-                <span className="flex min-w-0 items-center gap-3">
-                  <span className="font-mono text-xs text-foreground-faint">{o.numero}</span>
-                  <span className="truncate text-card-foreground">{o.obra_nome}</span>
-                </span>
-                <span className="flex shrink-0 items-center gap-3">
-                  <StatusOSBadge status={o.status} />
-                  <Icon icon="lucide:chevron-right" className="h-4 w-4 text-muted-foreground" />
-                </span>
-              </Link>
-            </li>
-          ))}
-        </SecaoAtividade>
-      </section>
 
       <ConfirmDialog
         open={inativando}
@@ -212,37 +131,6 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
         destrutivo
         onConfirm={confirmarInativar}
       />
-    </div>
-  );
-}
-
-function SecaoAtividade({
-  titulo,
-  icone,
-  quantidade,
-  vazio,
-  children,
-}: {
-  titulo: string;
-  icone: string;
-  quantidade: number;
-  vazio: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="rounded-xl border bg-card p-5 shadow-sm">
-      <div className="mb-3 flex items-center justify-between">
-        <h4 className="flex items-center gap-2 font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-          <Icon icon={icone} className="h-4 w-4" />
-          {titulo}
-        </h4>
-        <span className="font-mono text-xs text-muted-foreground">{quantidade}</span>
-      </div>
-      {quantidade === 0 ? (
-        <p className="py-6 text-center text-sm text-muted-foreground">{vazio}</p>
-      ) : (
-        <ul className="divide-y divide-border">{children}</ul>
-      )}
     </div>
   );
 }
