@@ -23,7 +23,12 @@ export function ClienteKpis({
 }: ClienteKpisProps) {
   const itens: ClienteKpiItem[] = [
     kpis.faturado,
-    { ...kpis.saldoReceber, valor: formatBRL(saldoReceber), rodape: saldoRodape },
+    {
+      ...kpis.saldoReceber,
+      valor: formatBRL(saldoReceber),
+      rodape: saldoRodape,
+      alerta: saldoReceber > 0,
+    },
     {
       rotulo: "OS ativas",
       valor: String(osAtivas),
