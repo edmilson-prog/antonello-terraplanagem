@@ -125,15 +125,19 @@ banda-nota rodapé.
 | Hero | avatar-ícone + badges + quickfacts + ações | nome, documento (CNPJ/CPF), telefone, "cliente desde" (`created_at`), ativo, tipo_pessoa (PJ/PF) | badge "Cliente recorrente"; última OS (se não derivável de `ordensStore`) |
 | KPIs (4) | strip c/ sparkline | contagem OS ativas (`ordensStore`), orçamentos abertos (`orcamentosStore`) | Faturado 2025 + trend, Saldo a receber (variante **alerta**), sparklines/trends |
 | Ordens de Serviço | lista (`CardSecao`) | `numero`, `obra_nome`, `status` (`ordensStore`, cruzando o cliente como o `cliente-detalhe.tsx` já faz) | horas e valor R$ por OS (sem campo no contrato) |
-| Contas a receber | tabela | contrato `ContaReceber` existe, mas sem store alimentada hoje | linhas (documento NF, emissão, vencimento, valor, situação A vencer/Vencido/Pago) |
+| Contas a receber | tabela | **REAL** via `contasReceberStore` (`src/features/financeiro/contas-receber-store.ts`), cruzando o cliente: `valor`, `vencimento`, `status` (a vencer/vencido/pago), `recebido_em` | documento NF (se não resolvível via `faturamento_id`, omitir a coluna) |
 | Dados cadastrais | datalist | razão social (`nome`), telefone, tipo_pessoa | nome fantasia, segmento, e-mail, endereço, contato (nome · papel) |
 | Orçamentos | lista (`CardSecao`) | `numero`, `descricao_obra`, `valor_total`, `status` (`orcamentosStore`) | — |
 | Recebimentos | lista (`CardSecao`) | — | PIX/TED/boleto (título, data·hora, valor) — decisão 3 |
 | Banda Farolti | banda tracejada aço + grid de stats | **todos os `legado_*`** + `cli_codigo_legado` (preservar o render atual, extraindo em componente) | "origem: migração jun/2024" (sem campo de data) |
 
-**Estados vazios:** OS sem vínculo → card empty; orçamentos vazios → empty; **banda Farolti
-oculta quando o cliente não tem `legado_*`** (preservar a condicional atual do
-`cliente-detalhe.tsx`). Contas a receber e Recebimentos são showcase → sempre renderizam.
+**Estados vazios:** OS sem vínculo → card empty; orçamentos vazios → empty; contas a receber
+vazias → empty (agora real); **banda Farolti oculta quando o cliente não tem `legado_*`**
+(preservar a condicional atual do `cliente-detalhe.tsx`). Só o card Recebimentos é showcase →
+sempre renderiza.
+
+**KPI "Saldo a receber":** valor = soma das contas em aberto do cliente (`contasReceberStore`),
+para bater com o card de Contas a receber; sparkline/trend permanecem exemplo.
 
 **Sensibilidade/LGPD:** `documento` é CNPJ (PJ) ou **CPF (PF, sensível)**; contato/e-mail/
 endereço/telefone são PII. Como hoje esses extras são apenas exemplo (sem persistência),
@@ -146,9 +150,9 @@ não há novo tratamento de dado — apenas **não logar** e manter o CPF fora d
 - `cliente-detalhe.tsx` — **reescrever** para orquestrar e compor (preservando
   loading/erro/edição/inativar e o cruzamento real com `ordensStore`/`orcamentosStore`).
 - Módulo de exemplo: `src/features/clientes/cliente-showcase-data.ts` — determinístico por
-  `id`. Expõe só EXEMPLO (KPIs faturado/saldo/trends/sparklines, linhas de contas a receber,
-  horas+valor por OS, cadastrais extras, linhas de recebimentos, "recorrente", origem/data
-  migração). **Não** inclui `legado_*` (vêm reais do `cliente`).
+  `id`. Expõe só EXEMPLO (KPIs faturado + trends/sparklines, horas+valor por OS, cadastrais
+  extras, linhas de recebimentos, "recorrente", origem/data migração). **Não** inclui
+  `legado_*` (vêm reais do `cliente`) nem contas a receber (vêm reais de `contasReceberStore`).
 
 ## Mapeamento de tokens (mock → projeto)
 
@@ -187,7 +191,7 @@ tracejado) já presente no render atual.
 
 - Expandir os schemas `equipamentos` (marca/modelo/ano/aquisição) e `clientes`
   (fantasia/segmento/e-mail/endereço/contato).
-- Store real de `ContaReceber` e de recebimentos; agregações reais de KPI/receita/horas;
+- Store real de recebimentos (PIX/TED); agregações reais de KPI/receita/horas;
   relação leituras de horímetro ↔ equipamento (apontamentos).
 - Fluxos "registrar manutenção" e "novo orçamento" (hoje só navegam para as telas existentes).
 - Quando esses dados existirem, trocar os módulos `*-showcase-data.ts` pelas fontes reais,
