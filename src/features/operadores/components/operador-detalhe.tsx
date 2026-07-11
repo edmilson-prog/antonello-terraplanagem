@@ -8,6 +8,7 @@ import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { operadoresStore } from "@/features/operadores/operadores-store";
 import { OperadorForm } from "@/features/operadores/components/operador-form";
 import { OperadorHero } from "@/features/operadores/components/operador-hero";
+import { OperadorKpis } from "@/features/operadores/components/operador-kpis";
 import { showcaseDoOperador } from "@/features/operadores/operador-showcase-data";
 
 export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
@@ -117,8 +118,8 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
             onInativar={() => setInativando(true)}
             onReativar={reativar}
           />
-          {/* Seções seguintes entram nas próximas tasks:
-              KPIs, grid (apontamentos/OS + cadastrais/horas/equipamentos/app), nota rodapé. */}
+          <OperadorKpis kpis={showcase.kpis} />
+          {/* Grid (apontamentos/OS + cadastrais/horas/equipamentos/app) e nota — próximas tasks. */}
         </div>
       )}
 
