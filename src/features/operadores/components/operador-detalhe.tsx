@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { operadoresStore } from "@/features/operadores/operadores-store";
+import { AcessoAppCard } from "@/features/operadores/components/acesso-app-card";
 import { ApontamentosRecentesCard } from "@/features/operadores/components/apontamentos-recentes-card";
 import { DadosCadastraisCard } from "@/features/operadores/components/dados-cadastrais-card";
 import { EquipamentosHabilitadosCard } from "@/features/operadores/components/equipamentos-habilitados-card";
@@ -133,10 +134,17 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
               <DadosCadastraisCard cadastrais={showcase.cadastrais} telefone={operador.telefone} />
               <HorasSemanaCard semana={showcase.horasSemana} />
               <EquipamentosHabilitadosCard equipamentos={showcase.equipamentos} />
-              {/* App — próxima task */}
+              <AcessoAppCard acesso={showcase.acessoApp} />
             </div>
           </div>
-          {/* Nota rodapé — task final */}
+          <div className="mt-6 flex items-start gap-2.5 rounded-lg border border-dashed px-4 py-3 text-[12.5px] text-foreground-faint">
+            <Icon icon="lucide:lock" className="mt-0.5 h-4 w-4 shrink-0 text-primary/70" />
+            <span>
+              Perfil operacional — sem dados financeiros. Custo-hora e valores ficam restritos às
+              telas de <b>Custo da Hora</b>, <b>Financeiro</b> e <b>Rentabilidade</b>, conforme o
+              particionamento de acesso.
+            </span>
+          </div>
         </div>
       )}
 
