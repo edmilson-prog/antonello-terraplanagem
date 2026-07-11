@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { operadoresStore } from "@/features/operadores/operadores-store";
 import { ApontamentosRecentesCard } from "@/features/operadores/components/apontamentos-recentes-card";
+import { DadosCadastraisCard } from "@/features/operadores/components/dados-cadastrais-card";
 import { OperadorForm } from "@/features/operadores/components/operador-form";
 import { OperadorHero } from "@/features/operadores/components/operador-hero";
 import { OperadorKpis } from "@/features/operadores/components/operador-kpis";
@@ -127,7 +128,8 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
               <OrdensVinculadasCard ordens={showcase.ordens} />
             </div>
             <div className="space-y-4">
-              {/* Cadastrais, horas/semana, equipamentos, app — próximas tasks */}
+              <DadosCadastraisCard cadastrais={showcase.cadastrais} telefone={operador.telefone} />
+              {/* Horas/semana, equipamentos, app — próximas tasks */}
             </div>
           </div>
           {/* Nota rodapé — task final */}
