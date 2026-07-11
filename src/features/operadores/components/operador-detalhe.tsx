@@ -8,6 +8,7 @@ import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { operadoresStore } from "@/features/operadores/operadores-store";
 import { ApontamentosRecentesCard } from "@/features/operadores/components/apontamentos-recentes-card";
 import { DadosCadastraisCard } from "@/features/operadores/components/dados-cadastrais-card";
+import { HorasSemanaCard } from "@/features/operadores/components/horas-semana-card";
 import { OperadorForm } from "@/features/operadores/components/operador-form";
 import { OperadorHero } from "@/features/operadores/components/operador-hero";
 import { OperadorKpis } from "@/features/operadores/components/operador-kpis";
@@ -129,7 +130,8 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
             </div>
             <div className="space-y-4">
               <DadosCadastraisCard cadastrais={showcase.cadastrais} telefone={operador.telefone} />
-              {/* Horas/semana, equipamentos, app — próximas tasks */}
+              <HorasSemanaCard semana={showcase.horasSemana} />
+              {/* Equipamentos, app — próximas tasks */}
             </div>
           </div>
           {/* Nota rodapé — task final */}
