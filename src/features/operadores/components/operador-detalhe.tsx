@@ -10,6 +10,7 @@ import { ApontamentosRecentesCard } from "@/features/operadores/components/apont
 import { OperadorForm } from "@/features/operadores/components/operador-form";
 import { OperadorHero } from "@/features/operadores/components/operador-hero";
 import { OperadorKpis } from "@/features/operadores/components/operador-kpis";
+import { OrdensVinculadasCard } from "@/features/operadores/components/ordens-vinculadas-card";
 import { showcaseDoOperador } from "@/features/operadores/operador-showcase-data";
 
 export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
@@ -123,7 +124,7 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
             <div className="space-y-4">
               <ApontamentosRecentesCard apontamentos={showcase.apontamentos} />
-              {/* OS vinculadas — próxima task */}
+              <OrdensVinculadasCard ordens={showcase.ordens} />
             </div>
             <div className="space-y-4">
               {/* Cadastrais, horas/semana, equipamentos, app — próximas tasks */}
