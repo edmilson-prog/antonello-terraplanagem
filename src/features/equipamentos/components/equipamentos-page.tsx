@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -95,14 +96,21 @@ export function EquipamentosPage() {
     {
       header: "Nome",
       cell: (e) => (
-        <div className={cn("min-w-0 max-w-[22rem]", !e.ativo && "opacity-60")}>
-          <div className="truncate font-medium text-foreground" title={e.nome}>
+        <Link
+          to="/admin/equipamentos/$equipamentoId"
+          params={{ equipamentoId: e.id }}
+          className={cn("block min-w-0 max-w-[22rem]", !e.ativo && "opacity-60")}
+        >
+          <div
+            className="truncate font-medium text-foreground hover:text-primary hover:underline"
+            title={e.nome}
+          >
             {e.nome}
           </div>
           <div className="truncate font-mono text-xs text-foreground-faint">
             {e.identificador ?? "sem identificador"}
           </div>
-        </div>
+        </Link>
       ),
     },
     { header: "Tipo", cell: (e) => TIPO_LABEL[e.tipo] },
@@ -147,12 +155,18 @@ export function EquipamentosPage() {
   const renderCard = (e: Equipamento) => (
     <div className={cn("rounded-xl border bg-card p-4 shadow-sm", !e.ativo && "opacity-70")}>
       <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <div className="font-display font-bold text-card-foreground">{e.nome}</div>
+        <Link
+          to="/admin/equipamentos/$equipamentoId"
+          params={{ equipamentoId: e.id }}
+          className="min-w-0"
+        >
+          <div className="font-display font-bold text-card-foreground hover:text-primary hover:underline">
+            {e.nome}
+          </div>
           <div className="font-mono text-xs text-foreground-faint">
             {e.identificador ?? "sem identificador"}
           </div>
-        </div>
+        </Link>
         {e.ativo ? <EquipamentoStatusBadge status={e.status} /> : <InativoBadge />}
       </div>
       <dl className="mt-3 grid grid-cols-2 gap-2 text-xs">

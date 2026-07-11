@@ -50,6 +50,12 @@ carregar();
 const getAll = () => itens;
 const getById = (id: string) => itens.find((i) => i.id === id);
 const useAll = () => useSyncExternalStore(inscrever, getAll, getAll);
+const useEquipamento = (id: string) =>
+  useSyncExternalStore(
+    inscrever,
+    () => getById(id),
+    () => getById(id),
+  );
 const useEstado = () => useSyncExternalStore(inscrever, () => estado, () => estado);
 
 const create = async (dados: NovoEquipamento): Promise<Equipamento> => {
@@ -77,6 +83,7 @@ export const equipamentosStore = {
   getAll,
   getById,
   useAll,
+  useEquipamento,
   useEstado,
   create,
   update,
