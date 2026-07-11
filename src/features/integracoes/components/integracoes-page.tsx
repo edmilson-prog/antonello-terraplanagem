@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/select";
 import { useProvedorGatewayAtivo } from "@/features/integracoes/use-provedor-gateway";
 import { useProvedorWhatsAppAtivo } from "@/features/integracoes/use-provedor-whatsapp";
+import { PainelConexaoWaha } from "@/features/integracoes/components/painel-conexao-waha";
 import { PROVEDOR_GATEWAY_LABEL } from "@/features/cobranca-gateway/labels";
 import { PROVEDOR_WHATSAPP_LABEL } from "@/features/aviso-whatsapp/labels";
 import type { ProvedorGateway, ProvedorWhatsApp } from "@/shared/types";
@@ -19,6 +20,7 @@ const PROVEDORES_WHATSAPP: ProvedorWhatsApp[] = [
   "evolution_go",
   "meta_cloud_api",
   "openwa",
+  "waha",
 ];
 
 export function IntegracoesPage() {
@@ -80,6 +82,8 @@ export function IntegracoesPage() {
             </SelectContent>
           </Select>
         </div>
+
+        {provedorWhatsApp === "waha" ? <PainelConexaoWaha /> : null}
       </section>
     </div>
   );

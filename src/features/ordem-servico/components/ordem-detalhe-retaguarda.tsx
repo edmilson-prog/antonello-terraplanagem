@@ -3,6 +3,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
@@ -24,16 +25,43 @@ import { clientesStore } from "@/features/clientes/clientes-store";
 import { avisosWhatsAppStore } from "@/features/aviso-whatsapp/avisos-whatsapp-store";
 import { avisoDaOS } from "@/features/aviso-whatsapp/derivacoes";
 import { PROVEDOR_WHATSAPP_LABEL, StatusAvisoBadge } from "@/features/aviso-whatsapp/labels";
-import { useProvedorWhatsAppAtivo } from "@/features/integracoes/use-provedor-whatsapp";
 
 export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   const ordem = ordensStore.useOrdem(ordemId);
+  const { isLoading, error } = ordensStore.useEstado();
   const apontamentos = apontamentosStore.useTodos();
   const [editando, setEditando] = useState(false);
   const [confirmarFechar, setConfirmarFechar] = useState(false);
   const [resumoParaComprovante, setResumoParaComprovante] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { provedor: provedorWhatsAppAtivo } = useProvedorWhatsAppAtivo();
+
+  if (isLoading) {
+    return (
+      <div className="space-y-5">
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-32 w-full rounded-xl" />
+        <Skeleton className="h-40 w-full rounded-xl" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-5">
+        <div
+          role="alert"
+          className="flex flex-col items-center gap-3 rounded-lg border border-dashed bg-surface/60 px-6 py-16 text-center"
+        >
+          <Icon icon="lucide:triangle-alert" className="h-8 w-8 text-destructive" />
+          <p className="text-sm text-muted-foreground">{error.message}</p>
+          <Button variant="outline" onClick={ordensStore.retry} className="gap-2">
+            <Icon icon="lucide:rotate-cw" className="h-4 w-4" />
+            Tentar novamente
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (!ordem) return <OrdemNaoEncontradaAdmin />;
 
@@ -41,8 +69,8 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   const fechada = statusEfetivoOS(ordem, apontamentos) === "fechada";
   const podeFechar = podeFecharOS(ordem, apontamentos);
 
-  const fechar = () => {
-    const r = ordensStore.fechar(ordem.id, apontamentos);
+  const fechar = async () => {
+    const r = await ordensStore.fechar(ordem.id, apontamentos);
     if (!r.ok) {
       toast.error(r.motivo);
       setConfirmarFechar(false);
@@ -53,7 +81,7 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
 
     const cliente = clientesStore.getById(r.ordem.cliente_id);
     if (cliente) {
-      const disparo = avisosWhatsAppStore.dispararAviso(r.ordem, cliente, provedorWhatsAppAtivo);
+      const disparo = await avisosWhatsAppStore.dispararAviso(r.ordem, cliente);
       if (disparo.ok) {
         toast.success(
           `Aviso enviado ao cliente via ${PROVEDOR_WHATSAPP_LABEL[disparo.aviso.provedor]}.`,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
@@ -10,8 +10,17 @@ import { StatusAtivo } from "@/shared/components/status-ativo";
 import { KpiCard } from "@/features/dashboard/components/kpi-card";
 import { formatData, formatDataHora, formatDocumento, formatTelefone } from "@/shared/lib/format";
 import { formatBRL } from "@/features/retaguarda/format";
+import { idMockDoCliente } from "@/shared/lib/cliente-mock-id";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { ClienteForm } from "@/features/clientes/components/cliente-form";
+import { ordensStore } from "@/features/ordem-servico/ordens-store";
+import { StatusOSBadge } from "@/features/ordem-servico/labels";
+import { orcamentosStore } from "@/features/orcamentos/orcamentos-store";
+import { StatusOrcamentoBadge } from "@/features/orcamentos/labels";
+import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
+import { StatusFaturamentoBadge } from "@/features/faturamento/labels";
+import { comprovantesStore } from "@/features/comprovantes/comprovantes-store";
+import { StatusComprovanteBadge } from "@/features/comprovantes/labels";
 
 const TIPO_PESSOA_LABEL: Record<string, string> = {
   PF: "Pessoa física",
@@ -29,6 +38,12 @@ export function ClienteDetalhe({ clienteId }: { clienteId: string }) {
   const { isLoading, error } = clientesStore.useEstado();
   const [editando, setEditando] = useState(false);
   const [inativando, setInativando] = useState(false);
+
+  const idMock = idMockDoCliente(clienteId);
+  const osDoCliente = ordensStore.useTodas().filter((o) => o.cliente_id === idMock);
+  const orcamentosDoCliente = orcamentosStore.useTodos().filter((o) => o.cliente_id === idMock);
+  const faturamentosDoCliente = faturamentosStore.useTodos().filter((f) => f.cliente_id === idMock);
+  const comprovantesDoCliente = comprovantesStore.useTodos().filter((c) => c.cliente_id === idMock);
 
   const voltar = (
     <Link
@@ -188,6 +203,122 @@ export function ClienteDetalhe({ clienteId }: { clienteId: string }) {
         </section>
       )}
 
+      <section className="space-y-4">
+        <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
+          Atividade no sistema
+        </h3>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <SecaoAtividade
+            titulo="Ordens de Serviço"
+            icone="lucide:file-text"
+            quantidade={osDoCliente.length}
+            vazio="Nenhuma OS registrada para este cliente."
+          >
+            {osDoCliente.map((o) => (
+              <li key={o.id}>
+                <Link
+                  to="/admin/ordens/$ordemId"
+                  params={{ ordemId: o.id }}
+                  className="-mx-1 flex items-center justify-between gap-3 rounded px-1 py-2.5 text-sm hover:bg-muted/40"
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="font-mono text-xs text-foreground-faint">{o.numero}</span>
+                    <span className="truncate text-card-foreground">{o.obra_nome}</span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-3">
+                    <StatusOSBadge status={o.status} />
+                    <Icon icon="lucide:chevron-right" className="h-4 w-4 text-muted-foreground" />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </SecaoAtividade>
+
+          <SecaoAtividade
+            titulo="Orçamentos"
+            icone="lucide:file-spreadsheet"
+            quantidade={orcamentosDoCliente.length}
+            vazio="Nenhum orçamento registrado para este cliente."
+          >
+            {orcamentosDoCliente.map((o) => (
+              <li key={o.id}>
+                <Link
+                  to="/admin/orcamentos/$orcamentoId"
+                  params={{ orcamentoId: o.id }}
+                  className="-mx-1 flex items-center justify-between gap-3 rounded px-1 py-2.5 text-sm hover:bg-muted/40"
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="font-mono text-xs text-foreground-faint">{o.numero}</span>
+                    <span className="truncate text-card-foreground">{o.descricao_obra}</span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-3">
+                    <span className="font-mono text-xs text-card-foreground">
+                      {formatBRL(o.valor_total)}
+                    </span>
+                    <StatusOrcamentoBadge status={o.status} />
+                    <Icon icon="lucide:chevron-right" className="h-4 w-4 text-muted-foreground" />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </SecaoAtividade>
+
+          <SecaoAtividade
+            titulo="Faturamento"
+            icone="lucide:receipt"
+            quantidade={faturamentosDoCliente.length}
+            vazio="Nenhum faturamento registrado para este cliente."
+          >
+            {faturamentosDoCliente.map((f) => (
+              <li key={f.id}>
+                <Link
+                  to="/admin/faturamento/$faturamentoId"
+                  params={{ faturamentoId: f.id }}
+                  className="-mx-1 flex items-center justify-between gap-3 rounded px-1 py-2.5 text-sm hover:bg-muted/40"
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="font-mono text-xs text-foreground-faint">{f.numero}</span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-3">
+                    <span className="font-mono text-xs text-card-foreground">
+                      {formatBRL(f.valor_total)}
+                    </span>
+                    <StatusFaturamentoBadge status={f.status} />
+                    <Icon icon="lucide:chevron-right" className="h-4 w-4 text-muted-foreground" />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </SecaoAtividade>
+
+          <SecaoAtividade
+            titulo="Comprovantes"
+            icone="lucide:file-check-2"
+            quantidade={comprovantesDoCliente.length}
+            vazio="Nenhum comprovante registrado para este cliente."
+          >
+            {comprovantesDoCliente.map((c) => (
+              <li key={c.id}>
+                <Link
+                  to="/admin/comprovantes/$comprovanteId"
+                  params={{ comprovanteId: c.id }}
+                  className="-mx-1 flex items-center justify-between gap-3 rounded px-1 py-2.5 text-sm hover:bg-muted/40"
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="font-mono text-xs text-foreground-faint">{c.numero}</span>
+                    <span className="truncate text-card-foreground">{c.resumo_servico}</span>
+                  </span>
+                  <span className="flex shrink-0 items-center gap-3">
+                    <StatusComprovanteBadge status={c.status} />
+                    <Icon icon="lucide:chevron-right" className="h-4 w-4 text-muted-foreground" />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </SecaoAtividade>
+        </div>
+      </section>
+
       {temHistoricoLegado ? (
         <section className="space-y-4">
           <div>
@@ -258,6 +389,37 @@ export function ClienteDetalhe({ clienteId }: { clienteId: string }) {
         destrutivo
         onConfirm={confirmarInativar}
       />
+    </div>
+  );
+}
+
+function SecaoAtividade({
+  titulo,
+  icone,
+  quantidade,
+  vazio,
+  children,
+}: {
+  titulo: string;
+  icone: string;
+  quantidade: number;
+  vazio: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border bg-card p-5 shadow-sm">
+      <div className="mb-3 flex items-center justify-between">
+        <h4 className="flex items-center gap-2 font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
+          <Icon icon={icone} className="h-4 w-4" />
+          {titulo}
+        </h4>
+        <span className="font-mono text-xs text-muted-foreground">{quantidade}</span>
+      </div>
+      {quantidade === 0 ? (
+        <p className="py-6 text-center text-sm text-muted-foreground">{vazio}</p>
+      ) : (
+        <ul className="divide-y divide-border">{children}</ul>
+      )}
     </div>
   );
 }

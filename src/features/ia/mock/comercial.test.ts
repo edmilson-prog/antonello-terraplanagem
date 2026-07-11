@@ -16,7 +16,6 @@ describe("sugerirOrcamento", () => {
     });
   });
 
-
   it("returns no items and a clear justificativa when there is no similar obra", () => {
     return sugerirOrcamento(
       { clienteId: "cliente-inexistente-xyz", modeloCobranca: "hora_maquina" },
@@ -29,7 +28,7 @@ describe("sugerirOrcamento", () => {
 
   it("suggests hora_maquina items based on real past apontamentos of the same modelo_cobranca", async () => {
     const equipamento = equipamentosStore.getAll()[0];
-    const ordem = ordensStore.criar({
+    const ordem = await ordensStore.criar({
       cliente_id: "cliente-teste-c9",
       obra_nome: "Obra teste C9",
       endereco: null,
@@ -39,7 +38,11 @@ describe("sugerirOrcamento", () => {
       diametro_broca_mm: null,
       numero: "OS-TESTE-C9",
     });
-    apontamentosStore.iniciar({ equipamento_id: equipamento.id, horimetro_inicial: 100, os_id: ordem.id });
+    apontamentosStore.iniciar({
+      equipamento_id: equipamento.id,
+      horimetro_inicial: 100,
+      os_id: ordem.id,
+    });
     const emAndamento = apontamentosStore.listar()[0];
     apontamentosStore.finalizar(emAndamento.id, { horimetro_final: 110 });
 
@@ -48,7 +51,11 @@ describe("sugerirOrcamento", () => {
       { delayMs: 0 },
     );
     expect(sugestao.itens.length).toBeGreaterThan(0);
-    expect(sugestao.itens[0]).toMatchObject({ tipo: "hora_maquina", origem_id: equipamento.id, quantidade_estimada: 10 });
+    expect(sugestao.itens[0]).toMatchObject({
+      tipo: "hora_maquina",
+      origem_id: equipamento.id,
+      quantidade_estimada: 10,
+    });
     expect(sugestao.justificativa).toContain("cliente");
   });
 });

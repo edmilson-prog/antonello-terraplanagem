@@ -62,7 +62,7 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
 
   const modelo = watch("modelo_cobranca");
 
-  const onSubmit = (values: OrdemFormValues) => {
+  const onSubmit = async (values: OrdemFormValues) => {
     const responsavel =
       values.responsavel_id && values.responsavel_id !== SEM_RESPONSAVEL
         ? values.responsavel_id
@@ -78,15 +78,20 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
       diametro_broca_mm: ehPorMetro ? (values.diametro_broca_mm ?? null) : null,
     };
 
-    if (inicial) {
-      ordensStore.atualizar(inicial.id, dados);
-      toast.success("OS atualizada.");
-    } else {
-      const numero = proximoNumeroOS(ordensStore.listar(), new Date().getFullYear());
-      ordensStore.criar({ ...dados, numero });
-      toast.success(`OS criada — ${numero}.`);
+    try {
+      if (inicial) {
+        await ordensStore.atualizar(inicial.id, dados);
+        toast.success("OS atualizada.");
+      } else {
+        const numero = proximoNumeroOS(ordensStore.listar(), new Date().getFullYear());
+        await ordensStore.criar({ ...dados, numero });
+        toast.success(`OS criada — ${numero}.`);
+      }
+      onSuccess();
+    } catch (err) {
+      const detalhe = err instanceof Error ? `: ${err.message}` : "";
+      toast.error((inicial ? "Falha ao atualizar a OS" : "Falha ao criar a OS") + detalhe);
     }
-    onSuccess();
   };
 
   const formulario = (
@@ -157,10 +162,7 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
             control={control}
             name="responsavel_id"
             render={({ field }) => (
-              <Select
-                value={field.value ?? SEM_RESPONSAVEL}
-                onValueChange={field.onChange}
-              >
+              <Select value={field.value ?? SEM_RESPONSAVEL} onValueChange={field.onChange}>
                 <SelectTrigger id="responsavel_id">
                   <SelectValue />
                 </SelectTrigger>
@@ -188,7 +190,9 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
             min="0"
             className="font-mono"
             placeholder="ex.: 400"
-            {...register("diametro_broca_mm", { setValueAs: (v) => (v === "" ? undefined : Number(v)) })}
+            {...register("diametro_broca_mm", {
+              setValueAs: (v) => (v === "" ? undefined : Number(v)),
+            })}
             aria-invalid={!!errors.diametro_broca_mm}
           />
           {errors.diametro_broca_mm ? (

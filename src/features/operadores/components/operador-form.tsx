@@ -25,25 +25,34 @@ export function OperadorForm({ inicial, onSuccess, onCancel }: Props) {
     resolver: zodResolver(operadorSchema),
     defaultValues: {
       nome: inicial?.nome ?? "",
+      cpf: inicial?.cpf ?? "",
       telefone: inicial?.telefone ?? "",
       ativo: inicial?.ativo ?? true,
     },
   });
 
-  const onSubmit = (values: OperadorFormValues) => {
+  const onSubmit = async (values: OperadorFormValues) => {
     const payload = {
       nome: values.nome,
+      cpf: values.cpf.replace(/\D/g, ""),
       telefone: values.telefone?.trim() ? values.telefone.trim() : null,
       ativo: values.ativo,
     };
-    if (inicial) {
-      operadoresStore.update(inicial.id, payload);
-      toast.success("Operador atualizado.");
-    } else {
-      operadoresStore.create(payload);
-      toast.success("Operador cadastrado.");
+    try {
+      if (inicial) {
+        await operadoresStore.update(inicial.id, payload);
+        toast.success("Operador atualizado.");
+      } else {
+        await operadoresStore.create(payload);
+        toast.success("Operador cadastrado.");
+      }
+      onSuccess();
+    } catch (err) {
+      const detalhe = err instanceof Error ? `: ${err.message}` : "";
+      toast.error(
+        (inicial ? "Falha ao atualizar o operador" : "Falha ao cadastrar o operador") + detalhe,
+      );
     }
-    onSuccess();
   };
 
   return (
@@ -61,6 +70,25 @@ export function OperadorForm({ inicial, onSuccess, onCancel }: Props) {
           aria-invalid={!!errors.nome}
         />
         {errors.nome ? <p className="text-xs text-destructive">{errors.nome.message}</p> : null}
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="cpf">CPF *</Label>
+        <Input
+          id="cpf"
+          inputMode="numeric"
+          placeholder="somente números"
+          className="font-mono"
+          {...register("cpf")}
+          aria-invalid={!!errors.cpf}
+        />
+        {errors.cpf ? (
+          <p className="text-xs text-destructive">{errors.cpf.message}</p>
+        ) : !inicial ? (
+          <p className="text-xs text-muted-foreground">
+            O PIN inicial de acesso ao app de campo será os últimos 4 dígitos do CPF.
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-1.5">

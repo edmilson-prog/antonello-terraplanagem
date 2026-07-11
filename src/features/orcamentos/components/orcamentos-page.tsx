@@ -13,7 +13,6 @@ import {
 import { PageHeader } from "@/shared/components/page-header";
 import { DataList, type Column } from "@/shared/components/data-list";
 import { FormDialog } from "@/shared/components/form-dialog";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
 import { orcamentosStore } from "@/features/orcamentos/orcamentos-store";
 import { OrcamentoForm } from "@/features/orcamentos/components/orcamento-form";
 import {
@@ -29,12 +28,16 @@ import { cn } from "@/lib/utils";
 
 function validadeInfo(orc: Orcamento, agoraISO: string): { texto: string; vencida: boolean } {
   if (!orc.validade) return { texto: "—", vencida: false };
-  return { texto: orc.validade.split("-").reverse().join("/"), vencida: validadeVencida(orc, agoraISO) };
+  return {
+    texto: orc.validade.split("-").reverse().join("/"),
+    vencida: validadeVencida(orc, agoraISO),
+  };
 }
 
 export function OrcamentosPage() {
   const todos = orcamentosStore.useTodos();
-  const { isLoading, error, retry } = useMockResource(todos);
+  const { isLoading, error } = orcamentosStore.useEstado();
+  const retry = orcamentosStore.retry;
   const [q, setQ] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<StatusOrcamento | "todos">("todos");
   const [formAberto, setFormAberto] = useState(false);
@@ -70,12 +73,18 @@ export function OrcamentosPage() {
     {
       header: "Cliente",
       cell: (o) => (
-        <div className="min-w-0 max-w-[16rem] truncate">{clientesStore.getById(o.cliente_id)?.nome ?? "—"}</div>
+        <div className="min-w-0 max-w-[16rem] truncate">
+          {clientesStore.getById(o.cliente_id)?.nome ?? "—"}
+        </div>
       ),
     },
     {
       header: "Obra",
-      cell: (o) => <div className="min-w-0 max-w-[14rem] truncate text-muted-foreground">{o.descricao_obra}</div>,
+      cell: (o) => (
+        <div className="min-w-0 max-w-[14rem] truncate text-muted-foreground">
+          {o.descricao_obra}
+        </div>
+      ),
     },
     { header: "Valor", className: "font-mono", cell: (o) => formatBRL(o.valor_total) },
     {
@@ -103,7 +112,10 @@ export function OrcamentosPage() {
           className="pl-9"
         />
       </div>
-      <Select value={filtroStatus} onValueChange={(v) => setFiltroStatus(v as StatusOrcamento | "todos")}>
+      <Select
+        value={filtroStatus}
+        onValueChange={(v) => setFiltroStatus(v as StatusOrcamento | "todos")}
+      >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
@@ -138,8 +150,15 @@ export function OrcamentosPage() {
         </div>
         <div className="truncate text-xs text-muted-foreground">{o.descricao_obra}</div>
         <div className="mt-2 flex items-center justify-between">
-          <span className="font-mono text-sm font-semibold text-foreground">{formatBRL(o.valor_total)}</span>
-          <span className={cn("font-mono text-xs", v.vencida ? "text-destructive" : "text-muted-foreground")}>
+          <span className="font-mono text-sm font-semibold text-foreground">
+            {formatBRL(o.valor_total)}
+          </span>
+          <span
+            className={cn(
+              "font-mono text-xs",
+              v.vencida ? "text-destructive" : "text-muted-foreground",
+            )}
+          >
             {v.texto}
           </span>
         </div>

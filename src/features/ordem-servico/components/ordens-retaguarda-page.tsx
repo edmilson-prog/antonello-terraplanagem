@@ -13,7 +13,6 @@ import {
 import { PageHeader } from "@/shared/components/page-header";
 import { DataList, type Column } from "@/shared/components/data-list";
 import { FormDialog } from "@/shared/components/form-dialog";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import {
@@ -35,7 +34,8 @@ import type { OrdemServico, StatusOS } from "@/shared/types";
 export function OrdensRetaguardaPage({ statusInicial }: { statusInicial?: StatusOS } = {}) {
   const todas = ordensStore.useTodas();
   const apontamentos = apontamentosStore.useTodos();
-  const { isLoading, error, retry } = useMockResource(todas);
+  const { isLoading, error } = ordensStore.useEstado();
+  const retry = ordensStore.retry;
 
   const [q, setQ] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<StatusOS | "todos">(statusInicial ?? "todos");
@@ -84,7 +84,8 @@ export function OrdensRetaguardaPage({ statusInicial }: { statusInicial?: Status
       header: "Horas",
       className: "font-mono",
       cell: (o) => {
-        if (o.modelo_cobranca === "hora_maquina") return formatHorimetro(totalHorasOS(o.id, apontamentos));
+        if (o.modelo_cobranca === "hora_maquina")
+          return formatHorimetro(totalHorasOS(o.id, apontamentos));
         const metros = totalMetragemOS(o.id, apontamentos);
         return metros > 0 ? `${metros} m` : "—";
       },

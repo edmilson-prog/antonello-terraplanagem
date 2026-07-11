@@ -41,14 +41,18 @@ export function OrcamentoForm({ onCancel }: Props) {
     defaultValues: { cliente_id: "", descricao_obra: "", validade: validadePadrao() },
   });
 
-  const onSubmit = (values: OrcamentoFormValues) => {
-    const novo = orcamentosStore.criar({
-      cliente_id: values.cliente_id,
-      descricao_obra: values.descricao_obra.trim(),
-      validade: values.validade?.trim() ? values.validade : null,
-    });
-    toast.success(`Orçamento criado — ${novo.numero}.`);
-    navigate({ to: "/admin/orcamentos/$orcamentoId", params: { orcamentoId: novo.id } });
+  const onSubmit = async (values: OrcamentoFormValues) => {
+    try {
+      const novo = await orcamentosStore.criar({
+        cliente_id: values.cliente_id,
+        descricao_obra: values.descricao_obra.trim(),
+        validade: values.validade?.trim() ? values.validade : null,
+      });
+      toast.success(`Orçamento criado — ${novo.numero}.`);
+      navigate({ to: "/admin/orcamentos/$orcamentoId", params: { orcamentoId: novo.id } });
+    } catch (err) {
+      toast.error(`Falha ao criar o orçamento${err instanceof Error ? `: ${err.message}` : ""}`);
+    }
   };
 
   return (
@@ -80,7 +84,11 @@ export function OrcamentoForm({ onCancel }: Props) {
 
       <div className="space-y-1.5">
         <Label htmlFor="descricao_obra">Obra *</Label>
-        <Input id="descricao_obra" {...register("descricao_obra")} aria-invalid={!!errors.descricao_obra} />
+        <Input
+          id="descricao_obra"
+          {...register("descricao_obra")}
+          aria-invalid={!!errors.descricao_obra}
+        />
         {errors.descricao_obra ? (
           <p className="text-xs text-destructive">{errors.descricao_obra.message}</p>
         ) : null}

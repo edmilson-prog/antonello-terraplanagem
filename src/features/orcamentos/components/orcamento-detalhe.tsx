@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { OrcamentoItemRow } from "@/features/orcamentos/components/orcamento-item-row";
@@ -32,11 +33,40 @@ function inferirModelo(itens: OrcamentoItem[]): ModeloCobranca {
 
 export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
   const orc = orcamentosStore.useOrcamento(orcamentoId);
+  const { isLoading, error } = orcamentosStore.useEstado();
   const equipamentos = equipamentosStore.useAll();
   const precosHM = precoHoraMaquinaStore.useAll();
   const navigate = useNavigate();
   const [enviar, setEnviar] = useState(false);
   const [decisao, setDecisao] = useState<null | "aprovar" | "recusar">(null);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-5">
+        <Skeleton className="h-6 w-40" />
+        <Skeleton className="h-32 w-full rounded-xl" />
+        <Skeleton className="h-40 w-full rounded-xl" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-5">
+        <div
+          role="alert"
+          className="flex flex-col items-center gap-3 rounded-lg border border-dashed bg-surface/60 px-6 py-16 text-center"
+        >
+          <Icon icon="lucide:triangle-alert" className="h-8 w-8 text-destructive" />
+          <p className="text-sm text-muted-foreground">{error.message}</p>
+          <Button variant="outline" onClick={orcamentosStore.retry} className="gap-2">
+            <Icon icon="lucide:rotate-cw" className="h-4 w-4" />
+            Tentar novamente
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (!orc) return <OrcamentoNaoEncontrado />;
 
@@ -45,7 +75,7 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
   const pendente = temPendencia(orc);
   const vencida = validadeVencida(orc, new Date().toISOString());
 
-  const gerarOS = () => {
+  const gerarOS = async () => {
     const modelo = inferirModelo(orc.itens);
     const ehPorMetro = modelo === "por_metro";
     const itemMetro = ehPorMetro ? orc.itens.find((i) => i.tipo === "por_metro") : undefined;
@@ -53,23 +83,30 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
       itemMetro?.origem_id != null
         ? (precoFundacaoStore.getById(itemMetro.origem_id)?.diametro_broca_mm ?? null)
         : null;
-    const numero = proximoNumeroOS(ordensStore.listar(), new Date().getFullYear());
-    const nova = ordensStore.criar({
-      numero,
-      cliente_id: orc.cliente_id,
-      obra_nome: orc.descricao_obra,
-      endereco: null,
-      modelo_cobranca: modelo,
-      responsavel_id: null,
-      observacao: `Gerado do orçamento ${orc.numero}`,
-      diametro_broca_mm: ehPorMetro ? diametro : null,
-    });
-    orcamentosStore.vincularOS(orc.id, nova.id);
-    toast.success(`OS ${nova.numero} criada a partir do orçamento.`);
-    navigate({ to: "/admin/ordens/$ordemId", params: { ordemId: nova.id } });
+    try {
+      const numero = proximoNumeroOS(ordensStore.listar(), new Date().getFullYear());
+      const nova = await ordensStore.criar({
+        numero,
+        cliente_id: orc.cliente_id,
+        obra_nome: orc.descricao_obra,
+        endereco: null,
+        modelo_cobranca: modelo,
+        responsavel_id: null,
+        observacao: `Gerado do orçamento ${orc.numero}`,
+        diametro_broca_mm: ehPorMetro ? diametro : null,
+      });
+      await orcamentosStore.vincularOS(orc.id, nova.id);
+      toast.success(`OS ${nova.numero} criada a partir do orçamento.`);
+      navigate({ to: "/admin/ordens/$ordemId", params: { ordemId: nova.id } });
+    } catch (err) {
+      toast.error(`Falha ao gerar OS${err instanceof Error ? `: ${err.message}` : ""}`);
+    }
   };
 
-  const setItens = (next: OrcamentoItem[]) => orcamentosStore.atualizar(orc.id, { itens: next });
+  const setItens = (next: OrcamentoItem[]) =>
+    orcamentosStore.atualizar(orc.id, { itens: next }).catch((err) => {
+      toast.error(`Falha ao salvar item${err instanceof Error ? `: ${err.message}` : ""}`);
+    });
 
   const handleQuantidade = (itemId: string, q: number) => {
     setItens(
@@ -104,7 +141,9 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
     setItens(
       orc.itens.map((i) => {
         if (i.id !== itemId) return i;
-        const equipamento = i.origem_id ? equipamentos.find((e) => e.id === i.origem_id) : undefined;
+        const equipamento = i.origem_id
+          ? equipamentos.find((e) => e.id === i.origem_id)
+          : undefined;
         return aplicarHoraTipo(i, equipamento, precosHM, tipo);
       }),
     );
@@ -112,8 +151,8 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
 
   const handleRemover = (itemId: string) => setItens(orc.itens.filter((i) => i.id !== itemId));
 
-  const onEnviar = () => {
-    const r = orcamentosStore.enviar(orc.id);
+  const onEnviar = async () => {
+    const r = await orcamentosStore.enviar(orc.id);
     setEnviar(false);
     if (!r.ok) {
       toast.error(r.motivo);
@@ -122,9 +161,12 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
     toast.success(`Orçamento ${r.orcamento.numero} enviado.`);
   };
 
-  const onDecidir = () => {
+  const onDecidir = async () => {
     if (!decisao) return;
-    const r = decisao === "aprovar" ? orcamentosStore.aprovar(orc.id) : orcamentosStore.recusar(orc.id);
+    const r =
+      decisao === "aprovar"
+        ? await orcamentosStore.aprovar(orc.id)
+        : await orcamentosStore.recusar(orc.id);
     setDecisao(null);
     if (!r.ok) {
       toast.error(r.motivo);
@@ -170,7 +212,9 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
 
       <section className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg font-semibold text-foreground">Itens ({orc.itens.length})</h2>
+          <h2 className="font-display text-lg font-semibold text-foreground">
+            Itens ({orc.itens.length})
+          </h2>
           {pendente ? (
             <span className="inline-flex items-center gap-1 text-xs font-medium text-destructive">
               <Icon icon="lucide:triangle-alert" className="h-3.5 w-3.5" />
@@ -230,7 +274,13 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
                   placeholder="0,00"
                   onChange={(e) => {
                     const v = Number(e.target.value);
-                    orcamentosStore.atualizar(orc.id, { desconto: Number.isFinite(v) && v > 0 ? v : 0 });
+                    orcamentosStore
+                      .atualizar(orc.id, { desconto: Number.isFinite(v) && v > 0 ? v : 0 })
+                      .catch((err) => {
+                        toast.error(
+                          `Falha ao salvar desconto${err instanceof Error ? `: ${err.message}` : ""}`,
+                        );
+                      });
                   }}
                   className="font-mono"
                 />
@@ -244,9 +294,15 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
                 value={orc.observacao ?? ""}
                 placeholder="Notas internas sobre este orçamento"
                 onChange={(e) =>
-                  orcamentosStore.atualizar(orc.id, {
-                    observacao: e.target.value.trim() ? e.target.value : null,
-                  })
+                  orcamentosStore
+                    .atualizar(orc.id, {
+                      observacao: e.target.value.trim() ? e.target.value : null,
+                    })
+                    .catch((err) => {
+                      toast.error(
+                        `Falha ao salvar observação${err instanceof Error ? `: ${err.message}` : ""}`,
+                      );
+                    })
                 }
               />
             </div>
@@ -256,13 +312,19 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
             {orc.desconto > 0 ? (
               <p className="text-sm text-muted-foreground">Desconto: {formatBRL(orc.desconto)}</p>
             ) : null}
-            {orc.observacao ? <p className="text-sm text-muted-foreground">{orc.observacao}</p> : null}
+            {orc.observacao ? (
+              <p className="text-sm text-muted-foreground">{orc.observacao}</p>
+            ) : null}
           </div>
         )}
 
         <div className="flex items-center justify-between border-t pt-4">
-          <span className="font-mono text-sm uppercase tracking-wide text-foreground-faint">Total</span>
-          <span className="font-mono text-2xl font-bold text-foreground">{formatBRL(orc.valor_total)}</span>
+          <span className="font-mono text-sm uppercase tracking-wide text-foreground-faint">
+            Total
+          </span>
+          <span className="font-mono text-2xl font-bold text-foreground">
+            {formatBRL(orc.valor_total)}
+          </span>
         </div>
       </section>
 

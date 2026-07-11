@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -8,8 +9,7 @@ import { DataList, type Column } from "@/shared/components/data-list";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { StatusAtivo } from "@/shared/components/status-ativo";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
-import { formatTelefone } from "@/shared/lib/format";
+import { formatDocumento, formatTelefone } from "@/shared/lib/format";
 import { operadoresStore } from "@/features/operadores/operadores-store";
 import { OperadorForm } from "@/features/operadores/components/operador-form";
 import type { Operador } from "@/shared/types";
@@ -17,7 +17,8 @@ import { cn } from "@/lib/utils";
 
 export function OperadoresPage() {
   const todos = operadoresStore.useAll();
-  const { isLoading, error, retry } = useMockResource(todos);
+  const { isLoading, error } = operadoresStore.useEstado();
+  const retry = operadoresStore.retry;
 
   const [q, setQ] = useState("");
   const [mostrarInativos, setMostrarInativos] = useState(true);
@@ -42,26 +43,42 @@ export function OperadoresPage() {
     setEditando(o);
     setFormAberto(true);
   };
-  const confirmarInativar = () => {
+  const confirmarInativar = async () => {
     if (!inativando) return;
-    operadoresStore.setAtivo(inativando.id, false);
-    toast.success("Operador inativado.");
+    try {
+      await operadoresStore.setAtivo(inativando.id, false);
+      toast.success("Operador inativado.");
+    } catch (err) {
+      toast.error(`Falha ao inativar o operador${err instanceof Error ? `: ${err.message}` : ""}`);
+    }
     setInativando(null);
   };
-  const reativar = (o: Operador) => {
-    operadoresStore.setAtivo(o.id, true);
-    toast.success("Operador reativado.");
+  const reativar = async (o: Operador) => {
+    try {
+      await operadoresStore.setAtivo(o.id, true);
+      toast.success("Operador reativado.");
+    } catch (err) {
+      toast.error(`Falha ao reativar o operador${err instanceof Error ? `: ${err.message}` : ""}`);
+    }
   };
 
   const columns: Column<Operador>[] = [
     {
       header: "Nome",
       cell: (o) => (
-        <span className={cn("font-medium text-foreground", !o.ativo && "opacity-60")}>
+        <Link
+          to="/admin/operadores/$operadorId"
+          params={{ operadorId: o.id }}
+          className={cn(
+            "font-medium text-foreground hover:text-primary hover:underline",
+            !o.ativo && "opacity-60",
+          )}
+        >
           {o.nome}
-        </span>
+        </Link>
       ),
     },
+    { header: "CPF", className: "font-mono", cell: (o) => formatDocumento(o.cpf) },
     { header: "Telefone", className: "font-mono", cell: (o) => formatTelefone(o.telefone) },
     { header: "Status", cell: (o) => <StatusAtivo ativo={o.ativo} /> },
   ];
@@ -94,11 +111,17 @@ export function OperadoresPage() {
   const renderCard = (o: Operador) => (
     <div className={cn("rounded-xl border bg-card p-4 shadow-sm", !o.ativo && "opacity-70")}>
       <div className="flex items-start justify-between gap-2">
-        <div className="font-display font-bold text-card-foreground">{o.nome}</div>
+        <Link
+          to="/admin/operadores/$operadorId"
+          params={{ operadorId: o.id }}
+          className="min-w-0 font-display font-bold text-card-foreground hover:text-primary hover:underline"
+        >
+          {o.nome}
+        </Link>
         <StatusAtivo ativo={o.ativo} />
       </div>
       <div className="mt-1 font-mono text-sm text-muted-foreground">
-        {formatTelefone(o.telefone)}
+        {formatDocumento(o.cpf)} · {formatTelefone(o.telefone)}
       </div>
       <div className="mt-3 flex justify-end">{rowActions(o)}</div>
     </div>

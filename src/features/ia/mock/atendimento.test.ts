@@ -6,7 +6,7 @@ import { ordensStore } from "@/features/ordem-servico/ordens-store";
 describe("responderChatbotCliente", () => {
   it("answers a status_obra question about an ongoing obra", async () => {
     const cliente = clientesStore.getAll()[0];
-    const ordem = ordensStore.criar({
+    const ordem = await ordensStore.criar({
       cliente_id: cliente.id,
       obra_nome: "Obra teste D11",
       endereco: null,
@@ -16,15 +16,21 @@ describe("responderChatbotCliente", () => {
       diametro_broca_mm: null,
       numero: "OS-TESTE-D11",
     });
-    const resposta = await responderChatbotCliente("qual o status da minha obra?", cliente.id, { delayMs: 0 });
+    const resposta = await responderChatbotCliente("qual o status da minha obra?", cliente.id, {
+      delayMs: 0,
+    });
     expect(resposta).toContain(ordem.obra_nome);
   });
 
   it("falls back to human handoff for a question outside the 3 intents", async () => {
     const cliente = clientesStore.getAll()[0];
-    const resposta = await responderChatbotCliente("vocês fazem terraplanagem em outra cidade?", cliente.id, {
-      delayMs: 0,
-    });
+    const resposta = await responderChatbotCliente(
+      "vocês fazem terraplanagem em outra cidade?",
+      cliente.id,
+      {
+        delayMs: 0,
+      },
+    );
     expect(resposta).toContain("encaminhar sua mensagem para um atendente");
   });
 });

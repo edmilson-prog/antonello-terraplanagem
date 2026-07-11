@@ -31,6 +31,7 @@ export interface Operador {
   id: string;
   nome: string;
   telefone: string | null;
+  cpf: string;
   ativo: boolean;
   created_at: string;
   updated_at: string;
@@ -381,8 +382,17 @@ export interface CobrancaGateway {
 // features/ordem-servico/components/ordem-detalhe-retaguarda.tsx). Nunca há
 // chamada de rede real nesta fase — mensagem_preview é texto simulado,
 // sem valores (ver features/aviso-whatsapp/derivacoes.ts).
-export type ProvedorWhatsApp = "evolution_api" | "evolution_go" | "meta_cloud_api" | "openwa";
-export type StatusAvisoWhatsApp = "enviado" | "falha_telefone_invalido";
+export type ProvedorWhatsApp =
+  | "evolution_api"
+  | "evolution_go"
+  | "meta_cloud_api"
+  | "openwa"
+  | "waha";
+export type StatusAvisoWhatsApp =
+  | "enviado"
+  | "falha_telefone_invalido"
+  | "falha_sessao_desconectada"
+  | "falha_envio";
 
 export interface AvisoWhatsApp {
   id: string;

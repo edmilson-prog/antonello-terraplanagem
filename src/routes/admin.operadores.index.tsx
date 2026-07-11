@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { OperadoresPage } from "@/features/operadores";
 
-export const Route = createFileRoute("/admin/operadores")({
+export const Route = createFileRoute("/admin/operadores/")({
   head: () => ({
     meta: [
       { title: "Operadores · Antonello" },
