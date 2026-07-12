@@ -3,16 +3,14 @@ import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { PageHeader } from "@/shared/components/page-header";
 import { DataList, type Column } from "@/shared/components/data-list";
 import { FormDialog } from "@/shared/components/form-dialog";
+import {
+  StatusFilterChips,
+  type StatusFilterChipItem,
+} from "@/shared/components/status-filter-chips";
+import { CardPill } from "@/shared/components/card-secao";
 import { orcamentosStore } from "@/features/orcamentos/orcamentos-store";
 import { OrcamentoForm } from "@/features/orcamentos/components/orcamento-form";
 import {
@@ -56,6 +54,42 @@ export function OrcamentosPage() {
       );
     });
   }, [todos, q, filtroStatus]);
+
+  const totalEmAberto = useMemo(
+    () =>
+      todos
+        .filter((o) => o.status === "rascunho" || o.status === "enviado")
+        .reduce((s, o) => s + o.valor_total, 0),
+    [todos],
+  );
+
+  const chipItens: StatusFilterChipItem[] = [
+    { id: "todos", label: "Todos" },
+    ...STATUS_ORCAMENTO.map((s) => ({
+      id: s,
+      label: STATUS_ORCAMENTO_LABEL[s],
+      tone: (s === "aprovado"
+        ? "success"
+        : s === "recusado"
+          ? "neutral"
+          : "info") as StatusFilterChipItem["tone"],
+    })),
+  ];
+  const buscaAplicada = useMemo(() => {
+    const termo = q.trim().toLowerCase();
+    if (!termo) return todos;
+    return todos.filter((o) => {
+      const cliente = clientesStore.getById(o.cliente_id);
+      return (
+        o.numero.toLowerCase().includes(termo) ||
+        o.descricao_obra.toLowerCase().includes(termo) ||
+        (cliente?.nome.toLowerCase().includes(termo) ?? false)
+      );
+    });
+  }, [todos, q]);
+  const chipCounts: Record<string, number> = { todos: buscaAplicada.length };
+  for (const s of STATUS_ORCAMENTO)
+    chipCounts[s] = buscaAplicada.filter((o) => o.status === s).length;
 
   const columns: Column<Orcamento>[] = [
     {
@@ -112,22 +146,12 @@ export function OrcamentosPage() {
           className="pl-9"
         />
       </div>
-      <Select
-        value={filtroStatus}
-        onValueChange={(v) => setFiltroStatus(v as StatusOrcamento | "todos")}
-      >
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="todos">Todos os status</SelectItem>
-          {STATUS_ORCAMENTO.map((s) => (
-            <SelectItem key={s} value={s}>
-              {STATUS_ORCAMENTO_LABEL[s]}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <StatusFilterChips
+        itens={chipItens}
+        ativo={filtroStatus}
+        onChange={(id) => setFiltroStatus(id as StatusOrcamento | "todos")}
+        counts={chipCounts}
+      />
     </div>
   );
 
@@ -183,6 +207,10 @@ export function OrcamentosPage() {
         descricao="Monte estimativas a partir das tabelas de preço, antes de executar a obra."
         acoes={novoBtn}
       />
+
+      <div className="-mt-2">
+        <CardPill>{formatBRL(totalEmAberto)} em aberto</CardPill>
+      </div>
 
       <DataList
         data={lista}
