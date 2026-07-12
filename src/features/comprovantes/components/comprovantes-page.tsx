@@ -3,15 +3,13 @@ import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { PageHeader } from "@/shared/components/page-header";
 import { DataList, type Column } from "@/shared/components/data-list";
+import {
+  StatusFilterChips,
+  type StatusFilterChipItem,
+} from "@/shared/components/status-filter-chips";
+import { CardPill } from "@/shared/components/card-secao";
 import { useMockResource } from "@/shared/hooks/use-mock-resource";
 import { comprovantesStore } from "@/features/comprovantes/comprovantes-store";
 import {
@@ -45,17 +43,57 @@ export function ComprovantesPage() {
     });
   }, [todos, q, filtroStatus]);
 
+  const pendentes = todos.filter((c) => c.status === "pendente").length;
+  const pillTexto =
+    pendentes > 0
+      ? `${pendentes} pendente${pendentes > 1 ? "s" : ""} de assinatura`
+      : `${todos.length} comprovante${todos.length !== 1 ? "s" : ""}`;
+
+  const chipItens: StatusFilterChipItem[] = [
+    { id: "todos", label: "Todos" },
+    ...STATUS_COMPROVANTE.map((s) => ({
+      id: s,
+      label: STATUS_COMPROVANTE_LABEL[s],
+      tone: (s === "assinado"
+        ? "success"
+        : s === "recusado"
+          ? "neutral"
+          : "warn") as StatusFilterChipItem["tone"],
+    })),
+  ];
+  const buscaAplicada = useMemo(() => {
+    const termo = q.trim().toLowerCase();
+    if (!termo) return todos;
+    return todos.filter((c) => {
+      const os = ordensStore.obter(c.os_id);
+      const cliente = clientesStore.getById(c.cliente_id);
+      return (
+        c.numero.toLowerCase().includes(termo) ||
+        (os?.numero.toLowerCase().includes(termo) ?? false) ||
+        (cliente?.nome.toLowerCase().includes(termo) ?? false)
+      );
+    });
+  }, [todos, q]);
+  const chipCounts: Record<string, number> = { todos: buscaAplicada.length };
+  for (const s of STATUS_COMPROVANTE)
+    chipCounts[s] = buscaAplicada.filter((c) => c.status === s).length;
+
   const columns: Column<Comprovante>[] = [
     {
       header: "Número",
       cell: (c) => (
-        <Link
-          to="/admin/comprovantes/$comprovanteId"
-          params={{ comprovanteId: c.id }}
-          className="font-mono text-sm font-semibold text-foreground hover:text-primary"
-        >
-          {c.numero}
-        </Link>
+        <div className="flex items-center gap-2">
+          <span className="grid h-6 w-6 place-items-center rounded-md bg-primary/15 text-primary">
+            <Icon icon="lucide:file-signature" className="h-3.5 w-3.5" aria-hidden />
+          </span>
+          <Link
+            to="/admin/comprovantes/$comprovanteId"
+            params={{ comprovanteId: c.id }}
+            className="font-mono text-sm font-semibold text-foreground hover:text-primary"
+          >
+            {c.numero}
+          </Link>
+        </div>
       ),
     },
     {
@@ -69,7 +107,9 @@ export function ComprovantesPage() {
     {
       header: "Cliente",
       cell: (c) => (
-        <div className="min-w-0 max-w-[16rem] truncate">{clientesStore.getById(c.cliente_id)?.nome ?? "—"}</div>
+        <div className="min-w-0 max-w-[16rem] truncate">
+          {clientesStore.getById(c.cliente_id)?.nome ?? "—"}
+        </div>
       ),
     },
     {
@@ -94,19 +134,12 @@ export function ComprovantesPage() {
           className="pl-9"
         />
       </div>
-      <Select value={filtroStatus} onValueChange={(v) => setFiltroStatus(v as StatusComprovante | "todos")}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="todos">Todos os status</SelectItem>
-          {STATUS_COMPROVANTE.map((s) => (
-            <SelectItem key={s} value={s}>
-              {STATUS_COMPROVANTE_LABEL[s]}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <StatusFilterChips
+        itens={chipItens}
+        ativo={filtroStatus}
+        onChange={(id) => setFiltroStatus(id as StatusComprovante | "todos")}
+        counts={chipCounts}
+      />
     </div>
   );
 
@@ -125,7 +158,9 @@ export function ComprovantesPage() {
       <div className="mt-2 font-display font-bold text-card-foreground">
         {clientesStore.getById(c.cliente_id)?.nome ?? "—"}
       </div>
-      <div className="truncate text-xs text-muted-foreground">OS {ordensStore.obter(c.os_id)?.numero ?? "—"}</div>
+      <div className="truncate text-xs text-muted-foreground">
+        OS {ordensStore.obter(c.os_id)?.numero ?? "—"}
+      </div>
       <div className="mt-2 text-xs text-muted-foreground">{formatDataHora(c.gerado_em)}</div>
     </div>
   );
@@ -145,6 +180,10 @@ export function ComprovantesPage() {
         titulo="Comprovantes"
         descricao="Comprovantes de serviço gerados a partir de ordens de serviço fechadas."
       />
+
+      <div className="-mt-2">
+        <CardPill>{pillTexto}</CardPill>
+      </div>
 
       <DataList
         data={lista}
