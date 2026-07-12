@@ -1,4 +1,5 @@
 import { PageHeader } from "@/shared/components/page-header";
+import { CardSecao } from "@/shared/components/card-secao";
 import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
 import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
@@ -9,6 +10,7 @@ import { NotasFiscaisCard } from "@/features/faturamento/components/notas-fiscai
 import { AFaturarCard } from "@/features/faturamento/components/a-faturar-card";
 import { FaturamentoMensalCard } from "@/features/faturamento/components/faturamento-mensal-card";
 import { AguardandoFaturamento } from "@/features/faturamento/components/aguardando-faturamento";
+import { FaturasList } from "@/features/faturamento/components/faturas-list";
 
 const MESES_EXTENSO = [
   "janeiro",
@@ -73,6 +75,10 @@ export function FaturamentoPage() {
       </div>
 
       <AguardandoFaturamento ordens={aguardando} apontamentos={apontamentos} />
+
+      <CardSecao titulo="Histórico completo de faturas" icone="lucide:history" bodyClassName="p-4">
+        <FaturasList faturamentos={faturamentos} />
+      </CardSecao>
     </div>
   );
 }
