@@ -146,7 +146,7 @@ git commit -m "feat: add shared StatStrip for real-data detail metrics"
 **Interfaces:**
 - Consumes: nada de tasks anteriores.
 - Produces:
-  - `interface DocumentoHeroQuickfact { rotulo: string; valor: string; mono?: boolean }`
+  - `interface DocumentoHeroQuickfact { rotulo: string; valor: ReactNode; mono?: boolean }` (valor aceita string ou nó — permite `<Link>` clicável, ex.: link da OS no faturamento/comprovante)
   - `interface DocumentoHeroProps { icone: string; numero: string; titulo?: string; badges?: ReactNode; quickfacts: DocumentoHeroQuickfact[]; acoes?: ReactNode }`
   - `function DocumentoHero(props: DocumentoHeroProps): JSX.Element`
 
@@ -192,7 +192,7 @@ import { Icon } from "@iconify/react";
 
 export interface DocumentoHeroQuickfact {
   rotulo: string;
-  valor: string;
+  valor: ReactNode; // string ou nó (ex.: <Link> da OS)
   mono?: boolean;
 }
 
@@ -628,7 +628,17 @@ Trocar o back-link + a primeira `<section>` (header) por:
   quickfacts={[
     {
       rotulo: "OS de origem",
-      valor: os ? `${os.numero} · ${os.obra_nome}` : "OS de origem removida",
+      valor: os ? (
+        <Link
+          to="/admin/ordens/$ordemId"
+          params={{ ordemId: os.id }}
+          className="font-medium text-primary hover:underline"
+        >
+          {os.numero} · {os.obra_nome}
+        </Link>
+      ) : (
+        "OS de origem removida"
+      ),
     },
     { rotulo: "Modelo", valor: MODELO_LABEL[fat.modelo_cobranca] },
     { rotulo: "Gerado em", valor: formatDataHora(fat.gerado_em) },
@@ -638,7 +648,7 @@ Trocar o back-link + a primeira `<section>` (header) por:
 
 <StatStrip itens={stats} />
 ```
-> Nota: o link para a OS agora vive no quickfact como texto. Se quiser manter o link clicável, envolver o valor num `Link` via um card dedicado — mas para preservar comportamento com menor risco, manter como texto no hero e o link clicável permanece disponível na navegação da lista. (Decisão de implementação: aceitável, pois não remove nenhuma ação de fluxo.)
+> O link da OS permanece clicável (o quickfact aceita `ReactNode`), preservando o comportamento atual.
 
 Envolver a seção de itens em `CardSecao titulo={`Itens (${fat.itens.length})`} icone="lucide:list" bodyClassName="p-4 space-y-3"` — **preservar** a lista `FaturamentoItemRow`, o empty state e o `Select` de mobilização (`editavel`).
 
@@ -698,12 +708,28 @@ Trocar back-link + `<header>` por:
   titulo={cliente?.nome ?? "—"}
   badges={<StatusComprovanteBadge status={comprovante.status} />}
   quickfacts={[
-    ...(os ? [{ rotulo: "OS", valor: `${os.numero} · ${os.obra_nome}` }] : []),
+    ...(os
+      ? [
+          {
+            rotulo: "OS",
+            valor: (
+              <Link
+                to="/admin/ordens/$ordemId"
+                params={{ ordemId: os.id }}
+                className="font-medium text-primary hover:underline"
+              >
+                {os.numero} · {os.obra_nome}
+              </Link>
+            ),
+          },
+        ]
+      : []),
     { rotulo: "Gerado em", valor: formatDataHora(comprovante.gerado_em) },
     ...(comprovante.assinado_em ? [{ rotulo: "Assinado em", valor: formatDataHora(comprovante.assinado_em) }] : []),
   ]}
 />
 ```
+> O link da OS permanece clicável (o quickfact aceita `ReactNode`), preservando o "Ver OS" atual.
 
 Envolver "Resumo do serviço" em `CardSecao titulo="Resumo do serviço" icone="lucide:file-text" bodyClassName="p-4"` mantendo o `<pre className="whitespace-pre-wrap font-sans text-sm text-card-foreground">`.
 
