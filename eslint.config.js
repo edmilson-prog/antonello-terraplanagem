@@ -14,6 +14,8 @@ export default tseslint.config(
       ".vercel",
       ".git",
       ".serena",
+      ".claude",
+      ".tanstack",
       "graphify-out",
       "node_modules",
     ],
