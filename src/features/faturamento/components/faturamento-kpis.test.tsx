@@ -11,7 +11,8 @@ describe("FaturamentoKpis", () => {
         aFaturarValor={26200}
         aFaturarRodape="2 rascunhos sem confirmar"
         ticketMedio={7183.33}
-        series={[18, 16, 17, 12, 13, 9]}
+        seriesValor={[18, 16, 17, 12, 13, 9]}
+        seriesQtd={[3, 2, 4, 1, 2, 12]}
       />,
     );
     expect(screen.getByText("Faturado no mês")).toBeInTheDocument();

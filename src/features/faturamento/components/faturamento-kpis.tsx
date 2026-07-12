@@ -8,7 +8,8 @@ export interface FaturamentoKpisProps {
   aFaturarValor: number;
   aFaturarRodape: string;
   ticketMedio: number;
-  series: number[]; // valores mensais reais (últimos N meses), para os sparks escalados 0..100
+  seriesValor: number[]; // valores mensais reais (últimos N meses), para o spark de "Faturado no mês"
+  seriesQtd: number[]; // quantidade de NFs por mês (últimos N meses), para o spark de "NFs emitidas"
 }
 
 function escalar0a100(valores: number[]): number[] {
@@ -23,9 +24,11 @@ export function FaturamentoKpis({
   aFaturarValor,
   aFaturarRodape,
   ticketMedio,
-  series,
+  seriesValor,
+  seriesQtd,
 }: FaturamentoKpisProps) {
-  const spark = escalar0a100(series);
+  const sparkValor = escalar0a100(seriesValor);
+  const sparkQtd = escalar0a100(seriesQtd);
   const temPendencia = aFaturarValor > 0;
   return (
     <section className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
@@ -33,14 +36,14 @@ export function FaturamentoKpis({
         rotulo="Faturado no mês"
         valor={formatBRL(faturadoNoMes)}
         icone="lucide:credit-card"
-        spark={spark}
+        spark={sparkValor}
       />
       <Tile
         rotulo="NFs emitidas"
         valor={String(nfsNoMes)}
         icone="lucide:file-check"
         rodape="no mês"
-        spark={spark}
+        spark={sparkQtd}
       />
       <Tile
         rotulo="A faturar"

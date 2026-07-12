@@ -61,7 +61,8 @@ export function FaturamentoPage() {
             : `${rascunhos.length} rascunho${rascunhos.length > 1 ? "s" : ""} sem confirmar`
         }
         ticketMedio={ticketMedio}
-        series={meses.map((m) => m.valor)}
+        seriesValor={meses.map((m) => m.valor)}
+        seriesQtd={meses.map((m) => m.qtd)}
       />
 
       <div className="grid gap-4 lg:grid-cols-[1.6fr_1fr]">
