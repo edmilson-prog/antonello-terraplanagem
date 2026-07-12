@@ -1,12 +1,9 @@
 import { PageHeader } from "@/shared/components/page-header";
-import { Button } from "@/components/ui/button";
-import { Icon } from "@iconify/react";
 import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
 import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { osFechadasSemFaturamento, agregadoMensal } from "@/features/faturamento/derivacoes";
-import { exportarFaturamentoPdf } from "@/features/retaguarda/export-faturamento-pdf";
 import { FaturamentoKpis } from "@/features/faturamento/components/faturamento-kpis";
 import { NotasFiscaisCard } from "@/features/faturamento/components/notas-fiscais-card";
 import { AFaturarCard } from "@/features/faturamento/components/a-faturar-card";
@@ -50,16 +47,7 @@ export function FaturamentoPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
-        titulo="Faturamento"
-        descricao={rotuloMes}
-        acoes={
-          <Button variant="outline" onClick={exportarFaturamentoPdf} className="gap-2">
-            <Icon icon="lucide:arrow-up-right" className="h-4 w-4" />
-            Exportar
-          </Button>
-        }
-      />
+      <PageHeader titulo="Faturamento" descricao={rotuloMes} />
 
       <FaturamentoKpis
         faturadoNoMes={mesAtual.valor}
