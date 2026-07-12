@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FormDialog } from "@/shared/components/form-dialog";
+import { DocumentoHero } from "@/shared/components/documento-hero";
+import { CardSecao } from "@/shared/components/card-secao";
 import { SignaturePad } from "@/features/comprovantes/components/signature-pad";
 import { StatusComprovanteBadge } from "@/features/comprovantes/labels";
 import { comprovantesStore } from "@/features/comprovantes/comprovantes-store";
@@ -41,7 +43,10 @@ export function ComprovanteDetalhe({ comprovanteId }: { comprovanteId: string })
   };
 
   const onRecusar = () => {
-    const r = comprovantesStore.recusar(comprovante.id, motivoRecusa.trim() ? motivoRecusa.trim() : null);
+    const r = comprovantesStore.recusar(
+      comprovante.id,
+      motivoRecusa.trim() ? motivoRecusa.trim() : null,
+    );
     if (!r.ok) {
       toast.error(r.motivo);
       return;
@@ -60,42 +65,47 @@ export function ComprovanteDetalhe({ comprovanteId }: { comprovanteId: string })
         Comprovantes
       </Link>
 
-      <header className="rounded-xl border bg-card p-5 shadow-sm">
-        <div className="flex items-center gap-3">
-          <h1 className="font-mono text-xl font-bold text-foreground">{comprovante.numero}</h1>
-          <StatusComprovanteBadge status={comprovante.status} />
-        </div>
-        <p className="mt-1 font-display font-bold text-card-foreground">{cliente?.nome ?? "—"}</p>
-        {os ? (
-          <Link
-            to="/admin/ordens/$ordemId"
-            params={{ ordemId: os.id }}
-            className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-          >
-            <Icon icon="lucide:external-link" className="h-3.5 w-3.5" />
-            Ver OS {os.numero}
-          </Link>
-        ) : null}
-        <p className="mt-2 text-xs text-foreground-faint">
-          Gerado em {formatDataHora(comprovante.gerado_em)}
-          {comprovante.assinado_em ? ` · Assinado em ${formatDataHora(comprovante.assinado_em)}` : ""}
-        </p>
-      </header>
+      <DocumentoHero
+        icone="lucide:file-signature"
+        numero={comprovante.numero}
+        titulo={cliente?.nome ?? "—"}
+        badges={<StatusComprovanteBadge status={comprovante.status} />}
+        quickfacts={[
+          ...(os
+            ? [
+                {
+                  rotulo: "OS",
+                  valor: (
+                    <Link
+                      to="/admin/ordens/$ordemId"
+                      params={{ ordemId: os.id }}
+                      className="font-medium text-primary hover:underline"
+                    >
+                      {os.numero} · {os.obra_nome}
+                    </Link>
+                  ),
+                },
+              ]
+            : []),
+          { rotulo: "Gerado em", valor: formatDataHora(comprovante.gerado_em) },
+          ...(comprovante.assinado_em
+            ? [{ rotulo: "Assinado em", valor: formatDataHora(comprovante.assinado_em) }]
+            : []),
+        ]}
+      />
 
-      <section className="space-y-2 rounded-xl border bg-card p-5 shadow-sm">
-        <h2 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-          Resumo do serviço
-        </h2>
+      <CardSecao titulo="Resumo do serviço" icone="lucide:file-text" bodyClassName="p-4">
         <pre className="whitespace-pre-wrap font-sans text-sm text-card-foreground">
           {comprovante.resumo_servico}
         </pre>
-      </section>
+      </CardSecao>
 
       {pendente ? (
-        <section className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
-          <h2 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-            Assinatura do cliente
-          </h2>
+        <CardSecao
+          titulo="Assinatura do cliente"
+          icone="lucide:pen-line"
+          bodyClassName="p-4 space-y-4"
+        >
           <div className="space-y-1.5">
             <Label htmlFor="assinante_nome">Nome do assinante *</Label>
             <Input
@@ -126,14 +136,15 @@ export function ComprovanteDetalhe({ comprovanteId }: { comprovanteId: string })
               Confirmar assinatura
             </Button>
           </div>
-        </section>
+        </CardSecao>
       ) : null}
 
       {comprovante.status === "assinado" ? (
-        <section className="space-y-2 rounded-xl border bg-card p-5 shadow-sm">
-          <h2 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-            Assinatura registrada
-          </h2>
+        <CardSecao
+          titulo="Assinatura registrada"
+          icone="lucide:check"
+          bodyClassName="p-4 space-y-2"
+        >
           <p className="text-sm text-card-foreground">Assinante: {comprovante.assinante_nome}</p>
           {comprovante.assinatura_url ? (
             <img
@@ -142,7 +153,7 @@ export function ComprovanteDetalhe({ comprovanteId }: { comprovanteId: string })
               className="max-w-xs rounded-lg border bg-white p-2"
             />
           ) : null}
-        </section>
+        </CardSecao>
       ) : null}
 
       {comprovante.status === "recusado" ? (
@@ -150,7 +161,9 @@ export function ComprovanteDetalhe({ comprovanteId }: { comprovanteId: string })
           <h2 className="font-display text-sm font-bold uppercase tracking-wide text-destructive">
             Recusado pelo cliente
           </h2>
-          <p className="text-sm text-card-foreground">{comprovante.motivo_recusa ?? "Sem motivo informado."}</p>
+          <p className="text-sm text-card-foreground">
+            {comprovante.motivo_recusa ?? "Sem motivo informado."}
+          </p>
         </section>
       ) : null}
 
