@@ -7,8 +7,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
+import { DocumentoHero } from "@/shared/components/documento-hero";
+import { StatStrip, type StatItem } from "@/shared/components/stat-strip";
+import { CardSecao } from "@/shared/components/card-secao";
 import { GerarTextoBotao } from "@/features/ia/components/gerar-texto-botao";
-import { OrdemResumoCard } from "@/features/ordem-servico/components/ordem-resumo-card";
 import { ApontamentosDaOS } from "@/features/ordem-servico/components/apontamentos-da-os";
 import { OrdemForm } from "@/features/ordem-servico/components/ordem-form";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
@@ -16,7 +18,11 @@ import {
   apontamentosDaOS,
   podeFecharOS,
   statusEfetivoOS,
+  totalHorasOS,
+  totalMetragemOS,
 } from "@/features/ordem-servico/derivacoes";
+import { StatusOSBadge, MODELO_LABEL, STATUS_OS_LABEL } from "@/features/ordem-servico/labels";
+import { formatDataHora } from "@/shared/lib/format";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { comprovantesStore } from "@/features/comprovantes/comprovantes-store";
 import { montarResumoServico } from "@/features/comprovantes/derivacoes";
@@ -68,6 +74,32 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   const daOS = apontamentosDaOS(ordem.id, apontamentos);
   const fechada = statusEfetivoOS(ordem, apontamentos) === "fechada";
   const podeFechar = podeFecharOS(ordem, apontamentos);
+
+  const cliente = clientesStore.getById(ordem.cliente_id);
+  const statusEfetivo = statusEfetivoOS(ordem, apontamentos);
+  const horas = totalHorasOS(ordem.id, apontamentos);
+  const operadoresDistintos = new Set(daOS.map((a) => a.operador_id)).size;
+  const wa = (() => {
+    const d = cliente?.telefone?.replace(/\D/g, "") ?? "";
+    return d.length >= 10 ? `https://wa.me/55${d}` : null;
+  })();
+  const stats: StatItem[] = [
+    { rotulo: "Apontamentos", valor: String(daOS.length), icone: "lucide:timer" },
+    ordem.modelo_cobranca === "por_metro"
+      ? {
+          rotulo: "Metragem",
+          valor: `${totalMetragemOS(ordem.id, apontamentos)} m`,
+          icone: "lucide:ruler",
+        }
+      : { rotulo: "Horas totais", valor: String(horas), icone: "lucide:clock" },
+    { rotulo: "Operadores", valor: String(operadoresDistintos), icone: "lucide:users" },
+    {
+      rotulo: "Status",
+      valor: STATUS_OS_LABEL[statusEfetivo],
+      icone: "lucide:activity",
+      mono: false,
+    },
+  ];
 
   const fechar = async () => {
     const r = await ordensStore.fechar(ordem.id, apontamentos);
@@ -129,31 +161,67 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
         Ordens de Serviço
       </Link>
 
-      <OrdemResumoCard ordem={ordem} apontamentos={apontamentos} />
+      <DocumentoHero
+        icone="lucide:clipboard-list"
+        numero={ordem.numero}
+        titulo={cliente?.nome ? `${cliente.nome} · ${ordem.obra_nome}` : ordem.obra_nome}
+        badges={
+          <>
+            <StatusOSBadge status={statusEfetivo} />
+            <span className="rounded-full border bg-surface px-2.5 py-1 font-mono text-[11px] font-semibold text-muted-foreground">
+              {MODELO_LABEL[ordem.modelo_cobranca]}
+            </span>
+            {ordem.pendente_sync ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-steel/40 bg-surface px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
+                <Icon icon="lucide:refresh-cw" className="h-3 w-3" />
+                Sync pendente
+              </span>
+            ) : null}
+          </>
+        }
+        quickfacts={[
+          { rotulo: "Aberta em", valor: formatDataHora(ordem.aberta_em) },
+          ...(ordem.endereco ? [{ rotulo: "Endereço", valor: ordem.endereco }] : []),
+          ...(ordem.fechada_em
+            ? [{ rotulo: "Fechada em", valor: formatDataHora(ordem.fechada_em) }]
+            : []),
+        ]}
+        acoes={
+          <>
+            {!fechada ? (
+              <Button variant="outline" onClick={() => setEditando(true)} className="gap-1.5">
+                <Icon icon="lucide:pencil" className="h-4 w-4" />
+                Editar
+              </Button>
+            ) : null}
+            {wa ? (
+              <Button asChild variant="outline" className="gap-1.5">
+                <a href={wa} target="_blank" rel="noopener noreferrer">
+                  <Icon icon="lucide:message-circle" className="h-4 w-4" />
+                  WhatsApp
+                </a>
+              </Button>
+            ) : null}
+          </>
+        }
+      />
+
+      <StatStrip itens={stats} />
 
       {ordem.observacao ? (
-        <section className="space-y-2 rounded-xl border bg-card p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-foreground-faint">
-            <Icon icon="lucide:sticky-note" className="h-4 w-4" />
-            Observação
-          </div>
-          <p className="text-sm text-card-foreground">{ordem.observacao}</p>
-        </section>
+        <CardSecao titulo="Observação" icone="lucide:sticky-note">
+          <p className="px-4 py-4 text-sm text-card-foreground">{ordem.observacao}</p>
+        </CardSecao>
       ) : null}
 
-      <section className="space-y-3 rounded-xl border bg-card p-5 shadow-sm">
-        <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-          Apontamentos ({daOS.length})
-        </h3>
-        <ApontamentosDaOS apontamentos={daOS} />
-      </section>
+      <CardSecao titulo={`Apontamentos (${daOS.length})`} icone="lucide:timer">
+        <div className="p-4">
+          <ApontamentosDaOS apontamentos={daOS} />
+        </div>
+      </CardSecao>
 
       {!fechada ? (
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => setEditando(true)} className="gap-1.5">
-            <Icon icon="lucide:pencil" className="h-4 w-4" />
-            Editar
-          </Button>
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             onClick={() => setConfirmarFechar(true)}
             disabled={!podeFechar.pode}
@@ -169,44 +237,48 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
       ) : null}
 
       {fechada ? (
-        <div className="flex flex-wrap gap-2">
-          {comprovante ? (
-            <Link
-              to="/admin/comprovantes/$comprovanteId"
-              params={{ comprovanteId: comprovante.id }}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
-            >
-              <Icon icon="lucide:external-link" className="h-4 w-4" />
-              Ver comprovante {comprovante.numero}
-            </Link>
-          ) : (
-            <Button
-              onClick={abrirRevisaoComprovante}
-              className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary-hover"
-            >
-              <Icon icon="lucide:file-check-2" className="h-4 w-4" />
-              Gerar comprovante
-            </Button>
-          )}
-        </div>
+        <CardSecao titulo="Comprovante" icone="lucide:file-check-2">
+          <div className="p-4">
+            {comprovante ? (
+              <Link
+                to="/admin/comprovantes/$comprovanteId"
+                params={{ comprovanteId: comprovante.id }}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+              >
+                <Icon icon="lucide:external-link" className="h-4 w-4" />
+                Ver comprovante {comprovante.numero}
+              </Link>
+            ) : (
+              <Button
+                onClick={abrirRevisaoComprovante}
+                className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary-hover"
+              >
+                <Icon icon="lucide:file-check-2" className="h-4 w-4" />
+                Gerar comprovante
+              </Button>
+            )}
+          </div>
+        </CardSecao>
       ) : null}
 
       {fechada && aviso ? (
-        <section className="space-y-2 rounded-xl border bg-card p-4 text-sm">
-          <div className="flex items-center gap-2">
-            <StatusAvisoBadge status={aviso.status} />
-            <span className="text-xs text-muted-foreground">
-              via {PROVEDOR_WHATSAPP_LABEL[aviso.provedor]}
-            </span>
+        <CardSecao titulo="Aviso ao cliente" icone="lucide:message-circle">
+          <div className="space-y-2 p-4 text-sm">
+            <div className="flex items-center gap-2">
+              <StatusAvisoBadge status={aviso.status} />
+              <span className="text-xs text-muted-foreground">
+                via {PROVEDOR_WHATSAPP_LABEL[aviso.provedor]}
+              </span>
+            </div>
+            {aviso.status === "enviado" ? (
+              <p className="text-muted-foreground">{aviso.mensagem_preview}</p>
+            ) : (
+              <p className="text-destructive">
+                Cliente sem telefone válido cadastrado — atualize o cadastro para reenviar.
+              </p>
+            )}
           </div>
-          {aviso.status === "enviado" ? (
-            <p className="text-muted-foreground">{aviso.mensagem_preview}</p>
-          ) : (
-            <p className="text-destructive">
-              Cliente sem telefone válido cadastrado — atualize o cadastro para reenviar.
-            </p>
-          )}
-        </section>
+        </CardSecao>
       ) : null}
 
       <FormDialog
