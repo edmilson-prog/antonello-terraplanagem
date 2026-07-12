@@ -181,6 +181,9 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
         }
         quickfacts={[
           { rotulo: "Aberta em", valor: formatDataHora(ordem.aberta_em) },
+          ...(ordem.modelo_cobranca === "por_metro" && ordem.diametro_broca_mm != null
+            ? [{ rotulo: "Diâmetro da broca", valor: `Ø${ordem.diametro_broca_mm} mm`, mono: true }]
+            : []),
           ...(ordem.endereco ? [{ rotulo: "Endereço", valor: ordem.endereco }] : []),
           ...(ordem.fechada_em
             ? [{ rotulo: "Fechada em", valor: formatDataHora(ordem.fechada_em) }]
