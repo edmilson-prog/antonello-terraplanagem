@@ -40,3 +40,50 @@ export function resumoPipeline(
     },
   };
 }
+
+const MESES_ABREV = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
+function chaveMes(iso: string): string {
+  return iso.slice(0, 7); // "YYYY-MM"
+}
+
+function somarMeses(chaveMesRef: string, offset: number): string {
+  const [ano, mes] = chaveMesRef.split("-").map(Number);
+  const data = new Date(Date.UTC(ano, mes - 1 + offset, 1));
+  const anoNovo = data.getUTCFullYear();
+  const mesNovo = String(data.getUTCMonth() + 1).padStart(2, "0");
+  return `${anoNovo}-${mesNovo}`;
+}
+
+export interface AgregadoMensalFaturamento {
+  mes: string;
+  rotulo: string;
+  valor: number;
+  qtd: number;
+}
+
+// Agrega valor_total de Faturamento por mês de faturado_em, últimos N meses até a referência.
+export function agregadoMensal(
+  faturamentos: Faturamento[],
+  referenciaISO: string,
+  meses = 6,
+): AgregadoMensalFaturamento[] {
+  const mesRef = chaveMes(referenciaISO);
+  const chaves = Array.from({ length: meses }, (_, i) => somarMeses(mesRef, i - (meses - 1)));
+  const faturados = faturamentos.filter((f) => f.status === "faturado" && f.faturado_em != null);
+  return chaves.map((chave) => {
+    const doMes = faturados.filter((f) => chaveMes(f.faturado_em as string) === chave);
+    const mesIndex = Number(chave.slice(5, 7)) - 1;
+    return {
+      mes: chave,
+      rotulo: MESES_ABREV[mesIndex],
+      valor: round2(doMes.reduce((s, f) => s + f.valor_total, 0)),
+      qtd: doMes.length,
+    };
+  });
+}
+
+// Conta a Receber vinculada a um Faturamento (PRD-007).
+export function contaDoFaturamento(faturamentoId: string, contas: ContaReceber[]): ContaReceber | null {
+  return contas.find((c) => c.faturamento_id === faturamentoId) ?? null;
+}
