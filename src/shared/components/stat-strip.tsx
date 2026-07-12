@@ -36,7 +36,7 @@ function StatTile({ stat }: { stat: StatItem }) {
               : "grid h-8 w-8 place-items-center rounded-lg bg-surface text-primary"
           }
         >
-          <Icon icon={stat.icone} className="h-4 w-4" />
+          <Icon icon={stat.icone} className="h-4 w-4" aria-hidden />
         </span>
       </div>
       <div

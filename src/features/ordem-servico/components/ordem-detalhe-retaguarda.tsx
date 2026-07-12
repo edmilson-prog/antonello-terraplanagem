@@ -22,7 +22,7 @@ import {
   totalMetragemOS,
 } from "@/features/ordem-servico/derivacoes";
 import { StatusOSBadge, MODELO_LABEL, STATUS_OS_LABEL } from "@/features/ordem-servico/labels";
-import { formatDataHora } from "@/shared/lib/format";
+import { formatDataHora, formatHorimetro } from "@/shared/lib/format";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { comprovantesStore } from "@/features/comprovantes/comprovantes-store";
 import { montarResumoServico } from "@/features/comprovantes/derivacoes";
@@ -78,6 +78,7 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   const cliente = clientesStore.getById(ordem.cliente_id);
   const statusEfetivo = statusEfetivoOS(ordem, apontamentos);
   const horas = totalHorasOS(ordem.id, apontamentos);
+  const metragem = totalMetragemOS(ordem.id, apontamentos);
   const operadoresDistintos = new Set(daOS.map((a) => a.operador_id)).size;
   const wa = (() => {
     const d = cliente?.telefone?.replace(/\D/g, "") ?? "";
@@ -88,10 +89,10 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
     ordem.modelo_cobranca === "por_metro"
       ? {
           rotulo: "Metragem",
-          valor: `${totalMetragemOS(ordem.id, apontamentos)} m`,
+          valor: metragem > 0 ? `${metragem.toLocaleString("pt-BR")} m` : "metragem pendente",
           icone: "lucide:ruler",
         }
-      : { rotulo: "Horas totais", valor: String(horas), icone: "lucide:clock" },
+      : { rotulo: "Horas totais", valor: formatHorimetro(horas), icone: "lucide:clock" },
     { rotulo: "Operadores", valor: String(operadoresDistintos), icone: "lucide:users" },
     {
       rotulo: "Status",
