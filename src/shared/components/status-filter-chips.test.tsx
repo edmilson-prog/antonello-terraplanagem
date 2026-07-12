@@ -17,7 +17,10 @@ describe("StatusFilterChips", () => {
       />,
     );
     expect(screen.getByRole("button", { name: /Todos/ })).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByRole("button", { name: /Abertas/ })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByRole("button", { name: /Abertas/ })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
     expect(screen.getByText("2")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /Abertas/ }));
     expect(onChange).toHaveBeenCalledWith("aberta");

@@ -10,7 +10,9 @@ export function osFechadasSemFaturamento(
   ordens: OrdemServico[],
   faturamentos: Faturamento[],
 ): OrdemServico[] {
-  return ordens.filter((o) => o.status === "fechada" && faturamentoDaOS(o.id, faturamentos) === null);
+  return ordens.filter(
+    (o) => o.status === "fechada" && faturamentoDaOS(o.id, faturamentos) === null,
+  );
 }
 
 // Pipeline: executado = fechadas ainda não confirmadas (sem fatura OU rascunho);
@@ -41,7 +43,20 @@ export function resumoPipeline(
   };
 }
 
-const MESES_ABREV = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+const MESES_ABREV = [
+  "Jan",
+  "Fev",
+  "Mar",
+  "Abr",
+  "Mai",
+  "Jun",
+  "Jul",
+  "Ago",
+  "Set",
+  "Out",
+  "Nov",
+  "Dez",
+];
 
 function chaveMes(iso: string): string {
   return iso.slice(0, 7); // "YYYY-MM"
@@ -84,6 +99,9 @@ export function agregadoMensal(
 }
 
 // Conta a Receber vinculada a um Faturamento (PRD-007).
-export function contaDoFaturamento(faturamentoId: string, contas: ContaReceber[]): ContaReceber | null {
+export function contaDoFaturamento(
+  faturamentoId: string,
+  contas: ContaReceber[],
+): ContaReceber | null {
   return contas.find((c) => c.faturamento_id === faturamentoId) ?? null;
 }

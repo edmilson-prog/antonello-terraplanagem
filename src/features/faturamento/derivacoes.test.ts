@@ -10,20 +10,40 @@ import type { Faturamento, OrdemServico } from "@/shared/types";
 
 function os(id: string, status: OrdemServico["status"]): OrdemServico {
   return {
-    id, numero: `OS-2026-${id}`, cliente_id: "cl-001", obra_nome: "x", endereco: null,
-    modelo_cobranca: "hora_maquina", status, responsavel_id: null, observacao: null,
-    diametro_broca_mm: null, aberta_em: "2026-06-01T00:00:00.000Z",
-    fechada_em: status === "fechada" ? "2026-06-02T00:00:00.000Z" : null, pendente_sync: false,
-    created_at: "2026-06-01T00:00:00.000Z", updated_at: "2026-06-01T00:00:00.000Z",
+    id,
+    numero: `OS-2026-${id}`,
+    cliente_id: "cl-001",
+    obra_nome: "x",
+    endereco: null,
+    modelo_cobranca: "hora_maquina",
+    status,
+    responsavel_id: null,
+    observacao: null,
+    diametro_broca_mm: null,
+    aberta_em: "2026-06-01T00:00:00.000Z",
+    fechada_em: status === "fechada" ? "2026-06-02T00:00:00.000Z" : null,
+    pendente_sync: false,
+    created_at: "2026-06-01T00:00:00.000Z",
+    updated_at: "2026-06-01T00:00:00.000Z",
   };
 }
 
 function fat(id: string, os_id: string, status: Faturamento["status"], valor: number): Faturamento {
   return {
-    id, numero: `FAT-2026-${id}`, os_id, cliente_id: "cl-001", modelo_cobranca: "hora_maquina",
-    itens: [], desconto: 0, valor_total: valor, observacao: null, status,
-    gerado_em: "2026-06-02T00:00:00.000Z", faturado_em: status === "faturado" ? "2026-06-03T00:00:00.000Z" : null,
-    created_at: "2026-06-02T00:00:00.000Z", updated_at: "2026-06-02T00:00:00.000Z",
+    id,
+    numero: `FAT-2026-${id}`,
+    os_id,
+    cliente_id: "cl-001",
+    modelo_cobranca: "hora_maquina",
+    itens: [],
+    desconto: 0,
+    valor_total: valor,
+    observacao: null,
+    status,
+    gerado_em: "2026-06-02T00:00:00.000Z",
+    faturado_em: status === "faturado" ? "2026-06-03T00:00:00.000Z" : null,
+    created_at: "2026-06-02T00:00:00.000Z",
+    updated_at: "2026-06-02T00:00:00.000Z",
   };
 }
 
@@ -69,9 +89,24 @@ describe("agregadoMensal", () => {
 
   it("agrupa por mês de faturado_em, últimos 6 meses até a referência, ignorando rascunhos", () => {
     const faturamentos = [
-      base({ id: "f1", valor_total: 1000, status: "faturado", faturado_em: "2026-07-05T00:00:00.000Z" }),
-      base({ id: "f2", valor_total: 500, status: "faturado", faturado_em: "2026-07-20T00:00:00.000Z" }),
-      base({ id: "f3", valor_total: 2000, status: "faturado", faturado_em: "2026-06-10T00:00:00.000Z" }),
+      base({
+        id: "f1",
+        valor_total: 1000,
+        status: "faturado",
+        faturado_em: "2026-07-05T00:00:00.000Z",
+      }),
+      base({
+        id: "f2",
+        valor_total: 500,
+        status: "faturado",
+        faturado_em: "2026-07-20T00:00:00.000Z",
+      }),
+      base({
+        id: "f3",
+        valor_total: 2000,
+        status: "faturado",
+        faturado_em: "2026-06-10T00:00:00.000Z",
+      }),
       base({ id: "f4", valor_total: 9999, status: "rascunho", faturado_em: null }),
     ];
     const r = agregadoMensal(faturamentos, "2026-07-15T12:00:00.000Z", 6);
@@ -94,7 +129,18 @@ describe("agregadoMensal", () => {
 describe("contaDoFaturamento", () => {
   it("encontra a conta a receber vinculada pelo faturamento_id", () => {
     const contas = [
-      { id: "c1", faturamento_id: "f1", cliente_id: "cli1", valor: 100, vencimento: "2026-08-01", status: "aberta" as const, recebido_em: null, forma_recebimento: null, created_at: "", updated_at: "" },
+      {
+        id: "c1",
+        faturamento_id: "f1",
+        cliente_id: "cli1",
+        valor: 100,
+        vencimento: "2026-08-01",
+        status: "aberta" as const,
+        recebido_em: null,
+        forma_recebimento: null,
+        created_at: "",
+        updated_at: "",
+      },
     ];
     expect(contaDoFaturamento("f1", contas)?.id).toBe("c1");
     expect(contaDoFaturamento("f2", contas)).toBeNull();
