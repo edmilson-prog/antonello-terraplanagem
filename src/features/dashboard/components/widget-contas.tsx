@@ -20,7 +20,9 @@ export function WidgetContas() {
   }
 
   if (error) {
-    return <KpiCard rotulo="Contas" valor="" error={error} onRetry={retry} className="sm:col-span-2" />;
+    return (
+      <KpiCard rotulo="Contas" valor="" error={error} onRetry={retry} className="sm:col-span-2" />
+    );
   }
 
   const resumo = resumoContasPendentes(contasReceber, contasPagar, new Date());

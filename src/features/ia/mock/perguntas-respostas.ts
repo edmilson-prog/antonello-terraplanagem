@@ -16,7 +16,11 @@ import { planosManutencaoStore } from "@/features/manutencao/planos-manutencao-s
 import { precoHoraMaquinaStore } from "@/features/precos/precos-hora-maquina-store";
 import { statusEfetivoOS } from "@/features/ordem-servico/derivacoes";
 import { alertasManutencao } from "@/features/manutencao/derivacoes";
-import { apontamentosFinalizadosDoEquipamento, indicadoresPorEquipamento, totalHoras } from "@/features/diesel/derivacoes";
+import {
+  apontamentosFinalizadosDoEquipamento,
+  indicadoresPorEquipamento,
+  totalHoras,
+} from "@/features/diesel/derivacoes";
 import { contaVencida, resumoCaixa } from "@/features/financeiro/derivacoes";
 import {
   horasPorEquipamentoNoPeriodo,
@@ -38,15 +42,51 @@ interface PerguntaExemplo {
 }
 
 export const PERGUNTAS_EXEMPLO: PerguntaExemplo[] = [
-  { pergunta: "Quantas OS estão abertas?", fonte_rota: "/admin/ordens", fonte_rotulo: "Ordens de Serviço" },
-  { pergunta: "Quantas horas a Caterpillar 320D já trabalhou?", fonte_rota: "/admin/equipamentos", fonte_rotulo: "Equipamentos" },
-  { pergunta: "Qual equipamento é mais rentável?", fonte_rota: "/admin/rentabilidade", fonte_rotulo: "Rentabilidade" },
-  { pergunta: "Qual cliente está com maior atraso?", fonte_rota: "/admin/financeiro", fonte_rotulo: "Financeiro" },
-  { pergunta: "Quanto foi faturado esse mês?", fonte_rota: "/admin/gerencial", fonte_rotulo: "Painel Gerencial" },
-  { pergunta: "Quantas manutenções estão vencidas?", fonte_rota: "/admin/manutencao", fonte_rotulo: "Manutenção" },
-  { pergunta: "Qual equipamento consome mais diesel?", fonte_rota: "/admin/diesel", fonte_rotulo: "Diesel" },
-  { pergunta: "Quantas horas a frota trabalhou esse mês?", fonte_rota: "/admin/gerencial", fonte_rotulo: "Painel Gerencial" },
-  { pergunta: "Qual o saldo previsto de caixa?", fonte_rota: "/admin/financeiro", fonte_rotulo: "Financeiro" },
+  {
+    pergunta: "Quantas OS estão abertas?",
+    fonte_rota: "/admin/ordens",
+    fonte_rotulo: "Ordens de Serviço",
+  },
+  {
+    pergunta: "Quantas horas a Caterpillar 320D já trabalhou?",
+    fonte_rota: "/admin/equipamentos",
+    fonte_rotulo: "Equipamentos",
+  },
+  {
+    pergunta: "Qual equipamento é mais rentável?",
+    fonte_rota: "/admin/rentabilidade",
+    fonte_rotulo: "Rentabilidade",
+  },
+  {
+    pergunta: "Qual cliente está com maior atraso?",
+    fonte_rota: "/admin/financeiro",
+    fonte_rotulo: "Financeiro",
+  },
+  {
+    pergunta: "Quanto foi faturado esse mês?",
+    fonte_rota: "/admin/gerencial",
+    fonte_rotulo: "Painel Gerencial",
+  },
+  {
+    pergunta: "Quantas manutenções estão vencidas?",
+    fonte_rota: "/admin/manutencao",
+    fonte_rotulo: "Manutenção",
+  },
+  {
+    pergunta: "Qual equipamento consome mais diesel?",
+    fonte_rota: "/admin/diesel",
+    fonte_rotulo: "Diesel",
+  },
+  {
+    pergunta: "Quantas horas a frota trabalhou esse mês?",
+    fonte_rota: "/admin/gerencial",
+    fonte_rotulo: "Painel Gerencial",
+  },
+  {
+    pergunta: "Qual o saldo previsto de caixa?",
+    fonte_rota: "/admin/financeiro",
+    fonte_rotulo: "Financeiro",
+  },
 ];
 
 function normalizar(texto: string): string {
@@ -81,7 +121,9 @@ function encontraEquipamentoNaPergunta(pergunta: string) {
 function respostaEquipamentoHoras(pergunta: string): RespostaAssistente | null {
   const encontrado = encontraEquipamentoNaPergunta(pergunta);
   if (!encontrado) return null;
-  const total = totalHoras(apontamentosFinalizadosDoEquipamento(apontamentosStore.listar(), encontrado.id));
+  const total = totalHoras(
+    apontamentosFinalizadosDoEquipamento(apontamentosStore.listar(), encontrado.id),
+  );
   return {
     resposta: `${encontrado.nome} já trabalhou ${formatHorimetro(total)} no total (apontamentos finalizados).`,
     fonte_rota: "/admin/equipamentos",
@@ -103,7 +145,11 @@ function respostaOsAbertas(pergunta: string): RespostaAssistente | null {
 }
 
 function respostaMaisRentavel(pergunta: string): RespostaAssistente | null {
-  if (!pergunta.includes("rentáv") && !pergunta.includes("rentav") && !pergunta.includes("lucrativ")) {
+  if (
+    !pergunta.includes("rentáv") &&
+    !pergunta.includes("rentav") &&
+    !pergunta.includes("lucrativ")
+  ) {
     return null;
   }
   const periodo = periodoTerminandoEm("mes", mesReferencia(referenciaAtual()));
@@ -138,7 +184,11 @@ function respostaClienteMaiorAtraso(pergunta: string): RespostaAssistente | null
   const hojeISO = new Date().toISOString().slice(0, 10);
   const vencidas = contasReceberStore.listar().filter((c) => contaVencida(c, hojeISO));
   if (vencidas.length === 0) {
-    return { resposta: "Não há contas vencidas no momento.", fonte_rota: "/admin/financeiro", fonte_rotulo: "Financeiro" };
+    return {
+      resposta: "Não há contas vencidas no momento.",
+      fonte_rota: "/admin/financeiro",
+      fonte_rotulo: "Financeiro",
+    };
   }
   const maisAntiga = vencidas.reduce((a, b) => (b.vencimento < a.vencimento ? b : a));
   const cliente = clientesStore.getById(maisAntiga.cliente_id);
@@ -162,7 +212,11 @@ function respostaFaturadoMes(pergunta: string): RespostaAssistente | null {
 
 function respostaManutencoesVencidas(pergunta: string): RespostaAssistente | null {
   if (!pergunta.includes("manuten")) return null;
-  const alertas = alertasManutencao(equipamentosStore.getAll(), planosManutencaoStore.getAll(), registrosManutencaoStore.listar());
+  const alertas = alertasManutencao(
+    equipamentosStore.getAll(),
+    planosManutencaoStore.getAll(),
+    registrosManutencaoStore.listar(),
+  );
   const vencidas = alertas.filter((a) => a.status === "vencida").length;
   return {
     resposta: `${vencidas} manutenção(ões) está(ão) vencida(s) no momento.`,
@@ -173,13 +227,21 @@ function respostaManutencoesVencidas(pergunta: string): RespostaAssistente | nul
 
 function respostaMaisConsomeDiesel(pergunta: string): RespostaAssistente | null {
   if (!pergunta.includes("diesel") && !pergunta.includes("combust")) return null;
-  const comDado = indicadoresPorEquipamento(equipamentosStore.getAll(), abastecimentosStore.listar(), apontamentosStore.listar()).filter(
-    (i) => i.consumo_medio_l_h != null,
-  );
+  const comDado = indicadoresPorEquipamento(
+    equipamentosStore.getAll(),
+    abastecimentosStore.listar(),
+    apontamentosStore.listar(),
+  ).filter((i) => i.consumo_medio_l_h != null);
   if (comDado.length === 0) {
-    return { resposta: "Ainda não há dados de consumo suficientes para responder isso.", fonte_rota: "/admin/diesel", fonte_rotulo: "Diesel" };
+    return {
+      resposta: "Ainda não há dados de consumo suficientes para responder isso.",
+      fonte_rota: "/admin/diesel",
+      fonte_rotulo: "Diesel",
+    };
   }
-  const maior = comDado.reduce((a, b) => ((b.consumo_medio_l_h as number) > (a.consumo_medio_l_h as number) ? b : a));
+  const maior = comDado.reduce((a, b) =>
+    (b.consumo_medio_l_h as number) > (a.consumo_medio_l_h as number) ? b : a,
+  );
   return {
     resposta: `${maior.equipamento.nome} é o que mais consome diesel, com ${maior.consumo_medio_l_h} l/h em média.`,
     fonte_rota: "/admin/diesel",
@@ -191,7 +253,11 @@ function respostaHorasFrotaMes(pergunta: string): RespostaAssistente | null {
   if (!pergunta.includes("frota") || !pergunta.includes("hora")) return null;
   const mes = mesReferencia(referenciaAtual());
   const periodo = periodoTerminandoEm("mes", mes);
-  const porEquipamento = horasPorEquipamentoNoPeriodo(equipamentosStore.getAll(), apontamentosStore.listar(), periodo);
+  const porEquipamento = horasPorEquipamentoNoPeriodo(
+    equipamentosStore.getAll(),
+    apontamentosStore.listar(),
+    periodo,
+  );
   const total = porEquipamento.reduce((soma, e) => soma + e.horas, 0);
   return {
     resposta: `A frota trabalhou ${formatHorimetro(Math.round(total * 10) / 10)} em ${rotuloMes(mes)}.`,

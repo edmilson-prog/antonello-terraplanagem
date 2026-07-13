@@ -4,7 +4,8 @@ import { iniciarApontamentoSchema, finalizarApontamentoSchema } from "./apontame
 describe("iniciarApontamentoSchema", () => {
   it("aceita entrada mínima válida", () => {
     expect(
-      iniciarApontamentoSchema.safeParse({ equipamento_id: "eq-1", horimetro_inicial: 100 }).success,
+      iniciarApontamentoSchema.safeParse({ equipamento_id: "eq-1", horimetro_inicial: 100 })
+        .success,
     ).toBe(true);
   });
 
@@ -56,12 +57,15 @@ describe("finalizarApontamentoSchema", () => {
   it("aceita número válido e rejeita negativo/NaN", () => {
     expect(finalizarApontamentoSchema.safeParse({ horimetro_final: 10 }).success).toBe(true);
     expect(finalizarApontamentoSchema.safeParse({ horimetro_final: -1 }).success).toBe(false);
-    expect(finalizarApontamentoSchema.safeParse({ horimetro_final: Number.NaN }).success).toBe(false);
+    expect(finalizarApontamentoSchema.safeParse({ horimetro_final: Number.NaN }).success).toBe(
+      false,
+    );
   });
 
   it("aceita metros_executados positivo e rejeita zero/negativo", () => {
     expect(
-      finalizarApontamentoSchema.safeParse({ horimetro_final: 10, metros_executados: 12.5 }).success,
+      finalizarApontamentoSchema.safeParse({ horimetro_final: 10, metros_executados: 12.5 })
+        .success,
     ).toBe(true);
     expect(
       finalizarApontamentoSchema.safeParse({ horimetro_final: 10, metros_executados: 0 }).success,

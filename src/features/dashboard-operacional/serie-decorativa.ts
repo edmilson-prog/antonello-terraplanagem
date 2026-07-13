@@ -9,7 +9,10 @@ import type { PontoSerieDiaria } from "@/features/dashboard-operacional/derivaco
 // Determinístico (sem Math.random) para não "tremer" a cada re-render.
 // NUNCA usar este resultado para decisão de negócio, cálculo ou tooltip com
 // valor exato — apenas para o traçado visual do gráfico.
-export function serieDecorativa(pontos: PontoSerieDiaria[], pontosPorSegmento = 5): PontoSerieDiaria[] {
+export function serieDecorativa(
+  pontos: PontoSerieDiaria[],
+  pontosPorSegmento = 5,
+): PontoSerieDiaria[] {
   if (pontos.length <= 1) return pontos;
 
   const valores = pontos.map((p) => p.valor);
@@ -22,7 +25,8 @@ export function serieDecorativa(pontos: PontoSerieDiaria[], pontosPorSegmento = 
     const posicao = (i / (totalPontos - 1)) * totalSegmentos;
     const indiceInferior = Math.min(Math.floor(posicao), totalSegmentos - 1);
     const fracao = posicao - indiceInferior;
-    const base = valores[indiceInferior] + (valores[indiceInferior + 1] - valores[indiceInferior]) * fracao;
+    const base =
+      valores[indiceInferior] + (valores[indiceInferior + 1] - valores[indiceInferior]) * fracao;
     const ondulacao = (Math.sin(i * 1.35) * 0.14 + Math.sin(i * 0.55 + 1) * 0.09) * maximo;
     resultado.push({
       data: pontos[indiceInferior].data,

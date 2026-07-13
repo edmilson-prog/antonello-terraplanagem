@@ -1,7 +1,7 @@
-import * as React from 'react';
+import * as React from "react";
 
 export interface KpiTrend {
-  dir: 'up' | 'down';
+  dir: "up" | "down";
   /** Displayed trend text, e.g. "18%" or "3". */
   value: React.ReactNode;
 }

@@ -19,7 +19,8 @@ export function GraficoHorasEquipamento({ periodo }: Props) {
   const apontamentos = apontamentosStore.useTodos();
 
   const dados = useMemo(
-    () => horasPorEquipamentoNoPeriodo(equipamentos, apontamentos, periodo).filter((d) => d.horas > 0),
+    () =>
+      horasPorEquipamentoNoPeriodo(equipamentos, apontamentos, periodo).filter((d) => d.horas > 0),
     [equipamentos, apontamentos, periodo],
   );
   const { isLoading, error, retry } = useMockResource(dados);
@@ -50,7 +51,11 @@ export function GraficoHorasEquipamento({ periodo }: Props) {
         />
       ) : (
         <ResponsiveContainer width="100%" height={Math.max(220, dados.length * 40)}>
-          <BarChart data={dados} layout="vertical" margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+          <BarChart
+            data={dados}
+            layout="vertical"
+            margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
+          >
             <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" horizontal={false} />
             <XAxis type="number" stroke="var(--color-muted-foreground)" fontSize={12} />
             <YAxis

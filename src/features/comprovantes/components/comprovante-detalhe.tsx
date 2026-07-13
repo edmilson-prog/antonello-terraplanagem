@@ -41,7 +41,10 @@ export function ComprovanteDetalhe({ comprovanteId }: { comprovanteId: string })
   };
 
   const onRecusar = () => {
-    const r = comprovantesStore.recusar(comprovante.id, motivoRecusa.trim() ? motivoRecusa.trim() : null);
+    const r = comprovantesStore.recusar(
+      comprovante.id,
+      motivoRecusa.trim() ? motivoRecusa.trim() : null,
+    );
     if (!r.ok) {
       toast.error(r.motivo);
       return;
@@ -78,7 +81,9 @@ export function ComprovanteDetalhe({ comprovanteId }: { comprovanteId: string })
         ) : null}
         <p className="mt-2 text-xs text-foreground-faint">
           Gerado em {formatDataHora(comprovante.gerado_em)}
-          {comprovante.assinado_em ? ` · Assinado em ${formatDataHora(comprovante.assinado_em)}` : ""}
+          {comprovante.assinado_em
+            ? ` · Assinado em ${formatDataHora(comprovante.assinado_em)}`
+            : ""}
         </p>
       </header>
 
@@ -150,7 +155,9 @@ export function ComprovanteDetalhe({ comprovanteId }: { comprovanteId: string })
           <h2 className="font-display text-sm font-bold uppercase tracking-wide text-destructive">
             Recusado pelo cliente
           </h2>
-          <p className="text-sm text-card-foreground">{comprovante.motivo_recusa ?? "Sem motivo informado."}</p>
+          <p className="text-sm text-card-foreground">
+            {comprovante.motivo_recusa ?? "Sem motivo informado."}
+          </p>
         </section>
       ) : null}
 

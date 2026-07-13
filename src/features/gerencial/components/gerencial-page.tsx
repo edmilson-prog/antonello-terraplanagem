@@ -13,10 +13,7 @@ import {
   mesesDoPeriodo,
   type PeriodoGerencial,
 } from "@/features/gerencial/periodo-gerencial";
-import {
-  serieMensalFaturamento,
-  serieMensalCustoMargem,
-} from "@/features/gerencial/derivacoes";
+import { serieMensalFaturamento, serieMensalCustoMargem } from "@/features/gerencial/derivacoes";
 import { SeletorPeriodoGerencial } from "@/features/gerencial/components/seletor-periodo-gerencial";
 import { NumeroChaveCard } from "@/features/gerencial/components/numero-chave-card";
 import { GraficoEvolucaoFaturamento } from "@/features/gerencial/components/grafico-evolucao-faturamento";
@@ -69,7 +66,8 @@ export function GerencialPage() {
     [meses, faturamentos],
   );
   const totalAnterior = useMemo(
-    () => serieMensalFaturamento(mesesComparativo, faturamentos).reduce((s, p) => s + p.faturado, 0),
+    () =>
+      serieMensalFaturamento(mesesComparativo, faturamentos).reduce((s, p) => s + p.faturado, 0),
     [mesesComparativo, faturamentos],
   );
 
@@ -85,7 +83,16 @@ export function GerencialPage() {
         precosHoraMaquina,
         faturamentos,
       ).reduce((s, p) => s + p.margem, 0),
-    [meses, equipamentos, componentesCusto, abastecimentos, registrosManutencao, apontamentos, precosHoraMaquina, faturamentos],
+    [
+      meses,
+      equipamentos,
+      componentesCusto,
+      abastecimentos,
+      registrosManutencao,
+      apontamentos,
+      precosHoraMaquina,
+      faturamentos,
+    ],
   );
   const margemAnterior = useMemo(
     () =>
@@ -99,7 +106,16 @@ export function GerencialPage() {
         precosHoraMaquina,
         faturamentos,
       ).reduce((s, p) => s + p.margem, 0),
-    [mesesComparativo, equipamentos, componentesCusto, abastecimentos, registrosManutencao, apontamentos, precosHoraMaquina, faturamentos],
+    [
+      mesesComparativo,
+      equipamentos,
+      componentesCusto,
+      abastecimentos,
+      registrosManutencao,
+      apontamentos,
+      precosHoraMaquina,
+      faturamentos,
+    ],
   );
 
   return (

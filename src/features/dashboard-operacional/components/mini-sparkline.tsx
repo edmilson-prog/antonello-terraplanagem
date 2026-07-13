@@ -38,7 +38,13 @@ export function MiniSparkline({
             formatter={(valor: number) => [formatar(valor), ""]}
           />
         ) : null}
-        <Area type="monotone" dataKey="valor" stroke={cor} strokeWidth={2} fill={`url(#${gradientId})`} />
+        <Area
+          type="monotone"
+          dataKey="valor"
+          stroke={cor}
+          strokeWidth={2}
+          fill={`url(#${gradientId})`}
+        />
       </AreaChart>
     </ResponsiveContainer>
   );

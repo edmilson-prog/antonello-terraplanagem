@@ -31,7 +31,12 @@ export function criarFaturamentosStore(inicial: Faturamento[]) {
   const obter = (id: string) => itens.find((f) => f.id === id);
 
   function gerarDeOS(
-    os: { id: string; cliente_id: string; modelo_cobranca: Faturamento["modelo_cobranca"]; diametro_broca_mm: number | null },
+    os: {
+      id: string;
+      cliente_id: string;
+      modelo_cobranca: Faturamento["modelo_cobranca"];
+      diametro_broca_mm: number | null;
+    },
     apontamentos: Apontamento[],
     equipamentos: Equipamento[],
     precosHM: PrecoHoraMaquina[],
@@ -86,9 +91,15 @@ export function criarFaturamentosStore(inicial: Faturamento[]) {
   function confirmar(id: string): ResultadoConfirmar {
     const atual = obter(id);
     if (!atual) return { ok: false, motivo: "Faturamento não encontrado." };
-    if (atual.status === "faturado") return { ok: false, motivo: "Este faturamento já foi confirmado." };
+    if (atual.status === "faturado")
+      return { ok: false, motivo: "Este faturamento já foi confirmado." };
     const agora = new Date().toISOString();
-    const confirmado: Faturamento = { ...atual, status: "faturado", faturado_em: agora, updated_at: agora };
+    const confirmado: Faturamento = {
+      ...atual,
+      status: "faturado",
+      faturado_em: agora,
+      updated_at: agora,
+    };
     itens = itens.map((f) => (f.id === id ? confirmado : f));
     notificar();
     return { ok: true, faturamento: confirmado };

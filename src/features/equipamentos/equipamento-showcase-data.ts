@@ -52,6 +52,7 @@ export interface EquipamentoShowcase {
   leiturasHorimetro: EquipamentoLeitura[];
   fichaTecnica: EquipamentoFichaTecnica;
   utilizacaoSemana: EquipamentoSemana;
+  dieselMedioLh: string;
 }
 
 const OPERADORES_POOL = ["João Vitor", "Marcos Silva", "Anderson Reis", "Cleiton Souza"];
@@ -179,5 +180,7 @@ export function showcaseDoEquipamento(id: string): EquipamentoShowcase {
     picoLabel: barras[picoIdx].label,
   };
 
-  return { kpis, leiturasHorimetro, fichaTecnica, utilizacaoSemana };
+  const dieselMedioLh = `${(intBetween(80, 190) / 10).toFixed(1).replace(".", ",")} L/h`;
+
+  return { kpis, leiturasHorimetro, fichaTecnica, utilizacaoSemana, dieselMedioLh };
 }

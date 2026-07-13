@@ -8,14 +8,20 @@ const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !serviceRoleKey) {
-  throw new Error("Defina VITE_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no ambiente antes de rodar.");
+  throw new Error(
+    "Defina VITE_SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY no ambiente antes de rodar.",
+  );
 }
 
 const admin = createClient(supabaseUrl, serviceRoleKey);
 
 const CONTAS = [
   { email: "recepcao@antonello.com.br", nome: "Ana Recepção", perfil: "recepcao" as const },
-  { email: "proprietario@antonello.com.br", nome: "Sr. Antonello", perfil: "proprietario" as const },
+  {
+    email: "proprietario@antonello.com.br",
+    nome: "Sr. Antonello",
+    perfil: "proprietario" as const,
+  },
 ];
 
 const SENHA_TEMPORARIA = "TrocarNoPrimeiroAcesso123!";
@@ -38,11 +44,16 @@ async function main() {
       .insert({ id: data.user.id, nome: conta.nome, perfil: conta.perfil });
 
     if (perfilError) {
-      console.error(`Usuário criado mas falha ao inserir perfil de ${conta.email}:`, perfilError.message);
+      console.error(
+        `Usuário criado mas falha ao inserir perfil de ${conta.email}:`,
+        perfilError.message,
+      );
       continue;
     }
 
-    console.log(`Conta criada: ${conta.email} (${conta.perfil}) — senha temporária: ${SENHA_TEMPORARIA}`);
+    console.log(
+      `Conta criada: ${conta.email} (${conta.perfil}) — senha temporária: ${SENHA_TEMPORARIA}`,
+    );
   }
 }
 

@@ -30,7 +30,9 @@ export function AlertasTab({ alertas, onRegistrar }: AlertasTabProps) {
         >
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <div className="font-display font-bold text-card-foreground">{alerta.equipamento.nome}</div>
+              <div className="font-display font-bold text-card-foreground">
+                {alerta.equipamento.nome}
+              </div>
               <StatusManutencaoBadge status={alerta.status} />
             </div>
             <div className="mt-0.5 text-sm text-muted-foreground">{alerta.plano.descricao}</div>

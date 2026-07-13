@@ -1,10 +1,13 @@
-import * as React from 'react';
+import * as React from "react";
 
-export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+export interface ButtonProps extends Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  "children"
+> {
   /** Visual role. Default 'primary'. */
-  variant?: 'primary' | 'ghost' | 'ai' | 'wa' | 'danger';
+  variant?: "primary" | "ghost" | "ai" | "wa" | "danger";
   /** 'md' (default, 8×13px) or 'sm' (compact). */
-  size?: 'md' | 'sm';
+  size?: "md" | "sm";
   /** Leading icon — a brand Icon name or a ReactNode. */
   icon?: string | React.ReactNode;
   /** Trailing icon — a brand Icon name or a ReactNode. */

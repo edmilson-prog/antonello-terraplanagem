@@ -1,5 +1,11 @@
 import type { Apontamento, Cliente, ContaReceber } from "@/shared/types";
-import type { AlertaConsumoAnomalo, AnomaliaApontamento, InsightGerencial, PrevisaoCaixaPeriodo, RiscoCliente } from "@/features/ia/types";
+import type {
+  AlertaConsumoAnomalo,
+  AnomaliaApontamento,
+  InsightGerencial,
+  PrevisaoCaixaPeriodo,
+  RiscoCliente,
+} from "@/features/ia/types";
 import { comDelay } from "@/features/ia/delay";
 import { formatBRL } from "@/features/retaguarda/format";
 import type { IndicadorDieselEquipamento } from "@/features/diesel/derivacoes";
@@ -18,7 +24,9 @@ function diaDe(apontamento: Apontamento): string {
 // motor de regras sobre os apontamentos já finalizados, coerente com o RF-002
 // (não inventar cálculo novo) e a convenção de determinismo do projeto.
 export function detectarAnomalias(apontamentos: Apontamento[]): AnomaliaApontamento[] {
-  const finalizados = apontamentos.filter((a) => a.status === "finalizado" && a.horas_trabalhadas != null);
+  const finalizados = apontamentos.filter(
+    (a) => a.status === "finalizado" && a.horas_trabalhadas != null,
+  );
   const anomalias: AnomaliaApontamento[] = [];
   const jaAdicionado = new Set<string>();
 
@@ -165,7 +173,9 @@ export function avaliarRiscoClientes(
   const clientesComConta = [...new Set(contasReceber.map((c) => c.cliente_id))];
   const riscos: RiscoCliente[] = [];
   for (const clienteId of clientesComConta) {
-    const vencidas = contasReceber.filter((c) => c.cliente_id === clienteId && contaVencida(c, hojeISO)).length;
+    const vencidas = contasReceber.filter(
+      (c) => c.cliente_id === clienteId && contaVencida(c, hojeISO),
+    ).length;
     if (vencidas === 0) continue;
     const nivel = vencidas >= 2 ? "alto" : "medio";
     const nome = clientes.find((c) => c.id === clienteId)?.nome ?? "cliente";

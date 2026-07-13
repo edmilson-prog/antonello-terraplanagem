@@ -21,7 +21,11 @@ export function criarItemHora(
 ): OrcamentoItem {
   const horas = round2(horasEstimadas);
   const preco = precoHoraDoEquipamento(equipamento, precosHM);
-  const valorUnitario = preco ? (horaTipo === "seca" ? preco.valor_hora_seca : preco.valor_hora_operada) : null;
+  const valorUnitario = preco
+    ? horaTipo === "seca"
+      ? preco.valor_hora_seca
+      : preco.valor_hora_operada
+    : null;
   return {
     id: crypto.randomUUID(),
     tipo: "hora_maquina",
@@ -74,7 +78,11 @@ export function aplicarHoraTipo(
 ): OrcamentoItem {
   if (item.tipo !== "hora_maquina") return item;
   const preco = equipamento ? precoHoraDoEquipamento(equipamento, precosHM) : null;
-  const valorUnitario = preco ? (tipo === "seca" ? preco.valor_hora_seca : preco.valor_hora_operada) : null;
+  const valorUnitario = preco
+    ? tipo === "seca"
+      ? preco.valor_hora_seca
+      : preco.valor_hora_operada
+    : null;
   const nome = equipamento ? equipamento.nome : item.descricao.split(" — ")[0];
   return {
     ...item,

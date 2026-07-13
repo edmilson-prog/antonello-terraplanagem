@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  mesReferencia,
-  mesAnterior,
-  proximoMes,
-  rotuloMes,
-} from "@/shared/lib/periodo-mensal";
+import { mesReferencia, mesAnterior, proximoMes, rotuloMes } from "@/shared/lib/periodo-mensal";
 
 describe("shared/lib/periodo-mensal", () => {
   describe("mesReferencia", () => {

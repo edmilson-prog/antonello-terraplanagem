@@ -23,8 +23,12 @@ export function PrevisaoCaixaCard({ contasReceber, clientes }: PrevisaoCaixaCard
       <div className="mt-3 grid grid-cols-3 gap-3">
         {previsoes.map((p) => (
           <div key={p.dias} className="rounded-md bg-surface/50 p-3 text-center">
-            <div className="font-mono text-[10px] uppercase text-foreground-faint">{p.dias} dias</div>
-            <div className="mt-1 font-mono text-sm font-semibold text-foreground">{formatBRL(p.valor_previsto)}</div>
+            <div className="font-mono text-[10px] uppercase text-foreground-faint">
+              {p.dias} dias
+            </div>
+            <div className="mt-1 font-mono text-sm font-semibold text-foreground">
+              {formatBRL(p.valor_previsto)}
+            </div>
           </div>
         ))}
       </div>
@@ -37,7 +41,9 @@ export function PrevisaoCaixaCard({ contasReceber, clientes }: PrevisaoCaixaCard
               <span
                 className={cn(
                   "shrink-0 rounded-full px-2 py-0.5 font-semibold",
-                  r.nivel === "alto" ? "bg-destructive/10 text-destructive" : "bg-secondary/10 text-secondary",
+                  r.nivel === "alto"
+                    ? "bg-destructive/10 text-destructive"
+                    : "bg-secondary/10 text-secondary",
                 )}
               >
                 {r.nivel === "alto" ? "Alto risco" : "Risco médio"}

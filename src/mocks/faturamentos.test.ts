@@ -55,7 +55,12 @@ describe("mock de faturamentos", () => {
       for (const item of f.itens) {
         if (item.tipo !== "hora_maquina" || item.origem_id == null) continue;
         const horas = apontamentos
-          .filter((a) => a.os_id === f.os_id && a.equipamento_id === item.origem_id && a.status === "finalizado")
+          .filter(
+            (a) =>
+              a.os_id === f.os_id &&
+              a.equipamento_id === item.origem_id &&
+              a.status === "finalizado",
+          )
           .reduce((s, a) => s + (a.horas_trabalhadas ?? 0), 0);
         expect(item.quantidade).toBe(horas);
       }

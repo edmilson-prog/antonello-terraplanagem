@@ -61,19 +61,17 @@ describe("mesesDoPeriodo", () => {
   });
 
   it("cruza a virada de ano corretamente", () => {
-    expect(mesesDoPeriodo({ tipo: "personalizado", mesInicio: "2025-12", mesFim: "2026-02" })).toEqual([
-      "2025-12",
-      "2026-01",
-      "2026-02",
-    ]);
+    expect(
+      mesesDoPeriodo({ tipo: "personalizado", mesInicio: "2025-12", mesFim: "2026-02" }),
+    ).toEqual(["2025-12", "2026-01", "2026-02"]);
   });
 });
 
 describe("periodoAnterior", () => {
   it("desloca o período inteiro para trás mantendo o mesmo tamanho", () => {
-    expect(
-      periodoAnterior({ tipo: "trimestre", mesInicio: "2026-04", mesFim: "2026-06" }),
-    ).toEqual({ tipo: "trimestre", mesInicio: "2026-01", mesFim: "2026-03" });
+    expect(periodoAnterior({ tipo: "trimestre", mesInicio: "2026-04", mesFim: "2026-06" })).toEqual(
+      { tipo: "trimestre", mesInicio: "2026-01", mesFim: "2026-03" },
+    );
   });
 
   it("funciona para período de 1 mês", () => {
@@ -103,7 +101,11 @@ describe("intervaloDias", () => {
 
 describe("intervaloDatas", () => {
   it("gera Date UTC do início do mesInicio ao fim do mesFim", () => {
-    const { inicio, fim } = intervaloDatas({ tipo: "mes", mesInicio: "2026-06", mesFim: "2026-06" });
+    const { inicio, fim } = intervaloDatas({
+      tipo: "mes",
+      mesInicio: "2026-06",
+      mesFim: "2026-06",
+    });
     expect(inicio.toISOString()).toBe("2026-06-01T00:00:00.000Z");
     expect(fim.toISOString()).toBe("2026-06-30T23:59:59.999Z");
   });

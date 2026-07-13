@@ -22,10 +22,7 @@ function escreverBruto(chave: string, valor: string): void {
   memoriaFallback.set(chave, valor);
 }
 
-export function criarMetaMensalStore(
-  chave = "gerencial:meta-mensal-faturamento",
-  padrao = 20000,
-) {
+export function criarMetaMensalStore(chave = "gerencial:meta-mensal-faturamento", padrao = 20000) {
   function valorPersistido(): number {
     const bruto = lerBruto(chave);
     if (bruto === null) return padrao;

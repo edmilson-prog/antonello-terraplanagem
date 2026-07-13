@@ -152,8 +152,7 @@ export function PrecoHoraMaquinaList() {
         rowActions={rowActions}
         empty={{
           icon: "lucide:banknote",
-          titulo:
-            todos.length === 0 ? "Nenhum preço cadastrado" : "Nada encontrado",
+          titulo: todos.length === 0 ? "Nenhum preço cadastrado" : "Nada encontrado",
           descricao:
             todos.length === 0
               ? "Cadastre o primeiro preço de hora-máquina."

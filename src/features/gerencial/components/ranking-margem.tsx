@@ -12,7 +12,10 @@ import { precoHoraMaquinaStore } from "@/features/precos/precos-hora-maquina-sto
 import { componentesCustoStore } from "@/features/custo-hora/componentes-custo-store";
 import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
-import { rankingEquipamentosPorMargem, rankingObrasPorMargem } from "@/features/gerencial/derivacoes";
+import {
+  rankingEquipamentosPorMargem,
+  rankingObrasPorMargem,
+} from "@/features/gerencial/derivacoes";
 import type { PeriodoGerencial } from "@/features/gerencial/periodo-gerencial";
 import { formatPercentual } from "@/features/rentabilidade/format";
 import { formatBRL } from "@/features/retaguarda/format";
@@ -48,7 +51,17 @@ export function RankingMargem({ tipo, periodo }: Props) {
             faturamentos,
           )
         : [],
-    [tipo, equipamentos, periodo, componentesCusto, abastecimentos, registrosManutencao, apontamentos, precosHoraMaquina, faturamentos],
+    [
+      tipo,
+      equipamentos,
+      periodo,
+      componentesCusto,
+      abastecimentos,
+      registrosManutencao,
+      apontamentos,
+      precosHoraMaquina,
+      faturamentos,
+    ],
   );
 
   const resultadosObra = useMemo(
@@ -66,7 +79,18 @@ export function RankingMargem({ tipo, periodo }: Props) {
             precosHoraMaquina,
           )
         : [],
-    [tipo, ordens, faturamentos, periodo, equipamentos, componentesCusto, abastecimentos, registrosManutencao, apontamentos, precosHoraMaquina],
+    [
+      tipo,
+      ordens,
+      faturamentos,
+      periodo,
+      equipamentos,
+      componentesCusto,
+      abastecimentos,
+      registrosManutencao,
+      apontamentos,
+      precosHoraMaquina,
+    ],
   );
 
   const linhas =
@@ -119,7 +143,9 @@ export function RankingMargem({ tipo, periodo }: Props) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-left text-xs font-mono uppercase tracking-wide text-foreground-faint">
-                <th className="px-4 py-3 font-medium">{tipo === "equipamento" ? "Equipamento" : "OS"}</th>
+                <th className="px-4 py-3 font-medium">
+                  {tipo === "equipamento" ? "Equipamento" : "OS"}
+                </th>
                 <th className="px-4 py-3 font-medium">Margem</th>
                 <th className="px-4 py-3 font-medium">Margem %</th>
                 <th className="px-4 py-3 font-medium" />
@@ -141,7 +167,12 @@ export function RankingMargem({ tipo, periodo }: Props) {
                       </span>
                     ) : null}
                   </td>
-                  <td className={cn("px-4 py-3 font-mono font-semibold", l.margem < 0 && "text-destructive")}>
+                  <td
+                    className={cn(
+                      "px-4 py-3 font-mono font-semibold",
+                      l.margem < 0 && "text-destructive",
+                    )}
+                  >
                     {formatBRL(l.margem)}
                   </td>
                   <td className="px-4 py-3 font-mono">{formatPercentual(l.margemPercentual)}</td>

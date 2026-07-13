@@ -57,7 +57,8 @@ export function CardInsight({ gerar, vazio = false }: CardInsightProps) {
       {estado === "processando" ? <Skeleton className="mt-3 h-10 w-full" /> : null}
       {estado === "erro" ? (
         <p className="mt-3 text-sm text-muted-foreground">
-          IA indisponível — os números acima seguem confiáveis, só o resumo em texto não pôde ser gerado.
+          IA indisponível — os números acima seguem confiáveis, só o resumo em texto não pôde ser
+          gerado.
         </p>
       ) : null}
       {estado === "resultado" && insight ? (

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 
 export interface SparklineProps extends React.SVGProps<SVGSVGElement> {
   /** Y-values (higher renders higher) or [x,y] pairs. */

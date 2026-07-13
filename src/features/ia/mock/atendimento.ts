@@ -22,8 +22,14 @@ export async function responderChatbotCliente(
   const ordensDoCliente = ordensStore.listar().filter((o) => o.cliente_id === clienteId);
   const apontamentos = apontamentosStore.listar();
 
-  if (["segunda via", "2ª via", "2a via", "boleto", "cobrança", "cobranca"].some((p) => texto.includes(p))) {
-    const contas = contasReceberStore.listar().filter((c) => c.cliente_id === clienteId && c.status === "aberta");
+  if (
+    ["segunda via", "2ª via", "2a via", "boleto", "cobrança", "cobranca"].some((p) =>
+      texto.includes(p),
+    )
+  ) {
+    const contas = contasReceberStore
+      .listar()
+      .filter((c) => c.cliente_id === clienteId && c.status === "aberta");
     return comDelay(
       contas.length > 0
         ? `Você tem ${contas.length} cobrança(s) em aberto. Vamos encaminhar a 2ª via por aqui em instantes.`
@@ -32,7 +38,11 @@ export async function responderChatbotCliente(
     );
   }
 
-  if (["confirmar", "confirmação", "confirmacao", "concluído", "concluido"].some((p) => texto.includes(p))) {
+  if (
+    ["confirmar", "confirmação", "confirmacao", "concluído", "concluido"].some((p) =>
+      texto.includes(p),
+    )
+  ) {
     const fechada = ordensDoCliente.find((o) => statusEfetivoOS(o, apontamentos) === "fechada");
     return comDelay(
       fechada
@@ -52,7 +62,10 @@ export async function responderChatbotCliente(
     );
   }
 
-  return comDelay("Não entendi sua mensagem — vou encaminhar sua mensagem para um atendente humano.", delayMs);
+  return comDelay(
+    "Não entendi sua mensagem — vou encaminhar sua mensagem para um atendente humano.",
+    delayMs,
+  );
 }
 
 // D12 — copiloto de alocação de frota. "Porte" não tem um heurístico confiável
@@ -73,7 +86,11 @@ export async function sugerirAlocacao(
   const idsOcupados = new Set(
     apontamentos.filter((a) => a.status === "em_andamento").map((a) => a.equipamento_id),
   );
-  const indicadores = indicadoresPorEquipamento(equipamentosAtivos, abastecimentosStore.listar(), apontamentos);
+  const indicadores = indicadoresPorEquipamento(
+    equipamentosAtivos,
+    abastecimentosStore.listar(),
+    apontamentos,
+  );
 
   const candidatos = equipamentosAtivos
     .filter((e) => !idsOcupados.has(e.id))

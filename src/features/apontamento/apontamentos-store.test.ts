@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { criarApontamentosStore, apontamentosDoOperador, apontamentoEmAndamentoDoOperador } from "./apontamentos-store";
+import {
+  criarApontamentosStore,
+  apontamentosDoOperador,
+  apontamentoEmAndamentoDoOperador,
+} from "./apontamentos-store";
 import { gravarSessaoOperador } from "@/features/auth/operador-session";
 import type { Apontamento } from "@/shared/types";
 
@@ -71,14 +75,22 @@ describe("apontamentosStore", () => {
 
   it("iniciar normaliza observação vazia para null e os_id ausente para null", () => {
     const store = criarApontamentosStore([]);
-    const novo = store.iniciar({ equipamento_id: "eq-9", horimetro_inicial: 10, observacao: "   " });
+    const novo = store.iniciar({
+      equipamento_id: "eq-9",
+      horimetro_inicial: 10,
+      observacao: "   ",
+    });
     expect(novo.observacao).toBeNull();
     expect(novo.os_id).toBeNull();
   });
 
   it("iniciar grava modalidade quando informada, e null quando omitida", () => {
     const store = criarApontamentosStore([]);
-    const comModalidade = store.iniciar({ equipamento_id: "eq-9", horimetro_inicial: 10, modalidade: "seca" });
+    const comModalidade = store.iniciar({
+      equipamento_id: "eq-9",
+      horimetro_inicial: 10,
+      modalidade: "seca",
+    });
     expect(comModalidade.modalidade).toBe("seca");
     const semModalidade = store.iniciar({ equipamento_id: "eq-9", horimetro_inicial: 10 });
     expect(semModalidade.modalidade).toBeNull();

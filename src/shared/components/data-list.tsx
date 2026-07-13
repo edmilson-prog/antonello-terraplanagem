@@ -91,7 +91,10 @@ export function DataList<T>({
               </thead>
               <tbody>
                 {data.map((item) => (
-                  <tr key={getRowKey(item)} className="border-b last:border-b-0 hover:bg-surface/50">
+                  <tr
+                    key={getRowKey(item)}
+                    className="border-b last:border-b-0 hover:bg-surface/50"
+                  >
                     {columns.map((c) => (
                       <td key={c.header} className={cn("px-4 py-3 align-middle", c.className)}>
                         {c.cell(item)}

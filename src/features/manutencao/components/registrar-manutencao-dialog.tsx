@@ -13,7 +13,10 @@ interface RegistrarManutencaoDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function RegistrarManutencaoDialog({ alerta, onOpenChange }: RegistrarManutencaoDialogProps) {
+export function RegistrarManutencaoDialog({
+  alerta,
+  onOpenChange,
+}: RegistrarManutencaoDialogProps) {
   const [horimetroRealizado, setHorimetroRealizado] = useState("");
   const [custo, setCusto] = useState("");
   const [observacao, setObservacao] = useState("");
@@ -84,7 +87,12 @@ export function RegistrarManutencaoDialog({ alerta, onOpenChange }: RegistrarMan
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="observacao">Observação — opcional</Label>
-          <Textarea id="observacao" rows={2} value={observacao} onChange={(e) => setObservacao(e.target.value)} />
+          <Textarea
+            id="observacao"
+            rows={2}
+            value={observacao}
+            onChange={(e) => setObservacao(e.target.value)}
+          />
         </div>
         <div className="flex justify-end gap-2 pt-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>

@@ -20,6 +20,7 @@ describe("showcaseDoEquipamento", () => {
     expect(["up", "down", null]).toContain(s.kpis.horasMes.trendDir);
     expect(typeof s.fichaTecnica.marcaModelo).toBe("string");
     expect(typeof s.fichaTecnica.ano).toBe("string");
+    expect(s.dieselMedioLh).toMatch(/^\d+,\d L\/h$/);
     for (const barra of s.utilizacaoSemana.barras) {
       expect(barra.pct).toBeGreaterThanOrEqual(0);
       expect(barra.pct).toBeLessThanOrEqual(100);

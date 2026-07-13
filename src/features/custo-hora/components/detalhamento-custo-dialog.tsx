@@ -66,7 +66,9 @@ export function DetalhamentoCustoDialog({ equipamentoNome, resultado, onOpenChan
               <div>
                 <dt className="text-xs text-foreground-faint">Preço praticado (operada)</dt>
                 <dd className="font-mono font-semibold text-foreground">
-                  {resultado.preco_hora != null ? formatBRL(resultado.preco_hora) : "Sem preço ativo"}
+                  {resultado.preco_hora != null
+                    ? formatBRL(resultado.preco_hora)
+                    : "Sem preço ativo"}
                 </dd>
               </div>
             </dl>
@@ -79,8 +81,9 @@ export function DetalhamentoCustoDialog({ equipamentoNome, resultado, onOpenChan
                     : "rounded-lg border border-primary/40 bg-primary/10 px-3 py-2.5 text-sm text-foreground"
                 }
               >
-                Margem: <span className="font-mono font-bold">{formatBRL(resultado.margem_hora)}</span>{" "}
-                por hora
+                Margem:{" "}
+                <span className="font-mono font-bold">{formatBRL(resultado.margem_hora)}</span> por
+                hora
                 {resultado.margem_hora < 0 ? " — operando abaixo do custo" : null}
               </div>
             ) : null}

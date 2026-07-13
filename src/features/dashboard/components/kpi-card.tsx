@@ -39,7 +39,9 @@ export function KpiCard({
   if (error) {
     return (
       <div role="alert" className={cn("rounded-xl border bg-card p-5 shadow-sm", className)}>
-        <span className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">{rotulo}</span>
+        <span className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
+          {rotulo}
+        </span>
         <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
         {onRetry ? (
           <button
@@ -58,11 +60,15 @@ export function KpiCard({
   return (
     <div className={cn("h-full rounded-xl border bg-card p-5 shadow-sm", className)}>
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">{rotulo}</span>
+        <span className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
+          {rotulo}
+        </span>
         <span
           className={cn(
             "flex h-8 w-8 items-center justify-center rounded-md",
-            variante === "alerta" ? "bg-destructive/15 text-destructive" : "bg-primary/15 text-primary",
+            variante === "alerta"
+              ? "bg-destructive/15 text-destructive"
+              : "bg-primary/15 text-primary",
           )}
         >
           <Icon icon={icone} className="h-4 w-4" />

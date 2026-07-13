@@ -8,7 +8,10 @@ import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
 import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
 import { contagemOSPorStatus } from "@/features/dashboard/derivacoes";
 import { intervaloPeriodo } from "@/features/dashboard/periodo";
-import { dataReferenciaOperacional, serieDiariaOSAbertas } from "@/features/dashboard-operacional/derivacoes";
+import {
+  dataReferenciaOperacional,
+  serieDiariaOSAbertas,
+} from "@/features/dashboard-operacional/derivacoes";
 import { serieDecorativa } from "@/features/dashboard-operacional/serie-decorativa";
 
 export function CardOsAbertas() {
@@ -42,7 +45,11 @@ export function CardOsAbertas() {
     return (
       <div role="alert" className="rounded-xl border bg-card p-5 shadow-sm">
         <p className="text-sm text-muted-foreground">{error.message}</p>
-        <button type="button" onClick={retry} className="mt-2 text-sm font-semibold text-primary hover:underline">
+        <button
+          type="button"
+          onClick={retry}
+          className="mt-2 text-sm font-semibold text-primary hover:underline"
+        >
           Tentar novamente
         </button>
       </div>
@@ -51,8 +58,12 @@ export function CardOsAbertas() {
 
   return (
     <div className="rounded-xl border bg-card p-5 shadow-sm">
-      <span className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">OS abertas</span>
-      <div className="mt-2 font-mono text-2xl font-bold text-card-foreground">{contagem.abertas}</div>
+      <span className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
+        OS abertas
+      </span>
+      <div className="mt-2 font-mono text-2xl font-bold text-card-foreground">
+        {contagem.abertas}
+      </div>
       <p className="text-xs text-muted-foreground">{contagem.emAndamento} em andamento</p>
       <div className="mt-3 h-12">
         <ResponsiveContainer width="100%" height="100%">

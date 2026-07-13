@@ -41,8 +41,24 @@ export function diasDoIntervalo(referencia: Date, dias: number): IntervaloPeriod
   const intervalos: IntervaloPeriodo[] = [];
   for (let i = dias - 1; i >= 0; i -= 1) {
     const diaAlvo = new Date(referencia.getTime() - i * DIA_MS);
-    const inicio = new Date(diaAlvo.getFullYear(), diaAlvo.getMonth(), diaAlvo.getDate(), 0, 0, 0, 0);
-    const fim = new Date(diaAlvo.getFullYear(), diaAlvo.getMonth(), diaAlvo.getDate(), 23, 59, 59, 999);
+    const inicio = new Date(
+      diaAlvo.getFullYear(),
+      diaAlvo.getMonth(),
+      diaAlvo.getDate(),
+      0,
+      0,
+      0,
+      0,
+    );
+    const fim = new Date(
+      diaAlvo.getFullYear(),
+      diaAlvo.getMonth(),
+      diaAlvo.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
     intervalos.push({ inicio, fim });
   }
   return intervalos;
@@ -170,5 +186,7 @@ export function contasReceberPorCliente(
 
 // Horas restantes até a manutenção prevista (negativo = já vencida em horas).
 export function horasRestantesAlerta(alerta: AlertaManutencao): number {
-  return Math.round((alerta.registro.horimetro_previsto - alerta.equipamento.horimetro_atual) * 10) / 10;
+  return (
+    Math.round((alerta.registro.horimetro_previsto - alerta.equipamento.horimetro_atual) * 10) / 10
+  );
 }

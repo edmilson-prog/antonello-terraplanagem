@@ -17,13 +17,7 @@ import { contasPagarStore } from "@/features/financeiro/contas-pagar-store";
 import { CATEGORIA_LABEL } from "@/features/financeiro/labels";
 import type { CategoriaDespesa } from "@/shared/types";
 
-const CATEGORIAS: CategoriaDespesa[] = [
-  "diesel",
-  "manutencao",
-  "folha",
-  "fornecedor",
-  "outro",
-];
+const CATEGORIAS: CategoriaDespesa[] = ["diesel", "manutencao", "folha", "fornecedor", "outro"];
 
 const schema = z.object({
   descricao: z.string().min(3, "Mínimo 3 caracteres"),
@@ -124,9 +118,7 @@ export function NovaContaPagarDialog({ open, onOpenChange }: NovaContaPagarDialo
             placeholder="0,00"
             {...register("valor")}
           />
-          {errors.valor && (
-            <p className="text-xs text-destructive">{errors.valor.message}</p>
-          )}
+          {errors.valor && <p className="text-xs text-destructive">{errors.valor.message}</p>}
         </div>
 
         <div className="space-y-1.5">
@@ -138,7 +130,14 @@ export function NovaContaPagarDialog({ open, onOpenChange }: NovaContaPagarDialo
         </div>
 
         <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="outline" onClick={() => { reset(); onOpenChange(false); }}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              reset();
+              onOpenChange(false);
+            }}
+          >
             Cancelar
           </Button>
           <Button type="submit" disabled={isSubmitting}>

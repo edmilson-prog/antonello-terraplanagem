@@ -50,9 +50,7 @@ export function PrecoFundacaoList() {
     {
       header: "Diâmetro",
       className: "font-mono",
-      cell: (p) => (
-        <span className={cn(!p.ativo && "opacity-60")}>{p.diametro_broca_mm} mm</span>
-      ),
+      cell: (p) => <span className={cn(!p.ativo && "opacity-60")}>{p.diametro_broca_mm} mm</span>,
     },
     {
       header: "Valor/metro",
@@ -61,9 +59,7 @@ export function PrecoFundacaoList() {
     },
     {
       header: "Descrição",
-      cell: (p) => (
-        <span className="text-muted-foreground">{p.descricao ?? "—"}</span>
-      ),
+      cell: (p) => <span className="text-muted-foreground">{p.descricao ?? "—"}</span>,
     },
     { header: "Status", cell: (p) => <StatusAtivo ativo={p.ativo} /> },
   ];

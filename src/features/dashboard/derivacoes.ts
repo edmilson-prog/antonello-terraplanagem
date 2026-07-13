@@ -37,7 +37,8 @@ export function contagemOSPorStatus(
     const status = statusEfetivoOS(o, apontamentos);
     if (status === "aberta") abertas += 1;
     else if (status === "em_andamento") emAndamento += 1;
-    else if (status === "fechada" && estaNoIntervalo(o.fechada_em, intervalo)) fechadasNoPeriodo += 1;
+    else if (status === "fechada" && estaNoIntervalo(o.fechada_em, intervalo))
+      fechadasNoPeriodo += 1;
   }
   return { abertas, emAndamento, fechadasNoPeriodo };
 }
@@ -101,7 +102,9 @@ export function pipelineFinanceiroPeriodo(
     precosFund,
     intervalo,
   );
-  const faturamentosNoPeriodo = faturamentos.filter((f) => estaNoIntervalo(f.faturado_em, intervalo));
+  const faturamentosNoPeriodo = faturamentos.filter((f) =>
+    estaNoIntervalo(f.faturado_em, intervalo),
+  );
   const contasNoPeriodo = contasReceber.filter((c) => estaNoIntervalo(c.recebido_em, intervalo));
   const pipeline = resumoPipeline(ordens, faturamentosNoPeriodo, contasNoPeriodo);
   return { executado, faturado: pipeline.faturado.total, recebido: pipeline.recebido.total };

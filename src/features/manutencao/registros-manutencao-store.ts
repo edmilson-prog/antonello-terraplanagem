@@ -83,7 +83,10 @@ export function criarRegistrosManutencaoStore(
     return novo;
   };
 
-  const registrarRealizada: RegistrosManutencaoStore["registrarRealizada"] = (registroId, input) => {
+  const registrarRealizada: RegistrosManutencaoStore["registrarRealizada"] = (
+    registroId,
+    input,
+  ) => {
     const atual = obter(registroId);
     if (!atual) return { ok: false, motivo: "Registro de manutenção não encontrado." };
     if (atual.status === "realizada")

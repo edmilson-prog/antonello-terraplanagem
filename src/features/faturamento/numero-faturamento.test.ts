@@ -7,7 +7,11 @@ describe("proximoNumeroFAT", () => {
   });
 
   it("incrementa o maior do ano e ignora outros anos", () => {
-    const fats = [{ numero: "FAT-2026-0004" }, { numero: "FAT-2025-0099" }, { numero: "FAT-2026-0002" }];
+    const fats = [
+      { numero: "FAT-2026-0004" },
+      { numero: "FAT-2025-0099" },
+      { numero: "FAT-2026-0002" },
+    ];
     expect(proximoNumeroFAT(fats, 2026)).toBe("FAT-2026-0005");
   });
 });

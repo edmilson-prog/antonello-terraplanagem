@@ -2,14 +2,10 @@ import { Icon } from "@iconify/react";
 import { cn } from "@/lib/utils";
 import { planosManutencaoStore } from "@/features/manutencao/planos-manutencao-store";
 import { registrosManutencaoStore } from "@/features/manutencao/registros-manutencao-store";
-import {
-  planosParaEquipamento,
-  statusPlano,
-  type StatusPlanoResultado,
-} from "@/features/manutencao/derivacoes";
+import { resumoProximaManutencao } from "@/features/manutencao/derivacoes";
 import { formatHorimetro } from "@/shared/lib/format";
 import { CardSecao } from "@/shared/components/card-secao";
-import type { Equipamento, PlanoManutencao, StatusManutencao } from "@/shared/types";
+import type { Equipamento, StatusManutencao } from "@/shared/types";
 
 const HEALTH_LABEL: Record<StatusManutencao, string> = {
   em_dia: "Saudável",
@@ -23,34 +19,14 @@ const HEALTH_CLASSE: Record<StatusManutencao, string> = {
   vencida: "border-destructive/40 bg-destructive/15 text-destructive",
 };
 
-interface CandidatoUrgente {
-  plano: PlanoManutencao;
-  resultado: StatusPlanoResultado;
-}
-
 // Health badge + barra de progresso do intervalo do plano de manutenção mais
 // urgente (menor "horas restantes" entre os planos aplicáveis ao equipamento).
 export function ProximaManutencaoCard({ equipamento }: { equipamento: Equipamento }) {
   const planos = planosManutencaoStore.useAll();
   const registros = registrosManutencaoStore.useTodos();
-  const doEquip = planosParaEquipamento(equipamento, planos);
+  const resumo = resumoProximaManutencao(equipamento, planos, registros);
 
-  const candidatos = doEquip.reduce<CandidatoUrgente[]>((acc, plano) => {
-    const resultado = statusPlano(plano, equipamento, registros);
-    if (resultado) acc.push({ plano, resultado });
-    return acc;
-  }, []);
-
-  const maisUrgente = candidatos.reduce<CandidatoUrgente | null>((urgente, atual) => {
-    if (!urgente) return atual;
-    const restantesAtual =
-      atual.resultado.registro.horimetro_previsto - equipamento.horimetro_atual;
-    const restantesUrgente =
-      urgente.resultado.registro.horimetro_previsto - equipamento.horimetro_atual;
-    return restantesAtual < restantesUrgente ? atual : urgente;
-  }, null);
-
-  if (!maisUrgente) {
+  if (!resumo) {
     return (
       <CardSecao titulo="Próxima manutenção" icone="lucide:calendar-clock">
         <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed px-4 py-8 text-center">
@@ -61,13 +37,9 @@ export function ProximaManutencaoCard({ equipamento }: { equipamento: Equipament
     );
   }
 
-  const { plano, resultado } = maisUrgente;
-  const { status, registro } = resultado;
-  const previsto = registro.horimetro_previsto;
-  const intervalo = plano.intervalo_horas;
+  const { descricao, intervalo, previsto, restantes, status } = resumo;
   const atual = equipamento.horimetro_atual;
   const base = previsto - intervalo;
-  const restantes = previsto - atual;
   const progressoPct = Math.max(0, Math.min(100, ((atual - base) / intervalo) * 100));
   const vencida = status === "vencida";
 
@@ -79,7 +51,7 @@ export function ProximaManutencaoCard({ equipamento }: { equipamento: Equipament
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-foreground">{plano.descricao}</p>
+          <p className="truncate text-sm font-semibold text-foreground">{descricao}</p>
           <p className="mt-1 font-mono text-xs text-muted-foreground">A cada {intervalo} h</p>
         </div>
         <span

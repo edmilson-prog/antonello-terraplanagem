@@ -79,7 +79,10 @@ function ArtigoTerraplanagem() {
   return (
     <main className="min-h-screen bg-background px-4 py-12">
       <article className="mx-auto max-w-2xl space-y-6">
-        <nav aria-label="Trilha" className="text-xs font-mono uppercase tracking-[0.15em] text-foreground-faint">
+        <nav
+          aria-label="Trilha"
+          className="text-xs font-mono uppercase tracking-[0.15em] text-foreground-faint"
+        >
           <Link to="/" className="hover:text-foreground">
             Antonello
           </Link>
@@ -92,22 +95,19 @@ function ArtigoTerraplanagem() {
             Terraplanagem ou Terraplenagem: qual o termo correto?
           </h1>
           <p className="text-base text-muted-foreground">
-            As duas grafias existem e aparecem em contratos, propostas e nomes
-            comerciais — mas há uma forma preferida pelos dicionários e outra
-            consagrada pelo uso do setor. Veja qual escolher.
+            As duas grafias existem e aparecem em contratos, propostas e nomes comerciais — mas há
+            uma forma preferida pelos dicionários e outra consagrada pelo uso do setor. Veja qual
+            escolher.
           </p>
         </header>
 
         <section className="space-y-3">
-          <h2 className="font-display text-xl font-bold text-foreground">
-            Resposta rápida
-          </h2>
+          <h2 className="font-display text-xl font-bold text-foreground">Resposta rápida</h2>
           <p className="text-base text-foreground">
-            <strong>Terraplenagem</strong> é a forma preferencial nos dicionários
-            de língua portuguesa. <strong>Terraplanagem</strong> é a variante
-            mais usada no Brasil, especialmente nos nomes comerciais e contratos
-            de empresas do setor. As duas estão corretas e descrevem exatamente
-            o mesmo serviço.
+            <strong>Terraplenagem</strong> é a forma preferencial nos dicionários de língua
+            portuguesa. <strong>Terraplanagem</strong> é a variante mais usada no Brasil,
+            especialmente nos nomes comerciais e contratos de empresas do setor. As duas estão
+            corretas e descrevem exatamente o mesmo serviço.
           </p>
         </section>
 
@@ -116,16 +116,14 @@ function ArtigoTerraplanagem() {
             De onde vem cada palavra
           </h2>
           <p className="text-base text-foreground">
-            <em>Terraplenagem</em> vem de <em>terrapleno</em> — superfície de
-            terra preparada e nivelada. É a construção mais antiga e a que
-            aparece nos dicionários Aurélio, Houaiss e Michaelis como verbete
-            principal.
+            <em>Terraplenagem</em> vem de <em>terrapleno</em> — superfície de terra preparada e
+            nivelada. É a construção mais antiga e a que aparece nos dicionários Aurélio, Houaiss e
+            Michaelis como verbete principal.
           </p>
           <p className="text-base text-foreground">
-            <em>Terraplanagem</em> é uma formação mais recente, derivada do
-            verbo <em>terraplanar</em> (deixar a terra plana). Apesar de
-            considerada por alguns gramáticos uma forma menos elegante, está
-            dicionarizada, é amplamente usada e não constitui erro.
+            <em>Terraplanagem</em> é uma formação mais recente, derivada do verbo{" "}
+            <em>terraplanar</em> (deixar a terra plana). Apesar de considerada por alguns gramáticos
+            uma forma menos elegante, está dicionarizada, é amplamente usada e não constitui erro.
           </p>
         </section>
 
@@ -150,27 +148,23 @@ function ArtigoTerraplanagem() {
             Qual usar em contratos e propostas
           </h2>
           <p className="text-base text-foreground">
-            Use a grafia que sua empresa adota no nome fantasia. Misturar
-            "terraplenagem" no contrato e "terraplanagem" na nota fiscal cria
-            ruído jurídico desnecessário. Na Antonello adotamos
-            <strong> terraplanagem</strong> em todos os documentos — é a forma
-            registrada na razão social e a mais reconhecida pelos clientes na
-            região.
+            Use a grafia que sua empresa adota no nome fantasia. Misturar "terraplenagem" no
+            contrato e "terraplanagem" na nota fiscal cria ruído jurídico desnecessário. Na
+            Antonello adotamos
+            <strong> terraplanagem</strong> em todos os documentos — é a forma registrada na razão
+            social e a mais reconhecida pelos clientes na região.
           </p>
         </section>
 
         <section className="space-y-3 rounded-xl border bg-card p-6 shadow-sm">
-          <h2 className="font-display text-xl font-bold text-card-foreground">
-            Resumo
-          </h2>
+          <h2 className="font-display text-xl font-bold text-card-foreground">Resumo</h2>
           <ul className="ml-5 list-disc space-y-1 text-base text-card-foreground">
             <li>As duas grafias existem e estão corretas.</li>
             <li>
               <strong>Terraplenagem</strong>: forma preferencial dos dicionários.
             </li>
             <li>
-              <strong>Terraplanagem</strong>: forma mais comum no mercado
-              brasileiro.
+              <strong>Terraplanagem</strong>: forma mais comum no mercado brasileiro.
             </li>
             <li>Escolha uma e use de forma consistente em toda a documentação.</li>
           </ul>

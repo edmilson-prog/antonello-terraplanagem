@@ -35,9 +35,7 @@ export function podeFecharOS(os: OrdemServico, apontamentos: Apontamento[]): Res
   if (os.status === "fechada") {
     return { pode: false, motivo: "Esta OS já está fechada." };
   }
-  const temEmAndamento = apontamentos.some(
-    (a) => a.os_id === os.id && a.status === "em_andamento",
-  );
+  const temEmAndamento = apontamentos.some((a) => a.os_id === os.id && a.status === "em_andamento");
   if (temEmAndamento) {
     return {
       pode: false,

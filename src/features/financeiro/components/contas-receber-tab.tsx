@@ -71,7 +71,8 @@ export function ContasReceberTab({
             const cliente = clientesStore.getById(conta.cliente_id);
             const fat = faturamentosStore.obter(conta.faturamento_id);
             const vencida = contaVencida(conta, agoraISO);
-            const cobranca = conta.status === "aberta" ? cobrancaDaConta(conta.id, cobrancas) : null;
+            const cobranca =
+              conta.status === "aberta" ? cobrancaDaConta(conta.id, cobrancas) : null;
             const [ano, mes, dia] = conta.vencimento.split("-");
             return (
               <tr key={conta.id} className="hover:bg-muted/30">
@@ -103,7 +104,11 @@ export function ContasReceberTab({
                         {PROVEDOR_GATEWAY_LABEL[cobranca.provedor]}
                       </span>
                       {cobranca.status === "pendente" ? (
-                        <Button size="sm" variant="outline" onClick={() => onSimularPagamento?.(cobranca)}>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => onSimularPagamento?.(cobranca)}
+                        >
                           Simular Pagamento
                         </Button>
                       ) : null}

@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { alertasConsumoAnomalo, avaliarRiscoClientes, detectarAnomalias, gerarInsight, preverCaixa } from "@/features/ia/mock/analitico";
+import {
+  alertasConsumoAnomalo,
+  avaliarRiscoClientes,
+  detectarAnomalias,
+  gerarInsight,
+  preverCaixa,
+} from "@/features/ia/mock/analitico";
 import type { Apontamento, Cliente, ContaReceber, Equipamento } from "@/shared/types";
 import type { IndicadorDieselEquipamento } from "@/features/diesel/derivacoes";
 
@@ -32,7 +38,11 @@ describe("detectarAnomalias", () => {
     const lista = [apontamento({ id: "ap-1", horas_trabalhadas: 18 })];
     const anomalias = detectarAnomalias(lista);
     expect(anomalias).toEqual([
-      { apontamento_id: "ap-1", motivo: "Salto de horímetro atípico (18h em um único apontamento)", severidade: "alerta" },
+      {
+        apontamento_id: "ap-1",
+        motivo: "Salto de horímetro atípico (18h em um único apontamento)",
+        severidade: "alerta",
+      },
     ]);
   });
 
@@ -115,7 +125,10 @@ describe("alertasConsumoAnomalo", () => {
   });
 
   it("returns nothing when fewer than 2 equipamentos have enough data", () => {
-    const indicadores = [indicador("eq-1", 10), { ...indicador("eq-2", 30), qtd_abastecimentos: 1 }];
+    const indicadores = [
+      indicador("eq-1", 10),
+      { ...indicador("eq-2", 30), qtd_abastecimentos: 1 },
+    ];
     expect(alertasConsumoAnomalo(indicadores)).toEqual([]);
   });
 
@@ -142,7 +155,15 @@ function conta(overrides: Partial<ContaReceber>): ContaReceber {
 }
 
 function cliente(id: string, nome: string): Cliente {
-  return { id, nome, documento: null, telefone: null, ativo: true, created_at: "2026-01-01T00:00:00.000Z", updated_at: "2026-01-01T00:00:00.000Z" };
+  return {
+    id,
+    nome,
+    documento: null,
+    telefone: null,
+    ativo: true,
+    created_at: "2026-01-01T00:00:00.000Z",
+    updated_at: "2026-01-01T00:00:00.000Z",
+  };
 }
 
 describe("preverCaixa", () => {
@@ -179,18 +200,28 @@ describe("avaliarRiscoClientes", () => {
       conta({ id: "cr-1", cliente_id: "cli-1", vencimento: "2026-06-01" }),
       conta({ id: "cr-2", cliente_id: "cli-1", vencimento: "2026-06-10" }),
     ];
-    const riscos = avaliarRiscoClientes(contas, [cliente("cli-1", "Obras Silva")], { hojeISO: "2026-07-01" });
-    expect(riscos).toEqual([{ cliente_id: "cli-1", nivel: "alto", motivo: "2 contas vencidas — Obras Silva" }]);
+    const riscos = avaliarRiscoClientes(contas, [cliente("cli-1", "Obras Silva")], {
+      hojeISO: "2026-07-01",
+    });
+    expect(riscos).toEqual([
+      { cliente_id: "cli-1", nivel: "alto", motivo: "2 contas vencidas — Obras Silva" },
+    ]);
   });
 
   it("flags a cliente with exactly 1 overdue conta as medio risco", () => {
     const contas = [conta({ id: "cr-1", cliente_id: "cli-1", vencimento: "2026-06-01" })];
-    const riscos = avaliarRiscoClientes(contas, [cliente("cli-1", "Obras Silva")], { hojeISO: "2026-07-01" });
-    expect(riscos).toEqual([{ cliente_id: "cli-1", nivel: "medio", motivo: "1 conta vencida — Obras Silva" }]);
+    const riscos = avaliarRiscoClientes(contas, [cliente("cli-1", "Obras Silva")], {
+      hojeISO: "2026-07-01",
+    });
+    expect(riscos).toEqual([
+      { cliente_id: "cli-1", nivel: "medio", motivo: "1 conta vencida — Obras Silva" },
+    ]);
   });
 
   it("does not flag a cliente with no overdue contas", () => {
     const contas = [conta({ cliente_id: "cli-1", vencimento: "2026-08-01" })];
-    expect(avaliarRiscoClientes(contas, [cliente("cli-1", "Obras Silva")], { hojeISO: "2026-07-01" })).toEqual([]);
+    expect(
+      avaliarRiscoClientes(contas, [cliente("cli-1", "Obras Silva")], { hojeISO: "2026-07-01" }),
+    ).toEqual([]);
   });
 });

@@ -13,11 +13,7 @@ import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { precoFundacaoStore } from "@/features/precos/precos-fundacao-store";
 import { precoMobilizacaoStore } from "@/features/precos/precos-mobilizacao-store";
 import { precoHoraMaquinaStore } from "@/features/precos/precos-hora-maquina-store";
-import {
-  criarItemHora,
-  criarItemMetro,
-  criarItemMobilizacao,
-} from "@/features/orcamentos/calculo";
+import { criarItemHora, criarItemMetro, criarItemMobilizacao } from "@/features/orcamentos/calculo";
 import { formatBRL } from "@/features/retaguarda/format";
 import type { OrcamentoItem, TipoItemOrcamento } from "@/shared/types";
 
@@ -70,7 +66,10 @@ export function AdicionarItemOrcamento({
     tipo === "hora_maquina"
       ? equipamentos.map((e) => ({ id: e.id, label: e.nome }))
       : tipo === "por_metro"
-        ? fundacoes.map((p) => ({ id: p.id, label: `Ø${p.diametro_broca_mm}mm · ${formatBRL(p.valor_metro)}/m` }))
+        ? fundacoes.map((p) => ({
+            id: p.id,
+            label: `Ø${p.diametro_broca_mm}mm · ${formatBRL(p.valor_metro)}/m`,
+          }))
         : mobilizacoes.map((p) => ({ id: p.id, label: `${p.descricao} · ${formatBRL(p.valor)}` }));
 
   const mostrarQtd = tipo !== "mobilizacao";
@@ -79,7 +78,9 @@ export function AdicionarItemOrcamento({
   return (
     <div className="flex flex-wrap items-end gap-2 rounded-lg border border-dashed bg-surface/40 p-3">
       <div className="space-y-1">
-        <label className="font-mono text-[10px] uppercase tracking-wide text-foreground-faint">Tipo</label>
+        <label className="font-mono text-[10px] uppercase tracking-wide text-foreground-faint">
+          Tipo
+        </label>
         <Select
           value={tipo}
           onValueChange={(v) => {
@@ -101,7 +102,9 @@ export function AdicionarItemOrcamento({
       </div>
 
       <div className="min-w-[200px] flex-1 space-y-1">
-        <label className="font-mono text-[10px] uppercase tracking-wide text-foreground-faint">Item</label>
+        <label className="font-mono text-[10px] uppercase tracking-wide text-foreground-faint">
+          Item
+        </label>
         <Select value={fonte} onValueChange={setFonte}>
           <SelectTrigger>
             <SelectValue placeholder="Selecione" />
