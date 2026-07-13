@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -16,18 +17,33 @@ import { DataList, type Column } from "@/shared/components/data-list";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { StatusAtivo } from "@/shared/components/status-ativo";
+import { LinhaEntidadeCell } from "@/shared/components/linha-entidade-cell";
 import { formatDocumento, formatTelefone } from "@/shared/lib/format";
+import { formatBRL } from "@/features/retaguarda/format";
+import { idMockDoCliente } from "@/shared/lib/cliente-mock-id";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { ClienteForm } from "@/features/clientes/components/cliente-form";
+import { showcaseDoCliente } from "@/features/clientes/cliente-showcase-data";
+import { ordensStore } from "@/features/ordem-servico/ordens-store";
+import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
 import type { Cliente } from "@/shared/types";
 import { cn } from "@/lib/utils";
 
 const OPCOES_POR_PAGINA = [20, 50, 100] as const;
 
+interface ClienteListView {
+  cliente: Cliente;
+  cidade: string;
+  osAtivas: number;
+  saldo: number;
+}
+
 export function ClientesPage() {
   const todos = clientesStore.useAll();
   const { isLoading, error } = clientesStore.useEstado();
   const retry = clientesStore.retry;
+  const ordens = ordensStore.useTodas();
+  const contas = contasReceberStore.useTodas();
 
   const [q, setQ] = useState("");
   const [mostrarInativos, setMostrarInativos] = useState(true);
@@ -62,6 +78,26 @@ export function ClientesPage() {
   const inicioIntervalo = lista.length === 0 ? 0 : (paginaAtual - 1) * itensPorPagina + 1;
   const fimIntervalo = Math.min(paginaAtual * itensPorPagina, lista.length);
 
+  const viewsPaginados: ClienteListView[] = useMemo(
+    () =>
+      listaPaginada.map((cliente) => {
+        const idMock = idMockDoCliente(cliente.id);
+        const osDoCliente = ordens.filter((o) => o.cliente_id === idMock);
+        const contasDoCliente = contas.filter((c) => c.cliente_id === idMock);
+        const osAtivas = osDoCliente.filter((o) => o.status !== "fechada").length;
+        const saldo = contasDoCliente
+          .filter((c) => c.status === "aberta")
+          .reduce((s, c) => s + c.valor, 0);
+        return {
+          cliente,
+          cidade: showcaseDoCliente(cliente.id).cadastrais.cidade,
+          osAtivas,
+          saldo,
+        };
+      }),
+    [listaPaginada, ordens, contas],
+  );
+
   const abrirNovo = () => {
     setEditando(null);
     setFormAberto(true);
@@ -89,45 +125,83 @@ export function ClientesPage() {
     }
   };
 
-  const columns: Column<Cliente>[] = [
+  const columns: Column<ClienteListView>[] = [
     {
-      header: "Nome",
-      cell: (c) => (
-        <Link
-          to="/admin/clientes/$clienteId"
-          params={{ clienteId: c.id }}
-          className={cn(
-            "font-medium text-foreground hover:text-primary hover:underline",
-            !c.ativo && "opacity-60",
-          )}
-        >
-          {c.nome}
-        </Link>
+      header: "Cliente",
+      cell: ({ cliente, cidade }) => (
+        <LinhaEntidadeCell
+          variante="icone"
+          icone={cliente.tipo_pessoa === "PJ" ? "lucide:building-2" : "lucide:user"}
+          titulo={
+            <Link
+              to="/admin/clientes/$clienteId"
+              params={{ clienteId: cliente.id }}
+              className={cn("hover:text-primary hover:underline", !cliente.ativo && "opacity-60")}
+            >
+              {cliente.nome}
+            </Link>
+          }
+          subtitulo={cidade}
+        />
       ),
     },
-    { header: "Documento", className: "font-mono", cell: (c) => formatDocumento(c.documento) },
-    { header: "Telefone", className: "font-mono", cell: (c) => formatTelefone(c.telefone) },
-    { header: "Status", cell: (c) => <StatusAtivo ativo={c.ativo} /> },
+    {
+      header: "Tipo",
+      cell: ({ cliente }) =>
+        cliente.tipo_pessoa ? (
+          <Badge variant="secondary">{cliente.tipo_pessoa}</Badge>
+        ) : (
+          <span className="text-foreground-faint">—</span>
+        ),
+    },
+    {
+      header: "Documento",
+      className: "font-mono",
+      cell: ({ cliente }) => formatDocumento(cliente.documento),
+    },
+    {
+      header: "Telefone",
+      className: "font-mono",
+      cell: ({ cliente }) => formatTelefone(cliente.telefone),
+    },
+    {
+      header: "OS ativas",
+      className: "text-right font-mono",
+      headerClassName: "text-right",
+      cell: ({ osAtivas }) => osAtivas,
+    },
+    {
+      header: "Saldo",
+      className: "text-right font-mono",
+      headerClassName: "text-right",
+      cell: ({ saldo }) =>
+        saldo > 0 ? (
+          <span className="font-semibold text-destructive">{formatBRL(saldo)}</span>
+        ) : (
+          formatBRL(saldo)
+        ),
+    },
+    { header: "Status", cell: ({ cliente }) => <StatusAtivo ativo={cliente.ativo} /> },
   ];
 
-  const rowActions = (c: Cliente) => (
+  const rowActions = ({ cliente }: ClienteListView) => (
     <div className="flex justify-end gap-1">
-      <Button variant="ghost" size="sm" onClick={() => abrirEdicao(c)} className="gap-1.5">
+      <Button variant="ghost" size="sm" onClick={() => abrirEdicao(cliente)} className="gap-1.5">
         <Icon icon="lucide:pencil" className="h-4 w-4" />
         Editar
       </Button>
-      {c.ativo ? (
+      {cliente.ativo ? (
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setInativando(c)}
+          onClick={() => setInativando(cliente)}
           className="gap-1.5 text-destructive hover:text-destructive"
         >
           <Icon icon="lucide:ban" className="h-4 w-4" />
           Inativar
         </Button>
       ) : (
-        <Button variant="ghost" size="sm" onClick={() => reativar(c)} className="gap-1.5">
+        <Button variant="ghost" size="sm" onClick={() => reativar(cliente)} className="gap-1.5">
           <Icon icon="lucide:rotate-ccw" className="h-4 w-4" />
           Reativar
         </Button>
@@ -135,31 +209,58 @@ export function ClientesPage() {
     </div>
   );
 
-  const renderCard = (c: Cliente) => (
-    <div className={cn("rounded-xl border bg-card p-4 shadow-sm", !c.ativo && "opacity-70")}>
-      <div className="flex items-start justify-between gap-2">
-        <Link
-          to="/admin/clientes/$clienteId"
-          params={{ clienteId: c.id }}
-          className="min-w-0 font-display font-bold text-card-foreground hover:text-primary hover:underline"
-        >
-          {c.nome}
-        </Link>
-        <StatusAtivo ativo={c.ativo} />
+  const renderCard = (view: ClienteListView) => {
+    const { cliente, cidade, osAtivas, saldo } = view;
+    return (
+      <div
+        className={cn("rounded-xl border bg-card p-4 shadow-sm", !cliente.ativo && "opacity-70")}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <LinhaEntidadeCell
+            variante="icone"
+            icone={cliente.tipo_pessoa === "PJ" ? "lucide:building-2" : "lucide:user"}
+            titulo={
+              <Link
+                to="/admin/clientes/$clienteId"
+                params={{ clienteId: cliente.id }}
+                className="hover:text-primary hover:underline"
+              >
+                {cliente.nome}
+              </Link>
+            }
+            subtitulo={cidade}
+          />
+          <StatusAtivo ativo={cliente.ativo} />
+        </div>
+        <dl className="mt-2 space-y-1 text-xs">
+          <div className="flex justify-between gap-2">
+            <dt className="text-foreground-faint">Documento</dt>
+            <dd className="font-mono text-foreground">{formatDocumento(cliente.documento)}</dd>
+          </div>
+          <div className="flex justify-between gap-2">
+            <dt className="text-foreground-faint">Telefone</dt>
+            <dd className="font-mono text-foreground">{formatTelefone(cliente.telefone)}</dd>
+          </div>
+          <div className="flex justify-between gap-2">
+            <dt className="text-foreground-faint">OS ativas</dt>
+            <dd className="font-mono text-foreground">{osAtivas}</dd>
+          </div>
+          <div className="flex justify-between gap-2">
+            <dt className="text-foreground-faint">Saldo</dt>
+            <dd
+              className={cn(
+                "font-mono",
+                saldo > 0 ? "font-semibold text-destructive" : "text-foreground",
+              )}
+            >
+              {formatBRL(saldo)}
+            </dd>
+          </div>
+        </dl>
+        <div className="mt-3 flex justify-end">{rowActions(view)}</div>
       </div>
-      <dl className="mt-2 space-y-1 text-xs">
-        <div className="flex justify-between gap-2">
-          <dt className="text-foreground-faint">Documento</dt>
-          <dd className="font-mono text-foreground">{formatDocumento(c.documento)}</dd>
-        </div>
-        <div className="flex justify-between gap-2">
-          <dt className="text-foreground-faint">Telefone</dt>
-          <dd className="font-mono text-foreground">{formatTelefone(c.telefone)}</dd>
-        </div>
-      </dl>
-      <div className="mt-3 flex justify-end">{rowActions(c)}</div>
-    </div>
-  );
+    );
+  };
 
   const toolbar = (
     <div className="flex flex-wrap items-center gap-2">
@@ -203,9 +304,9 @@ export function ClientesPage() {
       />
 
       <DataList
-        data={listaPaginada}
+        data={viewsPaginados}
         columns={columns}
-        getRowKey={(c) => c.id}
+        getRowKey={(v) => v.cliente.id}
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}
