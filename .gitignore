@@ -30,6 +30,9 @@ graphify-out/
 # MCP local — caminho do interpretador Python varia por máquina (ver CLAUDE.md)
 .mcp.json
 
+# Banco Firebird bruto do ERP legado (56MB, dados reais de clientes/funcionários — nunca versionar)
+docs/db/Gerencial.fdb
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

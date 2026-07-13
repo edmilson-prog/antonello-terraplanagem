@@ -1,0 +1,35 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Text & borders" subtitle="Warm off-white foreground, two muted tiers, three border weights" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body{padding:20px 22px; display:flex; gap:34px; align-items:center}
+  .stack{display:flex; flex-direction:column; gap:10px}
+  .t{font:600 15px/1 var(--font-sans)}
+  .cap{font:600 10px/1 var(--font-display); letter-spacing:.12em; text-transform:uppercase; color:var(--muted-2); margin-bottom:2px}
+  .bd{display:flex; gap:12px}
+  .box{width:96px; height:52px; border-radius:8px; background:var(--surface); border:1px solid var(--border)}
+  .box.soft{border-color:var(--border-soft)}
+  .box.strong{border-color:var(--border-strong)}
+  .m{font:500 10px/1 var(--font-mono); color:var(--muted-2); margin-top:6px}
+</style>
+</head>
+<body>
+  <div class="stack">
+    <div class="cap">Text</div>
+    <div class="t" style="color:var(--fg)">fg — #f0eee6</div>
+    <div class="t" style="color:var(--muted)">muted — #a6a29a</div>
+    <div class="t" style="color:var(--muted-2)">muted-2 — #7d7a70</div>
+  </div>
+  <div class="stack">
+    <div class="cap">Borders</div>
+    <div class="bd">
+      <div><div class="box soft"></div><div class="m">soft</div></div>
+      <div><div class="box"></div><div class="m">border</div></div>
+      <div><div class="box strong"></div><div class="m">strong</div></div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+/* ============================================================
+   SPACING & LAYOUT — Antonello Terraplanagem
+   The app is built on a tight, dense information grid. Card internal
+   padding is 16–18px; gaps between cards are 16px.
+   ============================================================ */
+:root{
+  --space-1:4px;
+  --space-2:8px;
+  --space-3:12px;
+  --space-4:14px;
+  --space-5:16px;
+  --space-6:18px;
+  --space-7:22px;
+  --space-8:28px;
+  --space-10:48px;
+
+  /* purpose-built */
+  --gap-card:16px;              /* grid gap between cards */
+  --pad-card-y:16px;            /* card body vertical pad */
+  --pad-card-x:17px;            /* card body horizontal pad */
+  --pad-card-header:15px 18px;  /* card header */
+  --pad-content:22px 28px 48px; /* main content region */
+
+  /* layout */
+  --content-max:1320px;
+  --sidebar-w:236px;
+  --header-h:60px;
+}

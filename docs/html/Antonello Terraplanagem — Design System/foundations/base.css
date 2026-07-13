@@ -1,0 +1,47 @@
+/* ============================================================
+   BASE / RESET — Antonello Terraplanagem
+   Minimal reset + brand defaults + a few genuinely-reusable utilities
+   (.mono, .eyebrow, .hazard-bar) that recur across the product.
+   ============================================================ */
+*{margin:0; padding:0; box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--font-sans);
+  font-size:var(--text-body);
+  line-height:var(--leading-body);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* Selection uses the brand amber */
+::selection{background:var(--amarelo); color:#16140f}
+
+/* Links — default to amber (editor-added links inherit this) */
+a{color:var(--amarelo); text-decoration:none}
+a:hover{color:var(--amarelo-bright)}
+
+/* Focus — 2px amber ring, offset */
+:focus-visible{outline:2px solid var(--amarelo); outline-offset:2px; border-radius:6px}
+
+/* Custom scrollbars (dark) */
+::-webkit-scrollbar{width:8px; height:8px}
+::-webkit-scrollbar-thumb{background:#33301f; border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#413c2c}
+
+/* ---------- Reusable utilities ---------- */
+.mono{font-family:var(--font-mono)}
+.eyebrow{
+  font:var(--fw-semibold) 11px/1 var(--font-display);
+  letter-spacing:var(--track-eyebrow);
+  text-transform:uppercase;
+  color:var(--muted-2);
+}
+/* Signature hazard tape — a full-width brand bar */
+.hazard-bar{height:8px; background:var(--hazard)}
+.hazard-bar--header{height:6px; background:var(--hazard-header)}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important; scroll-behavior:auto !important}
+}
