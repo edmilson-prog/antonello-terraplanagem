@@ -4,16 +4,30 @@ import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/shared/components/page-header";
 import { DataList, type Column } from "@/shared/components/data-list";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { StatusAtivo } from "@/shared/components/status-ativo";
+import { LinhaEntidadeCell } from "@/shared/components/linha-entidade-cell";
 import { formatDocumento, formatTelefone } from "@/shared/lib/format";
 import { operadoresStore } from "@/features/operadores/operadores-store";
 import { OperadorForm } from "@/features/operadores/components/operador-form";
+import { iniciais } from "@/features/operadores/components/operador-hero";
+import { showcaseDoOperador } from "@/features/operadores/operador-showcase-data";
 import type { Operador } from "@/shared/types";
 import { cn } from "@/lib/utils";
+
+interface OperadorListView {
+  operador: Operador;
+  iniciais: string;
+  osAtivasLabel: string;
+  vinculo: string;
+  base: string;
+  horasMes: string;
+  acessoLiberado: boolean;
+}
 
 export function OperadoresPage() {
   const todos = operadoresStore.useAll();
@@ -34,6 +48,23 @@ export function OperadoresPage() {
       return o.nome.toLowerCase().includes(termo);
     });
   }, [todos, q, mostrarInativos]);
+
+  const views: OperadorListView[] = useMemo(
+    () =>
+      lista.map((operador) => {
+        const showcase = showcaseDoOperador(operador.id);
+        return {
+          operador,
+          iniciais: iniciais(operador.nome),
+          osAtivasLabel: `${showcase.kpis.osAtivas.valor} OS ativas`,
+          vinculo: showcase.cadastrais.vinculo,
+          base: showcase.cadastrais.base,
+          horasMes: showcase.kpis.horasApontadas.valor,
+          acessoLiberado: showcase.acessoApp.liberado,
+        };
+      }),
+    [lista],
+  );
 
   const abrirNovo = () => {
     setEditando(null);
@@ -62,45 +93,63 @@ export function OperadoresPage() {
     }
   };
 
-  const columns: Column<Operador>[] = [
+  const columns: Column<OperadorListView>[] = [
     {
-      header: "Nome",
-      cell: (o) => (
-        <Link
-          to="/admin/operadores/$operadorId"
-          params={{ operadorId: o.id }}
-          className={cn(
-            "font-medium text-foreground hover:text-primary hover:underline",
-            !o.ativo && "opacity-60",
-          )}
-        >
-          {o.nome}
-        </Link>
+      header: "Operador",
+      cell: ({ operador, iniciais: init, osAtivasLabel }) => (
+        <LinhaEntidadeCell
+          variante="avatar"
+          iniciais={init}
+          titulo={
+            <Link
+              to="/admin/operadores/$operadorId"
+              params={{ operadorId: operador.id }}
+              className={cn("hover:text-primary hover:underline", !operador.ativo && "opacity-60")}
+            >
+              {operador.nome}
+            </Link>
+          }
+          subtitulo={osAtivasLabel}
+        />
       ),
     },
-    { header: "CPF", className: "font-mono", cell: (o) => formatDocumento(o.cpf) },
-    { header: "Telefone", className: "font-mono", cell: (o) => formatTelefone(o.telefone) },
-    { header: "Status", cell: (o) => <StatusAtivo ativo={o.ativo} /> },
+    { header: "Vínculo", cell: ({ vinculo }) => <Badge variant="secondary">{vinculo}</Badge> },
+    { header: "Base", cell: ({ base }) => base },
+    {
+      header: "Horas (mês)",
+      className: "text-right font-mono",
+      headerClassName: "text-right",
+      cell: ({ horasMes }) => horasMes,
+    },
+    {
+      header: "Acesso ao app",
+      cell: ({ acessoLiberado }) => (
+        <Badge variant={acessoLiberado ? "default" : "secondary"}>
+          {acessoLiberado ? "Liberado" : "Sem acesso"}
+        </Badge>
+      ),
+    },
+    { header: "Status", cell: ({ operador }) => <StatusAtivo ativo={operador.ativo} /> },
   ];
 
-  const rowActions = (o: Operador) => (
+  const rowActions = ({ operador }: OperadorListView) => (
     <div className="flex justify-end gap-1">
-      <Button variant="ghost" size="sm" onClick={() => abrirEdicao(o)} className="gap-1.5">
+      <Button variant="ghost" size="sm" onClick={() => abrirEdicao(operador)} className="gap-1.5">
         <Icon icon="lucide:pencil" className="h-4 w-4" />
         Editar
       </Button>
-      {o.ativo ? (
+      {operador.ativo ? (
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setInativando(o)}
+          onClick={() => setInativando(operador)}
           className="gap-1.5 text-destructive hover:text-destructive"
         >
           <Icon icon="lucide:ban" className="h-4 w-4" />
           Inativar
         </Button>
       ) : (
-        <Button variant="ghost" size="sm" onClick={() => reativar(o)} className="gap-1.5">
+        <Button variant="ghost" size="sm" onClick={() => reativar(operador)} className="gap-1.5">
           <Icon icon="lucide:rotate-ccw" className="h-4 w-4" />
           Reativar
         </Button>
@@ -108,24 +157,67 @@ export function OperadoresPage() {
     </div>
   );
 
-  const renderCard = (o: Operador) => (
-    <div className={cn("rounded-xl border bg-card p-4 shadow-sm", !o.ativo && "opacity-70")}>
-      <div className="flex items-start justify-between gap-2">
-        <Link
-          to="/admin/operadores/$operadorId"
-          params={{ operadorId: o.id }}
-          className="min-w-0 font-display font-bold text-card-foreground hover:text-primary hover:underline"
-        >
-          {o.nome}
-        </Link>
-        <StatusAtivo ativo={o.ativo} />
+  const renderCard = (view: OperadorListView) => {
+    const {
+      operador,
+      iniciais: init,
+      osAtivasLabel,
+      vinculo,
+      base,
+      horasMes,
+      acessoLiberado,
+    } = view;
+    return (
+      <div
+        className={cn("rounded-xl border bg-card p-4 shadow-sm", !operador.ativo && "opacity-70")}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <LinhaEntidadeCell
+            variante="avatar"
+            iniciais={init}
+            titulo={
+              <Link
+                to="/admin/operadores/$operadorId"
+                params={{ operadorId: operador.id }}
+                className="hover:text-primary hover:underline"
+              >
+                {operador.nome}
+              </Link>
+            }
+            subtitulo={osAtivasLabel}
+          />
+          <StatusAtivo ativo={operador.ativo} />
+        </div>
+        <dl className="mt-2 space-y-1 text-xs">
+          <div className="flex justify-between gap-2">
+            <dt className="text-foreground-faint">CPF</dt>
+            <dd className="font-mono text-foreground">{formatDocumento(operador.cpf)}</dd>
+          </div>
+          <div className="flex justify-between gap-2">
+            <dt className="text-foreground-faint">Telefone</dt>
+            <dd className="font-mono text-foreground">{formatTelefone(operador.telefone)}</dd>
+          </div>
+          <div className="flex justify-between gap-2">
+            <dt className="text-foreground-faint">Vínculo</dt>
+            <dd className="text-foreground">{vinculo}</dd>
+          </div>
+          <div className="flex justify-between gap-2">
+            <dt className="text-foreground-faint">Base</dt>
+            <dd className="text-foreground">{base}</dd>
+          </div>
+          <div className="flex justify-between gap-2">
+            <dt className="text-foreground-faint">Horas (mês)</dt>
+            <dd className="font-mono text-foreground">{horasMes}</dd>
+          </div>
+          <div className="flex justify-between gap-2">
+            <dt className="text-foreground-faint">Acesso ao app</dt>
+            <dd className="text-foreground">{acessoLiberado ? "Liberado" : "Sem acesso"}</dd>
+          </div>
+        </dl>
+        <div className="mt-3 flex justify-end">{rowActions(view)}</div>
       </div>
-      <div className="mt-1 font-mono text-sm text-muted-foreground">
-        {formatDocumento(o.cpf)} · {formatTelefone(o.telefone)}
-      </div>
-      <div className="mt-3 flex justify-end">{rowActions(o)}</div>
-    </div>
-  );
+    );
+  };
 
   const toolbar = (
     <div className="flex flex-wrap items-center gap-2">
@@ -169,9 +261,9 @@ export function OperadoresPage() {
       />
 
       <DataList
-        data={lista}
+        data={views}
         columns={columns}
-        getRowKey={(o) => o.id}
+        getRowKey={(v) => v.operador.id}
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}
@@ -182,9 +274,7 @@ export function OperadoresPage() {
           icon: "lucide:hard-hat",
           titulo: todos.length === 0 ? "Nenhum operador cadastrado" : "Nada encontrado",
           descricao:
-            todos.length === 0
-              ? "Cadastre o primeiro operador da equipe."
-              : "Ajuste a busca.",
+            todos.length === 0 ? "Cadastre o primeiro operador da equipe." : "Ajuste a busca.",
           cta:
             todos.length === 0 ? (
               <Button
