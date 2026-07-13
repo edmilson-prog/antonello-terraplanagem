@@ -16,7 +16,11 @@ interface SugestaoOrcamentoDialogProps {
   onConfirmar: (itens: OrcamentoItem[]) => void;
 }
 
-export function SugestaoOrcamentoDialog({ clienteId, modeloCobranca, onConfirmar }: SugestaoOrcamentoDialogProps) {
+export function SugestaoOrcamentoDialog({
+  clienteId,
+  modeloCobranca,
+  onConfirmar,
+}: SugestaoOrcamentoDialogProps) {
   const [aberto, setAberto] = useState(false);
   const [sugestao, setSugestao] = useState<SugestaoOrcamento | null>(null);
   const equipamentos = equipamentosStore.useAll();
@@ -48,7 +52,12 @@ export function SugestaoOrcamentoDialog({ clienteId, modeloCobranca, onConfirmar
 
   return (
     <>
-      <BotaoIA label="Sugerir com IA" labelProcessando="Buscando obras semelhantes…" onAcionar={buscar} size="sm" />
+      <BotaoIA
+        label="Sugerir com IA"
+        labelProcessando="Buscando obras semelhantes…"
+        onAcionar={buscar}
+        size="sm"
+      />
       <FormDialog
         open={aberto}
         onOpenChange={setAberto}
@@ -80,7 +89,9 @@ export function SugestaoOrcamentoDialog({ clienteId, modeloCobranca, onConfirmar
             </div>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">{sugestao?.justificativa ?? "Sem sugestão disponível."}</p>
+          <p className="text-sm text-muted-foreground">
+            {sugestao?.justificativa ?? "Sem sugestão disponível."}
+          </p>
         )}
       </FormDialog>
     </>

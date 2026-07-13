@@ -81,7 +81,9 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
     setItens(
       fat.itens.map((i) => {
         if (i.id !== itemId) return i;
-        const equipamento = i.origem_id ? equipamentos.find((e) => e.id === i.origem_id) : undefined;
+        const equipamento = i.origem_id
+          ? equipamentos.find((e) => e.id === i.origem_id)
+          : undefined;
         return aplicarHoraTipo(i, equipamento, precosHM, tipo);
       }),
     );
@@ -131,10 +133,16 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <div className="font-mono text-lg font-bold text-card-foreground">{fat.numero}</div>
-            <div className="mt-1 font-display font-bold text-foreground">{cliente?.nome ?? "—"}</div>
+            <div className="mt-1 font-display font-bold text-foreground">
+              {cliente?.nome ?? "—"}
+            </div>
             <div className="text-sm text-muted-foreground">
               {os ? (
-                <Link to="/admin/ordens/$ordemId" params={{ ordemId: os.id }} className="hover:text-primary">
+                <Link
+                  to="/admin/ordens/$ordemId"
+                  params={{ ordemId: os.id }}
+                  className="hover:text-primary"
+                >
                   {os.numero} · {os.obra_nome}
                 </Link>
               ) : (
@@ -209,7 +217,9 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
                   placeholder="0,00"
                   onChange={(e) => {
                     const v = Number(e.target.value);
-                    faturamentosStore.atualizar(fat.id, { desconto: Number.isFinite(v) && v > 0 ? v : 0 });
+                    faturamentosStore.atualizar(fat.id, {
+                      desconto: Number.isFinite(v) && v > 0 ? v : 0,
+                    });
                   }}
                   className="font-mono"
                 />
@@ -246,7 +256,9 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
 
         <div className="flex items-end justify-between border-t pt-4">
           <span className="text-sm font-medium text-muted-foreground">Total</span>
-          <span className="font-mono text-2xl font-bold text-foreground">{formatBRL(fat.valor_total)}</span>
+          <span className="font-mono text-2xl font-bold text-foreground">
+            {formatBRL(fat.valor_total)}
+          </span>
         </div>
       </section>
 

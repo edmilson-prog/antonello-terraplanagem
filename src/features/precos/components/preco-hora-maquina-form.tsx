@@ -51,10 +51,8 @@ export function PrecoHoraMaquinaForm({ inicial, onSuccess, onCancel }: Props) {
 
   const onSubmit = (values: PrecoHoraMaquinaFormValues) => {
     const payload = {
-      equipamento_id:
-        values.vinculo === "equipamento" ? (values.equipamento_id ?? null) : null,
-      tipo_equipamento:
-        values.vinculo === "tipo" ? (values.tipo_equipamento ?? null) : null,
+      equipamento_id: values.vinculo === "equipamento" ? (values.equipamento_id ?? null) : null,
+      tipo_equipamento: values.vinculo === "tipo" ? (values.tipo_equipamento ?? null) : null,
       valor_hora_seca: values.valor_hora_seca,
       valor_hora_operada: values.valor_hora_operada,
       ativo: values.ativo,
@@ -126,10 +124,7 @@ export function PrecoHoraMaquinaForm({ inicial, onSuccess, onCancel }: Props) {
             name="tipo_equipamento"
             render={({ field }) => (
               <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                <SelectTrigger
-                  id="tipo_equipamento"
-                  aria-invalid={!!errors.tipo_equipamento}
-                >
+                <SelectTrigger id="tipo_equipamento" aria-invalid={!!errors.tipo_equipamento}>
                   <SelectValue placeholder="Selecione o tipo" />
                 </SelectTrigger>
                 <SelectContent>

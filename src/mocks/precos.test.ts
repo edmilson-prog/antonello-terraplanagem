@@ -27,9 +27,7 @@ describe("mocks de preço hora-máquina", () => {
   it("inclui edge cases: ao menos 1 inativo, 1 por tipo, 1 com seca === operada", () => {
     expect(precosHoraMaquina.some((p) => !p.ativo)).toBe(true);
     expect(precosHoraMaquina.some((p) => p.tipo_equipamento !== null)).toBe(true);
-    expect(
-      precosHoraMaquina.some((p) => p.valor_hora_seca === p.valor_hora_operada),
-    ).toBe(true);
+    expect(precosHoraMaquina.some((p) => p.valor_hora_seca === p.valor_hora_operada)).toBe(true);
   });
 });
 

@@ -30,7 +30,13 @@ export function PerguntarIABar() {
 
   return (
     <>
-      <Button type="button" variant="outline" size="sm" className="gap-2" onClick={() => setAberto(true)}>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="gap-2"
+        onClick={() => setAberto(true)}
+      >
         <Icon icon="lucide:sparkles" className="h-4 w-4 text-primary" />
         <span className="hidden sm:inline">Perguntar à IA</span>
       </Button>
@@ -57,7 +63,11 @@ export function PerguntarIABar() {
                 if (e.key === "Enter") void perguntar(pergunta);
               }}
             />
-            <Button type="button" onClick={() => void perguntar(pergunta)} disabled={estado === "processando"}>
+            <Button
+              type="button"
+              onClick={() => void perguntar(pergunta)}
+              disabled={estado === "processando"}
+            >
               Perguntar
             </Button>
           </div>

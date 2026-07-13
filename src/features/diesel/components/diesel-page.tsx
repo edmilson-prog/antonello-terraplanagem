@@ -1,14 +1,6 @@
 import { useMemo, useState } from "react";
 import { Fuel, Plus } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/shared/components/page-header";
 import { EmptyState } from "@/shared/components/empty-state";
@@ -142,7 +134,11 @@ export function DieselPage() {
                   layout="vertical"
                   margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
                 >
-                  <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" horizontal={false} />
+                  <CartesianGrid
+                    stroke="var(--color-border)"
+                    strokeDasharray="3 3"
+                    horizontal={false}
+                  />
                   <XAxis type="number" stroke="var(--color-muted-foreground)" fontSize={12} />
                   <YAxis
                     type="category"
@@ -166,7 +162,10 @@ export function DieselPage() {
             </Card>
           ) : null}
 
-          <Card titulo="Indicadores por equipamento" descricao="Consumo médio e utilização no período">
+          <Card
+            titulo="Indicadores por equipamento"
+            descricao="Consumo médio e utilização no período"
+          >
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>

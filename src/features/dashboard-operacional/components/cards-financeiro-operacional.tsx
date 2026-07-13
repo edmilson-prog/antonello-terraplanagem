@@ -51,7 +51,16 @@ export function CardsFinanceiroOperacional() {
         precosFund,
         intervaloMes,
       ),
-    [ordens, apontamentos, faturamentos, contasReceber, equipamentos, precosHM, precosFund, intervaloMes],
+    [
+      ordens,
+      apontamentos,
+      faturamentos,
+      contasReceber,
+      equipamentos,
+      precosHM,
+      precosFund,
+      intervaloMes,
+    ],
   );
   const pipelineAnterior = useMemo(
     () =>
@@ -65,12 +74,29 @@ export function CardsFinanceiroOperacional() {
         precosFund,
         intervaloAnterior,
       ),
-    [ordens, apontamentos, faturamentos, contasReceber, equipamentos, precosHM, precosFund, intervaloAnterior],
+    [
+      ordens,
+      apontamentos,
+      faturamentos,
+      contasReceber,
+      equipamentos,
+      precosHM,
+      precosFund,
+      intervaloAnterior,
+    ],
   );
   const serieExecutado = useMemo(
     () =>
       serieDecorativa(
-        serieDiariaExecutado(ordens, apontamentos, faturamentos, equipamentos, precosHM, precosFund, referencia),
+        serieDiariaExecutado(
+          ordens,
+          apontamentos,
+          faturamentos,
+          equipamentos,
+          precosHM,
+          precosFund,
+          referencia,
+        ),
       ),
     [ordens, apontamentos, faturamentos, equipamentos, precosHM, precosFund, referencia],
   );
@@ -97,7 +123,11 @@ export function CardsFinanceiroOperacional() {
     return (
       <div role="alert" className="rounded-xl border bg-card p-5 shadow-sm sm:col-span-3">
         <p className="text-sm text-muted-foreground">{error.message}</p>
-        <button type="button" onClick={retry} className="mt-2 text-sm font-semibold text-primary hover:underline">
+        <button
+          type="button"
+          onClick={retry}
+          className="mt-2 text-sm font-semibold text-primary hover:underline"
+        >
           Tentar novamente
         </button>
       </div>
@@ -138,10 +168,17 @@ export function CardsFinanceiroOperacional() {
             </span>
             <VariacaoBadge variacao={variacaoPercentual(card.valor, card.anterior)} />
           </div>
-          <div className="mt-2 font-mono text-xl font-bold text-card-foreground">{formatBRL(card.valor)}</div>
+          <div className="mt-2 font-mono text-xl font-bold text-card-foreground">
+            {formatBRL(card.valor)}
+          </div>
           <p className="text-xs text-muted-foreground">no mês</p>
           <div className="mt-3">
-            <MiniSparkline dados={card.serie} formatar={formatBRL} cor={card.cor} mostrarTooltip={false} />
+            <MiniSparkline
+              dados={card.serie}
+              formatar={formatBRL}
+              cor={card.cor}
+              mostrarTooltip={false}
+            />
           </div>
         </div>
       ))}

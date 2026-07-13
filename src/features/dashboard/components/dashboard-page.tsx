@@ -17,7 +17,10 @@ export function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader titulo="Dashboard" descricao="Visão geral da operação — equipamentos, ordens e faturamento." />
+      <PageHeader
+        titulo="Dashboard"
+        descricao="Visão geral da operação — equipamentos, ordens e faturamento."
+      />
 
       <Tabs defaultValue="visao-geral">
         <TabsList>

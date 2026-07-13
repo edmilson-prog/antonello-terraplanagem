@@ -11,7 +11,11 @@ import {
 } from "@/components/ui/select";
 import { DataList, type Column } from "@/shared/components/data-list";
 import { useMockResource } from "@/shared/hooks/use-mock-resource";
-import { StatusFaturamentoBadge, STATUS_FATURAMENTO, STATUS_FATURAMENTO_LABEL } from "@/features/faturamento/labels";
+import {
+  StatusFaturamentoBadge,
+  STATUS_FATURAMENTO,
+  STATUS_FATURAMENTO_LABEL,
+} from "@/features/faturamento/labels";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { formatBRL } from "@/features/retaguarda/format";
@@ -53,12 +57,18 @@ export function FaturasList({ faturamentos }: { faturamentos: Faturamento[] }) {
     {
       header: "Cliente",
       cell: (f) => (
-        <div className="min-w-0 max-w-[18rem] truncate">{clientesStore.getById(f.cliente_id)?.nome ?? "—"}</div>
+        <div className="min-w-0 max-w-[18rem] truncate">
+          {clientesStore.getById(f.cliente_id)?.nome ?? "—"}
+        </div>
       ),
     },
     {
       header: "OS",
-      cell: (f) => <span className="font-mono text-muted-foreground">{ordensStore.obter(f.os_id)?.numero ?? "—"}</span>,
+      cell: (f) => (
+        <span className="font-mono text-muted-foreground">
+          {ordensStore.obter(f.os_id)?.numero ?? "—"}
+        </span>
+      ),
     },
     {
       header: "Valor",
@@ -116,8 +126,12 @@ export function FaturasList({ faturamentos }: { faturamentos: Faturamento[] }) {
       <div className="mt-2 font-display font-bold text-card-foreground">
         {clientesStore.getById(f.cliente_id)?.nome ?? "—"}
       </div>
-      <div className="text-xs text-muted-foreground">{ordensStore.obter(f.os_id)?.numero ?? "—"}</div>
-      <div className="mt-2 font-mono text-sm font-semibold text-foreground">{formatBRL(f.valor_total)}</div>
+      <div className="text-xs text-muted-foreground">
+        {ordensStore.obter(f.os_id)?.numero ?? "—"}
+      </div>
+      <div className="mt-2 font-mono text-sm font-semibold text-foreground">
+        {formatBRL(f.valor_total)}
+      </div>
     </div>
   );
 

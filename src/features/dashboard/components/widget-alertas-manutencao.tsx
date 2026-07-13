@@ -13,7 +13,8 @@ export function WidgetAlertasManutencao() {
   const { isLoading, error, retry } = useMockResource(equipamentos);
 
   if (isLoading) return <KpiCard rotulo="Alertas de manutenção" valor="" isLoading />;
-  if (error) return <KpiCard rotulo="Alertas de manutenção" valor="" error={error} onRetry={retry} />;
+  if (error)
+    return <KpiCard rotulo="Alertas de manutenção" valor="" error={error} onRetry={retry} />;
 
   const total = contagemAlertasManutencao(equipamentos, planos, registros);
 

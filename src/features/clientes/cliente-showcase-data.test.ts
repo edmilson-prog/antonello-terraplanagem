@@ -19,6 +19,8 @@ describe("showcaseDoCliente", () => {
     expect(s.kpis.saldoReceber.alerta).toBe(true);
     expect(s.kpis.saldoReceber.spark).not.toBeNull();
     expect(typeof s.cadastrais.email).toBe("string");
+    expect(typeof s.cadastrais.cidade).toBe("string");
+    expect(s.cadastrais.cidade.length).toBeGreaterThan(0);
     expect(typeof s.origemMigracao).toBe("string");
   });
 });

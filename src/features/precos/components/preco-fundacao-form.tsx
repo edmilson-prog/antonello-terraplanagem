@@ -7,10 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { CurrencyInput } from "@/features/precos/components/currency-input";
 import { precoFundacaoStore } from "@/features/precos/precos-fundacao-store";
-import {
-  precoFundacaoSchema,
-  type PrecoFundacaoFormValues,
-} from "@/features/precos/precos-schema";
+import { precoFundacaoSchema, type PrecoFundacaoFormValues } from "@/features/precos/precos-schema";
 import type { PrecoFundacao } from "@/shared/types";
 
 interface Props {

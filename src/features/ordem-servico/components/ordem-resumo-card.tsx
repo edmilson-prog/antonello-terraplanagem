@@ -1,5 +1,9 @@
 import { StatusOSBadge, MODELO_LABEL } from "@/features/ordem-servico/labels";
-import { statusEfetivoOS, totalHorasOS, totalMetragemOS } from "@/features/ordem-servico/derivacoes";
+import {
+  statusEfetivoOS,
+  totalHorasOS,
+  totalMetragemOS,
+} from "@/features/ordem-servico/derivacoes";
 import { SyncBadge } from "@/shared/components/sync-badge";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { formatHorimetro } from "@/shared/lib/format";

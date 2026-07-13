@@ -9,7 +9,9 @@ export const Route = createFileRoute("/admin/comprovantes/$comprovanteId")({
   },
   head: ({ params }) => ({
     meta: [
-      { title: `${comprovantesStore.obter(params.comprovanteId)?.numero ?? "Comprovante"} · Antonello` },
+      {
+        title: `${comprovantesStore.obter(params.comprovanteId)?.numero ?? "Comprovante"} · Antonello`,
+      },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),

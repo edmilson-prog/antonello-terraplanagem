@@ -17,9 +17,7 @@ describe("mock de apontamentos", () => {
   it("horas_trabalhadas dos finalizados batem com calcularHoras", () => {
     for (const a of apontamentos) {
       if (a.status === "finalizado" && a.horimetro_final != null) {
-        expect(a.horas_trabalhadas).toBe(
-          calcularHoras(a.horimetro_inicial, a.horimetro_final),
-        );
+        expect(a.horas_trabalhadas).toBe(calcularHoras(a.horimetro_inicial, a.horimetro_final));
       }
     }
   });

@@ -12,7 +12,9 @@ describe("contaVencida", () => {
   });
 
   it("liquidada com vencimento passado → não vencida (já recebida)", () => {
-    expect(contaVencida({ status: "liquidada", vencimento: "2026-06-01" }, "2026-06-30")).toBe(false);
+    expect(contaVencida({ status: "liquidada", vencimento: "2026-06-01" }, "2026-06-30")).toBe(
+      false,
+    );
   });
 
   it("vencimento exatamente hoje → não vencida (estritamente <)", () => {

@@ -106,14 +106,31 @@ export function GraficoEvolucaoFaturamento({ meses }: Props) {
               formatter={(v: number) => brl.format(v)}
             />
             <Legend wrapperStyle={{ fontSize: 11, color: "var(--color-muted-foreground)" }} />
-            <Bar dataKey="faturado" name="Faturado" fill="var(--color-primary)" radius={[4, 4, 0, 0]} />
+            <Bar
+              dataKey="faturado"
+              name="Faturado"
+              fill="var(--color-primary)"
+              radius={[4, 4, 0, 0]}
+            />
             <ReferenceLine
               y={meta}
               stroke="var(--color-destructive)"
               strokeDasharray="6 4"
-              label={{ value: "Meta", position: "insideTopRight", fill: "var(--color-destructive)", fontSize: 11 }}
+              label={{
+                value: "Meta",
+                position: "insideTopRight",
+                fill: "var(--color-destructive)",
+                fontSize: 11,
+              }}
             />
-            <Line type="monotone" dataKey="faturado" name="Tendência" stroke="var(--color-primary)" strokeWidth={2} dot={false} />
+            <Line
+              type="monotone"
+              dataKey="faturado"
+              name="Tendência"
+              stroke="var(--color-primary)"
+              strokeWidth={2}
+              dot={false}
+            />
           </ComposedChart>
         </ResponsiveContainer>
       )}

@@ -23,10 +23,24 @@ function eq(id: string) {
 }
 
 const ARGS_EQUIPAMENTO = () =>
-  [componentesCusto, abastecimentos, registrosManutencao, apontamentos, precosHoraMaquina, faturamentos] as const;
+  [
+    componentesCusto,
+    abastecimentos,
+    registrosManutencao,
+    apontamentos,
+    precosHoraMaquina,
+    faturamentos,
+  ] as const;
 
 const ARGS_OBRA = () =>
-  [equipamentos, componentesCusto, abastecimentos, registrosManutencao, apontamentos, precosHoraMaquina] as const;
+  [
+    equipamentos,
+    componentesCusto,
+    abastecimentos,
+    registrosManutencao,
+    apontamentos,
+    precosHoraMaquina,
+  ] as const;
 
 describe("features/rentabilidade/derivacoes", () => {
   describe("rentabilidadePorEquipamento", () => {
@@ -101,7 +115,11 @@ describe("features/rentabilidade/derivacoes", () => {
 
   describe("rentabilidadePorTodosEquipamentos", () => {
     it("retorna um resultado por equipamento ativo, excluindo inativos (eq-008)", () => {
-      const resultados = rentabilidadePorTodosEquipamentos(equipamentos, PERIODO, ...ARGS_EQUIPAMENTO());
+      const resultados = rentabilidadePorTodosEquipamentos(
+        equipamentos,
+        PERIODO,
+        ...ARGS_EQUIPAMENTO(),
+      );
       expect(resultados).toHaveLength(7);
       expect(resultados.some((r) => r.equipamento_id === "eq-008")).toBe(false);
     });
@@ -118,7 +136,12 @@ describe("features/rentabilidade/derivacoes", () => {
     }
 
     it("os-003: um equipamento, faturado, margem positiva", () => {
-      const r = rentabilidadePorObra(osById("os-003"), faturamentosDaOSNoPeriodo("os-003"), PERIODO, ...ARGS_OBRA());
+      const r = rentabilidadePorObra(
+        osById("os-003"),
+        faturamentosDaOSNoPeriodo("os-003"),
+        PERIODO,
+        ...ARGS_OBRA(),
+      );
       expect(r.receita).toBe(5220);
       expect(r.custo).toBe(1529.28);
       expect(r.margem).toBe(3690.72);
@@ -128,7 +151,12 @@ describe("features/rentabilidade/derivacoes", () => {
     });
 
     it("os-007: multi-equipamento (rascunho), margem positiva porém estreita", () => {
-      const r = rentabilidadePorObra(osById("os-007"), faturamentosDaOSNoPeriodo("os-007"), PERIODO, ...ARGS_OBRA());
+      const r = rentabilidadePorObra(
+        osById("os-007"),
+        faturamentosDaOSNoPeriodo("os-007"),
+        PERIODO,
+        ...ARGS_OBRA(),
+      );
       expect(r.receita).toBe(8070);
       expect(r.custo).toBe(7051.2);
       expect(r.margem).toBe(1018.8);
@@ -137,7 +165,12 @@ describe("features/rentabilidade/derivacoes", () => {
     });
 
     it("os-008: sem_preco no item — receita zero, prejuízo (obra com prejuízo, edge case exigido)", () => {
-      const r = rentabilidadePorObra(osById("os-008"), faturamentosDaOSNoPeriodo("os-008"), PERIODO, ...ARGS_OBRA());
+      const r = rentabilidadePorObra(
+        osById("os-008"),
+        faturamentosDaOSNoPeriodo("os-008"),
+        PERIODO,
+        ...ARGS_OBRA(),
+      );
       expect(r.receita).toBe(0);
       expect(r.custo).toBe(3976);
       expect(r.margem).toBe(-3976);
@@ -146,7 +179,12 @@ describe("features/rentabilidade/derivacoes", () => {
     });
 
     it("os-009: por_metro, usa eq-007 (custo incompleto) — margem positiva mas sinalizada", () => {
-      const r = rentabilidadePorObra(osById("os-009"), faturamentosDaOSNoPeriodo("os-009"), PERIODO, ...ARGS_OBRA());
+      const r = rentabilidadePorObra(
+        osById("os-009"),
+        faturamentosDaOSNoPeriodo("os-009"),
+        PERIODO,
+        ...ARGS_OBRA(),
+      );
       expect(r.receita).toBe(2700);
       expect(r.custo).toBe(218.75);
       expect(r.margem).toBe(2481.25);
@@ -154,7 +192,12 @@ describe("features/rentabilidade/derivacoes", () => {
     });
 
     it("os-011: nova OS (eq-007), margem positiva mas sinalizada", () => {
-      const r = rentabilidadePorObra(osById("os-011"), faturamentosDaOSNoPeriodo("os-011"), PERIODO, ...ARGS_OBRA());
+      const r = rentabilidadePorObra(
+        osById("os-011"),
+        faturamentosDaOSNoPeriodo("os-011"),
+        PERIODO,
+        ...ARGS_OBRA(),
+      );
       expect(r.receita).toBe(1560);
       expect(r.custo).toBe(262.5);
       expect(r.margem).toBe(1297.5);

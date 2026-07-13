@@ -9,7 +9,9 @@ export const Route = createFileRoute("/admin/faturamento/$faturamentoId")({
   },
   head: ({ params }) => ({
     meta: [
-      { title: `${faturamentosStore.obter(params.faturamentoId)?.numero ?? "Faturamento"} · Antonello` },
+      {
+        title: `${faturamentosStore.obter(params.faturamentoId)?.numero ?? "Faturamento"} · Antonello`,
+      },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),

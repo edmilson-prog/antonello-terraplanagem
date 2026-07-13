@@ -1,4 +1,8 @@
-import { apontamentosDaOS, totalHorasOS, totalMetragemOS } from "@/features/ordem-servico/derivacoes";
+import {
+  apontamentosDaOS,
+  totalHorasOS,
+  totalMetragemOS,
+} from "@/features/ordem-servico/derivacoes";
 import type { Apontamento, Equipamento, OrdemServico } from "@/shared/types";
 
 function formatDataCurta(iso: string): string {

@@ -40,7 +40,16 @@ export function PipelineConsolidadoCard({ periodo }: Props) {
         precosFundacao,
         periodo,
       ),
-    [ordens, apontamentos, faturamentos, contasReceber, equipamentos, precosHoraMaquina, precosFundacao, periodo],
+    [
+      ordens,
+      apontamentos,
+      faturamentos,
+      contasReceber,
+      equipamentos,
+      precosHoraMaquina,
+      precosFundacao,
+      periodo,
+    ],
   );
   const { isLoading, error, retry } = useMockResource(pipeline);
 
@@ -70,24 +79,36 @@ export function PipelineConsolidadoCard({ periodo }: Props) {
             onClick={() => navigate({ to: "/admin/ordens" })}
             className="rounded-lg border bg-surface/50 p-4 text-left transition-colors hover:bg-surface"
           >
-            <div className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">Executado</div>
-            <div className="mt-1 font-mono text-xl font-bold text-card-foreground">{brl.format(pipeline.executado)}</div>
+            <div className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
+              Executado
+            </div>
+            <div className="mt-1 font-mono text-xl font-bold text-card-foreground">
+              {brl.format(pipeline.executado)}
+            </div>
           </button>
           <button
             type="button"
             onClick={() => navigate({ to: "/admin/faturamento" })}
             className="rounded-lg border bg-surface/50 p-4 text-left transition-colors hover:bg-surface"
           >
-            <div className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">Faturado</div>
-            <div className="mt-1 font-mono text-xl font-bold text-card-foreground">{brl.format(pipeline.faturado)}</div>
+            <div className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
+              Faturado
+            </div>
+            <div className="mt-1 font-mono text-xl font-bold text-card-foreground">
+              {brl.format(pipeline.faturado)}
+            </div>
           </button>
           <button
             type="button"
             onClick={() => navigate({ to: "/admin/financeiro" })}
             className="rounded-lg border bg-surface/50 p-4 text-left transition-colors hover:bg-surface"
           >
-            <div className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">Recebido</div>
-            <div className="mt-1 font-mono text-xl font-bold text-card-foreground">{brl.format(pipeline.recebido)}</div>
+            <div className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
+              Recebido
+            </div>
+            <div className="mt-1 font-mono text-xl font-bold text-card-foreground">
+              {brl.format(pipeline.recebido)}
+            </div>
           </button>
         </div>
       )}

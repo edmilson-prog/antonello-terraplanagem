@@ -56,9 +56,7 @@ export function OperadorShell() {
 
       <main className="flex-1 pb-24">
         <div className="mx-auto w-full max-w-md px-4 py-5">
-          <h1 className="sr-only">
-            Antonello Terraplanagem · Painel do Operador — {titulo}
-          </h1>
+          <h1 className="sr-only">Antonello Terraplanagem · Painel do Operador — {titulo}</h1>
           <Outlet />
         </div>
       </main>
@@ -69,8 +67,7 @@ export function OperadorShell() {
       >
         <ul className="mx-auto grid w-full max-w-md grid-cols-4">
           {itens.map((item) => {
-            const ativo =
-              item.to === "/app" ? pathname === "/app" : pathname.startsWith(item.to);
+            const ativo = item.to === "/app" ? pathname === "/app" : pathname.startsWith(item.to);
             const Icone = item.icone;
             return (
               <li key={item.to}>
@@ -78,9 +75,7 @@ export function OperadorShell() {
                   to={item.to}
                   className={cn(
                     "flex min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2 text-[11px] font-medium transition-colors",
-                    ativo
-                      ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground",
+                    ativo ? "text-primary" : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   <Icone className="h-6 w-6" strokeWidth={ativo ? 2.5 : 2} />

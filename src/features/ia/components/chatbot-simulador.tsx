@@ -2,7 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { responderChatbotCliente } from "@/features/ia/mock/atendimento";
 import { cn } from "@/lib/utils";
@@ -66,7 +72,9 @@ export function ChatbotSimulador() {
               key={i}
               className={cn(
                 "max-w-[80%] rounded-lg px-3 py-2 text-sm",
-                m.autor === "cliente" ? "ml-auto bg-primary text-primary-foreground" : "bg-surface text-foreground",
+                m.autor === "cliente"
+                  ? "ml-auto bg-primary text-primary-foreground"
+                  : "bg-surface text-foreground",
               )}
             >
               {m.texto}

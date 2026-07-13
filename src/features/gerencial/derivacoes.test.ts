@@ -33,10 +33,7 @@ describe("variacaoPercentual", () => {
 
 describe("serieMensalFaturamento", () => {
   it("soma valor_total das faturas com status faturado no mês, por mês", () => {
-    const serie = serieMensalFaturamento(
-      ["2026-01", "2026-02", "2026-06"],
-      faturamentos,
-    );
+    const serie = serieMensalFaturamento(["2026-01", "2026-02", "2026-06"], faturamentos);
     expect(serie).toHaveLength(3);
     expect(serie[0]).toEqual({ mes: "2026-01", rotulo: "Janeiro 2026", faturado: 5920 }); // 3600 + 2320
     expect(serie[1].faturado).toBe(8520); // 5040 + 3480

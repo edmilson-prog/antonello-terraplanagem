@@ -38,7 +38,8 @@ export function ConsumoAnomaloTab({ alertas, equipamentos }: ConsumoAnomaloTabPr
                 </span>
               </div>
               <p className="mt-0.5 text-sm text-muted-foreground">
-                Consumo anômalo — possível problema mecânico (distinto do alerta preventivo por horas).
+                Consumo anômalo — possível problema mecânico (distinto do alerta preventivo por
+                horas).
               </p>
             </div>
             <div className="shrink-0 text-right font-mono text-xs text-foreground">

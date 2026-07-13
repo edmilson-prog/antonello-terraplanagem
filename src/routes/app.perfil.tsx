@@ -48,12 +48,7 @@ function AppPerfil() {
         </div>
       </div>
 
-      <Button
-        variant="outline"
-        size="lg"
-        onClick={sair}
-        className="w-full justify-center gap-2"
-      >
+      <Button variant="outline" size="lg" onClick={sair} className="w-full justify-center gap-2">
         <LogOut className="h-4 w-4" />
         Sair
       </Button>

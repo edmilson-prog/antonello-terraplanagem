@@ -34,7 +34,11 @@ export function MapaCanteiro() {
         className="flex h-[360px] flex-col items-center justify-center gap-3 rounded-xl border bg-card text-center"
       >
         <p className="text-sm text-muted-foreground">{error.message}</p>
-        <button type="button" onClick={retry} className="text-sm font-semibold text-primary hover:underline">
+        <button
+          type="button"
+          onClick={retry}
+          className="text-sm font-semibold text-primary hover:underline"
+        >
           Tentar novamente
         </button>
       </div>

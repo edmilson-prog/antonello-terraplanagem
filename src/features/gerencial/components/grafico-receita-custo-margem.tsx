@@ -48,7 +48,16 @@ export function GraficoReceitaCustoMargem({ meses }: Props) {
         precosHoraMaquina,
         faturamentos,
       ),
-    [meses, equipamentos, componentesCusto, abastecimentos, registrosManutencao, apontamentos, precosHoraMaquina, faturamentos],
+    [
+      meses,
+      equipamentos,
+      componentesCusto,
+      abastecimentos,
+      registrosManutencao,
+      apontamentos,
+      precosHoraMaquina,
+      faturamentos,
+    ],
   );
   const { isLoading, error, retry } = useMockResource(serie);
 
@@ -59,8 +68,8 @@ export function GraficoReceitaCustoMargem({ meses }: Props) {
           Receita × Custo × Margem
         </h2>
         <p className="text-xs text-muted-foreground">
-          Só cobre modelo hora-máquina (único com custo modelado); pode ser menor que o
-          faturamento total do período.
+          Só cobre modelo hora-máquina (único com custo modelado); pode ser menor que o faturamento
+          total do período.
         </p>
       </div>
 
@@ -93,9 +102,26 @@ export function GraficoReceitaCustoMargem({ meses }: Props) {
               formatter={(v: number) => brl.format(v)}
             />
             <Legend wrapperStyle={{ fontSize: 11, color: "var(--color-muted-foreground)" }} />
-            <Bar dataKey="receita" name="Receita" fill="var(--color-primary)" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="custo" name="Custo" fill="var(--color-destructive)" radius={[4, 4, 0, 0]} />
-            <Line type="monotone" dataKey="margem" name="Margem" stroke="var(--color-foreground)" strokeWidth={2} dot={{ r: 3 }} />
+            <Bar
+              dataKey="receita"
+              name="Receita"
+              fill="var(--color-primary)"
+              radius={[4, 4, 0, 0]}
+            />
+            <Bar
+              dataKey="custo"
+              name="Custo"
+              fill="var(--color-destructive)"
+              radius={[4, 4, 0, 0]}
+            />
+            <Line
+              type="monotone"
+              dataKey="margem"
+              name="Margem"
+              stroke="var(--color-foreground)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
           </ComposedChart>
         </ResponsiveContainer>
       )}

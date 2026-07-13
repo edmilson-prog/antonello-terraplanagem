@@ -14,9 +14,7 @@ export function ApontamentoCard({ apontamento }: { apontamento: Apontamento }) {
   const equipamento = equipamentosStore.getById(apontamento.equipamento_id);
   const planos = planosManutencaoStore.useAll();
   const registros = registrosManutencaoStore.useTodos();
-  const statusManutencao = equipamento
-    ? statusEquipamento(equipamento, planos, registros)
-    : null;
+  const statusManutencao = equipamento ? statusEquipamento(equipamento, planos, registros) : null;
   const emAndamento = apontamento.status === "em_andamento";
 
   return (

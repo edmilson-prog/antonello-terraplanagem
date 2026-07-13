@@ -111,7 +111,10 @@ export function OrdensOperadorPage() {
                     <div className="truncate text-xs text-muted-foreground">{o.obra_nome}</div>
                     {o.pendente_sync ? <SyncBadge /> : null}
                   </div>
-                  <Icon icon="lucide:chevron-right" className="h-5 w-5 shrink-0 text-foreground-faint" />
+                  <Icon
+                    icon="lucide:chevron-right"
+                    className="h-5 w-5 shrink-0 text-foreground-faint"
+                  />
                 </Link>
               </li>
             );

@@ -91,7 +91,9 @@ export function PlanosTab({ planos, equipamentos }: PlanosTabProps) {
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="font-display font-bold text-card-foreground">{p.descricao}</div>
-          <div className="text-xs text-foreground-faint">{descreverVinculoPlano(p, equipamentos)}</div>
+          <div className="text-xs text-foreground-faint">
+            {descreverVinculoPlano(p, equipamentos)}
+          </div>
         </div>
         <StatusAtivo ativo={p.ativo} />
       </div>

@@ -18,7 +18,12 @@ export function criarAnomaliaRevisoesStore() {
     confirmadas = new Set(confirmadas).add(apontamentoId);
     notificar();
   };
-  const useConfirmadas = () => useSyncExternalStore(inscrever, () => confirmadas, () => confirmadas);
+  const useConfirmadas = () =>
+    useSyncExternalStore(
+      inscrever,
+      () => confirmadas,
+      () => confirmadas,
+    );
 
   return { estaConfirmada, confirmarOk, useConfirmadas };
 }

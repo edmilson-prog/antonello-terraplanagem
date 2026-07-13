@@ -9,7 +9,12 @@ interface GerarTextoBotaoProps {
   onGerado: (texto: string) => void;
 }
 
-export function GerarTextoBotao({ os, apontamentos, equipamentos, onGerado }: GerarTextoBotaoProps) {
+export function GerarTextoBotao({
+  os,
+  apontamentos,
+  equipamentos,
+  onGerado,
+}: GerarTextoBotaoProps) {
   return (
     <BotaoIA
       label="Gerar texto com IA"

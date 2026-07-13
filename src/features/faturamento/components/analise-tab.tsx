@@ -165,7 +165,11 @@ export function AnaliseTab() {
 
       <div className="grid gap-4 md:grid-cols-3">
         <Kpi rotulo="Faturamento total" valor={brl.format(totalValorPeriodo)} icone={Receipt} />
-        <Kpi rotulo="Horas faturadas" valor={`${numero.format(totalHorasPeriodo)} h`} icone={Clock} />
+        <Kpi
+          rotulo="Horas faturadas"
+          valor={`${numero.format(totalHorasPeriodo)} h`}
+          icone={Clock}
+        />
         <Kpi rotulo="Ticket médio / hora" valor={brl.format(ticketMedio)} icone={TrendingUp} />
       </div>
 
@@ -214,7 +218,11 @@ export function AnaliseTab() {
                   layout="vertical"
                   margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
                 >
-                  <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" horizontal={false} />
+                  <CartesianGrid
+                    stroke="var(--color-border)"
+                    strokeDasharray="3 3"
+                    horizontal={false}
+                  />
                   <XAxis type="number" stroke="var(--color-muted-foreground)" fontSize={12} />
                   <YAxis
                     type="category"
@@ -237,7 +245,10 @@ export function AnaliseTab() {
               </ResponsiveContainer>
             </Card>
 
-            <Card titulo="Faturamento por cliente" descricao="Participação no faturamento do período">
+            <Card
+              titulo="Faturamento por cliente"
+              descricao="Participação no faturamento do período"
+            >
               <ResponsiveContainer width="100%" height={280}>
                 <PieChart>
                   <Pie
@@ -298,7 +309,9 @@ export function AnaliseTab() {
                   <tr className="font-semibold">
                     <td className="py-2 pr-4">Total</td>
                     <td className="py-2 pr-4 font-mono">{numero.format(totalHorasPeriodo)} h</td>
-                    <td className="py-2 pr-4 text-right font-mono">{brl.format(totalValorPeriodo)}</td>
+                    <td className="py-2 pr-4 text-right font-mono">
+                      {brl.format(totalValorPeriodo)}
+                    </td>
                   </tr>
                 </tfoot>
               </table>
@@ -327,7 +340,15 @@ function SeletorMes({ valor, aoMudar }: { valor: string; aoMudar: (v: string) =>
   );
 }
 
-function Kpi({ rotulo, valor, icone: Icone }: { rotulo: string; valor: string; icone: LucideIcon }) {
+function Kpi({
+  rotulo,
+  valor,
+  icone: Icone,
+}: {
+  rotulo: string;
+  valor: string;
+  icone: LucideIcon;
+}) {
   return (
     <div className="rounded-xl border bg-card p-5 shadow-sm">
       <div className="flex items-center justify-between">
@@ -343,7 +364,15 @@ function Kpi({ rotulo, valor, icone: Icone }: { rotulo: string; valor: string; i
   );
 }
 
-function Card({ titulo, descricao, children }: { titulo: string; descricao?: string; children: React.ReactNode }) {
+function Card({
+  titulo,
+  descricao,
+  children,
+}: {
+  titulo: string;
+  descricao?: string;
+  children: React.ReactNode;
+}) {
   return (
     <section className="rounded-xl border bg-card p-5 shadow-sm">
       <div className="mb-4">

@@ -22,7 +22,15 @@ export function WidgetOsPorStatus({ intervalo }: { intervalo: IntervaloPeriodo }
   }
 
   if (error) {
-    return <KpiCard rotulo="OS por status" valor="" error={error} onRetry={retry} className="sm:col-span-3" />;
+    return (
+      <KpiCard
+        rotulo="OS por status"
+        valor=""
+        error={error}
+        onRetry={retry}
+        className="sm:col-span-3"
+      />
+    );
   }
 
   const contagem = contagemOSPorStatus(todas, apontamentos, intervalo);

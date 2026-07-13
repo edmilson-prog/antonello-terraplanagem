@@ -5,6 +5,7 @@ import {
   statusPlano,
   statusEquipamento,
   alertasManutencao,
+  resumoProximaManutencao,
 } from "./derivacoes";
 import type { Equipamento, PlanoManutencao, RegistroManutencao } from "@/shared/types";
 
@@ -141,8 +142,18 @@ describe("statusEquipamento", () => {
     const e = equipamento({ id: "eq-1", horimetro_atual: 1000 });
     const p1 = plano({ id: "pm-1", equipamento_id: "eq-1" });
     const p2 = plano({ id: "pm-2", equipamento_id: "eq-1" });
-    const r1 = registro({ id: "rm-1", plano_id: "pm-1", equipamento_id: "eq-1", horimetro_previsto: 2000 }); // em_dia
-    const r2 = registro({ id: "rm-2", plano_id: "pm-2", equipamento_id: "eq-1", horimetro_previsto: 990 }); // vencida
+    const r1 = registro({
+      id: "rm-1",
+      plano_id: "pm-1",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 2000,
+    }); // em_dia
+    const r2 = registro({
+      id: "rm-2",
+      plano_id: "pm-2",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 990,
+    }); // vencida
     expect(statusEquipamento(e, [p1, p2], [r1, r2])).toBe("vencida");
   });
 });
@@ -153,8 +164,18 @@ describe("alertasManutencao", () => {
     const e2 = equipamento({ id: "eq-2", horimetro_atual: 100 }); // em dia
     const p1 = plano({ id: "pm-1", equipamento_id: "eq-1" });
     const p2 = plano({ id: "pm-2", equipamento_id: "eq-2" });
-    const r1 = registro({ id: "rm-1", plano_id: "pm-1", equipamento_id: "eq-1", horimetro_previsto: 1250 });
-    const r2 = registro({ id: "rm-2", plano_id: "pm-2", equipamento_id: "eq-2", horimetro_previsto: 2000 });
+    const r1 = registro({
+      id: "rm-1",
+      plano_id: "pm-1",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 1250,
+    });
+    const r2 = registro({
+      id: "rm-2",
+      plano_id: "pm-2",
+      equipamento_id: "eq-2",
+      horimetro_previsto: 2000,
+    });
     const alertas = alertasManutencao([e1, e2], [p1, p2], [r1, r2]);
     expect(alertas).toHaveLength(1);
     expect(alertas[0].equipamento.id).toBe("eq-1");
@@ -164,7 +185,12 @@ describe("alertasManutencao", () => {
   it("ignora equipamento inativo", () => {
     const e = equipamento({ id: "eq-1", ativo: false, horimetro_atual: 9999 });
     const p = plano({ id: "pm-1", equipamento_id: "eq-1" });
-    const r = registro({ id: "rm-1", plano_id: "pm-1", equipamento_id: "eq-1", horimetro_previsto: 100 });
+    const r = registro({
+      id: "rm-1",
+      plano_id: "pm-1",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 100,
+    });
     expect(alertasManutencao([e], [p], [r])).toEqual([]);
   });
 
@@ -173,9 +199,81 @@ describe("alertasManutencao", () => {
     const e2 = equipamento({ id: "eq-2", horimetro_atual: 1300 }); // vencida
     const p1 = plano({ id: "pm-1", equipamento_id: "eq-1" });
     const p2 = plano({ id: "pm-2", equipamento_id: "eq-2" });
-    const r1 = registro({ id: "rm-1", plano_id: "pm-1", equipamento_id: "eq-1", horimetro_previsto: 1250 });
-    const r2 = registro({ id: "rm-2", plano_id: "pm-2", equipamento_id: "eq-2", horimetro_previsto: 1250 });
+    const r1 = registro({
+      id: "rm-1",
+      plano_id: "pm-1",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 1250,
+    });
+    const r2 = registro({
+      id: "rm-2",
+      plano_id: "pm-2",
+      equipamento_id: "eq-2",
+      horimetro_previsto: 1250,
+    });
     const alertas = alertasManutencao([e1, e2], [p1, p2], [r1, r2]);
     expect(alertas.map((a) => a.status)).toEqual(["vencida", "proxima"]);
+  });
+});
+
+describe("resumoProximaManutencao", () => {
+  it("retorna null quando não há plano aplicável", () => {
+    const e = equipamento({ id: "eq-1" });
+    expect(resumoProximaManutencao(e, [], [])).toBeNull();
+  });
+
+  it("retorna null quando há plano mas sem registro 'prevista'", () => {
+    const e = equipamento({ id: "eq-1" });
+    const p = plano({ id: "pm-1", equipamento_id: "eq-1" });
+    expect(resumoProximaManutencao(e, [p], [])).toBeNull();
+  });
+
+  it("retorna o plano mais urgente (menor horas restantes) entre vários aplicáveis", () => {
+    const e = equipamento({ id: "eq-1", horimetro_atual: 1000 });
+    const p1 = plano({
+      id: "pm-1",
+      equipamento_id: "eq-1",
+      intervalo_horas: 250,
+      descricao: "Troca de óleo",
+    });
+    const p2 = plano({
+      id: "pm-2",
+      equipamento_id: "eq-1",
+      intervalo_horas: 500,
+      descricao: "Revisão geral",
+    });
+    const r1 = registro({
+      id: "rm-1",
+      plano_id: "pm-1",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 1100,
+    }); // faltam 100
+    const r2 = registro({
+      id: "rm-2",
+      plano_id: "pm-2",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 1050,
+    }); // faltam 50 — mais urgente
+    const resumo = resumoProximaManutencao(e, [p1, p2], [r1, r2]);
+    expect(resumo?.descricao).toBe("Revisão geral");
+    expect(resumo?.intervalo).toBe(500);
+    expect(resumo?.previsto).toBe(1050);
+    expect(resumo?.restantes).toBe(50);
+    // 50h restantes > ANTECEDENCIA_HORAS_PADRAO (20h) → em_dia, não "proxima".
+    expect(resumo?.status).toBe("em_dia");
+  });
+
+  it("status 'vencida' quando as horas restantes são <= 0", () => {
+    const e = equipamento({ id: "eq-1", horimetro_atual: 1300 });
+    const p = plano({ id: "pm-1", equipamento_id: "eq-1" });
+    const r = registro({
+      id: "rm-1",
+      plano_id: "pm-1",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 1250,
+    });
+    const resumo = resumoProximaManutencao(e, [p], [r]);
+    expect(resumo?.status).toBe("vencida");
+    expect(resumo?.restantes).toBe(-50);
   });
 });
