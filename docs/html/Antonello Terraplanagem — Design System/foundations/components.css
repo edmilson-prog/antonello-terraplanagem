@@ -1,0 +1,141 @@
+/* ============================================================
+   COMPONENTS — Antonello Terraplanagem
+   Class styles + interaction states for the bundled React components
+   (namespaced `atp-`). Consumers get these free by linking styles.css.
+   Values copied verbatim from the source app.
+   ============================================================ */
+
+/* ---------------- Button ---------------- */
+.atp-btn{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:8px 13px; border-radius:var(--r-sm);
+  font:var(--fw-semibold) 13px/1 var(--font-sans);
+  cursor:pointer; border:1px solid transparent; background:transparent;
+  color:var(--fg); transition:var(--ease); white-space:nowrap;
+}
+.atp-btn:disabled{opacity:.5; cursor:not-allowed}
+.atp-btn--sm{padding:6px 10px; font-size:12px; gap:6px}
+.atp-btn--primary{background:var(--amarelo); color:#16140f; font-weight:var(--fw-bold); border-color:var(--amarelo)}
+.atp-btn--primary:hover:not(:disabled){background:var(--amarelo-bright)}
+.atp-btn--ghost{border-color:var(--border); color:var(--muted)}
+.atp-btn--ghost:hover:not(:disabled){border-color:var(--border-strong); color:var(--fg); background:#1e1a12}
+.atp-btn--ai{border-color:rgba(255,179,0,.38); color:var(--amarelo); background:var(--amarelo-soft)}
+.atp-btn--ai:hover:not(:disabled){background:rgba(255,179,0,.18)}
+.atp-btn--wa{border-color:rgba(76,122,63,.4); color:var(--success-fg)}
+.atp-btn--wa:hover:not(:disabled){background:var(--success-soft)}
+.atp-btn--danger{border-color:rgba(176,0,32,.4); color:var(--danger-fg)}
+.atp-btn--danger:hover:not(:disabled){background:var(--danger-soft)}
+
+/* ---------------- IconButton ---------------- */
+.atp-icon-btn{
+  width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center;
+  border:1px solid var(--border); color:var(--muted); border-radius:var(--r-sm);
+  background:transparent; cursor:pointer; transition:var(--ease);
+}
+.atp-icon-btn:hover{color:var(--amarelo); border-color:var(--border-strong)}
+.atp-icon-btn--sm{width:30px; height:30px}
+
+/* ---------------- Badge ---------------- */
+.atp-badge{
+  display:inline-flex; align-items:center; gap:6px; padding:4px 10px;
+  border-radius:var(--r-pill); font:var(--fw-semibold) 11.5px/1 var(--font-sans); white-space:nowrap;
+}
+.atp-badge__led{width:7px; height:7px; border-radius:50%; background:currentColor}
+.atp-badge--active{background:var(--success-soft); color:var(--success-fg); border:1px solid rgba(76,122,63,.35)}
+.atp-badge--neutral{background:#221e16; color:var(--muted); border:1px solid var(--border)}
+.atp-badge--info{background:var(--info-soft); color:var(--info-fg); border:1px solid rgba(90,127,166,.3)}
+.atp-badge--gold{background:var(--amarelo-soft); color:var(--amarelo); border:1px solid rgba(255,179,0,.28)}
+
+/* ---------------- StatusChip ---------------- */
+.atp-status{
+  display:inline-flex; align-items:center; gap:6px; padding:4px 9px;
+  border-radius:var(--r-pill); font:var(--fw-semibold) 11px/1 var(--font-sans); white-space:nowrap;
+}
+.atp-status__led{width:6px; height:6px; border-radius:50%; background:currentColor}
+.atp-status--amber{background:var(--amarelo-soft); color:var(--amarelo); border:1px solid rgba(255,179,0,.28)}
+.atp-status--info{background:var(--info-soft); color:var(--info-fg); border:1px solid rgba(90,127,166,.28)}
+.atp-status--success{background:var(--success-soft); color:var(--success-fg); border:1px solid rgba(76,122,63,.3)}
+.atp-status--danger{background:var(--danger-soft); color:var(--danger-fg); border:1px solid rgba(176,0,32,.32)}
+.atp-status--neutral{background:#221e16; color:var(--muted-2); border:1px solid var(--border)}
+
+/* ---------------- Chip ---------------- */
+.atp-chip{
+  display:inline-flex; align-items:center; gap:8px; padding:8px 12px;
+  background:var(--surface-2); border:1px solid var(--border); border-radius:22px;
+  font-size:13px; font-weight:var(--fw-medium); color:var(--fg);
+}
+.atp-chip svg{color:var(--amarelo)}
+
+/* ---------------- Pill ---------------- */
+.atp-pill{
+  font:var(--fw-semibold) 11px/1 var(--font-mono); color:var(--muted);
+  background:#221e15; border:1px solid var(--border); border-radius:var(--r-pill); padding:4px 10px;
+  white-space:nowrap;
+}
+
+/* ---------------- IconTile ---------------- */
+.atp-tile{display:grid; place-items:center; border-radius:var(--r-tile); flex-shrink:0}
+.atp-tile--amber{background:var(--surface-2); color:var(--amarelo)}
+.atp-tile--muted{background:var(--surface-2); color:var(--muted)}
+.atp-tile--steel{background:rgba(143,160,179,.07); color:var(--aco-2)}
+.atp-tile--brand{background:var(--amarelo-tile-gradient); color:#16140f; box-shadow:var(--shadow-amarelo)}
+
+/* ---------------- Avatar ---------------- */
+.atp-avatar{
+  display:grid; place-items:center; background:var(--amarelo); color:#16140f;
+  font-family:var(--font-display); font-weight:var(--fw-extrabold); line-height:1; flex-shrink:0;
+}
+.atp-avatar--brand{background:var(--amarelo-tile-gradient); box-shadow:var(--shadow-amarelo)}
+
+/* ---------------- Hazard ---------------- */
+.atp-hazard{height:8px; background:var(--hazard)}
+.atp-hazard--header{height:6px; background:var(--hazard-header)}
+
+/* ---------------- Card ---------------- */
+.atp-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--r); overflow:hidden}
+.atp-card__h{display:flex; align-items:center; gap:10px; padding:15px 18px; border-bottom:1px solid var(--border)}
+.atp-card__title{font:var(--fw-bold) 13px/1 var(--font-display); letter-spacing:var(--track-card); text-transform:uppercase; color:var(--fg)}
+.atp-card__right{margin-left:auto; display:flex; align-items:center; gap:8px}
+.atp-card__body--pad{padding:16px 18px}
+
+/* ---------------- KpiCard ---------------- */
+.atp-kpi{background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:16px 17px; position:relative; overflow:hidden}
+.atp-kpi__top{display:flex; align-items:center; justify-content:space-between}
+.atp-kpi__ic{width:32px; height:32px}
+.atp-kpi__label{font:var(--fw-semibold) 10.5px/1 var(--font-display); letter-spacing:var(--track-label); text-transform:uppercase; color:var(--muted-2)}
+.atp-kpi__val{font:var(--fw-bold) 27px/1 var(--font-display); margin:12px 0 6px; letter-spacing:.01em; color:var(--fg)}
+.atp-kpi__val--mono{font-family:var(--font-mono); font-size:23px; font-weight:var(--fw-semibold)}
+.atp-kpi__u{font-size:14px; color:var(--muted); font-weight:var(--fw-semibold); margin-left:3px}
+.atp-kpi__foot{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted)}
+.atp-kpi__spark{position:absolute; right:14px; bottom:14px; width:60px; height:24px; opacity:.9}
+.atp-kpi--warn .atp-kpi__ic{color:var(--down); background:rgba(217,139,107,.12)}
+.atp-trend{display:inline-flex; align-items:center; gap:3px; font-weight:var(--fw-semibold); font-size:12px}
+.atp-trend--up{color:var(--up)}
+.atp-trend--down{color:var(--down)}
+
+/* ---------------- DataRow ---------------- */
+.atp-datarow{display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border-soft)}
+.atp-datarow:last-child{border-bottom:none}
+.atp-datarow__i{width:32px; height:32px}
+.atp-datarow__k{font:var(--fw-semibold) 10px/1 var(--font-display); letter-spacing:.11em; text-transform:uppercase; color:var(--muted-2)}
+.atp-datarow__v{font-size:13.5px; font-weight:var(--fw-medium); margin-top:3px; color:var(--fg)}
+.atp-datarow__v small{color:var(--muted); font-weight:var(--fw-medium)}
+
+/* ---------------- Note ---------------- */
+.atp-note{padding:13px 16px; border:1px dashed var(--border); border-radius:var(--r-sm); font-size:12.5px; color:var(--muted-2); display:flex; gap:9px; align-items:flex-start}
+.atp-note>svg{color:var(--amarelo-dim); flex-shrink:0; margin-top:1px}
+.atp-note--steel>svg{color:var(--aco-2)}
+.atp-note b{color:var(--fg)}
+
+/* ---------------- NavItem ---------------- */
+.atp-nav-item{
+  display:flex; align-items:center; gap:11px; padding:8px 10px; border-radius:var(--r-sm);
+  color:var(--muted); font-size:13.5px; font-weight:var(--fw-medium); position:relative; cursor:pointer;
+  transition:background var(--ease-fast), color var(--ease-fast); text-decoration:none;
+}
+.atp-nav-item__label{flex:0 1 auto}
+.atp-nav-item:hover{background:#1d1a12; color:var(--fg)}
+.atp-nav-item__count{margin-left:auto; font:var(--fw-semibold) 11px/1 var(--font-mono); color:var(--muted-2); background:#221e15; border:1px solid var(--border); border-radius:var(--r-pill); padding:2px 7px}
+.atp-nav-item.is-active{background:var(--surface-2); color:var(--amarelo); font-weight:var(--fw-semibold)}
+.atp-nav-item.is-active::before{content:""; position:absolute; left:-12px; top:6px; bottom:6px; width:3px; background:var(--amarelo); border-radius:0 3px 3px 0}
+.atp-nav-item__dot{margin-left:auto; width:7px; height:7px; border-radius:50%; background:var(--amarelo); box-shadow:var(--ring-amarelo)}

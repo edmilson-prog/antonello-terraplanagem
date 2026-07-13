@@ -1,0 +1,23 @@
+<!-- @dsCard group="Spacing" viewport="700x160" name="Corner radii" subtitle="7px tiles · 10px buttons · 14px cards · 20px pills · circles" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body{padding:22px; display:flex; gap:20px; align-items:center}
+  .u{display:flex; flex-direction:column; align-items:center; gap:10px}
+  .box{width:74px; height:56px; background:var(--surface-2); border:1px solid var(--border)}
+  .m b{display:block; font:600 12px/1 var(--font-mono); color:var(--fg); text-align:center}
+  .m span{font:500 9.5px/1.2 var(--font-display); letter-spacing:.06em; text-transform:uppercase; color:var(--muted-2)}
+</style>
+</head>
+<body>
+  <div class="u"><div class="box" style="border-radius:7px"></div><div class="m"><b>7</b><span>xs · tiles</span></div></div>
+  <div class="u"><div class="box" style="border-radius:9px"></div><div class="m"><b>9</b><span>icon tile</span></div></div>
+  <div class="u"><div class="box" style="border-radius:10px"></div><div class="m"><b>10</b><span>sm · button</span></div></div>
+  <div class="u"><div class="box" style="border-radius:14px"></div><div class="m"><b>14</b><span>card</span></div></div>
+  <div class="u"><div class="box" style="width:110px; border-radius:20px"></div><div class="m"><b>20</b><span>pill</span></div></div>
+  <div class="u"><div class="box" style="width:56px; border-radius:50%"></div><div class="m"><b>50%</b><span>avatar</span></div></div>
+</body>
+</html>

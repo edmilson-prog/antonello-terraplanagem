@@ -1,0 +1,26 @@
+<!-- @dsCard group="Type" viewport="700x180" name="Mono — IBM Plex Mono" subtitle="EVERY number, code, date, currency value & ID (CNPJ/OS/NF/horímetro)" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body{padding:22px; display:flex; flex-direction:column; gap:16px; justify-content:center}
+  .big{font:600 26px/1 var(--font-mono); color:var(--fg); letter-spacing:.01em}
+  .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px 22px}
+  .cell b{display:block; font:600 15px/1.2 var(--font-mono); color:var(--fg)}
+  .cell span{font:600 9.5px/1 var(--font-display); letter-spacing:.11em; text-transform:uppercase; color:var(--muted-2)}
+</style>
+</head>
+<body>
+  <div class="big">R$ 148.500 &nbsp; · &nbsp; 8,0 h &nbsp; · &nbsp; +18%</div>
+  <div class="grid">
+    <div class="cell"><span>CNPJ</span><b>12.345.678/0001-90</b></div>
+    <div class="cell"><span>Ordem</span><b>OS-021</b></div>
+    <div class="cell"><span>Nota fiscal</span><b>NF 1042</b></div>
+    <div class="cell"><span>Data</span><b>09/07</b></div>
+    <div class="cell"><span>Horímetro</span><b>4.210 → 4.218</b></div>
+    <div class="cell"><span>Telefone</span><b>(55) 3312-8800</b></div>
+  </div>
+</body>
+</html>
