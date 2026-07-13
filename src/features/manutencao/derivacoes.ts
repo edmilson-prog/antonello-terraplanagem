@@ -101,3 +101,51 @@ export function alertasManutencao(
   }
   return alertas.sort((a, b) => PESO_STATUS[b.status] - PESO_STATUS[a.status]);
 }
+
+export interface ResumoProximaManutencao {
+  descricao: string;
+  intervalo: number;
+  previsto: number;
+  restantes: number;
+  status: StatusManutencao;
+}
+
+// Extrai o plano mais urgente (menor "horas restantes") entre os aplicáveis ao
+// equipamento — mesma seleção usada pelo card de detalhe (ProximaManutencaoCard)
+// e pela coluna "Próx. manutenção" da lista de equipamentos, para as duas telas
+// nunca divergirem para o mesmo equipamento.
+export function resumoProximaManutencao(
+  equipamento: Equipamento,
+  planos: PlanoManutencao[],
+  registros: RegistroManutencao[],
+): ResumoProximaManutencao | null {
+  const candidatos = planosParaEquipamento(equipamento, planos).reduce<
+    { plano: PlanoManutencao; resultado: StatusPlanoResultado }[]
+  >((acc, plano) => {
+    const resultado = statusPlano(plano, equipamento, registros);
+    if (resultado) acc.push({ plano, resultado });
+    return acc;
+  }, []);
+
+  const maisUrgente = candidatos.reduce<
+    { plano: PlanoManutencao; resultado: StatusPlanoResultado } | null
+  >((urgente, atual) => {
+    if (!urgente) return atual;
+    const restantesAtual =
+      atual.resultado.registro.horimetro_previsto - equipamento.horimetro_atual;
+    const restantesUrgente =
+      urgente.resultado.registro.horimetro_previsto - equipamento.horimetro_atual;
+    return restantesAtual < restantesUrgente ? atual : urgente;
+  }, null);
+
+  if (!maisUrgente) return null;
+
+  const { plano, resultado } = maisUrgente;
+  return {
+    descricao: plano.descricao,
+    intervalo: plano.intervalo_horas,
+    previsto: resultado.registro.horimetro_previsto,
+    restantes: resultado.registro.horimetro_previsto - equipamento.horimetro_atual,
+    status: resultado.status,
+  };
+}
