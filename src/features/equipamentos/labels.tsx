@@ -20,6 +20,15 @@ export const TIPOS: TipoEquipamento[] = [
   "outro",
 ];
 
+export const TIPO_ICONE: Record<TipoEquipamento, string> = {
+  escavadeira: "lucide:truck",
+  carregadeira: "lucide:forklift",
+  caminhao_cacamba: "lucide:truck",
+  trator_esteira: "lucide:tractor",
+  retroescavadeira: "lucide:tractor",
+  outro: "lucide:truck",
+};
+
 export const STATUS_LABEL: Record<EquipamentoStatus, string> = {
   disponivel: "Disponível",
   em_uso: "Em uso",
