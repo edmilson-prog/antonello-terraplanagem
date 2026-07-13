@@ -1,0 +1,57 @@
+/* ============================================================
+   THEME · LIGHT — Antonello Terraplanagem
+   Opt-in warm-paper light theme. Activate with data-theme="light" on
+   <html> (or any ancestor). Imported LAST so this single-selector scope
+   wins over every :root token when the attribute is present.
+   Amber, text-on-accent and the hazard tape stay constant across themes.
+   ============================================================ */
+[data-theme="light"]{
+  /* ---------- Surfaces (warm paper) ---------- */
+  --bg:#f4f1e9;
+  --surface:#fbf9f3;
+  --surface-2:#efeadd;
+  --surface-3:#f1ece0;
+  --sidebar:#f8f5ed;
+  --hover-row:#f0ebdd;
+  --chip-bg:#efeadd;
+  --scrim:rgba(250,248,242,.86);
+  --legacy-surface:#eef2f5; /* cool steel-tinted panel (Farolti / map) */
+
+  /* ---------- Borders ---------- */
+  --border:#e3ddce;
+  --border-soft:#ece7d9;
+  --border-strong:#d2cab5;
+
+  /* ---------- Text (warm near-black) ---------- */
+  --fg:#1f1b12;
+  --muted:#6b6555;
+  --muted-2:#928b78;
+
+  /* ---------- Brand amber — soft fill a touch stronger for light ---------- */
+  --amarelo-soft:rgba(255,179,0,.18);
+  --amarelo-dim:#9a6f0e;
+
+  /* ---------- Status — darker text, lighter fills for light bg ---------- */
+  --success:#4C7A3F; --success-fg:#3a6330; --success-soft:rgba(76,122,63,.14);
+  --danger:#b00020;  --danger-fg:#9a1b28;  --danger-soft:rgba(176,0,32,.10);
+  --info:#5a7fa6;    --info-fg:#3f5f82;    --info-soft:rgba(90,127,166,.12);
+
+  /* ---------- Aço (steel) — darker for legibility on paper ---------- */
+  --aco:#5b6b7d; --aco-2:#6f7e8f;
+  --aco-soft:rgba(90,110,130,.10); --aco-border:rgba(90,110,130,.30);
+
+  /* ---------- Trend ---------- */
+  --up:#4f7a3f; --down:#c0623c;
+
+  /* ---------- Gradients that hard-coded a dark endpoint ---------- */
+  --hero-gradient:linear-gradient(180deg, var(--surface) 0%, #f1ece0 100%);
+  --hero-glow:radial-gradient(circle, rgba(255,179,0,.16), transparent 70%); /* @kind other */
+}
+
+/* Cards sit on paper — a whisper of elevation reads better than a flat border alone. */
+[data-theme="light"] .atp-card,
+[data-theme="light"] .atp-kpi,
+[data-theme="light"] .rtg-hero{box-shadow:0 1px 2px rgba(31,27,18,.04), 0 3px 10px rgba(31,27,18,.05)}
+/* Dark scrollbar thumb → warm on paper. */
+[data-theme="light"] ::-webkit-scrollbar-thumb{background:#d8d0bd}
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover{background:#c7bda4}

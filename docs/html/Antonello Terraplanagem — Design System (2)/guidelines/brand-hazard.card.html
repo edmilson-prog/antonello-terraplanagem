@@ -1,0 +1,28 @@
+<!-- @dsCard group="Brand" viewport="700x160" name="Hazard stripe" subtitle="The signature motif — diagonal construction tape. Emphasis bars only" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body{padding:24px 26px; display:flex; flex-direction:column; gap:18px; justify-content:center}
+  .bar{border-radius:4px}
+  .b1{height:8px; background:var(--hazard)}
+  .b2{height:6px; background:var(--hazard-header)}
+  .m{font:500 11px/1 var(--font-mono); color:var(--muted-2); margin-top:9px}
+  .cap{font:600 10px/1 var(--font-display); letter-spacing:.12em; text-transform:uppercase; color:var(--muted-2); margin-bottom:10px}
+</style>
+</head>
+<body>
+  <div>
+    <div class="cap">Sidebar bar — 8px</div>
+    <div class="bar b1"></div>
+    <div class="m">repeating-linear-gradient(-45deg, #ffb300 0 11px, #211d15 11px 22px)</div>
+  </div>
+  <div>
+    <div class="cap">Content-top bar — 6px</div>
+    <div class="bar b2"></div>
+    <div class="m">repeating-linear-gradient(-45deg, #ffb300 0 13px, #1c1810 13px 26px)</div>
+  </div>
+</body>
+</html>

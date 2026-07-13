@@ -1,0 +1,25 @@
+<!-- @dsCard group="Spacing" viewport="700x150" name="Spacing scale" subtitle="Tight, dense grid — 4 → 48px. Card gaps 16px; card padding 16–18px" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body{padding:24px 22px; display:flex; align-items:flex-end; gap:16px}
+  .u{display:flex; flex-direction:column; align-items:center; gap:8px}
+  .bar{background:var(--amarelo); border-radius:3px; width:100%}
+  .u .box{display:flex; align-items:flex-end; height:64px}
+  .m b{display:block; font:600 12px/1 var(--font-mono); color:var(--fg); text-align:center}
+  .m span{font:500 10px/1 var(--font-mono); color:var(--muted-2)}
+</style>
+</head>
+<body>
+  <div class="u"><div class="box"><div class="bar" style="width:4px; height:4px"></div></div><div class="m"><b>4</b><span>space-1</span></div></div>
+  <div class="u"><div class="box"><div class="bar" style="width:8px; height:8px"></div></div><div class="m"><b>8</b><span>space-2</span></div></div>
+  <div class="u"><div class="box"><div class="bar" style="width:12px; height:12px"></div></div><div class="m"><b>12</b><span>space-3</span></div></div>
+  <div class="u"><div class="box"><div class="bar" style="width:16px; height:16px"></div></div><div class="m"><b>16</b><span>space-5</span></div></div>
+  <div class="u"><div class="box"><div class="bar" style="width:22px; height:22px"></div></div><div class="m"><b>22</b><span>space-7</span></div></div>
+  <div class="u"><div class="box"><div class="bar" style="width:28px; height:28px"></div></div><div class="m"><b>28</b><span>space-8</span></div></div>
+  <div class="u"><div class="box"><div class="bar" style="width:48px; height:48px"></div></div><div class="m"><b>48</b><span>space-10</span></div></div>
+</body>
+</html>

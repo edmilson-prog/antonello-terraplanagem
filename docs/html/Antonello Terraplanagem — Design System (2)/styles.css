@@ -1,0 +1,24 @@
+/* ============================================================
+   Antonello Terraplanagem — Design System
+   Global CSS entry point. Consumers link THIS one file.
+   Import order only — no rules live here.
+   ============================================================ */
+
+/* Webfonts first (Google Fonts @import must precede other rules) */
+@import url("tokens/fonts.css");
+
+/* Design tokens */
+@import url("tokens/colors.css");
+@import url("tokens/typography.css");
+@import url("tokens/spacing.css");
+@import url("tokens/radii.css");
+@import url("tokens/effects.css");
+
+/* Base reset + brand defaults + utilities */
+@import url("foundations/base.css");
+
+/* Component class styles + interaction states (backs the bundled React components) */
+@import url("foundations/components.css");
+
+/* Opt-in light theme — imported LAST so [data-theme="light"] wins over every :root token */
+@import url("tokens/theme-light.css");

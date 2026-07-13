@@ -1,0 +1,37 @@
+<!-- @dsCard group="Colors" viewport="700x160" name="Aço (steel) & trend" subtitle="Steel-blue for legacy/read-only data (ERP Farolti); green/orange for up/down trends" -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body{padding:20px 22px; display:flex; gap:30px; align-items:center}
+  .grp{display:flex; flex-direction:column; gap:10px}
+  .cap{font:600 10px/1 var(--font-display); letter-spacing:.12em; text-transform:uppercase; color:var(--muted-2)}
+  .steel{display:inline-flex; align-items:center; gap:7px; padding:6px 11px; border-radius:20px; font:600 10.5px/1 var(--font-sans); text-transform:uppercase; letter-spacing:.03em; color:var(--aco); background:var(--aco-soft); border:1px solid var(--aco-border)}
+  .row{display:flex; gap:12px}
+  .sw{display:flex; flex-direction:column; gap:6px}
+  .chip{width:64px; height:38px; border-radius:8px; border:1px solid var(--border-soft)}
+  .m{font:500 10px/1 var(--font-mono); color:var(--muted-2)}
+  .trend{display:inline-flex; align-items:center; gap:5px; font:700 15px/1 var(--font-display)}
+</style>
+</head>
+<body>
+  <div class="grp">
+    <div class="cap">Aço — legacy / read-only</div>
+    <div class="row">
+      <div class="sw"><div class="chip" style="background:#8fa0b3"></div><span class="m">aco · #8fa0b3</span></div>
+      <div class="sw"><div class="chip" style="background:#6f7e8f"></div><span class="m">aco-2 · #6f7e8f</span></div>
+    </div>
+    <span class="steel">Importado · congelado</span>
+  </div>
+  <div class="grp">
+    <div class="cap">Trend</div>
+    <div class="row" style="gap:22px; align-items:center">
+      <span class="trend" style="color:#7fb06f">↗ 18%</span>
+      <span class="trend" style="color:#d98b6b">↘ 6%</span>
+    </div>
+    <div class="row"><span class="m">up · #7fb06f</span><span class="m">down · #d98b6b</span></div>
+  </div>
+</body>
+</html>
