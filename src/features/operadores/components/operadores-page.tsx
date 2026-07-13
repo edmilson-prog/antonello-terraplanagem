@@ -113,6 +113,16 @@ export function OperadoresPage() {
         />
       ),
     },
+    {
+      header: "CPF",
+      className: "font-mono",
+      cell: ({ operador }) => formatDocumento(operador.cpf),
+    },
+    {
+      header: "Telefone",
+      className: "font-mono",
+      cell: ({ operador }) => formatTelefone(operador.telefone),
+    },
     { header: "Vínculo", cell: ({ vinculo }) => <Badge variant="secondary">{vinculo}</Badge> },
     { header: "Base", cell: ({ base }) => base },
     {
