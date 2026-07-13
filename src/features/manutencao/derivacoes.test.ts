@@ -142,8 +142,18 @@ describe("statusEquipamento", () => {
     const e = equipamento({ id: "eq-1", horimetro_atual: 1000 });
     const p1 = plano({ id: "pm-1", equipamento_id: "eq-1" });
     const p2 = plano({ id: "pm-2", equipamento_id: "eq-1" });
-    const r1 = registro({ id: "rm-1", plano_id: "pm-1", equipamento_id: "eq-1", horimetro_previsto: 2000 }); // em_dia
-    const r2 = registro({ id: "rm-2", plano_id: "pm-2", equipamento_id: "eq-1", horimetro_previsto: 990 }); // vencida
+    const r1 = registro({
+      id: "rm-1",
+      plano_id: "pm-1",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 2000,
+    }); // em_dia
+    const r2 = registro({
+      id: "rm-2",
+      plano_id: "pm-2",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 990,
+    }); // vencida
     expect(statusEquipamento(e, [p1, p2], [r1, r2])).toBe("vencida");
   });
 });
@@ -154,8 +164,18 @@ describe("alertasManutencao", () => {
     const e2 = equipamento({ id: "eq-2", horimetro_atual: 100 }); // em dia
     const p1 = plano({ id: "pm-1", equipamento_id: "eq-1" });
     const p2 = plano({ id: "pm-2", equipamento_id: "eq-2" });
-    const r1 = registro({ id: "rm-1", plano_id: "pm-1", equipamento_id: "eq-1", horimetro_previsto: 1250 });
-    const r2 = registro({ id: "rm-2", plano_id: "pm-2", equipamento_id: "eq-2", horimetro_previsto: 2000 });
+    const r1 = registro({
+      id: "rm-1",
+      plano_id: "pm-1",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 1250,
+    });
+    const r2 = registro({
+      id: "rm-2",
+      plano_id: "pm-2",
+      equipamento_id: "eq-2",
+      horimetro_previsto: 2000,
+    });
     const alertas = alertasManutencao([e1, e2], [p1, p2], [r1, r2]);
     expect(alertas).toHaveLength(1);
     expect(alertas[0].equipamento.id).toBe("eq-1");
@@ -165,7 +185,12 @@ describe("alertasManutencao", () => {
   it("ignora equipamento inativo", () => {
     const e = equipamento({ id: "eq-1", ativo: false, horimetro_atual: 9999 });
     const p = plano({ id: "pm-1", equipamento_id: "eq-1" });
-    const r = registro({ id: "rm-1", plano_id: "pm-1", equipamento_id: "eq-1", horimetro_previsto: 100 });
+    const r = registro({
+      id: "rm-1",
+      plano_id: "pm-1",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 100,
+    });
     expect(alertasManutencao([e], [p], [r])).toEqual([]);
   });
 
@@ -174,8 +199,18 @@ describe("alertasManutencao", () => {
     const e2 = equipamento({ id: "eq-2", horimetro_atual: 1300 }); // vencida
     const p1 = plano({ id: "pm-1", equipamento_id: "eq-1" });
     const p2 = plano({ id: "pm-2", equipamento_id: "eq-2" });
-    const r1 = registro({ id: "rm-1", plano_id: "pm-1", equipamento_id: "eq-1", horimetro_previsto: 1250 });
-    const r2 = registro({ id: "rm-2", plano_id: "pm-2", equipamento_id: "eq-2", horimetro_previsto: 1250 });
+    const r1 = registro({
+      id: "rm-1",
+      plano_id: "pm-1",
+      equipamento_id: "eq-1",
+      horimetro_previsto: 1250,
+    });
+    const r2 = registro({
+      id: "rm-2",
+      plano_id: "pm-2",
+      equipamento_id: "eq-2",
+      horimetro_previsto: 1250,
+    });
     const alertas = alertasManutencao([e1, e2], [p1, p2], [r1, r2]);
     expect(alertas.map((a) => a.status)).toEqual(["vencida", "proxima"]);
   });

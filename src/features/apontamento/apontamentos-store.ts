@@ -114,10 +114,7 @@ export function criarApontamentosStore(seed: Apontamento[]): ApontamentosStore {
 export const apontamentosStore = criarApontamentosStore(apontamentosIniciais);
 
 // Filtro puro (testável) — usado pela tela "Meus apontamentos".
-export function apontamentosDoOperador(
-  lista: Apontamento[],
-  operadorId: string,
-): Apontamento[] {
+export function apontamentosDoOperador(lista: Apontamento[], operadorId: string): Apontamento[] {
   return lista.filter((a) => a.operador_id === operadorId);
 }
 

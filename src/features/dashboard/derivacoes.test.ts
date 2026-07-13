@@ -164,8 +164,18 @@ describe("contagemOSPorStatus", () => {
 describe("horasApontadasNoPeriodo", () => {
   it("soma horas de finalizados no período; ignora em_andamento e fora do período", () => {
     const aps = [
-      ap({ id: "a1", status: "finalizado", horas_trabalhadas: 8, finalizado_em: "2026-07-02T12:00:00.000Z" }),
-      ap({ id: "a2", status: "finalizado", horas_trabalhadas: 5, finalizado_em: "2026-06-01T12:00:00.000Z" }),
+      ap({
+        id: "a1",
+        status: "finalizado",
+        horas_trabalhadas: 8,
+        finalizado_em: "2026-07-02T12:00:00.000Z",
+      }),
+      ap({
+        id: "a2",
+        status: "finalizado",
+        horas_trabalhadas: 5,
+        finalizado_em: "2026-06-01T12:00:00.000Z",
+      }),
       ap({ id: "a3", status: "em_andamento", horas_trabalhadas: null, finalizado_em: null }),
     ];
     expect(horasApontadasNoPeriodo(aps, INTERVALO)).toBe(8);
@@ -176,7 +186,13 @@ describe("valorExecutadoNoPeriodo", () => {
   it("soma o valor (via gerarItens) das OS fechadas no período ainda sem fatura", () => {
     const ordem = os({ id: "os-1", status: "fechada", fechada_em: "2026-07-02T12:00:00.000Z" });
     const aps = [
-      ap({ id: "a1", os_id: "os-1", equipamento_id: "eq-1", horas_trabalhadas: 10, modalidade: "operada" }),
+      ap({
+        id: "a1",
+        os_id: "os-1",
+        equipamento_id: "eq-1",
+        horas_trabalhadas: 10,
+        modalidade: "operada",
+      }),
     ];
     const equipamentos = [equipamento({ id: "eq-1" })];
     const precos = [precoHM({ id: "p1", equipamento_id: "eq-1", valor_hora_operada: 150 })];
@@ -187,7 +203,15 @@ describe("valorExecutadoNoPeriodo", () => {
   it("ignora OS já faturada", () => {
     const ordem = os({ id: "os-1", status: "fechada", fechada_em: "2026-07-02T12:00:00.000Z" });
     const faturamentoExistente = fat({ id: "f1", os_id: "os-1" });
-    const valor = valorExecutadoNoPeriodo([ordem], [], [faturamentoExistente], [], [], [], INTERVALO);
+    const valor = valorExecutadoNoPeriodo(
+      [ordem],
+      [],
+      [faturamentoExistente],
+      [],
+      [],
+      [],
+      INTERVALO,
+    );
     expect(valor).toBe(0);
   });
 
@@ -202,31 +226,75 @@ describe("pipelineFinanceiroPeriodo", () => {
   it("calcula executado (preview), faturado e recebido no período, todos em R$", () => {
     const ordens = [os({ id: "os-1", status: "fechada", fechada_em: "2026-07-02T09:00:00.000Z" })];
     const aps = [
-      ap({ id: "a1", os_id: "os-1", equipamento_id: "eq-1", horas_trabalhadas: 10, modalidade: "operada" }),
+      ap({
+        id: "a1",
+        os_id: "os-1",
+        equipamento_id: "eq-1",
+        horas_trabalhadas: 10,
+        modalidade: "operada",
+      }),
     ];
     const equipamentos = [equipamento({ id: "eq-1" })];
     const precos = [precoHM({ id: "p1", equipamento_id: "eq-1", valor_hora_operada: 150 })];
     const faturamentos = [
-      fat({ id: "f1", os_id: "os-2", status: "faturado", valor_total: 2000, faturado_em: "2026-07-02T09:00:00.000Z" }),
+      fat({
+        id: "f1",
+        os_id: "os-2",
+        status: "faturado",
+        valor_total: 2000,
+        faturado_em: "2026-07-02T09:00:00.000Z",
+      }),
     ];
     const contasReceber = [
-      contaReceber({ id: "c1", valor: 900, status: "liquidada", recebido_em: "2026-07-02T09:00:00.000Z" }),
+      contaReceber({
+        id: "c1",
+        valor: 900,
+        status: "liquidada",
+        recebido_em: "2026-07-02T09:00:00.000Z",
+      }),
     ];
 
     const pipeline = pipelineFinanceiroPeriodo(
-      ordens, aps, faturamentos, contasReceber, equipamentos, precos, [], INTERVALO,
+      ordens,
+      aps,
+      faturamentos,
+      contasReceber,
+      equipamentos,
+      precos,
+      [],
+      INTERVALO,
     );
     expect(pipeline).toEqual({ executado: 1500, faturado: 2000, recebido: 900 });
   });
 
   it("exclui faturas/recebimentos fora do período", () => {
     const faturamentos = [
-      fat({ id: "f1", os_id: "os-2", status: "faturado", valor_total: 2000, faturado_em: "2026-06-01T09:00:00.000Z" }),
+      fat({
+        id: "f1",
+        os_id: "os-2",
+        status: "faturado",
+        valor_total: 2000,
+        faturado_em: "2026-06-01T09:00:00.000Z",
+      }),
     ];
     const contasReceber = [
-      contaReceber({ id: "c1", valor: 900, status: "liquidada", recebido_em: "2026-06-01T09:00:00.000Z" }),
+      contaReceber({
+        id: "c1",
+        valor: 900,
+        status: "liquidada",
+        recebido_em: "2026-06-01T09:00:00.000Z",
+      }),
     ];
-    const pipeline = pipelineFinanceiroPeriodo([], [], faturamentos, contasReceber, [], [], [], INTERVALO);
+    const pipeline = pipelineFinanceiroPeriodo(
+      [],
+      [],
+      faturamentos,
+      contasReceber,
+      [],
+      [],
+      [],
+      INTERVALO,
+    );
     expect(pipeline).toEqual({ executado: 0, faturado: 0, recebido: 0 });
   });
 });

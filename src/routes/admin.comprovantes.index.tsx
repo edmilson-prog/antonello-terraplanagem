@@ -3,10 +3,7 @@ import { ComprovantesPage } from "@/features/comprovantes";
 
 export const Route = createFileRoute("/admin/comprovantes/")({
   head: () => ({
-    meta: [
-      { title: "Comprovantes · Antonello" },
-      { name: "robots", content: "noindex,nofollow" },
-    ],
+    meta: [{ title: "Comprovantes · Antonello" }, { name: "robots", content: "noindex,nofollow" }],
   }),
   component: ComprovantesPage,
 });

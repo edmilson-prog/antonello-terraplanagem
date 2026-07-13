@@ -105,7 +105,15 @@ describe("ordensDoOperador", () => {
       os({ id: "o2", responsavel_id: "op-002" }),
       os({ id: "o3", responsavel_id: "op-002" }),
     ];
-    const aps = [ap({ id: "a1", os_id: "o3", operador_id: "op-001", status: "finalizado", horas_trabalhadas: 1 })];
+    const aps = [
+      ap({
+        id: "a1",
+        os_id: "o3",
+        operador_id: "op-001",
+        status: "finalizado",
+        horas_trabalhadas: 1,
+      }),
+    ];
     const r = ordensDoOperador(ordens, aps, "op-001").map((o) => o.id);
     expect(r).toContain("o1"); // responsável
     expect(r).toContain("o3"); // tem apontamento

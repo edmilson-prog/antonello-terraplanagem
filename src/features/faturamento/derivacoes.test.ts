@@ -1,23 +1,47 @@
 import { describe, it, expect } from "vitest";
-import { faturamentoDaOS, osFechadasSemFaturamento, resumoPipeline } from "@/features/faturamento/derivacoes";
+import {
+  faturamentoDaOS,
+  osFechadasSemFaturamento,
+  resumoPipeline,
+} from "@/features/faturamento/derivacoes";
 import type { Faturamento, OrdemServico } from "@/shared/types";
 
 function os(id: string, status: OrdemServico["status"]): OrdemServico {
   return {
-    id, numero: `OS-2026-${id}`, cliente_id: "cl-001", obra_nome: "x", endereco: null,
-    modelo_cobranca: "hora_maquina", status, responsavel_id: null, observacao: null,
-    diametro_broca_mm: null, aberta_em: "2026-06-01T00:00:00.000Z",
-    fechada_em: status === "fechada" ? "2026-06-02T00:00:00.000Z" : null, pendente_sync: false,
-    created_at: "2026-06-01T00:00:00.000Z", updated_at: "2026-06-01T00:00:00.000Z",
+    id,
+    numero: `OS-2026-${id}`,
+    cliente_id: "cl-001",
+    obra_nome: "x",
+    endereco: null,
+    modelo_cobranca: "hora_maquina",
+    status,
+    responsavel_id: null,
+    observacao: null,
+    diametro_broca_mm: null,
+    aberta_em: "2026-06-01T00:00:00.000Z",
+    fechada_em: status === "fechada" ? "2026-06-02T00:00:00.000Z" : null,
+    pendente_sync: false,
+    created_at: "2026-06-01T00:00:00.000Z",
+    updated_at: "2026-06-01T00:00:00.000Z",
   };
 }
 
 function fat(id: string, os_id: string, status: Faturamento["status"], valor: number): Faturamento {
   return {
-    id, numero: `FAT-2026-${id}`, os_id, cliente_id: "cl-001", modelo_cobranca: "hora_maquina",
-    itens: [], desconto: 0, valor_total: valor, observacao: null, status,
-    gerado_em: "2026-06-02T00:00:00.000Z", faturado_em: status === "faturado" ? "2026-06-03T00:00:00.000Z" : null,
-    created_at: "2026-06-02T00:00:00.000Z", updated_at: "2026-06-02T00:00:00.000Z",
+    id,
+    numero: `FAT-2026-${id}`,
+    os_id,
+    cliente_id: "cl-001",
+    modelo_cobranca: "hora_maquina",
+    itens: [],
+    desconto: 0,
+    valor_total: valor,
+    observacao: null,
+    status,
+    gerado_em: "2026-06-02T00:00:00.000Z",
+    faturado_em: status === "faturado" ? "2026-06-03T00:00:00.000Z" : null,
+    created_at: "2026-06-02T00:00:00.000Z",
+    updated_at: "2026-06-02T00:00:00.000Z",
   };
 }
 

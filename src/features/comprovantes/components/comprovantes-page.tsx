@@ -69,7 +69,9 @@ export function ComprovantesPage() {
     {
       header: "Cliente",
       cell: (c) => (
-        <div className="min-w-0 max-w-[16rem] truncate">{clientesStore.getById(c.cliente_id)?.nome ?? "—"}</div>
+        <div className="min-w-0 max-w-[16rem] truncate">
+          {clientesStore.getById(c.cliente_id)?.nome ?? "—"}
+        </div>
       ),
     },
     {
@@ -94,7 +96,10 @@ export function ComprovantesPage() {
           className="pl-9"
         />
       </div>
-      <Select value={filtroStatus} onValueChange={(v) => setFiltroStatus(v as StatusComprovante | "todos")}>
+      <Select
+        value={filtroStatus}
+        onValueChange={(v) => setFiltroStatus(v as StatusComprovante | "todos")}
+      >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
@@ -125,7 +130,9 @@ export function ComprovantesPage() {
       <div className="mt-2 font-display font-bold text-card-foreground">
         {clientesStore.getById(c.cliente_id)?.nome ?? "—"}
       </div>
-      <div className="truncate text-xs text-muted-foreground">OS {ordensStore.obter(c.os_id)?.numero ?? "—"}</div>
+      <div className="truncate text-xs text-muted-foreground">
+        OS {ordensStore.obter(c.os_id)?.numero ?? "—"}
+      </div>
       <div className="mt-2 text-xs text-muted-foreground">{formatDataHora(c.gerado_em)}</div>
     </div>
   );

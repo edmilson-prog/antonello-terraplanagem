@@ -38,9 +38,11 @@ export function IniciarApontamentoForm({ osIdInicial }: { osIdInicial?: string }
   const planos = planosManutencaoStore.useAll();
   const registros = registrosManutencaoStore.useTodos();
   const apontamentos = apontamentosStore.useTodos();
-  const ordens = ordensDoOperador(ordensStore.useTodas(), apontamentos, getOperadorLogadoId()).filter(
-    (o) => o.status !== "fechada",
-  );
+  const ordens = ordensDoOperador(
+    ordensStore.useTodas(),
+    apontamentos,
+    getOperadorLogadoId(),
+  ).filter((o) => o.status !== "fechada");
   const [fotoInicialUrl, setFotoInicialUrl] = useState<string | null>(null);
 
   const {
@@ -111,7 +113,11 @@ export function IniciarApontamentoForm({ osIdInicial }: { osIdInicial?: string }
             name="equipamento_id"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger id="equipamento" className="h-12" aria-invalid={!!errors.equipamento_id}>
+                <SelectTrigger
+                  id="equipamento"
+                  className="h-12"
+                  aria-invalid={!!errors.equipamento_id}
+                >
                   <SelectValue placeholder="Selecione o equipamento" />
                 </SelectTrigger>
                 <SelectContent>

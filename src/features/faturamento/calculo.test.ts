@@ -105,8 +105,20 @@ describe("calculo de faturamento", () => {
     ];
     const itens = gerarItens(os, aps, equipamentos, precosHoraMaquina, precosFundacao);
     expect(itens).toHaveLength(2);
-    expect(itens[0]).toMatchObject({ origem_id: "eq-001", hora_tipo: "operada", quantidade: 12, valor_unitario: 360, valor_total: 4320, sem_preco: false });
-    expect(itens[1]).toMatchObject({ origem_id: "eq-002", quantidade: 10, valor_unitario: 290, valor_total: 2900 });
+    expect(itens[0]).toMatchObject({
+      origem_id: "eq-001",
+      hora_tipo: "operada",
+      quantidade: 12,
+      valor_unitario: 360,
+      valor_total: 4320,
+      sem_preco: false,
+    });
+    expect(itens[1]).toMatchObject({
+      origem_id: "eq-002",
+      quantidade: 10,
+      valor_unitario: 290,
+      valor_total: 2900,
+    });
   });
 
   it("gerarItens soma múltiplos apontamentos do mesmo equipamento", () => {
@@ -124,14 +136,30 @@ describe("calculo de faturamento", () => {
     const os = osHora("os-z");
     const aps = [apontamentoFinalizado("a1", "eq-005", "os-z", 8)];
     const itens = gerarItens(os, aps, equipamentos, precosHoraMaquina, precosFundacao);
-    expect(itens[0]).toMatchObject({ sem_preco: true, valor_unitario: null, valor_total: 0, quantidade: 8 });
+    expect(itens[0]).toMatchObject({
+      sem_preco: true,
+      valor_unitario: null,
+      valor_total: 0,
+      quantidade: 8,
+    });
   });
 
   it("gerarItens ignora apontamentos em andamento e de outra OS", () => {
     const os = osHora("os-w");
-    const emAndamento: Apontamento = { ...apontamentoFinalizado("a1", "eq-001", "os-w", 9), status: "em_andamento", horimetro_final: null, horas_trabalhadas: null };
+    const emAndamento: Apontamento = {
+      ...apontamentoFinalizado("a1", "eq-001", "os-w", 9),
+      status: "em_andamento",
+      horimetro_final: null,
+      horas_trabalhadas: null,
+    };
     const outraOs = apontamentoFinalizado("a2", "eq-002", "os-outra", 4);
-    const itens = gerarItens(os, [emAndamento, outraOs], equipamentos, precosHoraMaquina, precosFundacao);
+    const itens = gerarItens(
+      os,
+      [emAndamento, outraOs],
+      equipamentos,
+      precosHoraMaquina,
+      precosFundacao,
+    );
     expect(itens).toHaveLength(0);
   });
 
@@ -162,12 +190,24 @@ describe("calculo de faturamento", () => {
     const aps = [apontamentoComMetros("a1", "os-m", 30)];
     const itens = gerarItens(os, aps, equipamentos, precosHoraMaquina, precosFundacao);
     expect(itens).toHaveLength(1);
-    expect(itens[0]).toMatchObject({ tipo: "por_metro", quantidade: 30, valor_unitario: 90, valor_total: 2700, sem_preco: false });
+    expect(itens[0]).toMatchObject({
+      tipo: "por_metro",
+      quantidade: 30,
+      valor_unitario: 90,
+      valor_total: 2700,
+      sem_preco: false,
+    });
   });
 
   it("aplicarHoraTipo troca operada↔seca recalculando", () => {
     const os = osHora("os-t");
-    const [item] = gerarItens(os, [apontamentoFinalizado("a1", "eq-001", "os-t", 10)], equipamentos, precosHoraMaquina, precosFundacao);
+    const [item] = gerarItens(
+      os,
+      [apontamentoFinalizado("a1", "eq-001", "os-t", 10)],
+      equipamentos,
+      precosHoraMaquina,
+      precosFundacao,
+    );
     const seca = aplicarHoraTipo(item, eq("eq-001"), precosHoraMaquina, "seca");
     expect(seca).toMatchObject({ hora_tipo: "seca", valor_unitario: 280, valor_total: 2800 });
     expect(seca.descricao).toContain("seca");
@@ -175,13 +215,21 @@ describe("calculo de faturamento", () => {
 
   it("calcularValorTotal soma itens e subtrai desconto", () => {
     const os = osHora("os-d");
-    const itens = gerarItens(os, [apontamentoFinalizado("a1", "eq-002", "os-d", 18)], equipamentos, precosHoraMaquina, precosFundacao);
+    const itens = gerarItens(
+      os,
+      [apontamentoFinalizado("a1", "eq-002", "os-d", 18)],
+      equipamentos,
+      precosHoraMaquina,
+      precosFundacao,
+    );
     expect(calcularValorTotal(itens, 0)).toBe(5220);
     expect(calcularValorTotal(itens, 220)).toBe(5000);
   });
 
   it("temPendencia detecta item sem preço", () => {
-    expect(temPendencia({ itens: [{ sem_preco: false } as never, { sem_preco: true } as never] })).toBe(true);
+    expect(
+      temPendencia({ itens: [{ sem_preco: false } as never, { sem_preco: true } as never] }),
+    ).toBe(true);
     expect(temPendencia({ itens: [{ sem_preco: false } as never] })).toBe(false);
   });
 });

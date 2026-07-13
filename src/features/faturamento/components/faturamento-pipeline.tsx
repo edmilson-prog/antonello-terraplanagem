@@ -52,12 +52,7 @@ function Coluna({
   destaque?: boolean;
 }) {
   return (
-    <div
-      className={cn(
-        "rounded-xl border bg-card p-4 shadow-sm",
-        destaque && "border-primary/40",
-      )}
-    >
+    <div className={cn("rounded-xl border bg-card p-4 shadow-sm", destaque && "border-primary/40")}>
       <div className="flex items-center justify-between">
         <span className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
           {rotulo}

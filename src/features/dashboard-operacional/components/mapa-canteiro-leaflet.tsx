@@ -39,7 +39,10 @@ export function MapaCanteiroLeaflet({ equipamentosAtivos }: MapaCanteiroLeafletP
   const pins = useMemo(
     () =>
       posicoesEquipamentos
-        .map((pos) => ({ pos, equipamento: equipamentosAtivos.find((e) => e.id === pos.equipamento_id) }))
+        .map((pos) => ({
+          pos,
+          equipamento: equipamentosAtivos.find((e) => e.id === pos.equipamento_id),
+        }))
         .filter(
           (p): p is { pos: typeof p.pos; equipamento: NonNullable<typeof p.equipamento> } =>
             p.equipamento !== undefined,
@@ -62,7 +65,11 @@ export function MapaCanteiroLeaflet({ equipamentosAtivos }: MapaCanteiroLeafletP
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       {pins.map(({ pos, equipamento }) => (
-        <Marker key={equipamento.id} position={[pos.lat, pos.lng]} icon={iconePin(equipamento.status)}>
+        <Marker
+          key={equipamento.id}
+          position={[pos.lat, pos.lng]}
+          icon={iconePin(equipamento.status)}
+        >
           <Popup>
             <strong>{equipamento.nome}</strong>
             <br />

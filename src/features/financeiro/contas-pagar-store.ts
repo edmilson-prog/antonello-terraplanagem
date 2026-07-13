@@ -2,9 +2,7 @@ import { useSyncExternalStore } from "react";
 import { contasPagar as seed } from "@/mocks/contas-pagar";
 import type { ContaPagar, CategoriaDespesa } from "@/shared/types";
 
-export type ResultadoBaixaPagar =
-  | { ok: true; conta: ContaPagar }
-  | { ok: false; motivo: string };
+export type ResultadoBaixaPagar = { ok: true; conta: ContaPagar } | { ok: false; motivo: string };
 
 export type NovaContaPagar = {
   descricao: string;
@@ -26,8 +24,7 @@ export function criarContasPagarStore(inicial: ContaPagar[]) {
   };
 
   const listar = () => itens;
-  const obter = (id: string): ContaPagar | null =>
-    itens.find((c) => c.id === id) ?? null;
+  const obter = (id: string): ContaPagar | null => itens.find((c) => c.id === id) ?? null;
 
   function criar(nova: NovaContaPagar): ContaPagar {
     const agora = new Date().toISOString();
@@ -47,8 +44,7 @@ export function criarContasPagarStore(inicial: ContaPagar[]) {
   function darBaixaPagar(id: string, pago_em: string): ResultadoBaixaPagar {
     const atual = obter(id);
     if (!atual) return { ok: false, motivo: "Conta a pagar não encontrada." };
-    if (atual.status === "liquidada")
-      return { ok: false, motivo: "Esta conta já foi paga." };
+    if (atual.status === "liquidada") return { ok: false, motivo: "Esta conta já foi paga." };
     const agora = new Date().toISOString();
     const liquidada: ContaPagar = {
       ...atual,

@@ -59,7 +59,9 @@ export function InicioOperadorPage() {
     : undefined;
 
   const minhasOrdens = ordensDoOperador(todasOrdens, todosApontamentos, operadorLogadoId);
-  const ordensAtivas = minhasOrdens.filter((o) => statusEfetivoOS(o, todosApontamentos) !== "fechada");
+  const ordensAtivas = minhasOrdens.filter(
+    (o) => statusEfetivoOS(o, todosApontamentos) !== "fechada",
+  );
 
   const meusApontamentos = apontamentosDoOperador(todosApontamentos, operadorLogadoId);
   const pendentesSync =
@@ -140,14 +142,19 @@ export function InicioOperadorPage() {
                   >
                     <div className="min-w-0 flex-1 space-y-1">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-mono text-sm font-semibold text-foreground">{o.numero}</span>
+                        <span className="font-mono text-sm font-semibold text-foreground">
+                          {o.numero}
+                        </span>
                         <StatusOSBadge status={statusEfetivoOS(o, todosApontamentos)} />
                       </div>
                       <div className="truncate font-display text-sm font-bold text-card-foreground">
                         {cliente?.nome ?? "Cliente"}
                       </div>
                     </div>
-                    <Icon icon="lucide:chevron-right" className="h-5 w-5 shrink-0 text-foreground-faint" />
+                    <Icon
+                      icon="lucide:chevron-right"
+                      className="h-5 w-5 shrink-0 text-foreground-faint"
+                    />
                   </Link>
                 </li>
               );

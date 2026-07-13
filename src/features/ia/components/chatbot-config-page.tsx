@@ -27,7 +27,9 @@ export function ChatbotConfigPage() {
             </li>
           ))}
         </ul>
-        <p className="mt-3 text-xs text-muted-foreground">Tom de voz: cordial e direto, sem gírias.</p>
+        <p className="mt-3 text-xs text-muted-foreground">
+          Tom de voz: cordial e direto, sem gírias.
+        </p>
       </section>
       <ChatbotSimulador />
     </div>

@@ -79,7 +79,11 @@ describe("criarRegistrosManutencaoStore", () => {
   });
 
   it("registrarRealizada normaliza observação vazia para null e custo ausente para null", () => {
-    const r = store.registrarRealizada("rm-t01", { horimetroRealizado: 1010, intervaloHoras: 250, observacao: "   " });
+    const r = store.registrarRealizada("rm-t01", {
+      horimetroRealizado: 1010,
+      intervaloHoras: 250,
+      observacao: "   ",
+    });
     expect(r.ok).toBe(true);
     if (r.ok) {
       expect(r.registro.observacao).toBeNull();

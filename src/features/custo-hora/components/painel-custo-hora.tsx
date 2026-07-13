@@ -44,7 +44,15 @@ export function PainelCustoHora({ periodo }: Props) {
         apontamentos,
         precosHoraMaquina,
       ).sort((a, b) => (b.custo_por_hora ?? -1) - (a.custo_por_hora ?? -1)),
-    [equipamentos, periodo, componentesCusto, abastecimentos, registrosManutencao, apontamentos, precosHoraMaquina],
+    [
+      equipamentos,
+      periodo,
+      componentesCusto,
+      abastecimentos,
+      registrosManutencao,
+      apontamentos,
+      precosHoraMaquina,
+    ],
   );
 
   const { isLoading, error, retry } = useMockResource(resultados);
@@ -55,7 +63,9 @@ export function PainelCustoHora({ periodo }: Props) {
   const custoTotalPeriodo = resultados.reduce((s, r) => s + r.custo_total, 0);
   const horasTotais = resultados.reduce((s, r) => s + r.horas_trabalhadas, 0);
   const custoMedioHora = horasTotais > 0 ? custoTotalPeriodo / horasTotais : null;
-  const margensNegativas = resultados.filter((r) => r.margem_hora != null && r.margem_hora < 0).length;
+  const margensNegativas = resultados.filter(
+    (r) => r.margem_hora != null && r.margem_hora < 0,
+  ).length;
 
   if (componentesCusto.length === 0) {
     return (

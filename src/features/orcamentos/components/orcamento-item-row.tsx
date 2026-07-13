@@ -124,7 +124,9 @@ export function OrcamentoItemRow({
 function Campo({ rotulo, children }: { rotulo: string; children: React.ReactNode }) {
   return (
     <div className="space-y-1">
-      <div className="font-mono text-[10px] uppercase tracking-wide text-foreground-faint">{rotulo}</div>
+      <div className="font-mono text-[10px] uppercase tracking-wide text-foreground-faint">
+        {rotulo}
+      </div>
       {children}
     </div>
   );

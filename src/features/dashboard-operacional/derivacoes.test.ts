@@ -26,7 +26,12 @@ import {
   serieDiariaRecebido,
 } from "./derivacoes";
 
-const referencia = dataReferenciaOperacional(ordensServico, apontamentos, faturamentos, contasReceber);
+const referencia = dataReferenciaOperacional(
+  ordensServico,
+  apontamentos,
+  faturamentos,
+  contasReceber,
+);
 
 // Intervalo agregado equivalente à união dos 7 dias retornados por diasDoIntervalo,
 // construído de forma independente (sem chamar as funções sob teste) para servir
@@ -39,7 +44,15 @@ function janela7DiasAgregada(): IntervaloPeriodo {
 describe("intervaloMesAnterior", () => {
   it("cobre do dia 1 00:00 ao último dia 23:59:59.999 do mês anterior ao de referência", () => {
     const intervalo = intervaloMesAnterior(referencia);
-    const fimEsperado = new Date(referencia.getFullYear(), referencia.getMonth(), 0, 23, 59, 59, 999);
+    const fimEsperado = new Date(
+      referencia.getFullYear(),
+      referencia.getMonth(),
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
     expect(intervalo.inicio.getDate()).toBe(1);
     expect(intervalo.inicio.getHours()).toBe(0);
     expect(intervalo.fim.toDateString()).toBe(fimEsperado.toDateString());
@@ -172,7 +185,8 @@ describe("horasRestantesAlerta", () => {
     if (alertas.length === 0) return;
     for (const alerta of alertas) {
       const esperado =
-        Math.round((alerta.registro.horimetro_previsto - alerta.equipamento.horimetro_atual) * 10) / 10;
+        Math.round((alerta.registro.horimetro_previsto - alerta.equipamento.horimetro_atual) * 10) /
+        10;
       expect(horasRestantesAlerta(alerta)).toBe(esperado);
     }
   });

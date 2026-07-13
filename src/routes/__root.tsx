@@ -90,16 +90,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Antonello Terraplanagem · Plataforma de Gestão" },
       {
         property: "og:description",
-        content:
-          "Gestão de obras de terraplanagem: equipamentos, ordens de serviço e faturamento.",
+        content: "Gestão de obras de terraplanagem: equipamentos, ordens de serviço e faturamento.",
       },
       { property: "og:url", content: "https://antonello-terraplanagem.lovable.app/" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Antonello Terraplanagem · Plataforma de Gestão" },
       {
         name: "twitter:description",
-        content:
-          "Gestão de obras de terraplanagem: equipamentos, ordens de serviço e faturamento.",
+        content: "Gestão de obras de terraplanagem: equipamentos, ordens de serviço e faturamento.",
       },
       {
         property: "og:image",

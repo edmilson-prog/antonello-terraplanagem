@@ -16,8 +16,8 @@ export function SugestaoAlocacaoPainel({ modeloCobranca }: SugestaoAlocacaoPaine
   if (modeloCobranca !== "hora_maquina") {
     return (
       <p className="text-sm text-muted-foreground">
-        Sugestão de alocação não se aplica ao modelo "por metro" — esse modelo não vincula um equipamento
-        específico na abertura da OS.
+        Sugestão de alocação não se aplica ao modelo "por metro" — esse modelo não vincula um
+        equipamento específico na abertura da OS.
       </p>
     );
   }
@@ -30,7 +30,9 @@ export function SugestaoAlocacaoPainel({ modeloCobranca }: SugestaoAlocacaoPaine
       />
       {sugestoes ? (
         sugestoes.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nenhum equipamento disponível no momento — todos estão em uso.</p>
+          <p className="text-sm text-muted-foreground">
+            Nenhum equipamento disponível no momento — todos estão em uso.
+          </p>
         ) : (
           <ul className="space-y-2">
             {sugestoes.map((s) => (

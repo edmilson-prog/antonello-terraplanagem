@@ -54,10 +54,20 @@ export function GraficoUtilizacaoDiesel({ periodo }: Props) {
         />
       ) : (
         <ResponsiveContainer width="100%" height={Math.max(220, dados.length * 40)}>
-          <BarChart data={dados} layout="vertical" margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
+          <BarChart
+            data={dados}
+            layout="vertical"
+            margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
+          >
             <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" horizontal={false} />
             <XAxis type="number" stroke="var(--color-muted-foreground)" fontSize={12} />
-            <YAxis type="category" dataKey="nome" stroke="var(--color-muted-foreground)" fontSize={11} width={160} />
+            <YAxis
+              type="category"
+              dataKey="nome"
+              stroke="var(--color-muted-foreground)"
+              fontSize={11}
+              width={160}
+            />
             <Tooltip
               contentStyle={{
                 background: "var(--color-card)",

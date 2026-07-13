@@ -10,7 +10,9 @@ export function osFechadasSemFaturamento(
   ordens: OrdemServico[],
   faturamentos: Faturamento[],
 ): OrdemServico[] {
-  return ordens.filter((o) => o.status === "fechada" && faturamentoDaOS(o.id, faturamentos) === null);
+  return ordens.filter(
+    (o) => o.status === "fechada" && faturamentoDaOS(o.id, faturamentos) === null,
+  );
 }
 
 // Pipeline: executado = fechadas ainda não confirmadas (sem fatura OU rascunho);

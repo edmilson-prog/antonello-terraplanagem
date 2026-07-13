@@ -7,7 +7,8 @@ const base = (over: Partial<Comprovante> = {}): Comprovante => ({
   numero: "CMP-2026-0001",
   os_id: "os-x",
   cliente_id: "cl-001",
-  resumo_servico: "Obra: Teste\nPeríodo: 10/06/2026 a 11/06/2026\nEquipamentos: —\nTotal de horas: 0h",
+  resumo_servico:
+    "Obra: Teste\nPeríodo: 10/06/2026 a 11/06/2026\nEquipamentos: —\nTotal de horas: 0h",
   assinante_nome: null,
   assinatura_url: null,
   status: "pendente",
@@ -53,7 +54,10 @@ describe("assinar", () => {
 
   it("bloqueia assinar sem nome", () => {
     const store = criarComprovantesStore([base()]);
-    const r = store.assinar("cmp-x", { assinante_nome: "   ", assinatura_url: "data:image/png;base64,abc" });
+    const r = store.assinar("cmp-x", {
+      assinante_nome: "   ",
+      assinatura_url: "data:image/png;base64,abc",
+    });
     expect(r.ok).toBe(false);
   });
 
@@ -65,7 +69,10 @@ describe("assinar", () => {
 
   it("bloqueia assinar um comprovante já decidido", () => {
     const store = criarComprovantesStore([base({ status: "assinado" })]);
-    const r = store.assinar("cmp-x", { assinante_nome: "Maria", assinatura_url: "data:image/png;base64,abc" });
+    const r = store.assinar("cmp-x", {
+      assinante_nome: "Maria",
+      assinatura_url: "data:image/png;base64,abc",
+    });
     expect(r.ok).toBe(false);
   });
 });

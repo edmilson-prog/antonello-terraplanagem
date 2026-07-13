@@ -23,14 +23,12 @@ export function criarContasReceberStore(inicial: ContaReceber[]) {
   };
 
   const listar = () => itens;
-  const obter = (id: string): ContaReceber | null =>
-    itens.find((c) => c.id === id) ?? null;
+  const obter = (id: string): ContaReceber | null => itens.find((c) => c.id === id) ?? null;
 
   function darBaixaReceber(id: string, dados: DadosBaixaReceber): ResultadoBaixaReceber {
     const atual = obter(id);
     if (!atual) return { ok: false, motivo: "Conta a receber não encontrada." };
-    if (atual.status === "liquidada")
-      return { ok: false, motivo: "Esta conta já foi recebida." };
+    if (atual.status === "liquidada") return { ok: false, motivo: "Esta conta já foi recebida." };
     const agora = new Date().toISOString();
     const liquidada: ContaReceber = {
       ...atual,

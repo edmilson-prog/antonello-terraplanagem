@@ -26,8 +26,7 @@ export function planosParaEquipamento(
 ): PlanoManutencao[] {
   return planos.filter(
     (p) =>
-      p.ativo &&
-      (p.equipamento_id === equipamento.id || p.tipo_equipamento === equipamento.tipo),
+      p.ativo && (p.equipamento_id === equipamento.id || p.tipo_equipamento === equipamento.tipo),
   );
 }
 
@@ -37,8 +36,7 @@ export function registroPrevisto(
   equipamentoId: string,
 ): RegistroManutencao | undefined {
   return registros.find(
-    (r) =>
-      r.plano_id === planoId && r.equipamento_id === equipamentoId && r.status === "prevista",
+    (r) => r.plano_id === planoId && r.equipamento_id === equipamentoId && r.status === "prevista",
   );
 }
 
@@ -95,7 +93,12 @@ export function alertasManutencao(
     for (const plano of planosParaEquipamento(equipamento, planos)) {
       const resultado = statusPlano(plano, equipamento, registros);
       if (resultado && (resultado.status === "proxima" || resultado.status === "vencida")) {
-        alertas.push({ equipamento, plano, registro: resultado.registro, status: resultado.status });
+        alertas.push({
+          equipamento,
+          plano,
+          registro: resultado.registro,
+          status: resultado.status,
+        });
       }
     }
   }
@@ -127,9 +130,10 @@ export function resumoProximaManutencao(
     return acc;
   }, []);
 
-  const maisUrgente = candidatos.reduce<
-    { plano: PlanoManutencao; resultado: StatusPlanoResultado } | null
-  >((urgente, atual) => {
+  const maisUrgente = candidatos.reduce<{
+    plano: PlanoManutencao;
+    resultado: StatusPlanoResultado;
+  } | null>((urgente, atual) => {
     if (!urgente) return atual;
     const restantesAtual =
       atual.resultado.registro.horimetro_previsto - equipamento.horimetro_atual;

@@ -15,13 +15,7 @@ interface FormDialogProps {
   children: ReactNode;
 }
 
-export function FormDialog({
-  open,
-  onOpenChange,
-  titulo,
-  descricao,
-  children,
-}: FormDialogProps) {
+export function FormDialog({ open, onOpenChange, titulo, descricao, children }: FormDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">

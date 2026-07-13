@@ -34,7 +34,13 @@ export function WidgetPipelineFinanceiro({ intervalo }: { intervalo: IntervaloPe
 
   if (error) {
     return (
-      <KpiCard rotulo="Pipeline financeiro" valor="" error={error} onRetry={retry} className="sm:col-span-3" />
+      <KpiCard
+        rotulo="Pipeline financeiro"
+        valor=""
+        error={error}
+        onRetry={retry}
+        className="sm:col-span-3"
+      />
     );
   }
 
@@ -60,10 +66,20 @@ export function WidgetPipelineFinanceiro({ intervalo }: { intervalo: IntervaloPe
         />
       </Link>
       <Link to="/admin/faturamento" className="block">
-        <KpiCard icone="lucide:receipt" rotulo="Faturado" valor={formatBRL(pipeline.faturado)} descricao="no período" />
+        <KpiCard
+          icone="lucide:receipt"
+          rotulo="Faturado"
+          valor={formatBRL(pipeline.faturado)}
+          descricao="no período"
+        />
       </Link>
       <Link to="/admin/financeiro" className="block">
-        <KpiCard icone="lucide:banknote" rotulo="Recebido" valor={formatBRL(pipeline.recebido)} descricao="no período" />
+        <KpiCard
+          icone="lucide:banknote"
+          rotulo="Recebido"
+          valor={formatBRL(pipeline.recebido)}
+          descricao="no período"
+        />
       </Link>
     </div>
   );

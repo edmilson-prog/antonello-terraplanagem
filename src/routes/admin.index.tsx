@@ -13,8 +13,7 @@ export const Route = createFileRoute("/admin/")({
       { property: "og:title", content: "Dashboard da Retaguarda · Antonello" },
       {
         property: "og:description",
-        content:
-          "Visão geral da operação: equipamentos, ordens de serviço e faturamento.",
+        content: "Visão geral da operação: equipamentos, ordens de serviço e faturamento.",
       },
       { name: "robots", content: "noindex,nofollow" },
     ],

@@ -1,5 +1,14 @@
 import { useMemo, useState } from "react";
-import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { KpiCard } from "@/features/dashboard/components/kpi-card";
@@ -53,7 +62,17 @@ export function RankingObras({ periodo }: Props) {
         apontamentos,
         precosHoraMaquina,
       ).sort((a, b) => b.margem - a.margem),
-    [ordens, faturamentos, periodo, equipamentos, componentesCusto, abastecimentos, registrosManutencao, apontamentos, precosHoraMaquina],
+    [
+      ordens,
+      faturamentos,
+      periodo,
+      equipamentos,
+      componentesCusto,
+      abastecimentos,
+      registrosManutencao,
+      apontamentos,
+      precosHoraMaquina,
+    ],
   );
 
   const { isLoading, error, retry } = useMockResource(resultados);
@@ -101,8 +120,18 @@ export function RankingObras({ periodo }: Props) {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-4">
-        <KpiCard rotulo="Receita faturada" valor={formatBRL(receitaTotal)} icone="lucide:receipt" isLoading={isLoading} />
-        <KpiCard rotulo="Custo total" valor={formatBRL(custoTotal)} icone="lucide:wallet" isLoading={isLoading} />
+        <KpiCard
+          rotulo="Receita faturada"
+          valor={formatBRL(receitaTotal)}
+          icone="lucide:receipt"
+          isLoading={isLoading}
+        />
+        <KpiCard
+          rotulo="Custo total"
+          valor={formatBRL(custoTotal)}
+          icone="lucide:wallet"
+          isLoading={isLoading}
+        />
         <KpiCard
           rotulo="Margem total"
           valor={formatBRL(margemTotal)}
@@ -125,10 +154,24 @@ export function RankingObras({ periodo }: Props) {
             Margem por obra
           </h2>
           <ResponsiveContainer width="100%" height={Math.max(220, dadosGrafico.length * 40)}>
-            <BarChart data={dadosGrafico} layout="vertical" margin={{ top: 8, right: 16, left: 0, bottom: 0 }}>
-              <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" horizontal={false} />
+            <BarChart
+              data={dadosGrafico}
+              layout="vertical"
+              margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid
+                stroke="var(--color-border)"
+                strokeDasharray="3 3"
+                horizontal={false}
+              />
               <XAxis type="number" stroke="var(--color-muted-foreground)" fontSize={12} />
-              <YAxis type="category" dataKey="nome" stroke="var(--color-muted-foreground)" fontSize={11} width={120} />
+              <YAxis
+                type="category"
+                dataKey="nome"
+                stroke="var(--color-muted-foreground)"
+                fontSize={11}
+                width={120}
+              />
               <Tooltip
                 contentStyle={{
                   background: "var(--color-card)",
@@ -140,7 +183,10 @@ export function RankingObras({ periodo }: Props) {
               />
               <Bar dataKey="margem" radius={[0, 4, 4, 0]}>
                 {dadosGrafico.map((d, i) => (
-                  <Cell key={i} fill={d.margem < 0 ? "var(--color-destructive)" : "var(--color-primary)"} />
+                  <Cell
+                    key={i}
+                    fill={d.margem < 0 ? "var(--color-destructive)" : "var(--color-primary)"}
+                  />
                 ))}
               </Bar>
             </BarChart>

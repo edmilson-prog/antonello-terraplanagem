@@ -53,5 +53,7 @@ Deno.serve(async (req: Request) => {
     }
   }
 
-  return new Response(JSON.stringify({ ok: false, motivo: "falha_envio" }), { headers: jsonHeaders });
+  return new Response(JSON.stringify({ ok: false, motivo: "falha_envio" }), {
+    headers: jsonHeaders,
+  });
 });

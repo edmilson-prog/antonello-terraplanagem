@@ -28,9 +28,7 @@ describe("mock de ordens de serviço", () => {
 
   it("inclui uma OS colaborativa (apontamentos de 2+ operadores)", () => {
     const colaborativa = ordensServico.some((os) => {
-      const ops = new Set(
-        apontamentos.filter((a) => a.os_id === os.id).map((a) => a.operador_id),
-      );
+      const ops = new Set(apontamentos.filter((a) => a.os_id === os.id).map((a) => a.operador_id));
       return ops.size >= 2;
     });
     expect(colaborativa).toBe(true);

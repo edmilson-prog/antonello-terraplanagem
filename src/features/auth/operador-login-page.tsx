@@ -54,7 +54,11 @@ export function OperadorLoginPage() {
 
     setEntrando(false);
 
-    const resultado = data as { erro?: string; token?: string; operador?: { id: string; nome: string } } | null;
+    const resultado = data as {
+      erro?: string;
+      token?: string;
+      operador?: { id: string; nome: string };
+    } | null;
 
     if (error || !resultado || resultado.erro || !resultado.token || !resultado.operador) {
       setErroPin(resultado?.erro ?? "Não foi possível entrar. Tente novamente.");
@@ -178,7 +182,9 @@ export function OperadorLoginPage() {
         ) : null}
 
         {operadores?.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground">Nenhum operador ativo cadastrado.</p>
+          <p className="text-center text-sm text-muted-foreground">
+            Nenhum operador ativo cadastrado.
+          </p>
         ) : null}
 
         <div className="grid gap-2">

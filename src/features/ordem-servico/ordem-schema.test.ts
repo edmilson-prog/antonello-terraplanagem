@@ -1,7 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { ordemSchema } from "@/features/ordem-servico/ordem-schema";
 
-const base = { cliente_id: "cl-001", obra_nome: "Obra X", modelo_cobranca: "hora_maquina" as const };
+const base = {
+  cliente_id: "cl-001",
+  obra_nome: "Obra X",
+  modelo_cobranca: "hora_maquina" as const,
+};
 
 describe("ordemSchema", () => {
   it("aceita hora_maquina válida", () => {
@@ -16,7 +20,11 @@ describe("ordemSchema", () => {
   it("por_metro exige diâmetro", () => {
     const semDiam = ordemSchema.safeParse({ ...base, modelo_cobranca: "por_metro" });
     expect(semDiam.success).toBe(false);
-    const comDiam = ordemSchema.safeParse({ ...base, modelo_cobranca: "por_metro", diametro_broca_mm: 300 });
+    const comDiam = ordemSchema.safeParse({
+      ...base,
+      modelo_cobranca: "por_metro",
+      diametro_broca_mm: 300,
+    });
     expect(comDiam.success).toBe(true);
   });
 });

@@ -37,10 +37,7 @@ export function FinanceiroPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        titulo="Financeiro"
-        descricao="Contas a receber, a pagar e visão de caixa"
-      />
+      <PageHeader titulo="Financeiro" descricao="Contas a receber, a pagar e visão de caixa" />
 
       <PrevisaoCaixaCard contasReceber={contasReceber} clientes={clientes} />
 
@@ -72,16 +69,17 @@ export function FinanceiroPage() {
 
       <DarBaixaReceberDialog
         conta={contaReceberSelecionada}
-        onOpenChange={(open) => { if (!open) setContaReceberSelecionada(null); }}
+        onOpenChange={(open) => {
+          if (!open) setContaReceberSelecionada(null);
+        }}
       />
       <DarBaixaPagarDialog
         conta={contaPagarSelecionada}
-        onOpenChange={(open) => { if (!open) setContaPagarSelecionada(null); }}
+        onOpenChange={(open) => {
+          if (!open) setContaPagarSelecionada(null);
+        }}
       />
-      <NovaContaPagarDialog
-        open={novaContaAberta}
-        onOpenChange={setNovaContaAberta}
-      />
+      <NovaContaPagarDialog open={novaContaAberta} onOpenChange={setNovaContaAberta} />
       <EmitirCobrancaDialog
         conta={contaParaEmitirCobranca}
         onOpenChange={(open) => {

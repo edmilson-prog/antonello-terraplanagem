@@ -79,9 +79,7 @@ export function PrecoMobilizacaoForm({ inicial, onSuccess, onCancel }: Props) {
             />
           )}
         />
-        {errors.valor ? (
-          <p className="text-xs text-destructive">{errors.valor.message}</p>
-        ) : null}
+        {errors.valor ? <p className="text-xs text-destructive">{errors.valor.message}</p> : null}
       </div>
 
       <Controller

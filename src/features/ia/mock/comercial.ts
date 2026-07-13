@@ -31,11 +31,16 @@ export async function sugerirOrcamento(
   // cadastro (ex.: primeira obra dele nesta modalidade). Cliente inexistente não tem
   // "obra semelhante" nenhuma — não inventa a partir da carteira de outros clientes (RF).
   const clienteCadastrado = clientesStore.getById(contexto.clienteId) != null;
-  const mesmoModelo = clienteCadastrado ? ordens.filter((o) => o.modelo_cobranca === contexto.modeloCobranca) : [];
+  const mesmoModelo = clienteCadastrado
+    ? ordens.filter((o) => o.modelo_cobranca === contexto.modeloCobranca)
+    : [];
   const base = doCliente.length > 0 ? doCliente : mesmoModelo;
 
   if (base.length === 0) {
-    return comDelay({ itens: [], justificativa: "Sem obras semelhantes no histórico para sugerir itens." }, delayMs);
+    return comDelay(
+      { itens: [], justificativa: "Sem obras semelhantes no histórico para sugerir itens." },
+      delayMs,
+    );
   }
 
   const justificativaBase =
@@ -51,7 +56,10 @@ export async function sugerirOrcamento(
       );
       const porEquipDaOS = new Map<string, number>();
       for (const a of daOS) {
-        porEquipDaOS.set(a.equipamento_id, (porEquipDaOS.get(a.equipamento_id) ?? 0) + (a.horas_trabalhadas ?? 0));
+        porEquipDaOS.set(
+          a.equipamento_id,
+          (porEquipDaOS.get(a.equipamento_id) ?? 0) + (a.horas_trabalhadas ?? 0),
+        );
       }
       for (const [equipId, horas] of porEquipDaOS) {
         porEquipamento.set(equipId, [...(porEquipamento.get(equipId) ?? []), horas]);
@@ -61,7 +69,8 @@ export async function sugerirOrcamento(
       .sort((a, b) => b[1].length - a[1].length)
       .slice(0, 2)
       .map(([equipId, listaHoras]) => {
-        const media = Math.round((listaHoras.reduce((s, h) => s + h, 0) / listaHoras.length) * 10) / 10;
+        const media =
+          Math.round((listaHoras.reduce((s, h) => s + h, 0) / listaHoras.length) * 10) / 10;
         return {
           tipo: "hora_maquina" as const,
           origem_id: equipId,
@@ -71,7 +80,10 @@ export async function sugerirOrcamento(
       });
     if (itens.length === 0) {
       return comDelay(
-        { itens: [], justificativa: "Obras semelhantes encontradas, mas sem horas apontadas registradas." },
+        {
+          itens: [],
+          justificativa: "Obras semelhantes encontradas, mas sem horas apontadas registradas.",
+        },
         delayMs,
       );
     }
@@ -81,13 +93,19 @@ export async function sugerirOrcamento(
   const metros = base.map((os) => totalMetragemOS(os.id, apontamentos)).filter((m) => m > 0);
   if (metros.length === 0) {
     return comDelay(
-      { itens: [], justificativa: "Obras semelhantes encontradas, mas sem metragem executada registrada." },
+      {
+        itens: [],
+        justificativa: "Obras semelhantes encontradas, mas sem metragem executada registrada.",
+      },
       delayMs,
     );
   }
   const precoRef = precoFundacaoStore.getAll().find((p) => p.ativo);
   if (!precoRef) {
-    return comDelay({ itens: [], justificativa: "Nenhuma tabela de preço por metro ativa para sugerir." }, delayMs);
+    return comDelay(
+      { itens: [], justificativa: "Nenhuma tabela de preço por metro ativa para sugerir." },
+      delayMs,
+    );
   }
   const mediaMetros = Math.round((metros.reduce((s, m) => s + m, 0) / metros.length) * 10) / 10;
   return comDelay(

@@ -3,14 +3,21 @@ import {
   rentabilidadePorTodosEquipamentos,
   rentabilidadePorTodasAsObras,
 } from "@/features/rentabilidade/derivacoes";
-import type { RentabilidadeEquipamento, RentabilidadeObra } from "@/features/rentabilidade/derivacoes";
+import type {
+  RentabilidadeEquipamento,
+  RentabilidadeObra,
+} from "@/features/rentabilidade/derivacoes";
 import { horasTrabalhadasNoPeriodo } from "@/features/custo-hora/derivacoes";
 import { indicadoresPorEquipamento } from "@/features/diesel/derivacoes";
 import type { IndicadorDieselEquipamento } from "@/features/diesel/derivacoes";
 import { pipelineFinanceiroPeriodo } from "@/features/dashboard/derivacoes";
 import type { PipelineFinanceiroPeriodo } from "@/features/dashboard/derivacoes";
 import { rotuloMes } from "@/shared/lib/periodo-mensal";
-import { intervaloDatas, intervaloDias, mesesDoPeriodo } from "@/features/gerencial/periodo-gerencial";
+import {
+  intervaloDatas,
+  intervaloDias,
+  mesesDoPeriodo,
+} from "@/features/gerencial/periodo-gerencial";
 import type { PeriodoGerencial } from "@/features/gerencial/periodo-gerencial";
 import type {
   Abastecimento,
@@ -127,7 +134,12 @@ export function utilizacaoPorEquipamentoNoPeriodo(
   apontamentos: Apontamento[],
   periodo: PeriodoGerencial,
 ): IndicadorDieselEquipamento[] {
-  return indicadoresPorEquipamento(equipamentos, abastecimentos, apontamentos, intervaloDias(periodo));
+  return indicadoresPorEquipamento(
+    equipamentos,
+    abastecimentos,
+    apontamentos,
+    intervaloDias(periodo),
+  );
 }
 
 // custoHoraEquipamento/rentabilidadePorEquipamento só entendem 1 mês por vez —

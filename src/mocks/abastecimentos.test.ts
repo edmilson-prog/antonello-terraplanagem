@@ -33,9 +33,7 @@ describe("mocks/abastecimentos", () => {
   });
 
   it("inclui ao menos um abastecimento sem nenhum dado de custo (registrado por operador)", () => {
-    expect(
-      abastecimentos.some((a) => a.custo_total === null && a.preco_litro === null),
-    ).toBe(true);
+    expect(abastecimentos.some((a) => a.custo_total === null && a.preco_litro === null)).toBe(true);
   });
 
   it("inclui o edge case de litros alto (>= 300)", () => {
@@ -43,9 +41,7 @@ describe("mocks/abastecimentos", () => {
   });
 
   it("inclui o edge case de custo total sem preço por litro", () => {
-    expect(
-      abastecimentos.some((a) => a.custo_total !== null && a.preco_litro === null),
-    ).toBe(true);
+    expect(abastecimentos.some((a) => a.custo_total !== null && a.preco_litro === null)).toBe(true);
   });
 
   it("eq-003, eq-004 e eq-008 não têm nenhum abastecimento", () => {

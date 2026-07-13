@@ -38,6 +38,8 @@ describe("serieDecorativa", () => {
 
   it("retorna a entrada sem alteração para 0 ou 1 ponto", () => {
     expect(serieDecorativa([])).toEqual([]);
-    expect(serieDecorativa([{ data: "2026-07-01", valor: 5 }])).toEqual([{ data: "2026-07-01", valor: 5 }]);
+    expect(serieDecorativa([{ data: "2026-07-01", valor: 5 }])).toEqual([
+      { data: "2026-07-01", valor: 5 },
+    ]);
   });
 });

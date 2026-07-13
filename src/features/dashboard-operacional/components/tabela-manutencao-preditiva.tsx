@@ -24,7 +24,9 @@ export function TabelaManutencaoPreditiva() {
   return (
     <section className="rounded-xl border bg-card p-5 shadow-sm">
       <div className="mb-4">
-        <h2 className="font-display text-base font-bold text-card-foreground">Manutenção preditiva</h2>
+        <h2 className="font-display text-base font-bold text-card-foreground">
+          Manutenção preditiva
+        </h2>
         <p className="text-xs text-muted-foreground">Alertas por horímetro — próxima ou vencida</p>
       </div>
 
@@ -33,7 +35,11 @@ export function TabelaManutencaoPreditiva() {
       ) : error ? (
         <div role="alert" className="flex flex-col items-center gap-3 py-16 text-center">
           <p className="text-sm text-muted-foreground">{error.message}</p>
-          <button type="button" onClick={retry} className="text-sm font-semibold text-primary hover:underline">
+          <button
+            type="button"
+            onClick={retry}
+            className="text-sm font-semibold text-primary hover:underline"
+          >
             Tentar novamente
           </button>
         </div>
@@ -58,11 +64,18 @@ export function TabelaManutencaoPreditiva() {
               {alertas.map((alerta) => {
                 const horas = horasRestantesAlerta(alerta);
                 return (
-                  <tr key={`${alerta.equipamento.id}-${alerta.plano.id}`} className="border-b last:border-0">
-                    <td className="py-2 pr-4 font-semibold text-card-foreground">{alerta.equipamento.nome}</td>
+                  <tr
+                    key={`${alerta.equipamento.id}-${alerta.plano.id}`}
+                    className="border-b last:border-0"
+                  >
+                    <td className="py-2 pr-4 font-semibold text-card-foreground">
+                      {alerta.equipamento.nome}
+                    </td>
                     <td className="py-2 pr-4 text-muted-foreground">{alerta.plano.descricao}</td>
                     <td className="py-2 pr-4 font-mono text-card-foreground">
-                      {horas <= 0 ? `${numero.format(Math.abs(horas))} h vencidas` : `${numero.format(horas)} h`}
+                      {horas <= 0
+                        ? `${numero.format(Math.abs(horas))} h vencidas`
+                        : `${numero.format(horas)} h`}
                     </td>
                     <td className="py-2">
                       <StatusManutencaoBadge status={alerta.status} />
