@@ -33,6 +33,7 @@ export interface ClienteOrdemFinanceiro {
 
 export interface ClienteCadastrais {
   fantasia: string;
+  cidade: string;
   segmento: string;
   email: string;
   endereco: string;
@@ -148,6 +149,7 @@ export function showcaseDoCliente(id: string): ClienteShowcase {
 
   const cadastrais: ClienteCadastrais = {
     fantasia: pick(FANTASIA_POOL),
+    cidade: pick(CIDADES_POOL),
     segmento: pick(SEGMENTO_POOL),
     email: "contato@exemplo.com.br",
     endereco: `${pick(RUAS_POOL)} · ${pick(CIDADES_POOL)}`,
