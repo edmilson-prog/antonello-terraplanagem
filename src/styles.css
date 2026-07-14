@@ -243,3 +243,9 @@
     display: none;
   }
 }
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
