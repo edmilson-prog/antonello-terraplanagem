@@ -249,11 +249,11 @@ convenção estabelecida para isso; ficaria inconsistente introduzir uma só aqu
 
 ## Testes
 
-- `login-page.test.tsx` (existente, estendido): painel de marca renderiza o rodapé de versão
-  (`"v0.21.0 · Ledger"`); botão de mostrar/ocultar senha alterna `type` do input; desmarcar
-  "Manter conectado" antes de submeter grava `"false"` em `localStorage["sb-lembrar-conectado"]`;
-  clique em "Esqueci minha senha?" abre o dialog (mockar `EsqueciSenhaDialog` ou verificar
-  `role="dialog"` visível).
+- `login-page.test.tsx` (novo — `login-page.tsx` não tem teste hoje): painel de marca renderiza
+  o rodapé de versão (`"v0.21.0 · Ledger"`); botão de mostrar/ocultar senha alterna `type` do
+  input; desmarcar "Manter conectado" antes de submeter grava `"false"` em
+  `localStorage["sb-lembrar-conectado"]`; clique em "Esqueci minha senha?" abre o dialog
+  (verificar `role="dialog"` visível).
 - `esqueci-senha-dialog.test.tsx` (novo): envio com e-mail preenchido mostra o estado "enviado"
   (mock de `supabase.auth.resetPasswordForEmail` resolvendo); erro de rede (mock rejeitando)
   mostra banner inline; fechar e reabrir o dialog reseta o estado.
@@ -268,6 +268,16 @@ convenção estabelecida para isso; ficaria inconsistente introduzir uma só aqu
 - `campo-com-icone.test.tsx` (novo): renderiza ícone + label + input; `onChange` repassa o valor
   digitado; `acao` (quando fornecida) é renderizada dentro da caixa.
 - `tsc --noEmit` limpo; suíte `vitest` existente permanece verde.
+
+**Infraestrutura de teste (pré-requisito):** o mock global de `vitest.setup.ts`
+(`vi.mock("./src/lib/supabase", ...)`) hoje só expõe `from` e `functions.invoke` — não tem
+`auth` nenhum. `login-page.tsx` já chama `supabase.auth.signInWithPassword` em produção, mas
+nunca foi testado (por isso o gap nunca apareceu). Antes de qualquer teste desta spec, o mock
+global precisa ganhar um objeto `auth` com `vi.fn()` para `signInWithPassword`, `signOut`,
+`resetPasswordForEmail`, `updateUser` e `getSession` (todos resolvendo um valor neutro por
+padrão, ex. `{ data: {}, error: null }`), para que cada teste sobrescreva com
+`vi.mocked(supabase.auth.<método>).mockResolvedValueOnce(...)` conforme o cenário — mesmo padrão
+já usado pelos stores para `supabase.from`.
 
 ## Fora de escopo
 
