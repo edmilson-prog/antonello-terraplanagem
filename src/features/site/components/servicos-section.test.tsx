@@ -11,8 +11,6 @@ describe("ServicosSection", () => {
     expect(screen.getByText("Nivelamento de pátios")).toBeInTheDocument();
     expect(screen.getByText("Abertura de acessos")).toBeInTheDocument();
     expect(screen.getByText("Limpeza de terreno")).toBeInTheDocument();
-    expect(
-      screen.getByText(/Corte, aterro e conformação de platôs/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Corte, aterro e conformação de platôs/)).toBeInTheDocument();
   });
 });

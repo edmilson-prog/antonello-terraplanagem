@@ -11,8 +11,7 @@ const SERVICOS: Servico[] = [
   {
     icone: "lucide:truck",
     titulo: "Terraplenagem",
-    descricao:
-      "Corte, aterro e conformação de platôs para obras industriais, comerciais e rurais.",
+    descricao: "Corte, aterro e conformação de platôs para obras industriais, comerciais e rurais.",
   },
   {
     icone: "lucide:shovel",
@@ -22,8 +21,7 @@ const SERVICOS: Servico[] = [
   {
     icone: "lucide:building-2",
     titulo: "Fundações e estacas",
-    descricao:
-      "Escavação para fundação de galpões e estruturas, com apoio à cravação de estacas.",
+    descricao: "Escavação para fundação de galpões e estruturas, com apoio à cravação de estacas.",
   },
   {
     icone: "lucide:gauge",
@@ -57,8 +55,8 @@ export function ServicosSection() {
             Infraestrutura de solo do início ao fim
           </h2>
           <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-            Da limpeza do terreno à compactação final — uma equipe, uma frota e um responsável
-            pela sua obra.
+            Da limpeza do terreno à compactação final — uma equipe, uma frota e um responsável pela
+            sua obra.
           </p>
         </div>
 

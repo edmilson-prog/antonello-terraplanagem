@@ -30,8 +30,8 @@ export function HeroSection() {
             O terreno <em className="not-italic text-primary">pronto</em> para o seu projeto
           </h1>
           <p className="mt-5 max-w-lg text-base leading-relaxed text-muted-foreground">
-            Terraplenagem, escavação e infraestrutura de solo com equipamentos próprios,
-            operadores experientes e gestão de obra em tempo real — do orçamento à nota fiscal.
+            Terraplenagem, escavação e infraestrutura de solo com equipamentos próprios, operadores
+            experientes e gestão de obra em tempo real — do orçamento à nota fiscal.
           </p>
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <Button
@@ -86,9 +86,7 @@ export function HeroSection() {
               <Icon icon="lucide:gauge" className="h-4 w-4" />
             </span>
             <div>
-              <div className="text-xs font-semibold text-foreground">
-                Horímetro 4.210 → 4.218
-              </div>
+              <div className="text-xs font-semibold text-foreground">Horímetro 4.210 → 4.218</div>
               <div className="font-mono text-[11px] text-muted-foreground">
                 8,0 h apontadas hoje
               </div>

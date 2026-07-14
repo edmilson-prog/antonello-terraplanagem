@@ -129,7 +129,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           url: "https://antonello-terraplanagem.lovable.app/",
           description:
             "Serviços de terraplanagem com equipamentos pesados — escavadeiras, tratores de esteira, carregadeiras e caminhões basculantes.",
-          areaServed: "BR-PR",
+          areaServed: "BR-RS",
         }),
       },
       {

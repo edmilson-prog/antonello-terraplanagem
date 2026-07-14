@@ -4,7 +4,11 @@ import { useRevealOnScroll } from "./use-reveal-on-scroll";
 
 function Exemplo() {
   const { ref, revelado } = useRevealOnScroll<HTMLDivElement>();
-  return <div ref={ref} data-testid="alvo">{revelado ? "visivel" : "oculto"}</div>;
+  return (
+    <div ref={ref} data-testid="alvo">
+      {revelado ? "visivel" : "oculto"}
+    </div>
+  );
 }
 
 describe("useRevealOnScroll", () => {
@@ -47,7 +51,10 @@ describe("useRevealOnScroll", () => {
     expect(screen.getByTestId("alvo")).toHaveTextContent("oculto");
 
     act(() => {
-      callback?.([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
+      callback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
     });
 
     expect(screen.getByTestId("alvo")).toHaveTextContent("visivel");

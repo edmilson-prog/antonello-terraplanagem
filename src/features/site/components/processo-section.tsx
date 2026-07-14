@@ -39,17 +39,15 @@ export function ProcessoSection() {
             Obra gerenciada, não improvisada
           </h2>
           <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-            Cada obra vira uma Ordem de Serviço no nosso sistema — você acompanha horas, medições
-            e faturamento sem surpresa.
+            Cada obra vira uma Ordem de Serviço no nosso sistema — você acompanha horas, medições e
+            faturamento sem surpresa.
           </p>
         </div>
 
         <div className="mt-10 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
           {PASSOS.map((passo) => (
             <div key={passo.numero} className="rounded-xl border border-border bg-card p-5">
-              <div className="font-mono text-[13px] font-semibold text-primary">
-                {passo.numero}
-              </div>
+              <div className="font-mono text-[13px] font-semibold text-primary">{passo.numero}</div>
               <div className="my-3.5 h-[3px] overflow-hidden rounded-full bg-primary/15">
                 <div className="h-full w-full rounded-full bg-primary" />
               </div>
