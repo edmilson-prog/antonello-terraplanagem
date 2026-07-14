@@ -49,7 +49,9 @@ de redefinição via Supabase Auth).
    `CODINOME_SISTEMA = "Ledger"` (hoje em `package.json`/`CHANGELOG.md`) — mantida manualmente a
    cada bump de versão, junto do passo já existente no fluxo de PRDs do `CLAUDE.md`
    ("Incrementar versão... Atualizar CHANGELOG"). O texto exibido é
-   `"Sistemas operacionais"` (bolinha verde, `text-success`/token semântico) +
+   `"Sistemas operacionais"` (bolinha `bg-primary` — o projeto não tem token verde de
+   "sucesso"; o mapeamento já estabelecido em `filtro-chips.tsx`/`status-filter-chips.tsx` usa
+   `text-primary` para o tom "success", reaproveitado aqui) +
    `"v{VERSAO_SISTEMA} · {CODINOME_SISTEMA}"` em `font-mono`.
 6. **Nada de placeholder/dead end nos dois novos fluxos** — ao contrário do que o próprio mock
    faz (checkbox e link sem lógica nenhuma), a implementação real cobre os dois de ponta a
@@ -243,7 +245,7 @@ convenção estabelecida para isso; ficaria inconsistente introduzir uma só aqu
 - Checkbox "Manter conectado": `<label>` associado, navegável por teclado.
 - Contraste do rodapé de status sobre a imagem: o gradiente escurece o suficiente na faixa
   inferior (`asphalt/75` no fim) para o texto claro (`sidebar-foreground`) manter ≥ 4.5:1 —
-  mesma técnica de scrim já usada no hero da landing page.
+  verificar com o DevTools (contrast checker) na implementação, já que é texto sobre imagem.
 - `Dialog` e página de redefinição seguem o mesmo padrão de foco/`Escape` que os demais
   `Dialog`s do projeto (shadcn já cobre isso).
 
