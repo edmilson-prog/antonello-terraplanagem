@@ -13,9 +13,7 @@ describe("EsqueciSenhaDialog", () => {
   });
 
   it("envia o e-mail e mostra a confirmação", async () => {
-    render(
-      <EsqueciSenhaDialog aberto onOpenChange={() => {}} emailInicial="joao@antonello.com" />,
-    );
+    render(<EsqueciSenhaDialog aberto onOpenChange={() => {}} emailInicial="joao@antonello.com" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Enviar link" }));
 
@@ -32,9 +30,7 @@ describe("EsqueciSenhaDialog", () => {
 
   it("mostra erro inline quando a chamada falha", async () => {
     vi.mocked(supabase.auth.resetPasswordForEmail).mockRejectedValueOnce(new Error("rede"));
-    render(
-      <EsqueciSenhaDialog aberto onOpenChange={() => {}} emailInicial="joao@antonello.com" />,
-    );
+    render(<EsqueciSenhaDialog aberto onOpenChange={() => {}} emailInicial="joao@antonello.com" />);
 
     fireEvent.click(screen.getByRole("button", { name: "Enviar link" }));
 
