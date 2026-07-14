@@ -40,4 +40,23 @@ describe("EsqueciSenhaDialog", () => {
       ).toBeInTheDocument(),
     );
   });
+
+  it("pré-preenche o e-mail com emailInicial já na primeira abertura (não só a partir da segunda)", () => {
+    const { rerender } = render(
+      <EsqueciSenhaDialog aberto={false} onOpenChange={() => {}} emailInicial="" />,
+    );
+
+    // Usuário digita o e-mail no formulário de login e então abre o dialog pela
+    // primeira vez: o componente já está montado (nunca desmontou), então o
+    // useState inicial não roda de novo — precisa de um efeito para sincronizar.
+    rerender(
+      <EsqueciSenhaDialog
+        aberto={true}
+        onOpenChange={() => {}}
+        emailInicial="novo@antonello.com"
+      />,
+    );
+
+    expect(screen.getByLabelText("E-mail")).toHaveValue("novo@antonello.com");
+  });
 });

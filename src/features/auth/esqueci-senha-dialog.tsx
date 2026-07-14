@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Icon } from "@iconify/react";
 import {
   Dialog,
@@ -27,9 +27,17 @@ export function EsqueciSenhaDialog({
   const [enviado, setEnviado] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
+  // O dialog fica sempre montado (nunca desmonta), então o useState inicial só
+  // roda no primeiro mount. Re-sincroniza o e-mail local com emailInicial toda
+  // vez que o dialog abre, para que a pré-seleção funcione já na primeira abertura.
+  useEffect(() => {
+    if (aberto) {
+      setEmail(emailInicial ?? "");
+    }
+  }, [aberto, emailInicial]);
+
   function fechar(novoAberto: boolean) {
     if (!novoAberto) {
-      setEmail(emailInicial ?? "");
       setEnviando(false);
       setEnviado(false);
       setErro(null);
