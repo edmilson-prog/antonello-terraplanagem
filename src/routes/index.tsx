@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LandingPage } from "@/features/site/components/landing-page";
+import { contato } from "@/features/site/lib/contato";
 
 const URL_PAGINA = "https://antonello-terraplanagem.lovable.app/";
 
@@ -9,8 +10,7 @@ export const Route = createFileRoute("/")({
       { title: "Antonello Terraplanagem · Terraplenagem, escavação e infraestrutura de solo" },
       {
         name: "description",
-        content:
-          "Terraplenagem, escavação e infraestrutura de solo em Frederico Westphalen — RS, com equipamentos próprios, operadores experientes e gestão de obra em tempo real.",
+        content: `Terraplenagem, escavação e infraestrutura de solo em ${contato.cidadeUf}, com equipamentos próprios, operadores experientes e gestão de obra em tempo real.`,
       },
       {
         property: "og:title",
