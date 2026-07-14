@@ -2,19 +2,23 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Icon } from "@iconify/react";
+import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { HazardStripe } from "@/shared/components/hazard-stripe";
-import { ThemeToggle } from "@/shared/components/theme-toggle";
 import { CampoComIcone } from "@/shared/components/campo-com-icone";
 import { EsqueciSenhaDialog } from "@/features/auth/esqueci-senha-dialog";
 import { VERSAO_SISTEMA, CODINOME_SISTEMA } from "@/features/auth/versao-sistema";
 import { STORAGE_KEY_LEMBRAR } from "@/lib/supabase-storage";
 import { supabase } from "@/lib/supabase";
+import { useTheme } from "@/shared/hooks/use-theme";
+import { cn } from "@/lib/utils";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const { theme, toggle } = useTheme();
+  const invertido = theme === "dark";
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
@@ -55,9 +59,20 @@ export function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen w-full bg-asphalt">
-      {/* Painel de marca — logo full-bleed com gradiente escuro e rodapé de status. */}
-      <aside className="relative hidden w-1/2 flex-col overflow-hidden bg-asphalt md:flex">
+    <main className="relative flex min-h-screen w-full overflow-hidden bg-asphalt">
+      <div aria-live="polite" className="sr-only">
+        {`Tema alterado para ${invertido ? "escuro" : "claro"}`}
+      </div>
+
+      {/* Painel de marca — logo full-bleed com gradiente escuro e rodapé de status.
+          Aparência sempre escura; só a posição (esquerda/direita) muda com o tema. */}
+      <aside
+        className={cn(
+          "relative hidden w-1/2 flex-col overflow-hidden bg-asphalt md:flex",
+          "md:absolute md:inset-y-0 md:left-0 md:transition-transform md:duration-500 md:ease-in-out motion-reduce:md:transition-none",
+          invertido ? "md:translate-x-full" : "md:translate-x-0",
+        )}
+      >
         <img
           src="/logo-antonello-preto.png"
           alt="Antonello Terraplanagem"
@@ -82,17 +97,39 @@ export function LoginPage() {
         </div>
       </aside>
 
-      {/* Painel do formulário — tom concreto claro FIXO (via .theme-light):
-          NÃO segue o toggle de tema, para manter o contraste do split-screen. */}
-      <div className="theme-light flex w-full flex-1 flex-col bg-background text-foreground md:w-1/2">
+      {/* Painel do formulário — agora segue o tema real (sem .theme-light fixo).
+          Ancorado à direita no desktop; troca de lado com o tema junto com o painel de marca. */}
+      <div
+        className={cn(
+          "flex w-full flex-1 flex-col bg-background text-foreground",
+          "md:absolute md:inset-y-0 md:right-0 md:w-1/2 md:transition-transform md:duration-500 md:ease-in-out motion-reduce:md:transition-none",
+          invertido ? "md:-translate-x-full" : "md:translate-x-0",
+        )}
+      >
         <div className="flex items-center justify-between px-4 py-4 md:px-8">
+          {/* Logo troca com o tema: "branco" (fundo claro embutido) no tema claro,
+              "preto" (fundo escuro embutido) no tema escuro — evita um quadrado
+              destoando do fundo do cabeçalho compacto no mobile. */}
           <img
-            src="/logo-antonello-branco.png"
+            src={invertido ? "/logo-antonello-preto.png" : "/logo-antonello-branco.png"}
             alt="Antonello Terraplanagem"
             className="h-12 w-auto select-none object-contain md:hidden"
           />
           <div className="ml-auto">
-            <ThemeToggle />
+            {/* Toggle inline (não o componente <ThemeToggle />) para compartilhar a MESMA
+                instância de useTheme() que decide o lado dos painéis — useTheme() é um hook
+                simples (useState por chamada, sem contexto/store compartilhado), então usar o
+                componente aqui criaria uma segunda instância de estado dessincronizada da usada
+                acima para animar aside/formulário, e o clique nunca trocaria os painéis de lado. */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggle}
+              aria-label={invertido ? "Mudar para tema claro" : "Mudar para tema escuro"}
+              className="text-foreground hover:bg-surface"
+            >
+              {invertido ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
           </div>
         </div>
 

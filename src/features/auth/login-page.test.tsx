@@ -52,4 +52,40 @@ describe("LoginPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Esqueci minha senha" }));
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
+
+  it("no tema claro (padrão), painel de marca fica à esquerda e formulário à direita", () => {
+    const { container } = render(<LoginPage />);
+    const aside = container.querySelector("aside");
+    expect(aside?.className).toContain("md:translate-x-0");
+    expect(aside?.className).not.toContain("md:translate-x-full");
+  });
+
+  it("alternar para tema escuro troca os painéis de lado", () => {
+    const { container } = render(<LoginPage />);
+    const aside = container.querySelector("aside");
+
+    fireEvent.click(screen.getByRole("button", { name: "Mudar para tema escuro" }));
+
+    expect(aside?.className).toContain("md:translate-x-full");
+  });
+
+  it("alternar o tema troca a logo do cabeçalho mobile", () => {
+    render(<LoginPage />);
+    const logos = screen.getAllByAltText("Antonello Terraplanagem") as HTMLImageElement[];
+    const logoMobile = logos.find((img) => img.className.includes("md:hidden"));
+    expect(logoMobile?.src).toContain("logo-antonello-branco.png");
+
+    fireEvent.click(screen.getByRole("button", { name: "Mudar para tema escuro" }));
+
+    expect(logoMobile?.src).toContain("logo-antonello-preto.png");
+  });
+
+  it("anuncia a troca de tema para leitores de tela", () => {
+    render(<LoginPage />);
+    expect(screen.getByText("Tema alterado para claro")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Mudar para tema escuro" }));
+
+    expect(screen.getByText("Tema alterado para escuro")).toBeInTheDocument();
+  });
 });
