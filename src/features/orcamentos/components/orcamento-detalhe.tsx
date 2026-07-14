@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
+import { DocumentoHero } from "@/shared/components/documento-hero";
+import { StatStrip, type StatItem } from "@/shared/components/stat-strip";
+import { CardSecao } from "@/shared/components/card-secao";
 import { OrcamentoItemRow } from "@/features/orcamentos/components/orcamento-item-row";
 import { AdicionarItemOrcamento } from "@/features/orcamentos/components/adicionar-item-orcamento";
 import { SugestaoOrcamentoDialog } from "@/features/ia/components/sugestao-orcamento-dialog";
@@ -22,7 +25,7 @@ import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { proximoNumeroOS } from "@/features/ordem-servico/numero-os";
 import { precoFundacaoStore } from "@/features/precos/precos-fundacao-store";
 import { formatBRL } from "@/features/retaguarda/format";
-import { formatDataHora } from "@/shared/lib/format";
+import { formatData, formatDataHora } from "@/shared/lib/format";
 import type { ModeloCobranca, OrcamentoItem } from "@/shared/types";
 
 // Modelo de cobrança da OS gerada: o primeiro item não-mobilização decide (default hora_maquina).
@@ -74,6 +77,14 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
   const cliente = clientesStore.getById(orc.cliente_id);
   const pendente = temPendencia(orc);
   const vencida = validadeVencida(orc, new Date().toISOString());
+
+  const subtotal = orc.itens.reduce((s, i) => s + i.valor_total, 0);
+  const stats: StatItem[] = [
+    { rotulo: "Itens", valor: String(orc.itens.length), icone: "lucide:list" },
+    { rotulo: "Subtotal", valor: formatBRL(subtotal), icone: "lucide:calculator" },
+    { rotulo: "Desconto", valor: formatBRL(orc.desconto), icone: "lucide:tag" },
+    { rotulo: "Total", valor: formatBRL(orc.valor_total), icone: "lucide:banknote" },
+  ];
 
   const gerarOS = async () => {
     const modelo = inferirModelo(orc.itens);
@@ -193,36 +204,47 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
         Orçamentos
       </Link>
 
-      <header className="rounded-xl border bg-card p-5 shadow-sm">
-        <div className="flex items-center gap-3">
-          <h1 className="font-mono text-xl font-bold text-foreground">{orc.numero}</h1>
-          <StatusOrcamentoBadge status={orc.status} />
-        </div>
-        <p className="mt-1 font-display font-bold text-card-foreground">{cliente?.nome ?? "—"}</p>
-        <p className="text-sm text-muted-foreground">{orc.descricao_obra}</p>
-        <p className="mt-2 text-xs text-foreground-faint">
-          Validade:{" "}
-          <span className={vencida ? "font-medium text-destructive" : ""}>
-            {orc.validade ? orc.validade.split("-").reverse().join("/") : "—"}
-          </span>
-          {orc.enviado_em ? ` · Enviado em ${formatDataHora(orc.enviado_em)}` : ""}
-          {orc.decidido_em ? ` · Decidido em ${formatDataHora(orc.decidido_em)}` : ""}
-        </p>
-      </header>
+      <DocumentoHero
+        icone="lucide:file-text"
+        numero={orc.numero}
+        titulo={cliente?.nome ? `${cliente.nome} · ${orc.descricao_obra}` : orc.descricao_obra}
+        badges={
+          <>
+            <StatusOrcamentoBadge status={orc.status} />
+            {vencida ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-destructive/40 bg-destructive/10 px-2.5 py-1 text-[11px] font-semibold text-destructive">
+                <Icon icon="lucide:calendar-x" className="h-3 w-3" />
+                Vencido
+              </span>
+            ) : null}
+          </>
+        }
+        quickfacts={[
+          { rotulo: "Validade", valor: formatData(orc.validade) },
+          ...(orc.enviado_em
+            ? [{ rotulo: "Enviado em", valor: formatDataHora(orc.enviado_em) }]
+            : []),
+          ...(orc.decidido_em
+            ? [{ rotulo: "Decidido em", valor: formatDataHora(orc.decidido_em) }]
+            : []),
+        ]}
+      />
 
-      <section className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg font-semibold text-foreground">
-            Itens ({orc.itens.length})
-          </h2>
-          {pendente ? (
+      <StatStrip itens={stats} />
+
+      <CardSecao
+        titulo={`Itens (${orc.itens.length})`}
+        icone="lucide:list"
+        acessorio={
+          pendente ? (
             <span className="inline-flex items-center gap-1 text-xs font-medium text-destructive">
               <Icon icon="lucide:triangle-alert" className="h-3.5 w-3.5" />
               Há itens sem preço
             </span>
-          ) : null}
-        </div>
-
+          ) : undefined
+        }
+        bodyClassName="p-4 space-y-4"
+      >
         {orc.itens.length === 0 ? (
           <p className="rounded-lg border border-dashed bg-surface/40 p-6 text-center text-sm text-muted-foreground">
             Nenhum item ainda.{editavel ? " Adicione itens abaixo." : ""}
@@ -255,9 +277,13 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
             <AdicionarItemOrcamento onAdicionar={(item) => setItens([...orc.itens, item])} />
           </div>
         ) : null}
-      </section>
+      </CardSecao>
 
-      <section className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
+      <CardSecao
+        titulo="Desconto e observação"
+        icone="lucide:percent"
+        bodyClassName="p-4 space-y-4"
+      >
         {editavel ? (
           <>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -326,7 +352,7 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
             {formatBRL(orc.valor_total)}
           </span>
         </div>
-      </section>
+      </CardSecao>
 
       <section className="flex flex-wrap items-center justify-end gap-2">
         {orc.status === "rascunho" ? (

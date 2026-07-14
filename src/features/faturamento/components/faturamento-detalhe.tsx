@@ -13,6 +13,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
+import { DocumentoHero } from "@/shared/components/documento-hero";
+import { StatStrip, type StatItem } from "@/shared/components/stat-strip";
+import { CardSecao } from "@/shared/components/card-secao";
 import { FaturamentoItemRow } from "@/features/faturamento/components/faturamento-item-row";
 import { StatusFaturamentoBadge } from "@/features/faturamento/labels";
 import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
@@ -20,6 +23,7 @@ import { aplicarHoraTipo, temPendencia, valorItem } from "@/features/faturamento
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
+import { MODELO_LABEL } from "@/features/ordem-servico/labels";
 import { precoHoraMaquinaStore } from "@/features/precos/precos-hora-maquina-store";
 import { precoMobilizacaoStore } from "@/features/precos/precos-mobilizacao-store";
 import { GerarTextoBotao } from "@/features/ia/components/gerar-texto-botao";
@@ -43,6 +47,23 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
   const os = ordensStore.obter(fat.os_id);
   const editavel = fat.status === "rascunho";
   const pendente = temPendencia(fat);
+
+  const stats: StatItem[] = [
+    { rotulo: "Itens", valor: String(fat.itens.length), icone: "lucide:list" },
+    { rotulo: "Desconto", valor: formatBRL(fat.desconto), icone: "lucide:tag" },
+    {
+      rotulo: "Total",
+      valor: formatBRL(fat.valor_total),
+      icone: "lucide:banknote",
+      alerta: pendente,
+    },
+    {
+      rotulo: "Status",
+      valor: fat.status === "faturado" ? "Faturado" : "Rascunho",
+      icone: "lucide:activity",
+      mono: false,
+    },
+  ];
 
   const setItens = (itens: FaturamentoItem[]) => faturamentosStore.atualizar(fat.id, { itens });
 
@@ -129,40 +150,41 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
         Faturamento
       </Link>
 
-      <section className="space-y-3 rounded-xl border bg-card p-5 shadow-sm">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <div className="font-mono text-lg font-bold text-card-foreground">{fat.numero}</div>
-            <div className="mt-1 font-display font-bold text-foreground">
-              {cliente?.nome ?? "—"}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {os ? (
-                <Link
-                  to="/admin/ordens/$ordemId"
-                  params={{ ordemId: os.id }}
-                  className="hover:text-primary"
-                >
-                  {os.numero} · {os.obra_nome}
-                </Link>
-              ) : (
-                "OS de origem removida"
-              )}
-            </div>
-          </div>
-          <StatusFaturamentoBadge status={fat.status} />
-        </div>
-        {fat.faturado_em ? (
-          <p className="font-mono text-xs text-foreground-faint">
-            Faturado em {formatDataHora(fat.faturado_em)}
-          </p>
-        ) : null}
-      </section>
+      <DocumentoHero
+        icone="lucide:receipt"
+        numero={fat.numero}
+        titulo={cliente?.nome ?? "—"}
+        badges={<StatusFaturamentoBadge status={fat.status} />}
+        quickfacts={[
+          {
+            rotulo: "OS de origem",
+            valor: os ? (
+              <Link
+                to="/admin/ordens/$ordemId"
+                params={{ ordemId: os.id }}
+                className="font-medium text-primary hover:underline"
+              >
+                {os.numero} · {os.obra_nome}
+              </Link>
+            ) : (
+              "OS de origem removida"
+            ),
+          },
+          { rotulo: "Modelo", valor: MODELO_LABEL[fat.modelo_cobranca] },
+          { rotulo: "Gerado em", valor: formatDataHora(fat.gerado_em) },
+          ...(fat.faturado_em
+            ? [{ rotulo: "Faturado em", valor: formatDataHora(fat.faturado_em) }]
+            : []),
+        ]}
+      />
 
-      <section className="space-y-3 rounded-xl border bg-card p-5 shadow-sm">
-        <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-          Itens ({fat.itens.length})
-        </h3>
+      <StatStrip itens={stats} />
+
+      <CardSecao
+        titulo={`Itens (${fat.itens.length})`}
+        icone="lucide:list"
+        bodyClassName="p-4 space-y-3"
+      >
         {fat.itens.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nenhum item neste faturamento.</p>
         ) : (
@@ -198,9 +220,9 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
             </Select>
           </div>
         ) : null}
-      </section>
+      </CardSecao>
 
-      <section className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
+      <CardSecao titulo="Observação e total" icone="lucide:file-text" bodyClassName="p-4 space-y-4">
         {editavel ? (
           <>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -260,7 +282,7 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
             {formatBRL(fat.valor_total)}
           </span>
         </div>
-      </section>
+      </CardSecao>
 
       {pendente ? (
         <p className="flex items-center gap-2 text-xs text-destructive">
