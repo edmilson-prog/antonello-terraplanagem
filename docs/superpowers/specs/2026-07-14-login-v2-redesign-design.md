@@ -3,7 +3,8 @@
 **Data:** 2026-07-14
 **Áreas:**
 - `src/features/auth/login-page.tsx` (redesign)
-- `src/lib/supabase.ts` (adaptador de storage para "Manter conectado")
+- `src/lib/supabase-storage.ts` (novo — adaptador de storage para "Manter conectado")
+- `src/lib/supabase.ts` (ajuste, passa a usar `src/lib/supabase-storage.ts`)
 - `src/features/auth/esqueci-senha-dialog.tsx` (novo)
 - `src/features/auth/redefinir-senha-page.tsx` (novo)
 - `src/routes/redefinir-senha.tsx` (novo)
@@ -144,7 +145,14 @@ de campo), com as trocas:**
 - Em `entrar()`, antes de `supabase.auth.signInWithPassword`:
   `localStorage.setItem("sb-lembrar-conectado", manterConectado ? "true" : "false")`.
 
-## Adaptador de storage (`src/lib/supabase.ts`)
+## Adaptador de storage
+
+**Novo arquivo `src/lib/supabase-storage.ts`** — extraído para fora de `supabase.ts`
+especificamente porque `vitest.setup.ts` já tem um `vi.mock("./src/lib/supabase", ...)` global
+que intercepta **todo** import de `@/lib/supabase` em toda a suíte (só expõe `from` e
+`functions.invoke` hoje). Se essa lógica vivesse dentro de `supabase.ts`, nenhum teste
+conseguiria importar a função real — sempre pegaria a versão mockada. Extraída para seu próprio
+módulo, sem relação de import com o client do Supabase, os testes importam direto dele:
 
 ```ts
 export const STORAGE_KEY_LEMBRAR = "sb-lembrar-conectado";
@@ -153,7 +161,7 @@ export function backingStorage(): Storage {
   return localStorage.getItem(STORAGE_KEY_LEMBRAR) === "false" ? sessionStorage : localStorage;
 }
 
-const storageAdaptavel = {
+export const storageAdaptavel = {
   getItem: (key: string) => backingStorage().getItem(key),
   setItem: (key: string, value: string) => backingStorage().setItem(key, value),
   removeItem: (key: string) => {
@@ -161,14 +169,17 @@ const storageAdaptavel = {
     sessionStorage.removeItem(key);
   },
 };
+```
 
+**`src/lib/supabase.ts` (ajuste — só a linha de `createClient`):**
+
+```ts
+import { storageAdaptavel } from "@/lib/supabase-storage";
+// ...
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: { storage: storageAdaptavel },
 });
 ```
-
-`backingStorage` e `STORAGE_KEY_LEMBRAR` são exportados nomeadamente de `src/lib/supabase.ts`
-especificamente para serem testáveis sem instanciar o client real (ver "Testes" abaixo).
 
 Padrão: ausência da chave (primeiro acesso, antes de qualquer login) equivale a "lembrar"
 (`localStorage`), igual ao checkbox nascer marcado. `removeItem` limpa dos dois storages para
@@ -263,10 +274,10 @@ convenção estabelecida para isso; ficaria inconsistente introduzir uma só aqu
   formulário aparece e submeter chama `updateUser` com a nova senha e navega para `/admin`; com
   `getSession` mockado retornando `null`, mostra o estado "link-invalido"; senhas diferentes no
   formulário bloqueiam o envio sem chamar `updateUser`.
-- `supabase-storage-adaptavel.test.ts` (novo, lógica pura, sem React — pode viver como teste de
-  uma função exportada separadamente de `src/lib/supabase.ts` para ser testável sem instanciar o
-  client real): sem a chave em `localStorage`, grava/lê em `localStorage`; com a chave
-  `"false"`, grava/lê em `sessionStorage`; `removeItem` limpa dos dois.
+- `supabase-storage.test.ts` (novo, lógica pura, sem React, importa direto de
+  `src/lib/supabase-storage.ts` — não passa pelo mock global de `@/lib/supabase`): sem a chave
+  em `localStorage`, grava/lê em `localStorage`; com a chave `"false"`, grava/lê em
+  `sessionStorage`; `removeItem` limpa dos dois.
 - `campo-com-icone.test.tsx` (novo): renderiza ícone + label + input; `onChange` repassa o valor
   digitado; `acao` (quando fornecida) é renderizada dentro da caixa.
 - `tsc --noEmit` limpo; suíte `vitest` existente permanece verde.
