@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { LandingPage } from "@/features/site/components/landing-page";
 import { contato } from "@/features/site/lib/contato";
 
-const URL_PAGINA = "https://antonello-terraplanagem.lovable.app/";
+const URL_PAGINA = "https://www.antonelloterraplanagem.com.br/";
 
 export const Route = createFileRoute("/")({
   head: () => ({

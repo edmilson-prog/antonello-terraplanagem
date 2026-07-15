@@ -1,17 +1,29 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { Icon } from "@iconify/react";
+import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { HazardStripe } from "@/shared/components/hazard-stripe";
-import { ThemeToggle } from "@/shared/components/theme-toggle";
+import { CampoComIcone } from "@/shared/components/campo-com-icone";
+import { EsqueciSenhaDialog } from "@/features/auth/esqueci-senha-dialog";
+import { VERSAO_SISTEMA, CODINOME_SISTEMA } from "@/features/auth/versao-sistema";
+import { STORAGE_KEY_LEMBRAR } from "@/lib/supabase-storage";
 import { supabase } from "@/lib/supabase";
+import { useTheme } from "@/shared/hooks/use-theme";
+import { cn } from "@/lib/utils";
 
 export function LoginPage() {
   const navigate = useNavigate();
+  const { theme, toggle } = useTheme();
+  const invertido = theme === "dark";
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [manterConectado, setManterConectado] = useState(true);
+  const [dialogEsqueciSenhaAberto, setDialogEsqueciSenhaAberto] = useState(false);
   const [entrando, setEntrando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -19,6 +31,8 @@ export function LoginPage() {
     e.preventDefault();
     setErro(null);
     setEntrando(true);
+
+    localStorage.setItem(STORAGE_KEY_LEMBRAR, manterConectado ? "true" : "false");
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password: senha });
     if (error || !data.session) {
@@ -45,49 +59,77 @@ export function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen w-full bg-asphalt">
-      {/* Painel de marca — asfalto fixo (não segue o toggle); tablet e desktop.
-          A logo "preto" já traz fundo escuro embutido idêntico ao bg-asphalt,
-          então as bordas do PNG quadrado se fundem ao painel. */}
-      <aside className="relative hidden w-1/2 flex-col items-center justify-center overflow-hidden bg-asphalt md:flex">
-        <HazardStripe className="absolute inset-x-0 top-0" />
+    <main className="relative flex min-h-screen w-full overflow-hidden bg-asphalt">
+      <div aria-live="polite" className="sr-only">
+        {`Tema alterado para ${invertido ? "escuro" : "claro"}`}
+      </div>
 
-        <div className="flex flex-col items-center gap-8 px-12 text-center">
-          <img
-            src="/logo-antonello-preto.png"
-            alt="Antonello Terraplanagem"
-            className="w-[20rem] max-w-full select-none object-contain"
-          />
-          <div className="space-y-4">
-            <p className="mx-auto max-w-sm text-balance text-base leading-relaxed text-sidebar-foreground/85">
-              Horas de máquina, ordens de serviço e faturamento em um só lugar — com a rentabilidade
-              de cada equipamento e cada obra sempre à vista.
-            </p>
-            <p className="font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-primary">
-              Gestão de Terraplanagem
-            </p>
+      {/* Painel de marca — logo full-bleed com gradiente escuro e rodapé de status.
+          Aparência sempre escura; só a posição (esquerda/direita) muda com o tema. */}
+      <aside
+        className={cn(
+          "relative hidden w-1/2 flex-col overflow-hidden bg-asphalt md:flex",
+          "md:absolute md:inset-y-0 md:left-0 md:transition-transform md:duration-500 md:ease-in-out motion-reduce:md:transition-none",
+          invertido ? "md:translate-x-full" : "md:translate-x-0",
+        )}
+      >
+        <img
+          src="/logo-antonello-preto.png"
+          alt="Antonello Terraplanagem"
+          className="absolute inset-0 h-full w-full select-none object-cover object-center"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-b from-asphalt/10 via-asphalt/5 to-asphalt/75"
+        />
+
+        <div className="relative mt-auto space-y-4 p-10">
+          <HazardStripe className="h-2" />
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center gap-2 font-sans text-[11px] font-semibold text-sidebar-foreground">
+              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-primary" />
+              Sistemas operacionais
+            </span>
+            <span className="ml-auto font-mono text-[11px] text-sidebar-foreground/60">
+              v{VERSAO_SISTEMA} · {CODINOME_SISTEMA}
+            </span>
           </div>
         </div>
-
-        <HazardStripe className="absolute inset-x-0 bottom-0" />
       </aside>
 
-      {/* Painel do formulário — tom concreto claro FIXO (via .theme-light):
-          NÃO segue o toggle de tema, para manter o contraste do split-screen. */}
-      <div className="theme-light flex w-full flex-1 flex-col bg-background text-foreground md:w-1/2">
+      {/* Painel do formulário — agora segue o tema real (sem .theme-light fixo).
+          Ancorado à direita no desktop; troca de lado com o tema junto com o painel de marca. */}
+      <div
+        className={cn(
+          "flex w-full flex-1 flex-col bg-background text-foreground",
+          "md:absolute md:inset-y-0 md:right-0 md:w-1/2 md:transition-transform md:duration-500 md:ease-in-out motion-reduce:md:transition-none",
+          invertido ? "md:-translate-x-full" : "md:translate-x-0",
+        )}
+      >
         <div className="flex items-center justify-between px-4 py-4 md:px-8">
-          {/* Logo "branco" traz fundo creme embutido idêntico ao bg-background,
-              então se funde ao painel no header compacto do mobile. */}
+          {/* Logo troca com o tema: "branco" (fundo claro embutido) no tema claro,
+              "preto" (fundo escuro embutido) no tema escuro — evita um quadrado
+              destoando do fundo do cabeçalho compacto no mobile. */}
           <img
-            src="/logo-antonello-branco.png"
+            src={invertido ? "/logo-antonello-preto.png" : "/logo-antonello-branco.png"}
             alt="Antonello Terraplanagem"
             className="h-12 w-auto select-none object-contain md:hidden"
           />
-          {/* Toggle mantido: não muda a cor desta tela (painéis são fixos), mas
-              persiste a preferência de tema do usuário para quando entrar em /admin,
-              atendendo à regra de tema claro/escuro obrigatório em toda a aplicação. */}
           <div className="ml-auto">
-            <ThemeToggle />
+            {/* Toggle inline (não o componente <ThemeToggle />) para compartilhar a MESMA
+                instância de useTheme() que decide o lado dos painéis — useTheme() é um hook
+                simples (useState por chamada, sem contexto/store compartilhado), então usar o
+                componente aqui criaria uma segunda instância de estado dessincronizada da usada
+                acima para animar aside/formulário, e o clique nunca trocaria os painéis de lado. */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggle}
+              aria-label={invertido ? "Mudar para tema claro" : "Mudar para tema escuro"}
+              className="text-foreground hover:bg-surface"
+            >
+              {invertido ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </Button>
           </div>
         </div>
 
@@ -106,38 +148,75 @@ export function LoginPage() {
             </div>
 
             <form onSubmit={entrar} className="space-y-5">
-              <div className="space-y-2">
-                <Label htmlFor="email">E-mail</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  inputMode="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  autoFocus
-                  required
-                  aria-invalid={erro ? true : undefined}
-                  aria-describedby={erro ? "login-erro" : undefined}
-                  className="h-11"
-                />
-              </div>
+              <CampoComIcone
+                icone="lucide:mail"
+                label="E-mail"
+                id="email"
+                tipo="email"
+                valor={email}
+                onChange={(valor) => {
+                  setEmail(valor);
+                  setErro(null);
+                }}
+                placeholder="seu@email.com"
+                autoComplete="email"
+                autoFocus
+                required
+                ariaInvalid={!!erro}
+                ariaDescribedBy={erro ? "login-erro" : undefined}
+              />
 
-              <div className="space-y-2">
-                <Label htmlFor="senha">Senha</Label>
-                <Input
-                  id="senha"
-                  type="password"
-                  placeholder="••••••••"
-                  value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
-                  autoComplete="current-password"
-                  required
-                  aria-invalid={erro ? true : undefined}
-                  aria-describedby={erro ? "login-erro" : undefined}
-                  className="h-11"
-                />
+              <CampoComIcone
+                icone="lucide:lock"
+                label="Senha"
+                id="senha"
+                tipo={mostrarSenha ? "text" : "password"}
+                valor={senha}
+                onChange={(valor) => {
+                  setSenha(valor);
+                  setErro(null);
+                }}
+                placeholder="••••••••"
+                autoComplete="current-password"
+                required
+                ariaInvalid={!!erro}
+                ariaDescribedBy={erro ? "login-erro" : undefined}
+                acao={
+                  <button
+                    type="button"
+                    aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+                    onClick={() => setMostrarSenha((v) => !v)}
+                    className="grid h-7 w-7 shrink-0 place-items-center rounded text-muted-foreground hover:text-primary"
+                  >
+                    <Icon
+                      icon={mostrarSenha ? "lucide:eye-off" : "lucide:eye"}
+                      className="h-4 w-4"
+                    />
+                  </button>
+                }
+              />
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="manter-conectado"
+                    checked={manterConectado}
+                    onCheckedChange={(v) => setManterConectado(v === true)}
+                  />
+                  <Label
+                    htmlFor="manter-conectado"
+                    className="text-xs font-normal text-muted-foreground"
+                  >
+                    Manter conectado
+                  </Label>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setDialogEsqueciSenhaAberto(true)}
+                  className="text-xs font-semibold text-primary hover:underline"
+                >
+                  Esqueci minha senha
+                </button>
               </div>
 
               {erro ? (
@@ -166,6 +245,12 @@ export function LoginPage() {
           </div>
         </div>
       </div>
+
+      <EsqueciSenhaDialog
+        aberto={dialogEsqueciSenhaAberto}
+        onOpenChange={setDialogEsqueciSenhaAberto}
+        emailInicial={email}
+      />
     </main>
   );
 }

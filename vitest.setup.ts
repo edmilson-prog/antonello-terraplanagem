@@ -25,6 +25,18 @@ if (!window.matchMedia) {
   });
 }
 
+// jsdom também não implementa ResizeObserver — usado internamente por
+// primitivos Radix (ex.: Checkbox, via @radix-ui/react-use-size) para medir
+// o elemento antes de renderizar o indicador. Sem este polyfill, qualquer
+// teste que monte esses componentes quebra com "ResizeObserver is not defined".
+if (!window.ResizeObserver) {
+  window.ResizeObserver = class ResizeObserver {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
 // Impede que stores respaldados pelo Supabase (ex.: equipamentosStore,
 // clientesStore, ordensStore, orcamentosStore) façam chamadas de rede reais
 // durante os testes unitários — elas rodariam contra o projeto de produção,
@@ -138,6 +150,13 @@ vi.mock("./src/lib/supabase", () => {
       from: (table: string) => new FakeQueryBuilder(table),
       functions: {
         invoke: vi.fn().mockResolvedValue({ data: { ok: true }, error: null }),
+      },
+      auth: {
+        signInWithPassword: vi.fn().mockResolvedValue({ data: {}, error: null }),
+        signOut: vi.fn().mockResolvedValue({ error: null }),
+        resetPasswordForEmail: vi.fn().mockResolvedValue({ data: {}, error: null }),
+        updateUser: vi.fn().mockResolvedValue({ data: {}, error: null }),
+        getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
       },
     },
   };
