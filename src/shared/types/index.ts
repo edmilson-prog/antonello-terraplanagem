@@ -140,6 +140,13 @@ export interface PrecoMobilizacao {
 // operador ou horímetro na OS. (Substitui o legado OrdemServicoOperador na T10.)
 export type ModeloCobranca = "hora_maquina" | "por_metro";
 export type StatusOS = "aberta" | "em_andamento" | "fechada";
+export type TipoServico =
+  | "terraplenagem"
+  | "drenagem"
+  | "nivelamento"
+  | "fundacao_estacas"
+  | "cascalhamento"
+  | "limpeza_terreno";
 
 export interface OrdemServico {
   id: string;
@@ -152,6 +159,9 @@ export interface OrdemServico {
   responsavel_id: string | null; // FK → Operador
   observacao: string | null;
   diametro_broca_mm: number | null; // por_metro
+  tipo_servico: TipoServico | null;
+  equipamento_previsto_id: string | null; // FK → Equipamento; informativo, ver ADR-001
+  inicio_previsto: string | null; // "YYYY-MM-DD"
   aberta_em: string; // ISO 8601
   fechada_em: string | null;
   pendente_sync: boolean;
