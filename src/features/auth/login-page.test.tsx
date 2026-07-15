@@ -27,6 +27,18 @@ describe("LoginPage", () => {
     expect(screen.getByText("v0.21.0 · Ledger")).toBeInTheDocument();
   });
 
+  it("renderiza a tagline de marca no painel de marca", () => {
+    render(<LoginPage />);
+    expect(screen.getByText("Gestão de Terraplanagem")).toBeInTheDocument();
+  });
+
+  it("renderiza o parágrafo de destaque no painel de marca", () => {
+    render(<LoginPage />);
+    expect(
+      screen.getByText(/Horas de máquina, ordens de serviço e faturamento/),
+    ).toBeInTheDocument();
+  });
+
   it("alterna a visibilidade da senha", () => {
     render(<LoginPage />);
     const senha = screen.getByLabelText("Senha") as HTMLInputElement;
