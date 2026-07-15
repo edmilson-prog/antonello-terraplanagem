@@ -92,7 +92,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         property: "og:description",
         content: "Gestão de obras de terraplanagem: equipamentos, ordens de serviço e faturamento.",
       },
-      { property: "og:url", content: "https://antonello-terraplanagem.lovable.app/" },
+      { property: "og:url", content: "https://www.antonelloterraplanagem.com.br/" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Antonello Terraplanagem · Plataforma de Gestão" },
       {
@@ -101,13 +101,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         property: "og:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ae1ac7dd-3637-44fb-a10e-807cb561e784/id-preview-3ff2f665--49ae62e6-4214-45ea-8c30-7d1e957d3fd1.lovable.app-1782305254203.png",
+        content: "https://www.antonelloterraplanagem.com.br/logo-antonello.png",
       },
       {
         name: "twitter:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/ae1ac7dd-3637-44fb-a10e-807cb561e784/id-preview-3ff2f665--49ae62e6-4214-45ea-8c30-7d1e957d3fd1.lovable.app-1782305254203.png",
+        content: "https://www.antonelloterraplanagem.com.br/logo-antonello.png",
       },
     ],
     links: [
@@ -126,7 +124,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "Antonello Terraplanagem",
-          url: "https://antonello-terraplanagem.lovable.app/",
+          url: "https://www.antonelloterraplanagem.com.br/",
           description:
             "Serviços de terraplanagem com equipamentos pesados — escavadeiras, tratores de esteira, carregadeiras e caminhões basculantes.",
           areaServed: "BR-RS",
@@ -138,7 +136,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: "Antonello Terraplanagem",
-          url: "https://antonello-terraplanagem.lovable.app/",
+          url: "https://www.antonelloterraplanagem.com.br/",
         }),
       },
     ],
