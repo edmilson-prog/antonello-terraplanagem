@@ -36,6 +36,9 @@ describe("sugerirOrcamento", () => {
       responsavel_id: null,
       observacao: null,
       diametro_broca_mm: null,
+      tipo_servico: null,
+      equipamento_previsto_id: null,
+      inicio_previsto: null,
       numero: "OS-TESTE-C9",
     });
     apontamentosStore.iniciar({
@@ -73,6 +76,9 @@ describe("gerarTexto", () => {
       responsavel_id: null,
       observacao: null,
       diametro_broca_mm: null,
+      tipo_servico: null,
+      equipamento_previsto_id: null,
+      inicio_previsto: null,
       aberta_em: "2026-06-01T00:00:00.000Z",
       fechada_em: null,
       pendente_sync: false,
