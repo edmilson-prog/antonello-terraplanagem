@@ -80,8 +80,18 @@ export function LoginPage() {
         />
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-asphalt/10 via-asphalt/5 to-asphalt/75"
+          className="absolute inset-0 bg-gradient-to-b from-asphalt/75 via-asphalt/10 to-asphalt/85"
         />
+
+        <div className="relative space-y-3 p-10">
+          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.22em] text-primary">
+            Gestão de Terraplanagem
+          </p>
+          <p className="max-w-sm text-balance text-base leading-relaxed text-sidebar-foreground/90">
+            Horas de máquina, ordens de serviço e faturamento em um só lugar — com a
+            rentabilidade de cada equipamento e cada obra sempre à vista.
+          </p>
+        </div>
 
         <div className="relative mt-auto space-y-4 p-10">
           <HazardStripe className="h-2" />
