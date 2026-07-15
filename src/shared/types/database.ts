@@ -842,8 +842,10 @@ export type Database = {
           created_at: string;
           diametro_broca_mm: number | null;
           endereco: string | null;
+          equipamento_previsto_id: string | null;
           fechada_em: string | null;
           id: string;
+          inicio_previsto: string | null;
           modelo_cobranca: string;
           numero: string;
           obra_nome: string;
@@ -851,6 +853,7 @@ export type Database = {
           pendente_sync: boolean;
           responsavel_id: string | null;
           status: string;
+          tipo_servico: string | null;
           updated_at: string;
         };
         Insert: {
@@ -859,8 +862,10 @@ export type Database = {
           created_at?: string;
           diametro_broca_mm?: number | null;
           endereco?: string | null;
+          equipamento_previsto_id?: string | null;
           fechada_em?: string | null;
           id?: string;
+          inicio_previsto?: string | null;
           modelo_cobranca: string;
           numero: string;
           obra_nome: string;
@@ -868,6 +873,7 @@ export type Database = {
           pendente_sync?: boolean;
           responsavel_id?: string | null;
           status?: string;
+          tipo_servico?: string | null;
           updated_at?: string;
         };
         Update: {
@@ -876,8 +882,10 @@ export type Database = {
           created_at?: string;
           diametro_broca_mm?: number | null;
           endereco?: string | null;
+          equipamento_previsto_id?: string | null;
           fechada_em?: string | null;
           id?: string;
+          inicio_previsto?: string | null;
           modelo_cobranca?: string;
           numero?: string;
           obra_nome?: string;
@@ -885,6 +893,7 @@ export type Database = {
           pendente_sync?: boolean;
           responsavel_id?: string | null;
           status?: string;
+          tipo_servico?: string | null;
           updated_at?: string;
         };
         Relationships: [
@@ -893,6 +902,13 @@ export type Database = {
             columns: ["cliente_id"];
             isOneToOne: false;
             referencedRelation: "clientes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "ordens_servico_equipamento_previsto_id_fkey";
+            columns: ["equipamento_previsto_id"];
+            isOneToOne: false;
+            referencedRelation: "equipamentos";
             referencedColumns: ["id"];
           },
           {

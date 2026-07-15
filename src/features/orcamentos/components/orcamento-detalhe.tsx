@@ -105,6 +105,9 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
         responsavel_id: null,
         observacao: `Gerado do orçamento ${orc.numero}`,
         diametro_broca_mm: ehPorMetro ? diametro : null,
+        tipo_servico: null,
+        equipamento_previsto_id: null,
+        inicio_previsto: null,
       });
       await orcamentosStore.vincularOS(orc.id, nova.id);
       toast.success(`OS ${nova.numero} criada a partir do orçamento.`);

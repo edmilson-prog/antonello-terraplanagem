@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import type { ModeloCobranca, StatusOS } from "@/shared/types";
+import type { ModeloCobranca, StatusOS, TipoServico } from "@/shared/types";
 import { cn } from "@/lib/utils";
 
 export const STATUS_OS_LABEL: Record<StatusOS, string> = {
@@ -14,6 +14,32 @@ export const MODELO_LABEL: Record<ModeloCobranca, string> = {
   hora_maquina: "Hora-máquina",
   por_metro: "Por metro",
 };
+
+export const TIPO_SERVICO_LABEL: Record<TipoServico, string> = {
+  terraplenagem: "Terraplenagem",
+  drenagem: "Drenagem",
+  nivelamento: "Nivelamento",
+  fundacao_estacas: "Fundação — estacas",
+  cascalhamento: "Cascalhamento",
+  limpeza_terreno: "Limpeza de terreno",
+};
+
+export const TIPOS_SERVICO: TipoServico[] = [
+  "terraplenagem",
+  "drenagem",
+  "nivelamento",
+  "fundacao_estacas",
+  "cascalhamento",
+  "limpeza_terreno",
+];
+
+// Sentinelas dos selects opcionais do formulário de OS — <Select> não aceita
+// value="" num item, então "nada selecionado" precisa de um valor próprio.
+// Vivem aqui (não em ordem-form.tsx) para serem reaproveitadas por
+// ResumoNovaOrdem sem criar import circular entre os dois componentes.
+export const SEM_RESPONSAVEL = "sem-responsavel";
+export const SEM_EQUIPAMENTO = "sem-equipamento";
+export const SEM_ORCAMENTO = "sem-orcamento";
 
 const STATUS_CLASSE: Record<StatusOS, string> = {
   aberta: "bg-steel/20 text-foreground border-steel/40",
