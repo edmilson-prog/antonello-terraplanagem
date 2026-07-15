@@ -40,6 +40,7 @@ import { Route as AdminClientesIndexRouteImport } from './routes/admin.clientes.
 import { Route as AppOrdensOrdemIdRouteImport } from './routes/app.ordens.$ordemId'
 import { Route as AppApontamentoNovoRouteImport } from './routes/app.apontamento.novo'
 import { Route as AppApontamentoApontamentoIdRouteImport } from './routes/app.apontamento.$apontamentoId'
+import { Route as AdminOrdensNovaRouteImport } from './routes/admin.ordens.nova'
 import { Route as AdminOrdensOrdemIdRouteImport } from './routes/admin.ordens.$ordemId'
 import { Route as AdminOrcamentosOrcamentoIdRouteImport } from './routes/admin.orcamentos.$orcamentoId'
 import { Route as AdminOperadoresOperadorIdRouteImport } from './routes/admin.operadores.$operadorId'
@@ -206,6 +207,11 @@ const AppApontamentoApontamentoIdRoute =
     path: '/apontamento/$apontamentoId',
     getParentRoute: () => AppRoute,
   } as any)
+const AdminOrdensNovaRoute = AdminOrdensNovaRouteImport.update({
+  id: '/ordens/nova',
+  path: '/ordens/nova',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOrdensOrdemIdRoute = AdminOrdensOrdemIdRouteImport.update({
   id: '/ordens/$ordemId',
   path: '/ordens/$ordemId',
@@ -279,6 +285,7 @@ export interface FileRoutesByFullPath {
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
   '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
+  '/admin/ordens/nova': typeof AdminOrdensNovaRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
@@ -318,6 +325,7 @@ export interface FileRoutesByTo {
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
   '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
+  '/admin/ordens/nova': typeof AdminOrdensNovaRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
@@ -360,6 +368,7 @@ export interface FileRoutesById {
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
   '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
+  '/admin/ordens/nova': typeof AdminOrdensNovaRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
   '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
@@ -403,6 +412,7 @@ export interface FileRouteTypes {
     | '/admin/operadores/$operadorId'
     | '/admin/orcamentos/$orcamentoId'
     | '/admin/ordens/$ordemId'
+    | '/admin/ordens/nova'
     | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
@@ -442,6 +452,7 @@ export interface FileRouteTypes {
     | '/admin/operadores/$operadorId'
     | '/admin/orcamentos/$orcamentoId'
     | '/admin/ordens/$ordemId'
+    | '/admin/ordens/nova'
     | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
@@ -483,6 +494,7 @@ export interface FileRouteTypes {
     | '/admin/operadores/$operadorId'
     | '/admin/orcamentos/$orcamentoId'
     | '/admin/ordens/$ordemId'
+    | '/admin/ordens/nova'
     | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
     | '/app/ordens/$ordemId'
@@ -727,6 +739,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppApontamentoApontamentoIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/admin/ordens/nova': {
+      id: '/admin/ordens/nova'
+      path: '/ordens/nova'
+      fullPath: '/admin/ordens/nova'
+      preLoaderRoute: typeof AdminOrdensNovaRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/ordens/$ordemId': {
       id: '/admin/ordens/$ordemId'
       path: '/ordens/$ordemId'
@@ -803,6 +822,7 @@ interface AdminRouteChildren {
   AdminOperadoresOperadorIdRoute: typeof AdminOperadoresOperadorIdRoute
   AdminOrcamentosOrcamentoIdRoute: typeof AdminOrcamentosOrcamentoIdRoute
   AdminOrdensOrdemIdRoute: typeof AdminOrdensOrdemIdRoute
+  AdminOrdensNovaRoute: typeof AdminOrdensNovaRoute
   AdminClientesIndexRoute: typeof AdminClientesIndexRoute
   AdminComprovantesIndexRoute: typeof AdminComprovantesIndexRoute
   AdminEquipamentosIndexRoute: typeof AdminEquipamentosIndexRoute
@@ -830,6 +850,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminOperadoresOperadorIdRoute: AdminOperadoresOperadorIdRoute,
   AdminOrcamentosOrcamentoIdRoute: AdminOrcamentosOrcamentoIdRoute,
   AdminOrdensOrdemIdRoute: AdminOrdensOrdemIdRoute,
+  AdminOrdensNovaRoute: AdminOrdensNovaRoute,
   AdminClientesIndexRoute: AdminClientesIndexRoute,
   AdminComprovantesIndexRoute: AdminComprovantesIndexRoute,
   AdminEquipamentosIndexRoute: AdminEquipamentosIndexRoute,

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/shared/components/page-header";
 import { DataList, type Column } from "@/shared/components/data-list";
-import { FormDialog } from "@/shared/components/form-dialog";
 import {
   StatusFilterChips,
   type StatusFilterChipItem,
@@ -20,7 +19,6 @@ import {
   totalMetragemOS,
 } from "@/features/ordem-servico/derivacoes";
 import { StatusOSBadge, MODELO_LABEL } from "@/features/ordem-servico/labels";
-import { OrdemForm } from "@/features/ordem-servico/components/ordem-form";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { operadoresStore } from "@/features/operadores/operadores-store";
@@ -55,7 +53,6 @@ export function OrdensRetaguardaPage({ statusInicial }: { statusInicial?: Status
 
   const [q, setQ] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<StatusOS | "todos">(statusInicial ?? "todos");
-  const [formAberto, setFormAberto] = useState(false);
 
   const lista = useMemo(() => {
     const termo = q.trim().toLowerCase();
@@ -255,11 +252,13 @@ export function OrdensRetaguardaPage({ statusInicial }: { statusInicial?: Status
         descricao="Abertura, acompanhamento e fechamento das OS de campo."
         acoes={
           <Button
-            onClick={() => setFormAberto(true)}
+            asChild
             className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
           >
-            <Icon icon="lucide:plus" className="h-4 w-4" />
-            Nova OS
+            <Link to="/admin/ordens/nova">
+              <Icon icon="lucide:plus" className="h-4 w-4" />
+              Nova OS
+            </Link>
           </Button>
         }
       />
@@ -283,28 +282,17 @@ export function OrdensRetaguardaPage({ statusInicial }: { statusInicial?: Status
           cta:
             todas.length === 0 ? (
               <Button
-                onClick={() => setFormAberto(true)}
+                asChild
                 className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
               >
-                <Icon icon="lucide:plus" className="h-4 w-4" />
-                Abrir primeira OS
+                <Link to="/admin/ordens/nova">
+                  <Icon icon="lucide:plus" className="h-4 w-4" />
+                  Abrir primeira OS
+                </Link>
               </Button>
             ) : undefined,
         }}
       />
-
-      <FormDialog
-        open={formAberto}
-        onOpenChange={setFormAberto}
-        titulo="Nova OS"
-        descricao="Os campos com * são obrigatórios."
-      >
-        <OrdemForm
-          inicial={null}
-          onSuccess={() => setFormAberto(false)}
-          onCancel={() => setFormAberto(false)}
-        />
-      </FormDialog>
     </div>
   );
 }
