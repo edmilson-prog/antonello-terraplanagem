@@ -20,7 +20,7 @@ const EQ_FILTERS = [
   { id: 'Parado', label: 'Parados', tone: 'neutral' },
 ];
 
-function EquipamentosList() {
+function EquipamentosList({ onNew }) {
   const [filter, setFilter] = React.useState('todos');
   const rows = filter === 'todos' ? EQ_ROWS : EQ_ROWS.filter((r) => r.st === filter);
   const count = (id) => (id === 'todos' ? EQ_ROWS.length : EQ_ROWS.filter((r) => r.st === id).length);
@@ -32,7 +32,7 @@ function EquipamentosList() {
         <Pill>14 na frota</Pill>
         <div style={{ flex: 1 }} />
         <Button variant="ghost" icon="arrow-up-right">Exportar</Button>
-        <Button variant="primary" icon="file-plus">Novo equipamento</Button>
+        <Button variant="primary" icon="file-plus" onClick={onNew}>Novo equipamento</Button>
       </div>
 
       <div className="rtg-filters">

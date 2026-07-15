@@ -19,7 +19,7 @@ const OS_FILTERS = [
   { id: 'Concluída', label: 'Concluídas', tone: 'success' },
 ];
 
-function OSList() {
+function OSList({ onOpen, onNew }) {
   const [filter, setFilter] = React.useState('todas');
   const rows = filter === 'todas' ? OS_ROWS : OS_ROWS.filter((r) => r.st === filter);
   const count = (id) => (id === 'todas' ? OS_ROWS.length : OS_ROWS.filter((r) => r.st === id).length);
@@ -29,7 +29,7 @@ function OSList() {
         <h1 className="rtg-pagetitle">Ordens de Serviço</h1>
         <div style={{ flex: 1 }} />
         <Button variant="ghost" icon="arrow-up-right">Exportar</Button>
-        <Button variant="primary" icon="file-plus">Nova OS</Button>
+        <Button variant="primary" icon="file-plus" onClick={onNew}>Nova OS</Button>
       </div>
 
       <div className="rtg-filters">
@@ -49,7 +49,7 @@ function OSList() {
 
       <Card>
         <div className="rtg-tablewrap rtg-tablewrap--wide">
-        <table className="rtg-table">
+        <table className="rtg-table rtg-clickable">
           <thead>
             <tr>
               <th>OS</th><th>Serviço</th><th>Cliente</th><th>Equipamento</th><th>Operador</th>
@@ -58,7 +58,7 @@ function OSList() {
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.n}>
+              <tr key={r.n} onClick={() => onOpen && onOpen(r)}>
                 <td><span className="rtg-ostag">{r.n}</span></td>
                 <td style={{ fontWeight: 600 }}>{r.t}</td>
                 <td>{r.cli}</td>

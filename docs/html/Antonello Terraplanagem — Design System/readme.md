@@ -13,8 +13,8 @@ Two products are represented:
   Orçamentos, Faturamento, Financeiro, Custo da Hora, Rentabilidade, Painel Gerencial,
   Manutenção, Diesel.
 - **App de campo** — a companion Android field app operators use to log hours
-  (*apontamentos* / *horímetro*) against a service order. Not recreated here; it is
-  referenced by the operator detail ("Acesso ao app").
+  (*apontamentos* / *horímetro*) against a service order. Prototyped in `ui_kits/app-campo/`
+  (PIN login, apontamento por horímetro, abastecimento, perfil).
 
 The current product version brands itself **v0.1 · fundação** (foundation).
 
@@ -202,32 +202,47 @@ components/
   navigation/ NavItem                                             (+ navigation.card.html)
 guidelines/                    foundation specimen cards (Colors, Type, Spacing, Brand)
 ui_kits/
+  app-campo/                   protótipo mobile do app de campo (Android)
+    index.html                 PIN → Hoje → Apontamento → Confirmação; abas OS/Abastecer/Perfil
+    CampoApp.jsx app.css android-frame.jsx
   site/                        landing page institucional (marketing)
     index.html                 hero animado, contadores, serviços, frota, processo, contato
     site.css  image-slot.js    estilos lp-* + slots de foto (arraste imagens reais)
   retaguarda/                  the back-office recreation (interactive)
     index.html                 app shell — Dashboard, Clientes/Operadores list → detail click-through
     screen-dashboard.html      Dashboard screen (operational overview)
+    screen-login.html          Login (acesso restrito → entra no app)
+    screen-login-v2.html       Login v2 (logo real full-bleed no painel de marca)
     screen-os.html             Ordens de Serviço list (status filters)
+    screen-nova-os.html        Nova OS (formulário de criação + resumo ao vivo)
+    screen-os-detalhe.html     Detalhe da OS (apontamentos, medições, vínculos)
     screen-orcamentos.html     Orçamentos (pipeline comercial)
+    screen-orcamento-detalhe.html Detalhe do Orçamento (itens, margem, histórico)
+    screen-novo-orcamento.html Novo Orçamento (itens da tabela + total ao vivo)
     screen-precos.html         Preços (tabela vigente vs. custo/h)
     screen-comprovantes.html   Comprovantes (PIX/TED/boleto por NF)
     screen-faturamento.html    Faturamento (NFs por OS, a faturar, evolução mensal)
+    screen-nova-nf.html        Nova NF (emissão a partir de OS/medição, ISS)
     screen-financeiro.html     Financeiro (a receber / a pagar, comprovantes)
+    screen-novo-pagamento.html Novo Pagamento (título a pagar)
     screen-custohora.html      Custo da Hora (custo/h por equipamento + composição)
+    screen-novo-custo.html     Novo lançamento de custo (impacto no custo/h)
     screen-rentabilidade.html  Rentabilidade (margem por OS e por cliente)
     screen-painel.html         Painel Gerencial (visão executiva do ano)
     screen-equipamentos.html   Equipamentos (frota — horímetro, diesel, manutenção)
+    screen-novo-equipamento.html Novo Equipamento (cadastro de frota)
     screen-diesel.html         Diesel (abastecimentos, consumo L/h, tanque interno)
+    screen-novo-abastecimento.html Novo Abastecimento (diesel, custo ao vivo)
     screen-manutencao.html     Manutenção (ordens + planos por horímetro)
+    screen-nova-manutencao.html Nova Manutenção (tipo, prioridade, custo)
     screen-parametros.html     Parâmetros (configurações do sistema)
     screen-sobre.html          Sobre (o sistema, produtos e legado Farolti)
     screen-cliente.html        Client detail screen (standalone / starting point)
     screen-operador.html       Operator detail screen (standalone / starting point)
-    App.jsx Sidebar.jsx Header.jsx Dashboard.jsx OSList.jsx OrcamentosList.jsx PrecosList.jsx
-    Faturamento.jsx Financeiro.jsx CustoHora.jsx Rentabilidade.jsx ComprovantesList.jsx
-    EquipamentosList.jsx Diesel.jsx Manutencao.jsx PainelGerencial.jsx Parametros.jsx Sobre.jsx
-    ClientesList.jsx OperadoresList.jsx
+    App.jsx Sidebar.jsx Header.jsx Dashboard.jsx OSList.jsx OSDetail.jsx NovaOS.jsx OrcamentosList.jsx PrecosList.jsx
+    Faturamento.jsx NovaNF.jsx Financeiro.jsx NovoPagamento.jsx CustoHora.jsx NovoCusto.jsx Rentabilidade.jsx ComprovantesList.jsx NovoOrcamento.jsx OrcamentoDetail.jsx
+    EquipamentosList.jsx NovoEquipamento.jsx Diesel.jsx NovoAbastecimento.jsx Manutencao.jsx NovaManutencao.jsx PainelGerencial.jsx Parametros.jsx Sobre.jsx
+    ClientesList.jsx NovoCliente.jsx OperadoresList.jsx NovoOperador.jsx
     ClienteDetail.jsx OperadorDetail.jsx Placeholder.jsx  data.js  kit.css
 assets/                        logo-tile.svg, mark-amber.svg, mark-dark.svg
 readme.md  SKILL.md

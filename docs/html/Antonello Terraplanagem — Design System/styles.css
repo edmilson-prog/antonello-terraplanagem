@@ -19,3 +19,6 @@
 
 /* Component class styles + interaction states (backs the bundled React components) */
 @import url("foundations/components.css");
+
+/* Opt-in light theme — imported LAST so [data-theme="light"] wins over every :root token */
+@import url("tokens/theme-light.css");

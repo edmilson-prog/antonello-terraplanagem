@@ -1,8 +1,8 @@
-import * as React from "react";
+import * as React from 'react';
 
 export interface HazardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** 'default' (8px, sidebar) or 'header' (6px, content top). */
-  variant?: "default" | "header";
+  variant?: 'default' | 'header';
   /** Override height (CSS length). */
   height?: string | number;
 }

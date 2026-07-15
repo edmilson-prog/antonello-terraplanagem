@@ -2,7 +2,7 @@
 const NS = window.AntonelloTerraplanagemDesignSystem_2ede57;
 const { Card, StatusChip, Badge, IconTile, Button } = NS;
 
-function ClientesList({ onOpen }) {
+function ClientesList({ onOpen, onNew }) {
   const rows = window.RTG.clientes;
   return (
     <>
@@ -10,7 +10,7 @@ function ClientesList({ onOpen }) {
         <h1 className="rtg-pagetitle">Clientes</h1>
         <div style={{ flex: 1 }} />
         <Button variant="ghost" icon="arrow-up-right">Exportar</Button>
-        <Button variant="primary" icon="file-plus">Novo cliente</Button>
+        <Button variant="primary" icon="file-plus" onClick={onNew}>Novo cliente</Button>
       </div>
       <Card>
         <table className="rtg-table rtg-clickable">

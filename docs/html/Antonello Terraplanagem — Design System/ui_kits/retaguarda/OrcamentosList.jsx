@@ -18,7 +18,7 @@ const ORC_FILTERS = [
   { id: 'Perdido', label: 'Perdidos', tone: 'neutral' },
 ];
 
-function OrcamentosList() {
+function OrcamentosList({ onNew, onOpen }) {
   const [filter, setFilter] = React.useState('todos');
   const rows = filter === 'todos' ? ORC_ROWS : ORC_ROWS.filter((r) => r.st === filter);
   const count = (id) => (id === 'todos' ? ORC_ROWS.length : ORC_ROWS.filter((r) => r.st === id).length);
@@ -30,7 +30,7 @@ function OrcamentosList() {
         <Pill>R$ 99.300 em aberto</Pill>
         <div style={{ flex: 1 }} />
         <Button variant="ghost" icon="arrow-up-right">Exportar</Button>
-        <Button variant="primary" icon="file-plus">Novo orçamento</Button>
+        <Button variant="primary" icon="file-plus" onClick={onNew}>Novo orçamento</Button>
       </div>
 
       <div className="rtg-filters">
@@ -45,13 +45,13 @@ function OrcamentosList() {
 
       <Card>
         <div className="rtg-tablewrap">
-        <table className="rtg-table">
+        <table className="rtg-table rtg-clickable">
           <thead>
             <tr><th>Orçamento</th><th>Serviço</th><th>Cliente</th><th>Emissão</th><th>Validade</th><th className="r">Valor</th><th className="r">Situação</th></tr>
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.n}>
+              <tr key={r.n} onClick={() => onOpen && onOpen(r)}>
                 <td><span className="rtg-doc">{r.n}</span></td>
                 <td style={{ fontWeight: 600 }}>{r.t}</td>
                 <td>{r.cli}</td>

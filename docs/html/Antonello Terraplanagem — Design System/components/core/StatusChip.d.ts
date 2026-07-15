@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 export interface StatusChipProps extends React.HTMLAttributes<HTMLSpanElement> {
   /**
@@ -6,7 +6,7 @@ export interface StatusChipProps extends React.HTMLAttributes<HTMLSpanElement> {
    * amber = em andamento / a vencer; info = aberto; success = concluída / pago / aprovado;
    * danger = vencido; neutral = perdido / inativo.
    */
-  tone?: "amber" | "info" | "success" | "danger" | "neutral";
+  tone?: 'amber' | 'info' | 'success' | 'danger' | 'neutral';
   /** Leading LED dot (for "in progress" style states). */
   led?: boolean;
   /** Leading icon — brand Icon name or ReactNode (e.g. 'check' for pago, 'circle-alert' for vencido). */

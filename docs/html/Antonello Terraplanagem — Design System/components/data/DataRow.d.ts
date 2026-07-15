@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 export interface DataRowProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Leading icon (muted tile) — brand Icon name or ReactNode. */

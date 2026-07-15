@@ -18,7 +18,7 @@
 .atp-btn--primary{background:var(--amarelo); color:#16140f; font-weight:var(--fw-bold); border-color:var(--amarelo)}
 .atp-btn--primary:hover:not(:disabled){background:var(--amarelo-bright)}
 .atp-btn--ghost{border-color:var(--border); color:var(--muted)}
-.atp-btn--ghost:hover:not(:disabled){border-color:var(--border-strong); color:var(--fg); background:#1e1a12}
+.atp-btn--ghost:hover:not(:disabled){border-color:var(--border-strong); color:var(--fg); background:var(--hover-row)}
 .atp-btn--ai{border-color:rgba(255,179,0,.38); color:var(--amarelo); background:var(--amarelo-soft)}
 .atp-btn--ai:hover:not(:disabled){background:rgba(255,179,0,.18)}
 .atp-btn--wa{border-color:rgba(76,122,63,.4); color:var(--success-fg)}
@@ -42,7 +42,7 @@
 }
 .atp-badge__led{width:7px; height:7px; border-radius:50%; background:currentColor}
 .atp-badge--active{background:var(--success-soft); color:var(--success-fg); border:1px solid rgba(76,122,63,.35)}
-.atp-badge--neutral{background:#221e16; color:var(--muted); border:1px solid var(--border)}
+.atp-badge--neutral{background:var(--chip-bg); color:var(--muted); border:1px solid var(--border)}
 .atp-badge--info{background:var(--info-soft); color:var(--info-fg); border:1px solid rgba(90,127,166,.3)}
 .atp-badge--gold{background:var(--amarelo-soft); color:var(--amarelo); border:1px solid rgba(255,179,0,.28)}
 
@@ -56,7 +56,7 @@
 .atp-status--info{background:var(--info-soft); color:var(--info-fg); border:1px solid rgba(90,127,166,.28)}
 .atp-status--success{background:var(--success-soft); color:var(--success-fg); border:1px solid rgba(76,122,63,.3)}
 .atp-status--danger{background:var(--danger-soft); color:var(--danger-fg); border:1px solid rgba(176,0,32,.32)}
-.atp-status--neutral{background:#221e16; color:var(--muted-2); border:1px solid var(--border)}
+.atp-status--neutral{background:var(--chip-bg); color:var(--muted-2); border:1px solid var(--border)}
 
 /* ---------------- Chip ---------------- */
 .atp-chip{
@@ -69,7 +69,7 @@
 /* ---------------- Pill ---------------- */
 .atp-pill{
   font:var(--fw-semibold) 11px/1 var(--font-mono); color:var(--muted);
-  background:#221e15; border:1px solid var(--border); border-radius:var(--r-pill); padding:4px 10px;
+  background:var(--chip-bg); border:1px solid var(--border); border-radius:var(--r-pill); padding:4px 10px;
   white-space:nowrap;
 }
 
@@ -134,8 +134,8 @@
   transition:background var(--ease-fast), color var(--ease-fast); text-decoration:none;
 }
 .atp-nav-item__label{flex:0 1 auto}
-.atp-nav-item:hover{background:#1d1a12; color:var(--fg)}
-.atp-nav-item__count{margin-left:auto; font:var(--fw-semibold) 11px/1 var(--font-mono); color:var(--muted-2); background:#221e15; border:1px solid var(--border); border-radius:var(--r-pill); padding:2px 7px}
+.atp-nav-item:hover{background:var(--hover-row); color:var(--fg)}
+.atp-nav-item__count{margin-left:auto; font:var(--fw-semibold) 11px/1 var(--font-mono); color:var(--muted-2); background:var(--chip-bg); border:1px solid var(--border); border-radius:var(--r-pill); padding:2px 7px}
 .atp-nav-item.is-active{background:var(--surface-2); color:var(--amarelo); font-weight:var(--fw-semibold)}
 .atp-nav-item.is-active::before{content:""; position:absolute; left:-12px; top:6px; bottom:6px; width:3px; background:var(--amarelo); border-radius:0 3px 3px 0}
 .atp-nav-item__dot{margin-left:auto; width:7px; height:7px; border-radius:50%; background:var(--amarelo); box-shadow:var(--ring-amarelo)}

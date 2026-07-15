@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 export interface PillProps extends React.HTMLAttributes<HTMLSpanElement> {
   children?: React.ReactNode;

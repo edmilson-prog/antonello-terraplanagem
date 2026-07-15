@@ -14,7 +14,7 @@ const CH_ROWS = [
     comp: [['fuel', 'Diesel', 'R$ 81/h', 47], ['wrench', 'Manutenção', 'R$ 44/h', 25], ['hard-hat', 'Operador', 'R$ 35/h', 20], ['history', 'Depreciação', 'R$ 14/h', 8]] },
 ];
 
-function CustoHora() {
+function CustoHora({ onNew }) {
   const [sel, setSel] = React.useState(CH_ROWS[0]);
   return (
     <>
@@ -23,7 +23,8 @@ function CustoHora() {
         <Pill>julho/2025</Pill>
         <div style={{ flex: 1 }} />
         <Button variant="ghost" icon="arrow-up-right">Exportar</Button>
-        <Button variant="primary" icon="calculator">Recalcular custos</Button>
+        <Button variant="ghost" icon="calculator">Recalcular custos</Button>
+        <Button variant="primary" icon="file-plus" onClick={onNew}>Novo lançamento</Button>
       </div>
 
       {/* KPIs */}

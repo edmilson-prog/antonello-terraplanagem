@@ -17,7 +17,7 @@ const MNT_PLANOS = [
   { eq: 'Rolo compactador CA25', ic: 'tractor', m: 'plano 3.000 h', v: 'em 130 h', late: false },
 ];
 
-function Manutencao() {
+function Manutencao({ onNew }) {
   return (
     <>
       <div className="rtg-listhead">
@@ -25,7 +25,7 @@ function Manutencao() {
         <Pill>julho/2025</Pill>
         <div style={{ flex: 1 }} />
         <Button variant="ghost" icon="arrow-up-right">Exportar</Button>
-        <Button variant="primary" icon="wrench">Nova manutenção</Button>
+        <Button variant="primary" icon="wrench" onClick={onNew}>Nova manutenção</Button>
       </div>
 
       {/* KPIs */}

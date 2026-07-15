@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 export interface CardProps extends React.HTMLAttributes<HTMLElement> {
   /** Uppercase card title (Archivo, tracked). */

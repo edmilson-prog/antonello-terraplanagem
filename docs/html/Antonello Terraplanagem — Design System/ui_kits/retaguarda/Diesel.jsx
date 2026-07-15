@@ -18,7 +18,7 @@ const DSL_CONSUMO = [
   { eq: 'Rolo CA25', ic: 'tractor', v: '8,6 L/h', pct: 47 },
 ];
 
-function Diesel() {
+function Diesel({ onNew }) {
   return (
     <>
       <div className="rtg-listhead">
@@ -26,7 +26,7 @@ function Diesel() {
         <Pill>julho/2025</Pill>
         <div style={{ flex: 1 }} />
         <Button variant="ghost" icon="arrow-up-right">Exportar</Button>
-        <Button variant="primary" icon="fuel">Novo abastecimento</Button>
+        <Button variant="primary" icon="fuel" onClick={onNew}>Novo abastecimento</Button>
       </div>
 
       {/* KPIs */}

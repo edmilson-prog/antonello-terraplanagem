@@ -2,7 +2,7 @@
 const NS = window.AntonelloTerraplanagemDesignSystem_2ede57;
 const { Card, StatusChip, Badge, Avatar, Button } = NS;
 
-function OperadoresList({ onOpen }) {
+function OperadoresList({ onOpen, onNew }) {
   const rows = window.RTG.operadores;
   return (
     <>
@@ -10,7 +10,7 @@ function OperadoresList({ onOpen }) {
         <h1 className="rtg-pagetitle">Operadores</h1>
         <div style={{ flex: 1 }} />
         <Button variant="ghost" icon="arrow-up-right">Exportar</Button>
-        <Button variant="primary" icon="file-plus">Novo operador</Button>
+        <Button variant="primary" icon="file-plus" onClick={onNew}>Novo operador</Button>
       </div>
       <Card>
         <table className="rtg-table rtg-clickable">

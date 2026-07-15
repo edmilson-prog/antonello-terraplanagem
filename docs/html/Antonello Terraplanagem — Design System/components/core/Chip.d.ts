@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 export interface ChipProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** Leading icon (rendered amber) — brand Icon name or ReactNode. */

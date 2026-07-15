@@ -16,7 +16,7 @@ const FAT_PENDENTES = [
 ];
 const FAT_MESES = [['fev', 52], ['mar', 61], ['abr', 58], ['mai', 74], ['jun', 78], ['jul', 88]];
 
-function Faturamento() {
+function Faturamento({ onNew }) {
   return (
     <>
       <div className="rtg-listhead">
@@ -24,7 +24,7 @@ function Faturamento() {
         <Pill>julho/2025</Pill>
         <div style={{ flex: 1 }} />
         <Button variant="ghost" icon="arrow-up-right">Exportar</Button>
-        <Button variant="primary" icon="file-check">Emitir NF</Button>
+        <Button variant="primary" icon="file-check" onClick={onNew}>Emitir NF</Button>
       </div>
 
       {/* KPIs */}

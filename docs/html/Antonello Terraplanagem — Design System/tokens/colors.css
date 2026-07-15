@@ -11,6 +11,10 @@
   --surface-2:#2c2712;   /* inset tiles, active nav, chips */
   --surface-3:#26221a;   /* alt inset */
   --sidebar:#141109;     /* sidebar — darker than page */
+  --hover-row:#1e1a13;   /* row / list / filter hover */
+  --chip-bg:#221e16;     /* neutral badge / status / pill / count fill */
+  --scrim:rgba(22,20,15,.86);  /* sticky header scrim */
+  --legacy-surface:#1a1813;    /* Farolti snapshot / map panel bg */
 
   /* ---------- Borders ---------- */
   --border:#2e2c26;        /* default hairline */

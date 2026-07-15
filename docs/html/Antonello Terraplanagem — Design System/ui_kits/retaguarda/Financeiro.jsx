@@ -27,7 +27,7 @@ const FIN_FORMAS = [
   { icon: 'link', t: 'Boleto', m: '7 recebimentos', v: 'R$ 18.700' },
 ];
 
-function Financeiro() {
+function Financeiro({ onNew }) {
   return (
     <>
       <div className="rtg-listhead">
@@ -35,7 +35,7 @@ function Financeiro() {
         <Pill>julho/2025</Pill>
         <div style={{ flex: 1 }} />
         <Button variant="ghost" icon="arrow-up-right">Exportar</Button>
-        <Button variant="primary" icon="file-plus">Novo lançamento</Button>
+        <Button variant="primary" icon="file-plus" onClick={onNew}>Novo lançamento</Button>
       </div>
 
       {/* KPIs */}
