@@ -159,5 +159,8 @@ vi.mock("./src/lib/supabase", () => {
         getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
       },
     },
+    // Stores (ex.: operadoresStore, orcamentosStore) aguardam esta promise
+    // antes da carga inicial — ver src/lib/supabase.ts.
+    sessaoRestaurada: Promise.resolve({ data: { session: null }, error: null }),
   };
 });

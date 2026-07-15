@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, sessaoRestaurada } from "@/lib/supabase";
 import { podeFecharOS } from "@/features/ordem-servico/derivacoes";
 import type { Apontamento, OrdemServico } from "@/shared/types";
 
@@ -53,7 +53,7 @@ async function carregar() {
   notificar();
 }
 
-carregar();
+sessaoRestaurada.then(carregar);
 
 const listar = () => itens;
 const obter = (id: string) => itens.find((o) => o.id === id);

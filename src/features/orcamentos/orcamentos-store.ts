@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, sessaoRestaurada } from "@/lib/supabase";
 import { calcularTotalOrcamento } from "@/features/orcamentos/calculo";
 import { proximoNumeroORC } from "@/features/orcamentos/numero-orcamento";
 import { podeDecidir, podeEnviar } from "@/features/orcamentos/derivacoes";
@@ -76,7 +76,7 @@ async function carregar() {
   notificar();
 }
 
-carregar();
+sessaoRestaurada.then(carregar);
 
 const listar = () => itens;
 const obter = (id: string) => itens.find((o) => o.id === id);

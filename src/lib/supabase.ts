@@ -14,3 +14,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: { storage: storageAdaptavel },
 });
+
+// createClient() restaura a sessão persistida de forma assíncrona — stores
+// que disparam sua carga inicial no escopo do módulo (import) precisam
+// aguardar essa promise antes da primeira query, senão ela sai como anon
+// (sem Authorization) e a RLS derruba com "permission denied".
+export const sessaoRestaurada = supabase.auth.getSession();

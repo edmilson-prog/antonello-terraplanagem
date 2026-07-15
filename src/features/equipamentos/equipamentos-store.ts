@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, sessaoRestaurada } from "@/lib/supabase";
 import type { Equipamento } from "@/shared/types";
 
 // Store reativo respaldado pelo Supabase (mesma API pública do antigo
@@ -45,7 +45,7 @@ async function carregar() {
   notificar();
 }
 
-carregar();
+sessaoRestaurada.then(carregar);
 
 const getAll = () => itens;
 const getById = (id: string) => itens.find((i) => i.id === id);
