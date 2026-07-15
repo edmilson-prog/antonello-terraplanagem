@@ -111,14 +111,28 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
       if (inicial) {
         await ordensStore.atualizar(inicial.id, dados);
         toast.success("OS atualizada.");
-      } else {
-        const numero = proximoNumeroOS(ordensStore.listar(), new Date().getFullYear());
-        const novaOrdem = await ordensStore.criar({ ...dados, numero });
-        if (orcamentoEscolhido) {
-          await orcamentosStore.vincularOS(orcamentoEscolhido, novaOrdem.id);
-        }
-        toast.success(`OS criada — ${numero}.`);
+        onSuccess();
+        return;
       }
+
+      const numero = proximoNumeroOS(ordensStore.listar(), new Date().getFullYear());
+      const novaOrdem = await ordensStore.criar({ ...dados, numero });
+
+      // A partir daqui a OS já existe no banco: uma falha no vínculo do
+      // orçamento não pode reaproveitar o catch genérico abaixo, senão o
+      // usuário vê "Falha ao criar a OS" e tenta de novo — criando uma
+      // segunda OS duplicada, já que a primeira nunca desapareceu.
+      if (orcamentoEscolhido) {
+        try {
+          await orcamentosStore.vincularOS(orcamentoEscolhido, novaOrdem.id);
+        } catch {
+          toast.warning("OS criada, mas não foi possível vincular o orçamento.");
+          onSuccess();
+          return;
+        }
+      }
+
+      toast.success(`OS criada — ${numero}.`);
       onSuccess();
     } catch (err) {
       const detalhe = err instanceof Error ? `: ${err.message}` : "";
