@@ -142,6 +142,19 @@ export interface PrecoMobilizacao {
   updated_at: string;
 }
 
+export type TipoHistoricoPreco = "hora_maquina" | "fundacao" | "mobilizacao";
+
+// Snapshot do estado ANTERIOR de um preço, capturado no momento de uma
+// edição/inativação/reativação — alimenta "Tabelas anteriores" (Onda
+// Comercial). Ainda mock: Preços não está conectado ao Supabase.
+export interface HistoricoPreco {
+  id: string;
+  tipo: TipoHistoricoPreco;
+  preco_id: string;
+  snapshot: PrecoHoraMaquina | PrecoFundacao | PrecoMobilizacao;
+  alterado_em: string; // ISO 8601
+}
+
 // OS colaborativa (PRD-003). A OS é contêiner: horas e status efetivo são DERIVADOS
 // dos apontamentos vinculados (via Apontamento.os_id). Sem campos R$, equipamento,
 // operador ou horímetro na OS. (Substitui o legado OrdemServicoOperador na T10.)
