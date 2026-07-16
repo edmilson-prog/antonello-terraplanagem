@@ -28,6 +28,32 @@ describe("ComponenteCustoForm", () => {
     expect(screen.getByText("R$ 21,00")).toBeInTheDocument();
   });
 
+  it("na criação calcula o impacto no custo/h ao vivo (variável por hora)", () => {
+    render(<ComponenteCustoForm inicial={null} onSuccess={() => {}} onCancel={() => {}} />);
+
+    fireEvent.click(screen.getByLabelText("Base do valor *"));
+    fireEvent.click(screen.getByRole("option", { name: "Variável por hora" }));
+
+    fireEvent.change(screen.getByLabelText("Descrição *"), { target: { value: "Operador" } });
+    // "3800" via CurrencyInput (centavos) => R$ 38,00 — nesse ramo o impacto é
+    // o próprio valor, sem dividir por horas de referência.
+    fireEvent.change(screen.getByLabelText("Valor (R$) *"), { target: { value: "3800" } });
+
+    expect(screen.getByText("R$ 38,00")).toBeInTheDocument();
+  });
+
+  it("mostra R$ 0,00 (sem NaN/Infinity) quando horas de referência é zero", () => {
+    render(<ComponenteCustoForm inicial={null} onSuccess={() => {}} onCancel={() => {}} />);
+
+    fireEvent.change(screen.getByLabelText("Descrição *"), { target: { value: "Seguro" } });
+    fireEvent.change(screen.getByLabelText("Valor (R$) *"), { target: { value: "38000" } });
+    fireEvent.change(screen.getByLabelText("Horas/mês de referência"), {
+      target: { value: "0" },
+    });
+
+    expect(screen.getByText("R$ 0,00")).toBeInTheDocument();
+  });
+
   it("na edição não mostra o resumo ao vivo", () => {
     render(
       <ComponenteCustoForm

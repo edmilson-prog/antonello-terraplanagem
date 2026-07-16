@@ -189,19 +189,21 @@ export function ComponenteCustoForm({ inicial, onSuccess, onCancel }: Props) {
           {errors.valor ? <p className="text-xs text-destructive">{errors.valor.message}</p> : null}
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="horas_referencia">Horas/mês de referência</Label>
-          <Input
-            id="horas_referencia"
-            type="number"
-            min="0"
-            inputMode="numeric"
-            className="font-mono"
-            disabled={tipo === "variavel_hora"}
-            value={horasReferencia}
-            onChange={(e) => setHorasReferencia(e.target.value)}
-          />
-        </div>
+        {!inicial ? (
+          <div className="space-y-1.5">
+            <Label htmlFor="horas_referencia">Horas/mês de referência</Label>
+            <Input
+              id="horas_referencia"
+              type="number"
+              min="0"
+              inputMode="numeric"
+              className="font-mono"
+              disabled={tipo === "variavel_hora"}
+              value={horasReferencia}
+              onChange={(e) => setHorasReferencia(e.target.value)}
+            />
+          </div>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
