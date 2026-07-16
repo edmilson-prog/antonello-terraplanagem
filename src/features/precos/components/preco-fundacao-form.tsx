@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { CurrencyInput } from "@/features/precos/components/currency-input";
 import { precoFundacaoStore } from "@/features/precos/precos-fundacao-store";
 import { precoFundacaoSchema, type PrecoFundacaoFormValues } from "@/features/precos/precos-schema";
+import { historicoPrecosStore } from "@/features/precos/historico-precos-store";
 import type { PrecoFundacao } from "@/shared/types";
 
 interface Props {
@@ -40,6 +41,7 @@ export function PrecoFundacaoForm({ inicial, onSuccess, onCancel }: Props) {
       ativo: values.ativo,
     };
     if (inicial) {
+      historicoPrecosStore.registrar("fundacao", inicial);
       precoFundacaoStore.update(inicial.id, payload);
       toast.success("Preço atualizado.");
     } else {
