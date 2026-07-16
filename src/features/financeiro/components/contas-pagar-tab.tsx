@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { contaVencida } from "@/features/financeiro/derivacoes";
-import { StatusContaBadge, CATEGORIA_LABEL } from "@/features/financeiro/labels";
+import { StatusContaBadge, CATEGORIA_LABEL, CATEGORIA_ICONE } from "@/features/financeiro/labels";
 import { formatBRL } from "@/features/retaguarda/format";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -70,7 +70,10 @@ export function ContasPagarTab({ contasPagar, onDarBaixa }: ContasPagarTabProps)
                     <td className="px-4 py-3 font-medium">{conta.descricao}</td>
                     <td className="px-4 py-3 text-muted-foreground">{conta.fornecedor ?? "—"}</td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {CATEGORIA_LABEL[conta.categoria]}
+                      <span className="inline-flex items-center gap-1.5">
+                        <Icon icon={CATEGORIA_ICONE[conta.categoria]} className="h-3.5 w-3.5" />
+                        {CATEGORIA_LABEL[conta.categoria]}
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-right font-mono">{formatBRL(conta.valor)}</td>
                     <td className="px-4 py-3">

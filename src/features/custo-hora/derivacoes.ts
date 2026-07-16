@@ -172,3 +172,26 @@ export function custoHoraPorEquipamento(
       ),
     );
 }
+
+// Estimativa de custo/hora INDEPENDENTE do uso real do período — soma os
+// componentes ativos do equipamento usando horas/mês de referência fixas em
+// vez de horas_trabalhadas reais (que podem ser 0 e zerar custo_por_hora em
+// custoHoraEquipamento). Mesma fórmula do "impacto no custo/h" já usada no
+// formulário de Componente de Custo, generalizada para todos os componentes
+// do equipamento. Usada em Preços (coluna Custo ref./Margem).
+export function custoEstimadoHoraEquipamento(
+  equipamentoId: string,
+  componentes: ComponenteCusto[],
+  horasReferencia = 160,
+): number | null {
+  const ativos = componentesAtivosDoEquipamento(componentes, equipamentoId);
+  if (ativos.length === 0) return null;
+  const fixos = ativos.filter((c) => c.tipo === "fixo_mensal");
+  const variaveis = ativos.filter((c) => c.tipo === "variavel_hora");
+  const custoFixoRateado =
+    horasReferencia > 0
+      ? round2(fixos.reduce((soma, c) => soma + c.valor, 0) / horasReferencia)
+      : 0;
+  const custoVariavel = round2(variaveis.reduce((soma, c) => soma + c.valor, 0));
+  return round2(custoFixoRateado + custoVariavel);
+}

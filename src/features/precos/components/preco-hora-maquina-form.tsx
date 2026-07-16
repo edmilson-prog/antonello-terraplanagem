@@ -18,6 +18,7 @@ import {
   type PrecoHoraMaquinaFormValues,
 } from "@/features/precos/precos-schema";
 import { VINCULOS, VINCULO_LABEL } from "@/features/precos/labels";
+import { historicoPrecosStore } from "@/features/precos/historico-precos-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { TIPOS, TIPO_LABEL } from "@/features/equipamentos/labels";
 import type { PrecoHoraMaquina } from "@/shared/types";
@@ -58,6 +59,7 @@ export function PrecoHoraMaquinaForm({ inicial, onSuccess, onCancel }: Props) {
       ativo: values.ativo,
     };
     if (inicial) {
+      historicoPrecosStore.registrar("hora_maquina", inicial);
       precoHoraMaquinaStore.update(inicial.id, payload);
       toast.success("Preço atualizado.");
     } else {

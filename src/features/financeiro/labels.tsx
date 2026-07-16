@@ -58,3 +58,20 @@ export const FORMA_PAGAMENTO_LABEL: Record<FormaPagamento, string> = {
   cheque: "Cheque",
   outro: "Outro",
 };
+
+export const FORMA_RECEBIMENTO_ICONE: Record<FormaRecebimento, string> = {
+  dinheiro: "lucide:banknote",
+  pix: "lucide:credit-card",
+  transferencia: "lucide:landmark",
+  boleto: "lucide:link",
+  cheque: "lucide:file-text",
+  outro: "lucide:circle",
+};
+
+export const CATEGORIA_ICONE: Record<CategoriaDespesa, string> = {
+  diesel: "lucide:fuel",
+  manutencao: "lucide:wrench",
+  folha: "lucide:hard-hat",
+  fornecedor: "lucide:truck",
+  outro: "lucide:circle",
+};

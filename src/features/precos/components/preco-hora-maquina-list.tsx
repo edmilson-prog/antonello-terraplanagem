@@ -10,7 +10,10 @@ import { useMockResource } from "@/shared/hooks/use-mock-resource";
 import { formatBRL } from "@/features/retaguarda/format";
 import { precoHoraMaquinaStore } from "@/features/precos/precos-hora-maquina-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
-import { descreverVinculo } from "@/features/precos/labels";
+import { descreverVinculo, margemPercentual, MARGEM_MINIMA_PADRAO } from "@/features/precos/labels";
+import { historicoPrecosStore } from "@/features/precos/historico-precos-store";
+import { componentesCustoStore } from "@/features/custo-hora/componentes-custo-store";
+import { custoEstimadoHoraEquipamento } from "@/features/custo-hora/derivacoes";
 import { PrecoHoraMaquinaForm } from "@/features/precos/components/preco-hora-maquina-form";
 import type { PrecoHoraMaquina } from "@/shared/types";
 import { cn } from "@/lib/utils";
@@ -18,7 +21,19 @@ import { cn } from "@/lib/utils";
 export function PrecoHoraMaquinaList() {
   const todos = precoHoraMaquinaStore.useAll();
   const equipamentos = equipamentosStore.useAll();
+  const componentes = componentesCustoStore.useAll();
   const { isLoading, error, retry } = useMockResource(todos);
+
+  const custoRefPorId = useMemo(() => {
+    const mapa = new Map<string, number | null>();
+    for (const p of todos) {
+      mapa.set(
+        p.id,
+        p.equipamento_id ? custoEstimadoHoraEquipamento(p.equipamento_id, componentes) : null,
+      );
+    }
+    return mapa;
+  }, [todos, componentes]);
 
   const [mostrarInativos, setMostrarInativos] = useState(true);
   const [formAberto, setFormAberto] = useState(false);
@@ -40,11 +55,13 @@ export function PrecoHoraMaquinaList() {
   };
   const confirmarInativar = () => {
     if (!inativando) return;
+    historicoPrecosStore.registrar("hora_maquina", inativando);
     precoHoraMaquinaStore.setAtivo(inativando.id, false);
     toast.success("Preço inativado.");
     setInativando(null);
   };
   const reativar = (p: PrecoHoraMaquina) => {
+    historicoPrecosStore.registrar("hora_maquina", p);
     precoHoraMaquinaStore.setAtivo(p.id, true);
     toast.success("Preço reativado.");
   };
@@ -67,6 +84,32 @@ export function PrecoHoraMaquinaList() {
       header: "Hora operada",
       className: "font-mono",
       cell: (p) => formatBRL(p.valor_hora_operada),
+    },
+    {
+      header: "Custo ref.",
+      className: "text-right font-mono",
+      cell: (p) => {
+        const custo = custoRefPorId.get(p.id);
+        return custo == null ? (
+          <span className="text-foreground-faint">—</span>
+        ) : (
+          formatBRL(custo)
+        );
+      },
+    },
+    {
+      header: "Margem",
+      className: "text-right font-mono",
+      cell: (p) => {
+        const custo = custoRefPorId.get(p.id);
+        if (custo == null) return <span className="text-foreground-faint">—</span>;
+        const margem = margemPercentual(p.valor_hora_operada, custo);
+        return (
+          <span className={cn(margem < MARGEM_MINIMA_PADRAO && "text-destructive")}>
+            {Math.round(margem * 100)}%
+          </span>
+        );
+      },
     },
     { header: "Status", cell: (p) => <StatusAtivo ativo={p.ativo} /> },
   ];
@@ -112,6 +155,31 @@ export function PrecoHoraMaquinaList() {
         <div>
           <dt className="text-foreground-faint">Hora operada</dt>
           <dd className="font-mono text-foreground">{formatBRL(p.valor_hora_operada)}</dd>
+        </div>
+        <div>
+          <dt className="text-foreground-faint">Custo ref.</dt>
+          <dd className="font-mono text-foreground">
+            {custoRefPorId.get(p.id) != null ? formatBRL(custoRefPorId.get(p.id)!) : "—"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-foreground-faint">Margem</dt>
+          <dd
+            className={cn(
+              "font-mono text-foreground",
+              (() => {
+                const custo = custoRefPorId.get(p.id);
+                if (custo == null) return false;
+                return margemPercentual(p.valor_hora_operada, custo) < MARGEM_MINIMA_PADRAO;
+              })() && "text-destructive",
+            )}
+          >
+            {(() => {
+              const custo = custoRefPorId.get(p.id);
+              if (custo == null) return "—";
+              return `${Math.round(margemPercentual(p.valor_hora_operada, custo) * 100)}%`;
+            })()}
+          </dd>
         </div>
       </dl>
       <div className="mt-3 flex justify-end">{rowActions(p)}</div>

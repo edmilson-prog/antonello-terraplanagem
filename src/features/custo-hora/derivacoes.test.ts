@@ -5,6 +5,7 @@ import { abastecimentos } from "@/mocks/abastecimentos";
 import { registrosManutencao } from "@/mocks/registros-manutencao";
 import { componentesCusto } from "@/mocks/componentes-custo";
 import { precosHoraMaquina } from "@/mocks/precos-hora-maquina";
+import type { ComponenteCusto } from "@/shared/types";
 import {
   horasTrabalhadasNoPeriodo,
   custoDieselNoPeriodo,
@@ -12,6 +13,7 @@ import {
   componentesAtivosDoEquipamento,
   custoHoraEquipamento,
   custoHoraPorEquipamento,
+  custoEstimadoHoraEquipamento,
 } from "@/features/custo-hora/derivacoes";
 
 const PERIODO = "2026-06";
@@ -172,6 +174,79 @@ describe("features/custo-hora/derivacoes", () => {
       );
       expect(resultados).toHaveLength(7);
       expect(resultados.some((r) => r.equipamento_id === "eq-008")).toBe(false);
+    });
+  });
+
+  describe("custoEstimadoHoraEquipamento", () => {
+    it("soma fixo rateado por horas de referência (160h padrão) + variável por hora", () => {
+      // eq-001: cc-001 fixo_mensal 4200 (/160 = 26.25) + cc-002 variavel_hora 45 = 71.25
+      expect(custoEstimadoHoraEquipamento("eq-001", componentesCusto)).toBe(71.25);
+    });
+
+    it("aceita horasReferencia customizada", () => {
+      // eq-001: 4200 / 200 = 21 + 45 = 66
+      expect(custoEstimadoHoraEquipamento("eq-001", componentesCusto, 200)).toBe(66);
+    });
+
+    it("retorna null para equipamento sem nenhum componente ativo", () => {
+      expect(custoEstimadoHoraEquipamento("eq-003", componentesCusto)).toBeNull();
+    });
+
+    it("soma só componentes fixos quando não há variável", () => {
+      const somenteFixo: ComponenteCusto[] = [
+        {
+          id: "x1",
+          equipamento_id: "eq-x",
+          descricao: "Seguro",
+          tipo: "fixo_mensal",
+          valor: 1600,
+          categoria: null,
+          competencia: null,
+          observacao: null,
+          ativo: true,
+          created_at: "2026-01-01T00:00:00.000Z",
+          updated_at: "2026-01-01T00:00:00.000Z",
+        },
+      ];
+      expect(custoEstimadoHoraEquipamento("eq-x", somenteFixo, 160)).toBe(10);
+    });
+
+    it("soma só componentes variáveis quando não há fixo", () => {
+      const somenteVariavel: ComponenteCusto[] = [
+        {
+          id: "x2",
+          equipamento_id: "eq-y",
+          descricao: "Operador",
+          tipo: "variavel_hora",
+          valor: 35,
+          categoria: null,
+          competencia: null,
+          observacao: null,
+          ativo: true,
+          created_at: "2026-01-01T00:00:00.000Z",
+          updated_at: "2026-01-01T00:00:00.000Z",
+        },
+      ];
+      expect(custoEstimadoHoraEquipamento("eq-y", somenteVariavel, 160)).toBe(35);
+    });
+
+    it("ignora componentes inativos", () => {
+      const comInativo: ComponenteCusto[] = [
+        {
+          id: "x3",
+          equipamento_id: "eq-z",
+          descricao: "Peça antiga",
+          tipo: "fixo_mensal",
+          valor: 9999,
+          categoria: null,
+          competencia: null,
+          observacao: null,
+          ativo: false,
+          created_at: "2026-01-01T00:00:00.000Z",
+          updated_at: "2026-01-01T00:00:00.000Z",
+        },
+      ];
+      expect(custoEstimadoHoraEquipamento("eq-z", comInativo, 160)).toBeNull();
     });
   });
 });
