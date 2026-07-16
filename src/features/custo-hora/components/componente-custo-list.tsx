@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -33,10 +34,6 @@ export function ComponenteCustoList() {
   const nomeDoEquipamento = (id: string) =>
     equipamentos.find((e) => e.id === id)?.nome ?? "Equipamento removido";
 
-  const abrirNovo = () => {
-    setEditando(null);
-    setFormAberto(true);
-  };
   const abrirEdicao = (c: ComponenteCusto) => {
     setEditando(c);
     setFormAberto(true);
@@ -134,12 +131,11 @@ export function ComponenteCustoList() {
         <Icon icon={mostrarInativos ? "lucide:eye" : "lucide:eye-off"} className="h-4 w-4" />
         Inativos
       </Button>
-      <Button
-        onClick={abrirNovo}
-        className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
-      >
-        <Icon icon="lucide:plus" className="h-4 w-4" />
-        Novo componente
+      <Button asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover">
+        <Link to="/admin/custo-hora/novo">
+          <Icon icon="lucide:plus" className="h-4 w-4" />
+          Novo componente
+        </Link>
       </Button>
     </div>
   );
@@ -165,12 +161,11 @@ export function ComponenteCustoList() {
               : "Ajuste o filtro de inativos.",
           cta:
             todos.length === 0 ? (
-              <Button
-                onClick={abrirNovo}
-                className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
-              >
-                <Icon icon="lucide:plus" className="h-4 w-4" />
-                Cadastrar primeiro componente
+              <Button asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover">
+                <Link to="/admin/custo-hora/novo">
+                  <Icon icon="lucide:plus" className="h-4 w-4" />
+                  Cadastrar primeiro componente
+                </Link>
               </Button>
             ) : undefined,
         }}
@@ -179,7 +174,7 @@ export function ComponenteCustoList() {
       <FormDialog
         open={formAberto}
         onOpenChange={setFormAberto}
-        titulo={editando ? "Editar componente de custo" : "Novo componente de custo"}
+        titulo="Editar componente de custo"
         descricao="Os campos com * são obrigatórios."
       >
         <ComponenteCustoForm

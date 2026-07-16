@@ -37,6 +37,21 @@ if (!window.ResizeObserver) {
   };
 }
 
+// jsdom não implementa scrollIntoView nem a Pointer Capture API — usadas pelo
+// Radix Select ao abrir/fechar o listbox e posicionar o item selecionado.
+// Sem estes polyfills, qualquer teste que abra um <Select> obrigatório (ex.:
+// Equipamento em ComponenteCustoForm) quebra com "scrollIntoView is not a
+// function" ao montar o SelectContent.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => {};
+}
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = () => false;
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = () => {};
+}
+
 // Impede que stores respaldados pelo Supabase (ex.: equipamentosStore,
 // clientesStore, ordensStore, orcamentosStore) façam chamadas de rede reais
 // durante os testes unitários — elas rodariam contra o projeto de produção,

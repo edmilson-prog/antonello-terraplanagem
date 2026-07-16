@@ -352,6 +352,13 @@ export interface Comprovante {
 // ComponenteCusto manual) — o custo/hora final é sempre calculado, nunca
 // persistido (ver features/custo-hora/derivacoes.ts).
 export type TipoComponenteCusto = "fixo_mensal" | "variavel_hora" | "diesel" | "manutencao";
+export type CategoriaComponenteCusto =
+  | "depreciacao"
+  | "seguro"
+  | "pneus"
+  | "operador"
+  | "indireto"
+  | "outros";
 
 export interface ComponenteCusto {
   id: string;
@@ -359,6 +366,9 @@ export interface ComponenteCusto {
   descricao: string; // ex.: "Parcela FINAME", "Seguro", "Material rodante", "Operador"
   tipo: TipoComponenteCusto; // configurável pelo usuário: só fixo_mensal | variavel_hora
   valor: number; // R$ (mensal se fixo; por hora se variável)
+  categoria: CategoriaComponenteCusto | null; // organização/relatório — não entra no cálculo
+  competencia: string | null; // "YYYY-MM"
+  observacao: string | null;
   ativo: boolean;
   created_at: string;
   updated_at: string;
