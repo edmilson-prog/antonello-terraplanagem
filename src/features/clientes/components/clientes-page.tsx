@@ -98,10 +98,6 @@ export function ClientesPage() {
     [listaPaginada, ordens, contas],
   );
 
-  const abrirNovo = () => {
-    setEditando(null);
-    setFormAberto(true);
-  };
   const abrirEdicao = (c: Cliente) => {
     setEditando(c);
     setFormAberto(true);
@@ -293,12 +289,11 @@ export function ClientesPage() {
         titulo="Clientes"
         descricao="Para quem as obras são executadas e a cobrança é emitida."
         acoes={
-          <Button
-            onClick={abrirNovo}
-            className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
-          >
-            <Icon icon="lucide:plus" className="h-4 w-4" />
-            Novo cliente
+          <Button asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover">
+            <Link to="/admin/clientes/novo">
+              <Icon icon="lucide:plus" className="h-4 w-4" />
+              Novo cliente
+            </Link>
           </Button>
         }
       />
@@ -322,12 +317,11 @@ export function ClientesPage() {
               : "Ajuste a busca.",
           cta:
             todos.length === 0 ? (
-              <Button
-                onClick={abrirNovo}
-                className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
-              >
-                <Icon icon="lucide:plus" className="h-4 w-4" />
-                Cadastrar primeiro cliente
+              <Button asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover">
+                <Link to="/admin/clientes/novo">
+                  <Icon icon="lucide:plus" className="h-4 w-4" />
+                  Cadastrar primeiro cliente
+                </Link>
               </Button>
             ) : undefined,
         }}
@@ -388,7 +382,7 @@ export function ClientesPage() {
       <FormDialog
         open={formAberto}
         onOpenChange={setFormAberto}
-        titulo={editando ? "Editar cliente" : "Novo cliente"}
+        titulo="Editar cliente"
         descricao="Os campos com * são obrigatórios."
       >
         <ClienteForm

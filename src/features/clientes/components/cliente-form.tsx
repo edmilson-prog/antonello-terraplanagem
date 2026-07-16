@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { clienteSchema, type ClienteFormValues } from "@/features/clientes/cliente-schema";
+import { ResumoNovoCliente } from "@/features/clientes/components/resumo-novo-cliente";
 import type { Cliente } from "@/shared/types";
 
 interface Props {
@@ -55,7 +57,7 @@ export function ClienteForm({ inicial, onSuccess, onCancel }: Props) {
     }
   };
 
-  return (
+  const formulario = (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor="nome">Nome / razão social *</Label>
@@ -127,5 +129,19 @@ export function ClienteForm({ inicial, onSuccess, onCancel }: Props) {
         </Button>
       </div>
     </form>
+  );
+
+  if (inicial) return formulario;
+
+  return (
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
+      <Card>
+        <CardHeader>
+          <CardTitle>Dados cadastrais</CardTitle>
+        </CardHeader>
+        <CardContent>{formulario}</CardContent>
+      </Card>
+      <ResumoNovoCliente control={control} />
+    </div>
   );
 }
