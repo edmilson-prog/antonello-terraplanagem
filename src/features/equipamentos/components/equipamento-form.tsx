@@ -12,12 +12,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { TIPOS, TIPO_LABEL, STATUS, STATUS_LABEL } from "@/features/equipamentos/labels";
 import {
   equipamentoSchema,
   type EquipamentoFormValues,
 } from "@/features/equipamentos/equipamento-schema";
+import { ResumoNovoEquipamento } from "@/features/equipamentos/components/resumo-novo-equipamento";
 import type { Equipamento } from "@/shared/types";
 
 interface Props {
@@ -73,7 +75,7 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
     }
   };
 
-  return (
+  const formulario = (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1.5">
         <Label htmlFor="nome">Nome *</Label>
@@ -201,5 +203,19 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
         </Button>
       </div>
     </form>
+  );
+
+  if (inicial) return formulario;
+
+  return (
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
+      <Card>
+        <CardHeader>
+          <CardTitle>Dados do equipamento</CardTitle>
+        </CardHeader>
+        <CardContent>{formulario}</CardContent>
+      </Card>
+      <ResumoNovoEquipamento control={control} />
+    </div>
   );
 }
