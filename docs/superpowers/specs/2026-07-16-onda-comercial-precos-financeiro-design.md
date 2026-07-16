@@ -101,7 +101,10 @@ tentar estimar uma média — não há `ComponenteCusto` vinculado a um tipo, s�
 um equipamento específico):
 
 - **Custo ref.**: `custoEstimadoHoraEquipamento(...)`, `formatBRL`, "—" se
-  `null` (equipamento sem nenhum componente ativo).
+  `null` (equipamento sem nenhum componente ativo — acontece mesmo em linhas
+  com `equipamento_id` preenchido, ex.: o mock de dados tem `phm-006` vinculado
+  a `eq-007`, que não tem nenhum `ComponenteCusto` cadastrado — "configuração
+  incompleta", mesmo conceito já usado em `custoHoraEquipamento`).
 - **Margem**: `(valor_hora_operada − custoRef) / valor_hora_operada`, em %.
   Laranja (`text-destructive`, mesma classe usada em outras badges de alerta
   do projeto) quando < 30% — **limiar fixo no código** (constante
@@ -112,33 +115,45 @@ um equipamento específico):
 
 ### Histórico de preços ("Tabelas anteriores")
 
-Novo, mínimo:
+**Correção importante descoberta ao investigar o código:** Preços (e
+Financeiro) ainda não estão conectados ao Supabase — as 3 stores de preço
+usam `createMockStore` (`src/shared/lib/create-mock-store.ts`), um store
+100% em memória, sem nenhuma chamada a `supabase.from(...)`. Diferente da
+Onda 1 (Cliente/Equipamento/Operador, já conectados), criar uma tabela real
+no Supabase aqui seria inconsistente com a maturidade atual da feature —
+ficaria uma tabela real "pendurada" sem nada mais no domínio usando o banco.
+Histórico de preços, então, é **mock também** (mesmo padrão de
+`contasPagarStore`/`contasReceberStore`: array em memória + `useSyncExternalStore`),
+pensado para virar `seed.sql` quando Preços for conectado de verdade.
 
-- Migration `supabase/migrations/<timestamp>_historico_precos.sql`:
-  ```sql
-  create table public.historico_precos (
-    id uuid primary key default gen_random_uuid(),
-    tipo text not null check (tipo in ('hora_maquina', 'fundacao', 'mobilizacao')),
-    preco_id uuid not null,
-    snapshot jsonb not null, -- linha completa da tabela de origem, antes da alteração
-    alterado_em timestamptz not null default now(),
-    created_at timestamptz not null default now()
-  );
-  alter table public.historico_precos enable row level security;
-  create policy "retaguarda le historico_precos" on public.historico_precos
-    for select to authenticated using (is_retaguarda());
-  create policy "retaguarda insere historico_precos" on public.historico_precos
-    for insert to authenticated with check (is_retaguarda());
-  create index idx_historico_precos_tipo_preco on public.historico_precos (tipo, preco_id);
+- Novo `src/mocks/historico-precos.ts`: array vazio (`export const historicoPrecos: HistoricoPreco[] = []`).
+- Novo tipo em `src/shared/types/index.ts`:
+  ```ts
+  export type TipoHistoricoPreco = "hora_maquina" | "fundacao" | "mobilizacao";
+
+  export interface HistoricoPreco {
+    id: string;
+    tipo: TipoHistoricoPreco;
+    preco_id: string;
+    snapshot: PrecoHoraMaquina | PrecoFundacao | PrecoMobilizacao; // estado anterior à alteração
+    alterado_em: string; // ISO 8601
+  }
   ```
-- Cada store de preço (`precos-hora-maquina-store.ts`,
-  `precos-fundacao-store.ts`, `precos-mobilizacao-store.ts`) ganha: antes de
-  aplicar `update`/`setAtivo`, insere uma linha em `historico_precos` com o
-  snapshot do estado **anterior** à alteração (não é trigger de banco — é
-  aplicado no código do store, mesmo padrão mock→seed do projeto).
+- Novo `src/features/precos/historico-precos-store.ts`, mesmo padrão de
+  `criarContasPagarStore`: função `registrar(tipo, snapshot)` insere no
+  início do array (mais recente primeiro) + `notificar()`; `useTodos()` via
+  `useSyncExternalStore`.
+- Cada formulário de preço (`PrecoHoraMaquinaForm`, `PrecoFundacaoForm`,
+  `PrecoMobilizacaoForm`), no branch de edição (`if (inicial)`, antes de
+  chamar `store.update(...)`), chama
+  `historicoPrecosStore.registrar("hora_maquina", inicial)` (snapshot do
+  estado **anterior**, já disponível na prop `inicial`). Cada lista
+  (`PrecoHoraMaquinaList`, etc.), em `confirmarInativar` e `reativar`, faz o
+  mesmo antes de chamar `store.setAtivo(...)` (o objeto completo já está em
+  `inativando`/`p`, disponível no call site).
 - Novo `src/features/precos/components/tabelas-anteriores-dialog.tsx`:
-  `Dialog` somente leitura, lista os snapshots (3 tipos juntos, ordenados por
-  `alterado_em` desc), cada linha mostra tipo + descrição do item (via
+  `Dialog` somente leitura, lista os snapshots dos 3 tipos juntos, ordenados
+  por `alterado_em` desc, cada linha mostra tipo + descrição do item (via
   `descreverVinculo`/`descricao` do snapshot) + `alterado_em` formatado. Sem
   paginação (mock de dados é pequeno; se crescer, é ajuste futuro).
 - Botão "Tabelas anteriores" (`variant="ghost"`, ícone `lucide:history`) no
@@ -171,12 +186,18 @@ tabela é renderizada (dentro de `CardSecao` em vez de `TabsContent`).
 
 ### `FinanceiroKpis` (novo componente, mesmo padrão `Tile` de `FaturamentoKpis`)
 
+`StatusConta = "aberta" | "liquidada"` (não há status "recebido"/"pago" — a
+data em `recebido_em`/`pago_em` que marca a liquidação). `ContaVencida`,
+`resumoCaixa` (usados por `CaixaTab`) já existem em
+`src/features/financeiro/derivacoes.ts` e usam exatamente essa convenção —
+os novos cálculos abaixo seguem o mesmo padrão.
+
 | Tile | Cálculo | Rodapé |
 |------|---------|--------|
-| A receber | soma `valor` de `ContaReceber` com `status !== "recebido"` | "N títulos · M vencidos" (vencido = `vencimento < hoje`, mesma `contaVencida` já usada) |
-| A pagar | soma `valor` de `ContaPagar` com `status !== "pago"` | "N títulos até {vencimento mais próximo, DD/MM}" |
-| Recebido no mês | soma `valor` de `ContaReceber` com `status === "recebido"` e `recebido_em` no mês corrente | trend vs. mês anterior + sparkline 6 meses (reaproveita o padrão de `agregadoMensal`, adaptado pra somar por `recebido_em` em vez de `faturado_em`) |
-| Saldo do mês | (Recebido no mês) − (soma `ContaPagar.valor` com `pago_em` no mês corrente) | sparkline 6 meses |
+| A receber | soma `valor` de `ContaReceber` com `status === "aberta"` | "N títulos · M vencidos" (vencido = `contaVencida`, já existe) |
+| A pagar | soma `valor` de `ContaPagar` com `status === "aberta"` | "N títulos até {vencimento mais próximo, DD/MM}" |
+| Recebido no mês | soma `valor` de `ContaReceber` com `status === "liquidada"` e `recebido_em` no mês corrente | trend vs. mês anterior + sparkline 6 meses (reaproveita o padrão de `agregadoMensal`, adaptado pra somar por `recebido_em` em vez de `faturado_em`) |
+| Saldo do mês | (Recebido no mês) − (soma `ContaPagar.valor` com `status === "liquidada"` e `pago_em` no mês corrente) | sparkline 6 meses |
 
 Nova função `agregadoMensalFinanceiro` em `src/features/financeiro/derivacoes.ts`
 (mesma forma de `agregadoMensal` de faturamento: recebe lista + campo de data +
@@ -184,26 +205,26 @@ quantidade de meses, devolve `{ mes, valor, qtd }[]`).
 
 ### `RecebimentosPorFormaCard` (novo)
 
-Agrupa `ContaReceber` com `status === "recebido"` por `forma_recebimento`,
+Agrupa `ContaReceber` com `status === "liquidada"` por `forma_recebimento`,
 soma `valor` + conta ocorrências. Nova função `recebimentosPorForma` em
-`derivacoes.ts`. Ícone por forma (mapa já existe parcialmente em
-`ContaPagar`/`ContaReceber` — se não existir, adicionar em
-`src/features/financeiro/labels.tsx`): `pix→credit-card`,
+`derivacoes.ts`. `FORMA_RECEBIMENTO_LABEL` já existe em
+`src/features/financeiro/labels.tsx` — falta só o mapa de ícone por forma
+(adicionar `FORMA_RECEBIMENTO_ICONE` no mesmo arquivo): `pix→credit-card`,
 `transferencia→landmark`, `boleto→link`, `dinheiro→banknote`,
 `cheque→file-text`, `outro→circle`. Linhas ordenadas por valor desc.
 
 ### `ComprovantesRecentesCard` (novo)
 
-Últimas 5 `ContaReceber` com `status === "recebido"`, ordenadas por
-`recebido_em` desc. Cada linha: ícone da forma (mesmo mapa acima) + texto
-`"{FORMA_RECEBIMENTO_LABEL} recebido — {faturamento.numero}"` (join via
+Últimas 5 `ContaReceber` com `status === "liquidada"`, ordenadas por
+`recebido_em` desc. Cada linha: ícone da forma (`FORMA_RECEBIMENTO_ICONE`) +
+texto `"{FORMA_RECEBIMENTO_LABEL} recebido — {faturamento.numero}"` (join via
 `faturamentosStore.obter(conta.faturamento_id)`, formato real
 `"FAT-2026-0042"` — o mock usa `"NF 1042"` como exemplo ilustrativo, não é um
-formato real do sistema) + valor formatado + `recebido_em` relativo/formatado.
-Nome deliberadamente igual ao mock ("Comprovantes recentes"), mesmo não tendo
-relação com a entidade `Comprovante` (assinatura de serviço) do domínio — são
-conceitos homônimos não relacionados; evitar confundir ao implementar (este
-card não toca a tabela `comprovantes`).
+formato real do sistema) + valor formatado + `recebido_em` formatado
+(`DD/MM/AAAA`). Nome deliberadamente igual ao mock ("Comprovantes recentes"),
+mesmo não tendo relação com a entidade `Comprovante` (assinatura de serviço)
+do domínio — são conceitos homônimos não relacionados; evitar confundir ao
+implementar (este card não toca a tabela/feature `comprovantes`).
 
 ### `ContaPagar` — ícone por categoria
 
@@ -234,9 +255,11 @@ Real só tem `categoria` (`CategoriaDespesa`), sem campo de ícone. Mapear em
 - `agregadoMensalFinanceiro`, `recebimentosPorForma`: testes unitários em
   `src/features/financeiro/derivacoes.test.ts` — lista vazia, um mês, múltiplos
   meses/formas.
-- Stores de preço: teste cobrindo que `update`/`setAtivo` grava snapshot em
-  `historico_precos` antes de alterar (usar o mock de Supabase já existente em
-  `vitest.setup.ts`).
+- `historicoPrecosStore`: teste cobrindo `registrar` + `useTodos` (mesmo
+  padrão de teste dos outros stores mock, sem Supabase envolvido).
+- Formulários de preço (`PrecoHoraMaquinaForm` etc.): teste garantindo que
+  editar um preço existente chama `historicoPrecosStore.registrar` com o
+  snapshot anterior antes de `store.update`.
 - `TabelasAnterioresDialog`: teste de render com histórico vazio e com itens
   dos 3 tipos.
 - `PrecoHoraMaquinaList`: teste garantindo que a coluna Margem aplica a classe
@@ -247,7 +270,7 @@ Real só tem `categoria` (`CategoriaDespesa`), sem campo de ícone. Mapear em
 
 ## Migrations Supabase
 
-Uma migration nova: `historico_precos` (criação de tabela + RLS). Nenhuma
-alteração em tabelas existentes é necessária para esta sub-onda — todos os
-outros dados novos (Recebimentos por Forma, Comprovantes Recentes, ícones por
-categoria) são 100% derivados de colunas já existentes.
+Nenhuma. Preços e Financeiro ainda não estão conectados ao Supabase (ver
+seção de Histórico acima) — todos os dados novos desta sub-onda, incluindo
+`historico_precos`, são mock/derivados. Fica para quando essas features
+tiverem sua própria onda de conexão mock→real.
