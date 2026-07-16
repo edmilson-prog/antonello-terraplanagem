@@ -129,7 +129,7 @@ export function ContaPagarForm({ onSuccess, onCancel }: Props) {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="fornecedor">Fornecedor / beneficiário *</Label>
+            <Label htmlFor="fornecedor">Fornecedor / beneficiário</Label>
             <Input
               id="fornecedor"
               placeholder="Ex.: Posto Missões"

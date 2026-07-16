@@ -17,7 +17,7 @@ describe("ContaPagarForm", () => {
 
     expect(screen.getByText("Novo pagamento")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("Fornecedor / beneficiário *"), {
+    fireEvent.change(screen.getByLabelText("Fornecedor / beneficiário"), {
       target: { value: "Posto Missões" },
     });
     fireEvent.change(screen.getByLabelText("Documento"), { target: { value: "NF 5540" } });
@@ -33,7 +33,7 @@ describe("ContaPagarForm", () => {
     fireEvent.change(screen.getByLabelText("Descrição *"), {
       target: { value: "Abastecimento Julho" },
     });
-    fireEvent.change(screen.getByLabelText("Fornecedor / beneficiário *"), {
+    fireEvent.change(screen.getByLabelText("Fornecedor / beneficiário"), {
       target: { value: "Posto Missões" },
     });
     fireEvent.change(screen.getByLabelText("Valor (R$) *"), { target: { value: "1500" } });
