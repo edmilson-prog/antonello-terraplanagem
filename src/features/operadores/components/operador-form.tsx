@@ -52,24 +52,28 @@ export function OperadorForm({ inicial, onSuccess, onCancel }: Props) {
   });
 
   const onSubmit = async (values: OperadorFormValues) => {
-    const payload = {
-      nome: values.nome,
-      cpf: values.cpf.replace(/\D/g, ""),
-      telefone: values.telefone?.trim() ? values.telefone.trim() : null,
-      ativo: values.ativo,
-      vinculo: values.vinculo ?? null,
-      data_nascimento: values.data_nascimento?.trim() ? values.data_nascimento.trim() : null,
-      cnh_categoria: values.cnh_categoria?.trim() ? values.cnh_categoria.trim() : null,
-      cnh_validade: values.cnh_validade?.trim() ? values.cnh_validade.trim() : null,
-      base: values.base?.trim() ? values.base.trim() : null,
-      equipamentos_ids: values.equipamentos_ids,
-    };
     try {
       if (inicial) {
-        await operadoresStore.update(inicial.id, payload);
+        await operadoresStore.update(inicial.id, {
+          nome: values.nome,
+          cpf: values.cpf.replace(/\D/g, ""),
+          telefone: values.telefone?.trim() ? values.telefone.trim() : null,
+          ativo: values.ativo,
+        });
         toast.success("Operador atualizado.");
       } else {
-        await operadoresStore.create(payload);
+        await operadoresStore.create({
+          nome: values.nome,
+          cpf: values.cpf.replace(/\D/g, ""),
+          telefone: values.telefone?.trim() ? values.telefone.trim() : null,
+          ativo: values.ativo,
+          vinculo: values.vinculo ?? null,
+          data_nascimento: values.data_nascimento?.trim() ? values.data_nascimento.trim() : null,
+          cnh_categoria: values.cnh_categoria?.trim() ? values.cnh_categoria.trim() : null,
+          cnh_validade: values.cnh_validade?.trim() ? values.cnh_validade.trim() : null,
+          base: values.base?.trim() ? values.base.trim() : null,
+          equipamentos_ids: values.equipamentos_ids,
+        });
         toast.success("Operador cadastrado.");
       }
       onSuccess();
