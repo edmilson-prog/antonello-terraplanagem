@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import type { StatusConta, CategoriaDespesa, FormaRecebimento } from "@/shared/types";
+import type { StatusConta, CategoriaDespesa, FormaRecebimento, FormaPagamento } from "@/shared/types";
 import { cn } from "@/lib/utils";
 
 export const STATUS_CONTA_LABEL: Record<StatusConta, string> = {
@@ -42,6 +42,15 @@ export const CATEGORIA_LABEL: Record<CategoriaDespesa, string> = {
 };
 
 export const FORMA_RECEBIMENTO_LABEL: Record<FormaRecebimento, string> = {
+  dinheiro: "Dinheiro",
+  pix: "PIX",
+  transferencia: "Transferência",
+  boleto: "Boleto",
+  cheque: "Cheque",
+  outro: "Outro",
+};
+
+export const FORMA_PAGAMENTO_LABEL: Record<FormaPagamento, string> = {
   dinheiro: "Dinheiro",
   pix: "PIX",
   transferencia: "Transferência",

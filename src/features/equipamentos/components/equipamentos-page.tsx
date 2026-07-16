@@ -125,10 +125,6 @@ export function EquipamentosPage() {
     [lista, planos, registros],
   );
 
-  const abrirNovo = () => {
-    setEditando(null);
-    setFormAberto(true);
-  };
   const abrirEdicao = (e: Equipamento) => {
     setEditando(e);
     setFormAberto(true);
@@ -373,12 +369,11 @@ export function EquipamentosPage() {
         titulo="Equipamentos"
         descricao="Cadastro da frota: escavadeiras, carregadeiras, caçambas e tratores."
         acoes={
-          <Button
-            onClick={abrirNovo}
-            className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
-          >
-            <Icon icon="lucide:plus" className="h-4 w-4" />
-            Novo equipamento
+          <Button asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover">
+            <Link to="/admin/equipamentos/novo">
+              <Icon icon="lucide:plus" className="h-4 w-4" />
+              Novo equipamento
+            </Link>
           </Button>
         }
       />
@@ -402,12 +397,11 @@ export function EquipamentosPage() {
               : "Ajuste a busca ou os filtros.",
           cta:
             todos.length === 0 ? (
-              <Button
-                onClick={abrirNovo}
-                className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
-              >
-                <Icon icon="lucide:plus" className="h-4 w-4" />
-                Cadastrar primeiro equipamento
+              <Button asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover">
+                <Link to="/admin/equipamentos/novo">
+                  <Icon icon="lucide:plus" className="h-4 w-4" />
+                  Cadastrar primeiro equipamento
+                </Link>
               </Button>
             ) : undefined,
         }}
@@ -416,7 +410,7 @@ export function EquipamentosPage() {
       <FormDialog
         open={formAberto}
         onOpenChange={setFormAberto}
-        titulo={editando ? "Editar equipamento" : "Novo equipamento"}
+        titulo="Editar equipamento"
         descricao="Os campos com * são obrigatórios."
       >
         <EquipamentoForm

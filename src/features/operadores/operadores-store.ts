@@ -10,7 +10,9 @@ import type { Operador } from "@/shared/types";
 // tabela exige pin_hash (não nulo), e o hash só pode ser gerado com pgcrypto
 // no servidor. PIN inicial = últimos 4 dígitos do CPF.
 
-type NovoOperador = Omit<Operador, "id" | "created_at" | "updated_at">;
+type NovoOperador = Omit<Operador, "id" | "created_at" | "updated_at"> & {
+  equipamentos_ids?: string[];
+};
 type PatchOperador = Partial<Omit<Operador, "id" | "created_at">>;
 
 interface Estado {
@@ -70,9 +72,15 @@ const useEstado = () =>
 const create = async (dados: NovoOperador): Promise<Operador> => {
   const { data, error } = await supabase.rpc("criar_operador", {
     p_nome: dados.nome,
-    p_telefone: dados.telefone,
+    p_telefone: dados.telefone ?? "",
     p_cpf: dados.cpf,
     p_ativo: dados.ativo,
+    p_vinculo: dados.vinculo ?? undefined,
+    p_data_nascimento: dados.data_nascimento ?? undefined,
+    p_cnh_categoria: dados.cnh_categoria ?? undefined,
+    p_cnh_validade: dados.cnh_validade ?? undefined,
+    p_base: dados.base ?? undefined,
+    p_equipamentos_ids: dados.equipamentos_ids ?? undefined,
   });
 
   if (error) throw new Error(error.message);

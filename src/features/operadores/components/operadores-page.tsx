@@ -66,10 +66,6 @@ export function OperadoresPage() {
     [lista],
   );
 
-  const abrirNovo = () => {
-    setEditando(null);
-    setFormAberto(true);
-  };
   const abrirEdicao = (o: Operador) => {
     setEditando(o);
     setFormAberto(true);
@@ -261,11 +257,13 @@ export function OperadoresPage() {
         descricao="Quem opera as máquinas e aponta as horas em campo."
         acoes={
           <Button
-            onClick={abrirNovo}
+            asChild
             className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
           >
-            <Icon icon="lucide:plus" className="h-4 w-4" />
-            Novo operador
+            <Link to="/admin/operadores/novo">
+              <Icon icon="lucide:plus" className="h-4 w-4" />
+              Novo operador
+            </Link>
           </Button>
         }
       />
@@ -288,11 +286,13 @@ export function OperadoresPage() {
           cta:
             todos.length === 0 ? (
               <Button
-                onClick={abrirNovo}
+                asChild
                 className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
               >
-                <Icon icon="lucide:plus" className="h-4 w-4" />
-                Cadastrar primeiro operador
+                <Link to="/admin/operadores/novo">
+                  <Icon icon="lucide:plus" className="h-4 w-4" />
+                  Cadastrar primeiro operador
+                </Link>
               </Button>
             ) : undefined,
         }}
@@ -301,7 +301,7 @@ export function OperadoresPage() {
       <FormDialog
         open={formAberto}
         onOpenChange={setFormAberto}
-        titulo={editando ? "Editar operador" : "Novo operador"}
+        titulo="Editar operador"
         descricao="Os campos com * são obrigatórios."
       >
         <OperadorForm

@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import type { TipoComponenteCusto } from "@/shared/types";
+import type { CategoriaComponenteCusto, TipoComponenteCusto } from "@/shared/types";
 import { cn } from "@/lib/utils";
 
 export const TIPO_COMPONENTE_LABEL: Record<TipoComponenteCusto, string> = {
@@ -32,3 +32,30 @@ export function TipoComponenteCustoBadge({ tipo }: { tipo: TipoComponenteCusto }
     </span>
   );
 }
+
+export const CATEGORIA_COMPONENTE_LABEL: Record<CategoriaComponenteCusto, string> = {
+  depreciacao: "Depreciação",
+  seguro: "Seguro",
+  pneus: "Pneus / rodante",
+  operador: "Operador / folha",
+  indireto: "Custo indireto",
+  outros: "Outros",
+};
+
+export const CATEGORIA_COMPONENTE_ICONE: Record<CategoriaComponenteCusto, string> = {
+  depreciacao: "lucide:history",
+  seguro: "lucide:badge-check",
+  pneus: "lucide:truck",
+  operador: "lucide:hard-hat",
+  indireto: "lucide:wallet",
+  outros: "lucide:calculator",
+};
+
+export const CATEGORIAS_COMPONENTE: CategoriaComponenteCusto[] = [
+  "depreciacao",
+  "seguro",
+  "pneus",
+  "operador",
+  "indireto",
+  "outros",
+];

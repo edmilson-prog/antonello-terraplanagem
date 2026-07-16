@@ -5,6 +5,7 @@ import { clientes as clientesFixture } from "./src/mocks/clientes";
 import { ordensServico as ordensFixture } from "./src/mocks/ordens-servico";
 import { orcamentos as orcamentosFixture } from "./src/mocks/orcamentos";
 import { avisosWhatsApp as avisosWhatsAppFixture } from "./src/mocks/avisos-whatsapp";
+import { operadores as operadoresFixture } from "./src/mocks/operadores";
 
 // jsdom (ambiente de teste deste projeto) não implementa window.matchMedia por
 // padrão. Vários componentes/hooks usam prefers-color-scheme (useTheme) e
@@ -37,6 +38,24 @@ if (!window.ResizeObserver) {
   };
 }
 
+// jsdom não implementa scrollIntoView nem a Pointer Capture API — usadas pelo
+// Radix Select ao abrir/fechar o listbox e posicionar o item selecionado.
+// Sem estes polyfills, qualquer teste que abra um <Select> obrigatório (ex.:
+// Equipamento em ComponenteCustoForm) quebra com "scrollIntoView is not a
+// function" ao montar o SelectContent.
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = () => {};
+}
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = () => false;
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = () => {};
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = () => {};
+}
+
 // Impede que stores respaldados pelo Supabase (ex.: equipamentosStore,
 // clientesStore, ordensStore, orcamentosStore) façam chamadas de rede reais
 // durante os testes unitários — elas rodariam contra o projeto de produção,
@@ -54,6 +73,8 @@ vi.mock("./src/lib/supabase", () => {
       o.itens.map((item) => ({ ...item, orcamento_id: o.id })),
     ),
     avisos_whatsapp: avisosWhatsAppFixture.map((a) => ({ ...a })),
+    operadores: operadoresFixture.map((o) => ({ ...o })),
+    operadores_equipamentos: [],
   };
 
   class FakeQueryBuilder implements PromiseLike<{ data: unknown; error: null }> {
@@ -148,6 +169,41 @@ vi.mock("./src/lib/supabase", () => {
   return {
     supabase: {
       from: (table: string) => new FakeQueryBuilder(table),
+      rpc: (fn: string, args: Record<string, unknown> = {}) => {
+        if (fn === "criar_operador") {
+          const agora = new Date().toISOString();
+          const id = `operadores-teste-${(tabelas.operadores?.length ?? 0) + 1}`;
+          const novo = {
+            id,
+            nome: String(args.p_nome ?? "").trim(),
+            telefone: args.p_telefone ? String(args.p_telefone).trim() : null,
+            cpf: String(args.p_cpf ?? "").replace(/\D/g, ""),
+            ativo: (args.p_ativo as boolean | undefined) ?? true,
+            vinculo: (args.p_vinculo as string | null | undefined) ?? null,
+            data_nascimento: (args.p_data_nascimento as string | null | undefined) ?? null,
+            cnh_categoria: (args.p_cnh_categoria as string | null | undefined) ?? null,
+            cnh_validade: (args.p_cnh_validade as string | null | undefined) ?? null,
+            base: (args.p_base as string | null | undefined) ?? null,
+            created_at: agora,
+            updated_at: agora,
+          };
+          tabelas.operadores = [...(tabelas.operadores ?? []), novo];
+          const equipamentosIds = (args.p_equipamentos_ids as string[] | null | undefined) ?? [];
+          tabelas.operadores_equipamentos = [
+            ...(tabelas.operadores_equipamentos ?? []),
+            ...equipamentosIds.map((equipamentoId) => ({
+              operador_id: id,
+              equipamento_id: equipamentoId,
+              created_at: agora,
+            })),
+          ];
+          return Promise.resolve({ data: novo, error: null });
+        }
+        return Promise.resolve({
+          data: null,
+          error: { message: `RPC "${fn}" não mockada em vitest.setup.ts` },
+        });
+      },
       functions: {
         invoke: vi.fn().mockResolvedValue({ data: { ok: true }, error: null }),
       },

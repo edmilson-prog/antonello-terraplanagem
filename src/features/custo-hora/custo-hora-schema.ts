@@ -8,6 +8,11 @@ export const componenteCustoSchema = z.object({
   descricao: z.string().trim().min(2, "Informe a descrição"),
   tipo: z.enum(["fixo_mensal", "variavel_hora"]),
   valor: valorPositivo(),
+  categoria: z
+    .enum(["depreciacao", "seguro", "pneus", "operador", "indireto", "outros"])
+    .optional(),
+  competencia: z.string().trim().optional(),
+  observacao: z.string().trim().optional(),
   ativo: z.boolean(),
 });
 

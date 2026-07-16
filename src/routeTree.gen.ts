@@ -46,9 +46,13 @@ import { Route as AdminOrcamentosOrcamentoIdRouteImport } from './routes/admin.o
 import { Route as AdminOperadoresOperadorIdRouteImport } from './routes/admin.operadores.$operadorId'
 import { Route as AdminIaChatbotRouteImport } from './routes/admin.ia.chatbot'
 import { Route as AdminFaturamentoFaturamentoIdRouteImport } from './routes/admin.faturamento.$faturamentoId'
+import { Route as AdminEquipamentosNovoRouteImport } from './routes/admin.equipamentos.novo'
 import { Route as AdminEquipamentosEquipamentoIdRouteImport } from './routes/admin.equipamentos.$equipamentoId'
+import { Route as AdminCustoHoraNovoRouteImport } from './routes/admin.custo-hora.novo'
 import { Route as AdminComprovantesComprovanteIdRouteImport } from './routes/admin.comprovantes.$comprovanteId'
+import { Route as AdminClientesNovoRouteImport } from './routes/admin.clientes.novo'
 import { Route as AdminClientesClienteIdRouteImport } from './routes/admin.clientes.$clienteId'
+import { Route as AdminFinanceiroContasPagarNovoRouteImport } from './routes/admin.financeiro.contas-pagar.novo'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -240,23 +244,44 @@ const AdminFaturamentoFaturamentoIdRoute =
     path: '/faturamento/$faturamentoId',
     getParentRoute: () => AdminRoute,
   } as any)
+const AdminEquipamentosNovoRoute = AdminEquipamentosNovoRouteImport.update({
+  id: '/equipamentos/novo',
+  path: '/equipamentos/novo',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminEquipamentosEquipamentoIdRoute =
   AdminEquipamentosEquipamentoIdRouteImport.update({
     id: '/equipamentos/$equipamentoId',
     path: '/equipamentos/$equipamentoId',
     getParentRoute: () => AdminRoute,
   } as any)
+const AdminCustoHoraNovoRoute = AdminCustoHoraNovoRouteImport.update({
+  id: '/novo',
+  path: '/novo',
+  getParentRoute: () => AdminCustoHoraRoute,
+} as any)
 const AdminComprovantesComprovanteIdRoute =
   AdminComprovantesComprovanteIdRouteImport.update({
     id: '/comprovantes/$comprovanteId',
     path: '/comprovantes/$comprovanteId',
     getParentRoute: () => AdminRoute,
   } as any)
+const AdminClientesNovoRoute = AdminClientesNovoRouteImport.update({
+  id: '/clientes/novo',
+  path: '/clientes/novo',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminClientesClienteIdRoute = AdminClientesClienteIdRouteImport.update({
   id: '/clientes/$clienteId',
   path: '/clientes/$clienteId',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFinanceiroContasPagarNovoRoute =
+  AdminFinanceiroContasPagarNovoRouteImport.update({
+    id: '/financeiro/contas-pagar/novo',
+    path: '/financeiro/contas-pagar/novo',
+    getParentRoute: () => AdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -265,7 +290,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/admin/custo-hora': typeof AdminCustoHoraRoute
+  '/admin/custo-hora': typeof AdminCustoHoraRouteWithChildren
   '/admin/diesel': typeof AdminDieselRoute
   '/admin/gerencial': typeof AdminGerencialRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
@@ -278,8 +303,11 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/admin/clientes/$clienteId': typeof AdminClientesClienteIdRoute
+  '/admin/clientes/novo': typeof AdminClientesNovoRoute
   '/admin/comprovantes/$comprovanteId': typeof AdminComprovantesComprovanteIdRoute
+  '/admin/custo-hora/novo': typeof AdminCustoHoraNovoRoute
   '/admin/equipamentos/$equipamentoId': typeof AdminEquipamentosEquipamentoIdRoute
+  '/admin/equipamentos/novo': typeof AdminEquipamentosNovoRoute
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
@@ -299,13 +327,14 @@ export interface FileRoutesByFullPath {
   '/admin/ordens/': typeof AdminOrdensIndexRoute
   '/app/apontamento/': typeof AppApontamentoIndexRoute
   '/app/ordens/': typeof AppOrdensIndexRoute
+  '/admin/financeiro/contas-pagar/novo': typeof AdminFinanceiroContasPagarNovoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/admin/custo-hora': typeof AdminCustoHoraRoute
+  '/admin/custo-hora': typeof AdminCustoHoraRouteWithChildren
   '/admin/diesel': typeof AdminDieselRoute
   '/admin/gerencial': typeof AdminGerencialRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
@@ -318,8 +347,11 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
   '/admin/clientes/$clienteId': typeof AdminClientesClienteIdRoute
+  '/admin/clientes/novo': typeof AdminClientesNovoRoute
   '/admin/comprovantes/$comprovanteId': typeof AdminComprovantesComprovanteIdRoute
+  '/admin/custo-hora/novo': typeof AdminCustoHoraNovoRoute
   '/admin/equipamentos/$equipamentoId': typeof AdminEquipamentosEquipamentoIdRoute
+  '/admin/equipamentos/novo': typeof AdminEquipamentosNovoRoute
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
@@ -339,6 +371,7 @@ export interface FileRoutesByTo {
   '/admin/ordens': typeof AdminOrdensIndexRoute
   '/app/apontamento': typeof AppApontamentoIndexRoute
   '/app/ordens': typeof AppOrdensIndexRoute
+  '/admin/financeiro/contas-pagar/novo': typeof AdminFinanceiroContasPagarNovoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -348,7 +381,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/redefinir-senha': typeof RedefinirSenhaRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/admin/custo-hora': typeof AdminCustoHoraRoute
+  '/admin/custo-hora': typeof AdminCustoHoraRouteWithChildren
   '/admin/diesel': typeof AdminDieselRoute
   '/admin/gerencial': typeof AdminGerencialRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
@@ -361,8 +394,11 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
   '/admin/clientes/$clienteId': typeof AdminClientesClienteIdRoute
+  '/admin/clientes/novo': typeof AdminClientesNovoRoute
   '/admin/comprovantes/$comprovanteId': typeof AdminComprovantesComprovanteIdRoute
+  '/admin/custo-hora/novo': typeof AdminCustoHoraNovoRoute
   '/admin/equipamentos/$equipamentoId': typeof AdminEquipamentosEquipamentoIdRoute
+  '/admin/equipamentos/novo': typeof AdminEquipamentosNovoRoute
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
@@ -382,6 +418,7 @@ export interface FileRoutesById {
   '/admin/ordens/': typeof AdminOrdensIndexRoute
   '/app/apontamento/': typeof AppApontamentoIndexRoute
   '/app/ordens/': typeof AppOrdensIndexRoute
+  '/admin/financeiro/contas-pagar/novo': typeof AdminFinanceiroContasPagarNovoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -405,8 +442,11 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/app/'
     | '/admin/clientes/$clienteId'
+    | '/admin/clientes/novo'
     | '/admin/comprovantes/$comprovanteId'
+    | '/admin/custo-hora/novo'
     | '/admin/equipamentos/$equipamentoId'
+    | '/admin/equipamentos/novo'
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
     | '/admin/operadores/$operadorId'
@@ -426,6 +466,7 @@ export interface FileRouteTypes {
     | '/admin/ordens/'
     | '/app/apontamento/'
     | '/app/ordens/'
+    | '/admin/financeiro/contas-pagar/novo'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -445,8 +486,11 @@ export interface FileRouteTypes {
     | '/admin'
     | '/app'
     | '/admin/clientes/$clienteId'
+    | '/admin/clientes/novo'
     | '/admin/comprovantes/$comprovanteId'
+    | '/admin/custo-hora/novo'
     | '/admin/equipamentos/$equipamentoId'
+    | '/admin/equipamentos/novo'
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
     | '/admin/operadores/$operadorId'
@@ -466,6 +510,7 @@ export interface FileRouteTypes {
     | '/admin/ordens'
     | '/app/apontamento'
     | '/app/ordens'
+    | '/admin/financeiro/contas-pagar/novo'
   id:
     | '__root__'
     | '/'
@@ -487,8 +532,11 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/app/'
     | '/admin/clientes/$clienteId'
+    | '/admin/clientes/novo'
     | '/admin/comprovantes/$comprovanteId'
+    | '/admin/custo-hora/novo'
     | '/admin/equipamentos/$equipamentoId'
+    | '/admin/equipamentos/novo'
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
     | '/admin/operadores/$operadorId'
@@ -508,6 +556,7 @@ export interface FileRouteTypes {
     | '/admin/ordens/'
     | '/app/apontamento/'
     | '/app/ordens/'
+    | '/admin/financeiro/contas-pagar/novo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -781,6 +830,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFaturamentoFaturamentoIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/equipamentos/novo': {
+      id: '/admin/equipamentos/novo'
+      path: '/equipamentos/novo'
+      fullPath: '/admin/equipamentos/novo'
+      preLoaderRoute: typeof AdminEquipamentosNovoRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/equipamentos/$equipamentoId': {
       id: '/admin/equipamentos/$equipamentoId'
       path: '/equipamentos/$equipamentoId'
@@ -788,11 +844,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEquipamentosEquipamentoIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/custo-hora/novo': {
+      id: '/admin/custo-hora/novo'
+      path: '/novo'
+      fullPath: '/admin/custo-hora/novo'
+      preLoaderRoute: typeof AdminCustoHoraNovoRouteImport
+      parentRoute: typeof AdminCustoHoraRoute
+    }
     '/admin/comprovantes/$comprovanteId': {
       id: '/admin/comprovantes/$comprovanteId'
       path: '/comprovantes/$comprovanteId'
       fullPath: '/admin/comprovantes/$comprovanteId'
       preLoaderRoute: typeof AdminComprovantesComprovanteIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/clientes/novo': {
+      id: '/admin/clientes/novo'
+      path: '/clientes/novo'
+      fullPath: '/admin/clientes/novo'
+      preLoaderRoute: typeof AdminClientesNovoRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/clientes/$clienteId': {
@@ -802,11 +872,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClientesClienteIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/financeiro/contas-pagar/novo': {
+      id: '/admin/financeiro/contas-pagar/novo'
+      path: '/financeiro/contas-pagar/novo'
+      fullPath: '/admin/financeiro/contas-pagar/novo'
+      preLoaderRoute: typeof AdminFinanceiroContasPagarNovoRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminCustoHoraRouteChildren {
+  AdminCustoHoraNovoRoute: typeof AdminCustoHoraNovoRoute
+}
+
+const AdminCustoHoraRouteChildren: AdminCustoHoraRouteChildren = {
+  AdminCustoHoraNovoRoute: AdminCustoHoraNovoRoute,
+}
+
+const AdminCustoHoraRouteWithChildren = AdminCustoHoraRoute._addFileChildren(
+  AdminCustoHoraRouteChildren,
+)
+
 interface AdminRouteChildren {
-  AdminCustoHoraRoute: typeof AdminCustoHoraRoute
+  AdminCustoHoraRoute: typeof AdminCustoHoraRouteWithChildren
   AdminDieselRoute: typeof AdminDieselRoute
   AdminGerencialRoute: typeof AdminGerencialRoute
   AdminIntegracoesRoute: typeof AdminIntegracoesRoute
@@ -815,8 +904,10 @@ interface AdminRouteChildren {
   AdminRentabilidadeRoute: typeof AdminRentabilidadeRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminClientesClienteIdRoute: typeof AdminClientesClienteIdRoute
+  AdminClientesNovoRoute: typeof AdminClientesNovoRoute
   AdminComprovantesComprovanteIdRoute: typeof AdminComprovantesComprovanteIdRoute
   AdminEquipamentosEquipamentoIdRoute: typeof AdminEquipamentosEquipamentoIdRoute
+  AdminEquipamentosNovoRoute: typeof AdminEquipamentosNovoRoute
   AdminFaturamentoFaturamentoIdRoute: typeof AdminFaturamentoFaturamentoIdRoute
   AdminIaChatbotRoute: typeof AdminIaChatbotRoute
   AdminOperadoresOperadorIdRoute: typeof AdminOperadoresOperadorIdRoute
@@ -831,10 +922,11 @@ interface AdminRouteChildren {
   AdminOperadoresIndexRoute: typeof AdminOperadoresIndexRoute
   AdminOrcamentosIndexRoute: typeof AdminOrcamentosIndexRoute
   AdminOrdensIndexRoute: typeof AdminOrdensIndexRoute
+  AdminFinanceiroContasPagarNovoRoute: typeof AdminFinanceiroContasPagarNovoRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminCustoHoraRoute: AdminCustoHoraRoute,
+  AdminCustoHoraRoute: AdminCustoHoraRouteWithChildren,
   AdminDieselRoute: AdminDieselRoute,
   AdminGerencialRoute: AdminGerencialRoute,
   AdminIntegracoesRoute: AdminIntegracoesRoute,
@@ -843,8 +935,10 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminRentabilidadeRoute: AdminRentabilidadeRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminClientesClienteIdRoute: AdminClientesClienteIdRoute,
+  AdminClientesNovoRoute: AdminClientesNovoRoute,
   AdminComprovantesComprovanteIdRoute: AdminComprovantesComprovanteIdRoute,
   AdminEquipamentosEquipamentoIdRoute: AdminEquipamentosEquipamentoIdRoute,
+  AdminEquipamentosNovoRoute: AdminEquipamentosNovoRoute,
   AdminFaturamentoFaturamentoIdRoute: AdminFaturamentoFaturamentoIdRoute,
   AdminIaChatbotRoute: AdminIaChatbotRoute,
   AdminOperadoresOperadorIdRoute: AdminOperadoresOperadorIdRoute,
@@ -859,6 +953,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminOperadoresIndexRoute: AdminOperadoresIndexRoute,
   AdminOrcamentosIndexRoute: AdminOrcamentosIndexRoute,
   AdminOrdensIndexRoute: AdminOrdensIndexRoute,
+  AdminFinanceiroContasPagarNovoRoute: AdminFinanceiroContasPagarNovoRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

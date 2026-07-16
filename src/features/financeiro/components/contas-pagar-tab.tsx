@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { contaVencida } from "@/features/financeiro/derivacoes";
 import { StatusContaBadge, CATEGORIA_LABEL } from "@/features/financeiro/labels";
@@ -10,18 +11,19 @@ import type { ContaPagar } from "@/shared/types";
 interface ContasPagarTabProps {
   contasPagar: ContaPagar[];
   onDarBaixa?: (conta: ContaPagar) => void;
-  onNovaConta?: () => void;
 }
 
-export function ContasPagarTab({ contasPagar, onDarBaixa, onNovaConta }: ContasPagarTabProps) {
+export function ContasPagarTab({ contasPagar, onDarBaixa }: ContasPagarTabProps) {
   const agoraISO = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <Button onClick={onNovaConta}>
-          <Icon icon="lucide:plus" className="mr-1.5 h-4 w-4" />
-          Nova Conta a Pagar
+        <Button asChild>
+          <Link to="/admin/financeiro/contas-pagar/novo">
+            <Icon icon="lucide:plus" className="mr-1.5 h-4 w-4" />
+            Nova Conta a Pagar
+          </Link>
         </Button>
       </div>
 

@@ -143,6 +143,9 @@ function contaPagar(over: Partial<ContaPagar> & { id: string }): ContaPagar {
     vencimento: over.vencimento ?? "2026-07-10",
     status: over.status ?? "aberta",
     pago_em: over.pago_em ?? null,
+    documento: over.documento ?? null,
+    forma_pagamento: over.forma_pagamento ?? null,
+    observacao: over.observacao ?? null,
     created_at: "2026-01-01T00:00:00.000Z",
     updated_at: "2026-01-01T00:00:00.000Z",
   };

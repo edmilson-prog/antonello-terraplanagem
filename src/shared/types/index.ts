@@ -27,12 +27,19 @@ export interface Equipamento {
   updated_at: string;
 }
 
+export type VinculoOperador = "CLT" | "PJ";
+
 export interface Operador {
   id: string;
   nome: string;
   telefone: string | null;
   cpf: string;
   ativo: boolean;
+  vinculo: VinculoOperador | null;
+  data_nascimento: string | null; // "YYYY-MM-DD"
+  cnh_categoria: string | null;
+  cnh_validade: string | null; // "YYYY-MM-DD"
+  base: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -243,6 +250,7 @@ export interface Orcamento {
 export type StatusConta = "aberta" | "liquidada";
 export type FormaRecebimento = "dinheiro" | "pix" | "transferencia" | "boleto" | "cheque" | "outro";
 export type CategoriaDespesa = "diesel" | "manutencao" | "folha" | "fornecedor" | "outro";
+export type FormaPagamento = "dinheiro" | "pix" | "transferencia" | "boleto" | "cheque" | "outro";
 
 export interface ContaReceber {
   id: string;
@@ -266,6 +274,9 @@ export interface ContaPagar {
   vencimento: string; // "YYYY-MM-DD"
   status: StatusConta;
   pago_em: string | null; // "YYYY-MM-DD"
+  documento: string | null; // ex.: "BOL 8821", "NF 5540"
+  forma_pagamento: FormaPagamento | null;
+  observacao: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -352,6 +363,13 @@ export interface Comprovante {
 // ComponenteCusto manual) — o custo/hora final é sempre calculado, nunca
 // persistido (ver features/custo-hora/derivacoes.ts).
 export type TipoComponenteCusto = "fixo_mensal" | "variavel_hora" | "diesel" | "manutencao";
+export type CategoriaComponenteCusto =
+  | "depreciacao"
+  | "seguro"
+  | "pneus"
+  | "operador"
+  | "indireto"
+  | "outros";
 
 export interface ComponenteCusto {
   id: string;
@@ -359,6 +377,9 @@ export interface ComponenteCusto {
   descricao: string; // ex.: "Parcela FINAME", "Seguro", "Material rodante", "Operador"
   tipo: TipoComponenteCusto; // configurável pelo usuário: só fixo_mensal | variavel_hora
   valor: number; // R$ (mensal se fixo; por hora se variável)
+  categoria: CategoriaComponenteCusto | null; // organização/relatório — não entra no cálculo
+  competencia: string | null; // "YYYY-MM"
+  observacao: string | null;
   ativo: boolean;
   created_at: string;
   updated_at: string;

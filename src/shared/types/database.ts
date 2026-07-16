@@ -686,41 +686,89 @@ export type Database = {
       operadores: {
         Row: {
           ativo: boolean;
+          base: string | null;
           bloqueado_ate: string | null;
+          cnh_categoria: string | null;
+          cnh_validade: string | null;
           cpf: string;
           created_at: string;
+          data_nascimento: string | null;
           id: string;
           nome: string;
           pin_hash: string;
           telefone: string | null;
           tentativas_falhas: number;
           updated_at: string;
+          vinculo: string | null;
         };
         Insert: {
           ativo?: boolean;
+          base?: string | null;
           bloqueado_ate?: string | null;
+          cnh_categoria?: string | null;
+          cnh_validade?: string | null;
           cpf: string;
           created_at?: string;
+          data_nascimento?: string | null;
           id?: string;
           nome: string;
           pin_hash: string;
           telefone?: string | null;
           tentativas_falhas?: number;
           updated_at?: string;
+          vinculo?: string | null;
         };
         Update: {
           ativo?: boolean;
+          base?: string | null;
           bloqueado_ate?: string | null;
+          cnh_categoria?: string | null;
+          cnh_validade?: string | null;
           cpf?: string;
           created_at?: string;
+          data_nascimento?: string | null;
           id?: string;
           nome?: string;
           pin_hash?: string;
           telefone?: string | null;
           tentativas_falhas?: number;
           updated_at?: string;
+          vinculo?: string | null;
         };
         Relationships: [];
+      };
+      operadores_equipamentos: {
+        Row: {
+          created_at: string;
+          equipamento_id: string;
+          operador_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          equipamento_id: string;
+          operador_id: string;
+        };
+        Update: {
+          created_at?: string;
+          equipamento_id?: string;
+          operador_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "operadores_equipamentos_equipamento_id_fkey";
+            columns: ["equipamento_id"];
+            isOneToOne: false;
+            referencedRelation: "equipamentos";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "operadores_equipamentos_operador_id_fkey";
+            columns: ["operador_id"];
+            isOneToOne: false;
+            referencedRelation: "operadores";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       orcamento_itens: {
         Row: {
@@ -1146,7 +1194,18 @@ export type Database = {
     };
     Functions: {
       criar_operador: {
-        Args: { p_ativo?: boolean; p_cpf: string; p_nome: string; p_telefone: string | null };
+        Args: {
+          p_ativo?: boolean;
+          p_base?: string;
+          p_cnh_categoria?: string;
+          p_cnh_validade?: string;
+          p_cpf: string;
+          p_data_nascimento?: string;
+          p_equipamentos_ids?: string[];
+          p_nome: string;
+          p_telefone: string;
+          p_vinculo?: string;
+        };
         Returns: Json;
       };
       is_retaguarda: { Args: never; Returns: boolean };
