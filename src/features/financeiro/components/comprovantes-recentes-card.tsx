@@ -33,7 +33,8 @@ export function ComprovantesRecentesCard({ itens }: Props) {
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium text-foreground">
-                    {FORMA_RECEBIMENTO_LABEL[forma]} recebido — {fat?.numero ?? conta.faturamento_id}
+                    {FORMA_RECEBIMENTO_LABEL[forma]} recebido —{" "}
+                    {fat?.numero ?? conta.faturamento_id}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {conta.recebido_em ? formatarData(conta.recebido_em) : "—"}
