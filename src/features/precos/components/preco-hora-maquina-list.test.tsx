@@ -1,12 +1,31 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { PrecoHoraMaquinaList } from "@/features/precos/components/preco-hora-maquina-list";
+import { componentesCustoStore } from "@/features/custo-hora/componentes-custo-store";
+import { componentesCusto as componentesCustoFixture } from "@/mocks/componentes-custo";
+import type { ComponenteCusto } from "@/shared/types";
+
+// Nenhuma linha dos fixtures reais de precos-hora-maquina/componentes-custo
+// produz margem < 30% (phm-001≈80%, phm-002≈86%, phm-005≈77%; phm-003/004 são
+// por tipo e phm-006/eq-007 não tem componente — ambos "—"). Mockar o store
+// aqui (só neste arquivo de teste) permite injetar um cenário de margem baixa
+// sem alterar os fixtures compartilhados, dos quais outros testes do repo
+// dependem (custo-hora/derivacoes.test.ts, componente-custo-form.test.tsx).
+vi.mock("@/features/custo-hora/componentes-custo-store", () => ({
+  componentesCustoStore: { useAll: vi.fn() },
+}));
 
 describe("PrecoHoraMaquinaList — Custo ref./Margem", () => {
   // PrecoHoraMaquinaList usa useMockResource (delay simulado de loading) e
   // equipamentosStore (carregamento assíncrono via Supabase mockado) — por
   // isso as consultas usam findBy/findAllBy (retry com timeout) em vez de
   // getBy/getAllBy síncronos.
+
+  beforeEach(() => {
+    // Default: mesmos dados do fixture real, para os 3 primeiros testes
+    // continuarem exercitando o cenário real sem mudanças.
+    vi.mocked(componentesCustoStore.useAll).mockReturnValue(componentesCustoFixture);
+  });
 
   it("mostra custo de referência e margem para um preço vinculado a equipamento com componentes de custo", async () => {
     render(<PrecoHoraMaquinaList />);
@@ -37,14 +56,32 @@ describe("PrecoHoraMaquinaList — Custo ref./Margem", () => {
   });
 
   it("aplica destaque de alerta quando a margem fica abaixo de 30%", async () => {
+    // eq-001 (phm-001, valor_hora_operada: 360) recebe um componente fixo
+    // sintético bem acima do necessário pra cravar a margem abaixo de 30%
+    // (limiar: custo ref. > 252 = 70% de 360). custo ref. = 100000/160 = 625
+    // → margem = (360-625)/360 ≈ -74%.
+    const componenteAlto: ComponenteCusto = {
+      id: "cc-teste-margem-baixa",
+      equipamento_id: "eq-001",
+      descricao: "Componente sintético — margem baixa (teste)",
+      tipo: "fixo_mensal",
+      valor: 100000,
+      categoria: null,
+      competencia: null,
+      observacao: null,
+      ativo: true,
+      created_at: "2026-01-01T00:00:00.000Z",
+      updated_at: "2026-01-01T00:00:00.000Z",
+    };
+    vi.mocked(componentesCustoStore.useAll).mockReturnValue([componenteAlto]);
+
     render(<PrecoHoraMaquinaList />);
     const percentuais = await screen.findAllByText(/%$/);
     const margemBaixa = percentuais.find((el) => {
       const valor = Number(el.textContent?.replace("%", ""));
       return valor < 30;
     });
-    if (margemBaixa) {
-      expect(margemBaixa.className).toContain("text-destructive");
-    }
+    expect(margemBaixa).toBeDefined();
+    expect(margemBaixa!.className).toContain("text-destructive");
   });
 });
