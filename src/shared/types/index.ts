@@ -27,12 +27,19 @@ export interface Equipamento {
   updated_at: string;
 }
 
+export type VinculoOperador = "CLT" | "PJ";
+
 export interface Operador {
   id: string;
   nome: string;
   telefone: string | null;
   cpf: string;
   ativo: boolean;
+  vinculo: VinculoOperador | null;
+  data_nascimento: string | null; // "YYYY-MM-DD"
+  cnh_categoria: string | null;
+  cnh_validade: string | null; // "YYYY-MM-DD"
+  base: string | null;
   created_at: string;
   updated_at: string;
 }
