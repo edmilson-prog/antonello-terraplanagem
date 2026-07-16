@@ -7,7 +7,6 @@ import { ContasPagarTab } from "@/features/financeiro/components/contas-pagar-ta
 import { CaixaTab } from "@/features/financeiro/components/caixa-tab";
 import { DarBaixaReceberDialog } from "@/features/financeiro/components/dar-baixa-receber-dialog";
 import { DarBaixaPagarDialog } from "@/features/financeiro/components/dar-baixa-pagar-dialog";
-import { NovaContaPagarDialog } from "@/features/financeiro/components/nova-conta-pagar-dialog";
 import { EmitirCobrancaDialog } from "@/features/cobranca-gateway/components/emitir-cobranca-dialog";
 import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
 import { contasPagarStore } from "@/features/financeiro/contas-pagar-store";
@@ -23,7 +22,6 @@ export function FinanceiroPage() {
 
   const [contaReceberSelecionada, setContaReceberSelecionada] = useState<ContaReceber | null>(null);
   const [contaPagarSelecionada, setContaPagarSelecionada] = useState<ContaPagar | null>(null);
-  const [novaContaAberta, setNovaContaAberta] = useState(false);
   const [contaParaEmitirCobranca, setContaParaEmitirCobranca] = useState<ContaReceber | null>(null);
 
   function handleSimularPagamento(cobranca: CobrancaGateway) {
@@ -56,11 +54,7 @@ export function FinanceiroPage() {
           />
         </TabsContent>
         <TabsContent value="pagar" className="mt-4">
-          <ContasPagarTab
-            contasPagar={contasPagar}
-            onDarBaixa={setContaPagarSelecionada}
-            onNovaConta={() => setNovaContaAberta(true)}
-          />
+          <ContasPagarTab contasPagar={contasPagar} onDarBaixa={setContaPagarSelecionada} />
         </TabsContent>
         <TabsContent value="caixa" className="mt-4">
           <CaixaTab contasReceber={contasReceber} contasPagar={contasPagar} />
@@ -79,7 +73,6 @@ export function FinanceiroPage() {
           if (!open) setContaPagarSelecionada(null);
         }}
       />
-      <NovaContaPagarDialog open={novaContaAberta} onOpenChange={setNovaContaAberta} />
       <EmitirCobrancaDialog
         conta={contaParaEmitirCobranca}
         onOpenChange={(open) => {

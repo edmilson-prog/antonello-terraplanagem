@@ -52,6 +52,7 @@ import { Route as AdminCustoHoraNovoRouteImport } from './routes/admin.custo-hor
 import { Route as AdminComprovantesComprovanteIdRouteImport } from './routes/admin.comprovantes.$comprovanteId'
 import { Route as AdminClientesNovoRouteImport } from './routes/admin.clientes.novo'
 import { Route as AdminClientesClienteIdRouteImport } from './routes/admin.clientes.$clienteId'
+import { Route as AdminFinanceiroContasPagarNovoRouteImport } from './routes/admin.financeiro.contas-pagar.novo'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -275,6 +276,12 @@ const AdminClientesClienteIdRoute = AdminClientesClienteIdRouteImport.update({
   path: '/clientes/$clienteId',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFinanceiroContasPagarNovoRoute =
+  AdminFinanceiroContasPagarNovoRouteImport.update({
+    id: '/financeiro/contas-pagar/novo',
+    path: '/financeiro/contas-pagar/novo',
+    getParentRoute: () => AdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -320,6 +327,7 @@ export interface FileRoutesByFullPath {
   '/admin/ordens/': typeof AdminOrdensIndexRoute
   '/app/apontamento/': typeof AppApontamentoIndexRoute
   '/app/ordens/': typeof AppOrdensIndexRoute
+  '/admin/financeiro/contas-pagar/novo': typeof AdminFinanceiroContasPagarNovoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -363,6 +371,7 @@ export interface FileRoutesByTo {
   '/admin/ordens': typeof AdminOrdensIndexRoute
   '/app/apontamento': typeof AppApontamentoIndexRoute
   '/app/ordens': typeof AppOrdensIndexRoute
+  '/admin/financeiro/contas-pagar/novo': typeof AdminFinanceiroContasPagarNovoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -409,6 +418,7 @@ export interface FileRoutesById {
   '/admin/ordens/': typeof AdminOrdensIndexRoute
   '/app/apontamento/': typeof AppApontamentoIndexRoute
   '/app/ordens/': typeof AppOrdensIndexRoute
+  '/admin/financeiro/contas-pagar/novo': typeof AdminFinanceiroContasPagarNovoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -456,6 +466,7 @@ export interface FileRouteTypes {
     | '/admin/ordens/'
     | '/app/apontamento/'
     | '/app/ordens/'
+    | '/admin/financeiro/contas-pagar/novo'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -499,6 +510,7 @@ export interface FileRouteTypes {
     | '/admin/ordens'
     | '/app/apontamento'
     | '/app/ordens'
+    | '/admin/financeiro/contas-pagar/novo'
   id:
     | '__root__'
     | '/'
@@ -544,6 +556,7 @@ export interface FileRouteTypes {
     | '/admin/ordens/'
     | '/app/apontamento/'
     | '/app/ordens/'
+    | '/admin/financeiro/contas-pagar/novo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -859,6 +872,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClientesClienteIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/financeiro/contas-pagar/novo': {
+      id: '/admin/financeiro/contas-pagar/novo'
+      path: '/financeiro/contas-pagar/novo'
+      fullPath: '/admin/financeiro/contas-pagar/novo'
+      preLoaderRoute: typeof AdminFinanceiroContasPagarNovoRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
@@ -902,6 +922,7 @@ interface AdminRouteChildren {
   AdminOperadoresIndexRoute: typeof AdminOperadoresIndexRoute
   AdminOrcamentosIndexRoute: typeof AdminOrcamentosIndexRoute
   AdminOrdensIndexRoute: typeof AdminOrdensIndexRoute
+  AdminFinanceiroContasPagarNovoRoute: typeof AdminFinanceiroContasPagarNovoRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
@@ -932,6 +953,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminOperadoresIndexRoute: AdminOperadoresIndexRoute,
   AdminOrcamentosIndexRoute: AdminOrcamentosIndexRoute,
   AdminOrdensIndexRoute: AdminOrdensIndexRoute,
+  AdminFinanceiroContasPagarNovoRoute: AdminFinanceiroContasPagarNovoRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

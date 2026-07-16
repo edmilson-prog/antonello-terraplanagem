@@ -12,6 +12,9 @@ const seed: ContaPagar[] = [
     vencimento: "2026-07-01",
     status: "aberta",
     pago_em: null,
+    documento: null,
+    forma_pagamento: null,
+    observacao: null,
     created_at: "2026-06-01T00:00:00.000Z",
     updated_at: "2026-06-01T00:00:00.000Z",
   },
@@ -24,6 +27,9 @@ const seed: ContaPagar[] = [
     vencimento: "2026-06-15",
     status: "liquidada",
     pago_em: "2026-06-14",
+    documento: null,
+    forma_pagamento: null,
+    observacao: null,
     created_at: "2026-06-01T00:00:00.000Z",
     updated_at: "2026-06-14T00:00:00.000Z",
   },
@@ -47,6 +53,9 @@ describe("criarContasPagarStore", () => {
       categoria: "outro",
       valor: 100,
       vencimento: "2026-07-10",
+      documento: null,
+      forma_pagamento: null,
+      observacao: null,
     });
     const itens = store.listar();
     expect(itens).toHaveLength(3);

@@ -243,6 +243,7 @@ export interface Orcamento {
 export type StatusConta = "aberta" | "liquidada";
 export type FormaRecebimento = "dinheiro" | "pix" | "transferencia" | "boleto" | "cheque" | "outro";
 export type CategoriaDespesa = "diesel" | "manutencao" | "folha" | "fornecedor" | "outro";
+export type FormaPagamento = "dinheiro" | "pix" | "transferencia" | "boleto" | "cheque" | "outro";
 
 export interface ContaReceber {
   id: string;
@@ -266,6 +267,9 @@ export interface ContaPagar {
   vencimento: string; // "YYYY-MM-DD"
   status: StatusConta;
   pago_em: string | null; // "YYYY-MM-DD"
+  documento: string | null; // ex.: "BOL 8821", "NF 5540"
+  forma_pagamento: FormaPagamento | null;
+  observacao: string | null;
   created_at: string;
   updated_at: string;
 }

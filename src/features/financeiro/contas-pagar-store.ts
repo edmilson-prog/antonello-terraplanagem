@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { contasPagar as seed } from "@/mocks/contas-pagar";
-import type { ContaPagar, CategoriaDespesa } from "@/shared/types";
+import type { ContaPagar, CategoriaDespesa, FormaPagamento } from "@/shared/types";
 
 export type ResultadoBaixaPagar = { ok: true; conta: ContaPagar } | { ok: false; motivo: string };
 
@@ -10,6 +10,9 @@ export type NovaContaPagar = {
   categoria: CategoriaDespesa;
   valor: number;
   vencimento: string; // "YYYY-MM-DD"
+  documento: string | null;
+  forma_pagamento: FormaPagamento | null;
+  observacao: string | null;
 };
 
 export function criarContasPagarStore(inicial: ContaPagar[]) {
