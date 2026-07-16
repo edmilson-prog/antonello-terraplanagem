@@ -43,7 +43,7 @@ export function resumoPipeline(
   };
 }
 
-const MESES_ABREV = [
+export const MESES_ABREV = [
   "Jan",
   "Fev",
   "Mar",
@@ -58,11 +58,11 @@ const MESES_ABREV = [
   "Dez",
 ];
 
-function chaveMes(iso: string): string {
+export function chaveMes(iso: string): string {
   return iso.slice(0, 7); // "YYYY-MM"
 }
 
-function somarMeses(chaveMesRef: string, offset: number): string {
+export function somarMeses(chaveMesRef: string, offset: number): string {
   const [ano, mes] = chaveMesRef.split("-").map(Number);
   const data = new Date(Date.UTC(ano, mes - 1 + offset, 1));
   const anoNovo = data.getUTCFullYear();
