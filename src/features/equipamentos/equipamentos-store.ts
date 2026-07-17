@@ -63,7 +63,10 @@ const useEstado = () =>
     () => estado,
   );
 
-const create = async (dados: NovoEquipamento): Promise<Equipamento> => {
+const create = async (
+  dados: NovoEquipamento,
+  opts?: { planoIntervaloHoras?: number },
+): Promise<Equipamento> => {
   const { data, error } = await supabase
     .from("equipamentos")
     .insert(dados)
@@ -72,6 +75,17 @@ const create = async (dados: NovoEquipamento): Promise<Equipamento> => {
     .returns<Equipamento>();
 
   if (error) throw new Error(error.message);
+
+  if (opts?.planoIntervaloHoras) {
+    const { error: erroPlano } = await supabase.from("planos_manutencao").insert({
+      equipamento_id: data.id,
+      descricao: `Plano preventivo — ${data.nome}`,
+      intervalo_horas: opts.planoIntervaloHoras,
+      ativo: true,
+    });
+    if (erroPlano) throw new Error(erroPlano.message);
+  }
+
   await carregar();
   return data;
 };

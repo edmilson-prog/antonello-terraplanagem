@@ -14,6 +14,8 @@ export type TipoEquipamento =
 // status OPERACIONAL (onde a máquina está) — distinto de `ativo` (ciclo de vida)
 export type EquipamentoStatus = "disponivel" | "em_uso" | "manutencao";
 
+export type PropriedadeEquipamento = "propria" | "locada";
+
 export interface Equipamento {
   id: string;
   nome: string;
@@ -23,6 +25,9 @@ export interface Equipamento {
   identificador: string | null; // patrimônio/placa (opcional)
   status: EquipamentoStatus; // operacional
   ativo: boolean; // soft-delete / cadastral
+  marca: string | null; // marca/modelo (ex.: "Caterpillar 320") — só coletado na criação
+  ano: string | null; // ano de fabricação — só coletado na criação
+  propriedade: PropriedadeEquipamento | null; // própria/locada — só coletado na criação
   created_at: string;
   updated_at: string;
 }

@@ -100,6 +100,9 @@ function equipamento(over: Partial<Equipamento> & { id: string }): Equipamento {
     identificador: over.identificador ?? null,
     status: over.status ?? "disponivel",
     ativo: over.ativo ?? true,
+    marca: over.marca ?? null,
+    ano: over.ano ?? null,
+    propriedade: over.propriedade ?? null,
     created_at: "2026-01-01T00:00:00.000Z",
     updated_at: "2026-01-01T00:00:00.000Z",
   };

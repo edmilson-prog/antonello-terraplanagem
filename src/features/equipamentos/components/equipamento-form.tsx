@@ -1,6 +1,7 @@
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { TIPOS, TIPO_LABEL, STATUS, STATUS_LABEL } from "@/features/equipamentos/labels";
@@ -33,6 +35,7 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
     register,
     handleSubmit,
     control,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<EquipamentoFormValues>({
     resolver: zodResolver(equipamentoSchema),
@@ -44,25 +47,56 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
       identificador: inicial?.identificador ?? "",
       status: inicial?.status ?? "disponivel",
       ativo: inicial?.ativo ?? true,
+      propriedade: inicial?.propriedade ?? "propria",
+      marca: inicial?.marca ?? "",
+      ano: inicial?.ano ?? "",
     },
   });
 
   const onSubmit = async (values: EquipamentoFormValues) => {
-    const payload = {
-      nome: values.nome,
-      tipo: values.tipo,
-      capacidade: values.capacidade,
-      horimetro_atual: values.horimetro_atual,
-      identificador: values.identificador?.trim() ? values.identificador.trim() : null,
-      status: values.status,
-      ativo: values.ativo,
-    };
+    if (!inicial && !values.marca?.trim()) {
+      setError("marca", { message: "Informe a marca/modelo" });
+      return;
+    }
+
+    let planoIntervaloHoras: number | undefined;
+    if (!inicial && values.plano_intervalo_horas?.trim()) {
+      const n = Number(values.plano_intervalo_horas.trim());
+      if (!Number.isFinite(n) || n <= 0) {
+        setError("plano_intervalo_horas", { message: "Informe um número válido" });
+        return;
+      }
+      planoIntervaloHoras = n;
+    }
+
     try {
       if (inicial) {
-        await equipamentosStore.update(inicial.id, payload);
+        await equipamentosStore.update(inicial.id, {
+          nome: values.nome,
+          tipo: values.tipo,
+          capacidade: values.capacidade,
+          horimetro_atual: values.horimetro_atual,
+          identificador: values.identificador?.trim() ? values.identificador.trim() : null,
+          status: values.status,
+          ativo: values.ativo,
+        });
         toast.success("Equipamento atualizado.");
       } else {
-        await equipamentosStore.create(payload);
+        await equipamentosStore.create(
+          {
+            nome: values.nome,
+            tipo: values.tipo,
+            capacidade: values.capacidade,
+            horimetro_atual: values.horimetro_atual,
+            identificador: values.identificador?.trim() ? values.identificador.trim() : null,
+            status: "disponivel",
+            ativo: values.ativo,
+            marca: values.marca?.trim() ? values.marca.trim() : null,
+            ano: values.ano?.trim() ? values.ano.trim() : null,
+            propriedade: values.propriedade ?? null,
+          },
+          { planoIntervaloHoras },
+        );
         toast.success("Equipamento cadastrado.");
       }
       onSuccess();
@@ -129,9 +163,72 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
         </div>
       </div>
 
+      {!inicial ? (
+        <div className="space-y-1.5">
+          <Label>Propriedade</Label>
+          <Controller
+            control={control}
+            name="propriedade"
+            render={({ field }) => (
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                className="justify-stretch"
+                value={field.value ?? "propria"}
+                onValueChange={(v) => v && field.onChange(v)}
+              >
+                <ToggleGroupItem
+                  value="propria"
+                  className="flex-1 gap-1.5 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/20 data-[state=on]:text-foreground"
+                >
+                  <Icon icon="lucide:badge-check" className="h-4 w-4" />
+                  Própria
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="locada"
+                  className="flex-1 gap-1.5 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/20 data-[state=on]:text-foreground"
+                >
+                  <Icon icon="lucide:link" className="h-4 w-4" />
+                  Locada
+                </ToggleGroupItem>
+              </ToggleGroup>
+            )}
+          />
+        </div>
+      ) : null}
+
+      {!inicial ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="marca">Marca / modelo *</Label>
+            <Input
+              id="marca"
+              placeholder="Ex.: Caterpillar 320"
+              {...register("marca")}
+              aria-invalid={!!errors.marca}
+            />
+            {errors.marca ? (
+              <p className="text-xs text-destructive">{errors.marca.message}</p>
+            ) : null}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="ano">Ano</Label>
+            <Input
+              id="ano"
+              inputMode="numeric"
+              placeholder="2019"
+              className="font-mono"
+              {...register("ano")}
+            />
+          </div>
+        </div>
+      ) : null}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="horimetro_atual">Horímetro atual *</Label>
+          <Label htmlFor="horimetro_atual">
+            {inicial ? "Horímetro atual" : "Horímetro inicial"} *
+          </Label>
           <Input
             id="horimetro_atual"
             type="number"
@@ -147,32 +244,58 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="identificador">Identificador / patrimônio</Label>
+          <Label htmlFor="identificador">
+            {inicial ? "Identificador / patrimônio" : "Placa / patrimônio"}
+          </Label>
           <Input id="identificador" placeholder="opcional" {...register("identificador")} />
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="status">Status operacional *</Label>
-        <Controller
-          control={control}
-          name="status"
-          render={({ field }) => (
-            <Select value={field.value} onValueChange={field.onChange}>
-              <SelectTrigger id="status">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {STATUS_LABEL[s]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      {!inicial ? (
+        <div className="space-y-1.5">
+          <Label htmlFor="plano_intervalo_horas">Intervalo do plano preventivo (horas)</Label>
+          <Input
+            id="plano_intervalo_horas"
+            inputMode="numeric"
+            placeholder="Ex.: 250"
+            className="font-mono"
+            {...register("plano_intervalo_horas")}
+            aria-invalid={!!errors.plano_intervalo_horas}
+          />
+          {errors.plano_intervalo_horas ? (
+            <p className="text-xs text-destructive">{errors.plano_intervalo_horas.message}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Opcional. Se preenchido, cria um plano de manutenção preventiva vinculado a este
+              equipamento.
+            </p>
           )}
-        />
-      </div>
+        </div>
+      ) : null}
+
+      {inicial ? (
+        <div className="space-y-1.5">
+          <Label htmlFor="status">Status operacional *</Label>
+          <Controller
+            control={control}
+            name="status"
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger id="status">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {STATUS.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {STATUS_LABEL[s]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </div>
+      ) : null}
 
       <Controller
         control={control}
