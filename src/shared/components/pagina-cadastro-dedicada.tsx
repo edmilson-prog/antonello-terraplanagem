@@ -8,7 +8,8 @@ type RotaListagemCadastro =
   | "/admin/custo-hora"
   | "/admin/financeiro"
   | "/admin/operadores"
-  | "/admin/orcamentos";
+  | "/admin/orcamentos"
+  | "/admin/diesel";
 
 interface PaginaCadastroDedicadaProps {
   backLabel: string;
