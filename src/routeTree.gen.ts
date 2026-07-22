@@ -42,7 +42,9 @@ import { Route as AppApontamentoNovoRouteImport } from './routes/app.apontamento
 import { Route as AppApontamentoApontamentoIdRouteImport } from './routes/app.apontamento.$apontamentoId'
 import { Route as AdminOrdensNovaRouteImport } from './routes/admin.ordens.nova'
 import { Route as AdminOrdensOrdemIdRouteImport } from './routes/admin.ordens.$ordemId'
+import { Route as AdminOrcamentosNovoRouteImport } from './routes/admin.orcamentos.novo'
 import { Route as AdminOrcamentosOrcamentoIdRouteImport } from './routes/admin.orcamentos.$orcamentoId'
+import { Route as AdminOperadoresNovoRouteImport } from './routes/admin.operadores.novo'
 import { Route as AdminOperadoresOperadorIdRouteImport } from './routes/admin.operadores.$operadorId'
 import { Route as AdminIaChatbotRouteImport } from './routes/admin.ia.chatbot'
 import { Route as AdminFaturamentoFaturamentoIdRouteImport } from './routes/admin.faturamento.$faturamentoId'
@@ -221,12 +223,22 @@ const AdminOrdensOrdemIdRoute = AdminOrdensOrdemIdRouteImport.update({
   path: '/ordens/$ordemId',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminOrcamentosNovoRoute = AdminOrcamentosNovoRouteImport.update({
+  id: '/orcamentos/novo',
+  path: '/orcamentos/novo',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOrcamentosOrcamentoIdRoute =
   AdminOrcamentosOrcamentoIdRouteImport.update({
     id: '/orcamentos/$orcamentoId',
     path: '/orcamentos/$orcamentoId',
     getParentRoute: () => AdminRoute,
   } as any)
+const AdminOperadoresNovoRoute = AdminOperadoresNovoRouteImport.update({
+  id: '/operadores/novo',
+  path: '/operadores/novo',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOperadoresOperadorIdRoute =
   AdminOperadoresOperadorIdRouteImport.update({
     id: '/operadores/$operadorId',
@@ -311,7 +323,9 @@ export interface FileRoutesByFullPath {
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
+  '/admin/operadores/novo': typeof AdminOperadoresNovoRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
+  '/admin/orcamentos/novo': typeof AdminOrcamentosNovoRoute
   '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
   '/admin/ordens/nova': typeof AdminOrdensNovaRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
@@ -355,7 +369,9 @@ export interface FileRoutesByTo {
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
+  '/admin/operadores/novo': typeof AdminOperadoresNovoRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
+  '/admin/orcamentos/novo': typeof AdminOrcamentosNovoRoute
   '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
   '/admin/ordens/nova': typeof AdminOrdensNovaRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
@@ -402,7 +418,9 @@ export interface FileRoutesById {
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
+  '/admin/operadores/novo': typeof AdminOperadoresNovoRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
+  '/admin/orcamentos/novo': typeof AdminOrcamentosNovoRoute
   '/admin/ordens/$ordemId': typeof AdminOrdensOrdemIdRoute
   '/admin/ordens/nova': typeof AdminOrdensNovaRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
@@ -450,7 +468,9 @@ export interface FileRouteTypes {
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
     | '/admin/operadores/$operadorId'
+    | '/admin/operadores/novo'
     | '/admin/orcamentos/$orcamentoId'
+    | '/admin/orcamentos/novo'
     | '/admin/ordens/$ordemId'
     | '/admin/ordens/nova'
     | '/app/apontamento/$apontamentoId'
@@ -494,7 +514,9 @@ export interface FileRouteTypes {
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
     | '/admin/operadores/$operadorId'
+    | '/admin/operadores/novo'
     | '/admin/orcamentos/$orcamentoId'
+    | '/admin/orcamentos/novo'
     | '/admin/ordens/$ordemId'
     | '/admin/ordens/nova'
     | '/app/apontamento/$apontamentoId'
@@ -540,7 +562,9 @@ export interface FileRouteTypes {
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
     | '/admin/operadores/$operadorId'
+    | '/admin/operadores/novo'
     | '/admin/orcamentos/$orcamentoId'
+    | '/admin/orcamentos/novo'
     | '/admin/ordens/$ordemId'
     | '/admin/ordens/nova'
     | '/app/apontamento/$apontamentoId'
@@ -802,11 +826,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdensOrdemIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/orcamentos/novo': {
+      id: '/admin/orcamentos/novo'
+      path: '/orcamentos/novo'
+      fullPath: '/admin/orcamentos/novo'
+      preLoaderRoute: typeof AdminOrcamentosNovoRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/orcamentos/$orcamentoId': {
       id: '/admin/orcamentos/$orcamentoId'
       path: '/orcamentos/$orcamentoId'
       fullPath: '/admin/orcamentos/$orcamentoId'
       preLoaderRoute: typeof AdminOrcamentosOrcamentoIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/operadores/novo': {
+      id: '/admin/operadores/novo'
+      path: '/operadores/novo'
+      fullPath: '/admin/operadores/novo'
+      preLoaderRoute: typeof AdminOperadoresNovoRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/operadores/$operadorId': {
@@ -911,7 +949,9 @@ interface AdminRouteChildren {
   AdminFaturamentoFaturamentoIdRoute: typeof AdminFaturamentoFaturamentoIdRoute
   AdminIaChatbotRoute: typeof AdminIaChatbotRoute
   AdminOperadoresOperadorIdRoute: typeof AdminOperadoresOperadorIdRoute
+  AdminOperadoresNovoRoute: typeof AdminOperadoresNovoRoute
   AdminOrcamentosOrcamentoIdRoute: typeof AdminOrcamentosOrcamentoIdRoute
+  AdminOrcamentosNovoRoute: typeof AdminOrcamentosNovoRoute
   AdminOrdensOrdemIdRoute: typeof AdminOrdensOrdemIdRoute
   AdminOrdensNovaRoute: typeof AdminOrdensNovaRoute
   AdminClientesIndexRoute: typeof AdminClientesIndexRoute
@@ -942,7 +982,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminFaturamentoFaturamentoIdRoute: AdminFaturamentoFaturamentoIdRoute,
   AdminIaChatbotRoute: AdminIaChatbotRoute,
   AdminOperadoresOperadorIdRoute: AdminOperadoresOperadorIdRoute,
+  AdminOperadoresNovoRoute: AdminOperadoresNovoRoute,
   AdminOrcamentosOrcamentoIdRoute: AdminOrcamentosOrcamentoIdRoute,
+  AdminOrcamentosNovoRoute: AdminOrcamentosNovoRoute,
   AdminOrdensOrdemIdRoute: AdminOrdensOrdemIdRoute,
   AdminOrdensNovaRoute: AdminOrdensNovaRoute,
   AdminClientesIndexRoute: AdminClientesIndexRoute,
