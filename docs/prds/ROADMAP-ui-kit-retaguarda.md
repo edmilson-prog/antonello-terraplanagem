@@ -59,13 +59,13 @@
 | 9 | `NovoOperador.jsx` | `admin.operadores.novo.tsx` | ✅ | Onda 8 (+5 campos cadastrais e vínculo com equipamentos, além do reskin) |
 | 10 | `PrecosList.jsx` | `admin.precos.tsx` | ✅ | Onda 9 (mantidas as 3 abas; colunas Custo ref./Margem na aba Hora-Máquina; histórico de alterações "Tabelas anteriores") |
 | 11 | `OSList.jsx` | `admin.ordens.index.tsx` | ✅ | Onda 5 |
-| 12 | `OSDetail.jsx` | `admin.ordens.$ordemId.tsx` | ✅ | Onda 3 |
+| 12 | `OSDetail.jsx` | `admin.ordens.$ordemId.tsx` | ✅ | Onda 3 + aprofundado em 2026-07-21 — KPIs financeiros (Valor previsto/Custo estimado/Faturado/Margem, via `rentabilidadePorObra`), quickfact + evento de Orçamento de origem (busca reversa por `os_id`), tabela de Apontamentos com Horímetro e Data, card "Faturamento" (troca do conceito fictício "Medições" do mock, que não existe no modelo real) e card "Histórico" novo |
 | 13 | `NovaOS.jsx` | `admin.ordens.nova.tsx` | ✅ | Onda 7 (esta sessão) — referência do padrão "página dedicada" |
 | 14 | `Faturamento.jsx` | `admin.faturamento.index.tsx` + `$faturamentoId` | ✅ | Onda 5 (lista/página) + Onda 3 (detalhe) |
 | 15 | `NovaNF.jsx` | — | ⚠️ | Fluxo manual de emissão de NF não existe — Faturamento é gerado automaticamente ao fechar a OS. Questão de produto, não de refatoração visual |
 | 16 | `OrcamentosList.jsx` | `admin.orcamentos.index.tsx` | ✅ | Onda 5 |
 | 17 | `OrcamentoDetail.jsx` | `admin.orcamentos.$orcamentoId.tsx` | ✅ | Onda 3 |
-| 18 | `NovoOrcamento.jsx` | diálogo em `orcamentos-page.tsx` (`FormDialog`) | 🔲 | Mesma situação de `NovoCliente` |
+| 18 | `NovoOrcamento.jsx` | `admin.orcamentos.novo.tsx` | ✅ | Onda 10 (página dedicada, mesmo padrão da Onda 8 + itens do orçamento levados para a criação, ligados aos catálogos reais — equipamento/preço vigente, fundação, mobilização — em vez do catálogo fixo do mock) |
 | 19 | `Financeiro.jsx` | `admin.financeiro.index.tsx` | ✅ | Onda 9 (saiu do modelo 3-abas para KPIs + grid 2 colunas + cards "Recebimentos por forma"/"Comprovantes recentes"; fluxos de dar baixa/emitir cobrança preservados) |
 | 20 | `NovoPagamento.jsx` | `admin.financeiro.contas-pagar.novo.tsx` | ✅ | Onda 8. Só contas a pagar são criadas manualmente; a receber nasce do faturamento (mesma lógica da linha 15) |
 | 21 | `ComprovantesList.jsx` | `admin.comprovantes.index.tsx` + `$comprovanteId` | ✅ | Onda 5 (lista) + Onda 3 (detalhe) |
@@ -89,17 +89,23 @@
 
 | Status | Quantidade |
 |--------|------------|
-| ✅ Refatorado (bate com o design system) | 21 / 34 |
+| ✅ Refatorado (bate com o design system) | 22 / 34 |
 | 🔧 Funcional, visual antigo | 7 / 34 |
-| 🔲 Funcional, mas em diálogo genérico (mock pede página dedicada) | 3 / 34 |
+| 🔲 Funcional, mas em diálogo genérico (mock pede página dedicada) | 2 / 34 |
 | ⏳ Não existe | 2 / 34 |
 | ⚠️ Divergência de fluxo (não é visual) | 1 / 34 |
 
-> Nota: a contagem anterior (16/8/8/2/1 = 35) tinha um erro de soma — 34 telas no total, não 35. Corrigido nesta atualização junto com as Ondas 8 e 9.
+> Nota: a contagem anterior (16/8/8/2/1 = 35) tinha um erro de soma — 34 telas no total, não 35. Corrigido junto com as Ondas 8 e 9.
+
+## Ondas de refatoração em andamento
+
+| Onda | Telas cobertas | Status |
+|------|-----------------|--------|
+| 10 | Diálogos → páginas dedicadas: NovoOrcamento ✅ · NovoAbastecimento ⏳ · NovaManutencao ⏳ | Em andamento — uma página por vez (ver `feedback_onda_por_pagina_artifact_first` na memória), não como wave única de spec/plano/SDD como as Ondas 8/9 |
 
 ## O que falta, em ordem sugerida
 
-1. **🔲 Diálogos → páginas dedicadas** (3 telas restantes: NovoOrcamento, NovoAbastecimento, NovaManutencao) — mesmo padrão da Nova OS e da Onda 8. Cada uma precisa de uma decisão de produto/fluxo antes (foi por isso que ficaram de fora da Onda 8).
+1. **🔲 Diálogos → páginas dedicadas** (2 telas restantes: NovoAbastecimento, NovaManutencao — NovoOrcamento fechado na Onda 10). Fluxo: usuário traz o mock → Artifact fiel primeiro → só depois código real, uma tela por vez.
 2. **🔧 Páginas de área ainda sem refatoração** (6 telas: Manutenção, Diesel, Custo da Hora, Rentabilidade, Painel Gerencial, Dashboard + Painel Operacional) — candidatas a agrupar em ondas por afinidade, ex.: "Diesel + Manutenção" (Frota), "Custo da Hora/Rentabilidade/Painel Gerencial/Dashboard" (Analítico, a maior — 4 telas).
 3. **⏳ Parâmetros** — maior gap: não tem PRD nem rota. Precisa decisão de escopo antes de virar plano.
 4. **⏳ Sobre** — institucional, baixo esforço.
@@ -111,7 +117,9 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Data** | 2026-07-16 |
+| **Data** | 2026-07-21 |
 | **Gerado por** | Claude Code, a pedido do usuário |
 | **Método** | Leitura dos 34 arquivos `.jsx` do UI kit + `find` em rotas reais + `git log` por arquivo/feature para achar a última mudança real (distinguindo refatoração de commits incidentais como lint/type-check) + leitura do `Goal` de cada plano em `docs/superpowers/plans/` para mapear onda → telas cobertas |
 | **Atualização 2026-07-16** | Fechadas as Ondas 8 (Cadastros — Páginas Dedicadas, PR #9) e 9 (Onda Comercial — Preços + Financeiro, PR #10). 7 telas passaram de 🔲/🔧 para ✅ (NovoCliente, NovoEquipamento, NovoOperador, NovoCusto, NovoPagamento, Preços, Financeiro). Corrigido também um erro de soma no resumo anterior (34 telas, não 35). |
+| **Atualização 2026-07-21** | Iniciada a Onda 10 (Diálogos → páginas dedicadas), agora uma tela por vez com Artifact-primeiro em vez de spec/plano/SDD. `NovoOrcamento` fechado: página dedicada em `/admin/orcamentos/novo`, com os itens do orçamento levados para a criação (divergência do mock resolvida a favor de ligar aos catálogos reais — equipamento/preço vigente, fundação, mobilização — reaproveitando `AdicionarItemOrcamento`/`OrcamentoItemRow` já existentes). |
+| **Atualização 2026-07-21 (2)** | Aprofundado `OSDetail`/`admin.ordens.$ordemId.tsx` (linha 12), fora de onda formal — pedido direto do usuário para bater mais fielmente com o mock. KPIs financeiros adicionados (reaproveitando `rentabilidadePorObra` já existente da Rentabilidade, não recalculado do zero); a seção fictícia "Medições" do mock foi substituída por um card "Faturamento vinculado" (busca reversa por `os_id`, com botão "Gerar faturamento" espelhando o já existente em `AguardandoFaturamento`); nova tabela `ApontamentosOSTabela` (Data/Horímetro, mantendo o componente `ApontamentosDaOS` original intocado por ser compartilhado com o app do operador); novo card "Histórico" montado a partir de timestamps reais (orçamento/OS/faturamento/comprovante), sem inventar um conceito de auditoria novo. |
