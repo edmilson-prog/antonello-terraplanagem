@@ -70,7 +70,7 @@
 | 20 | `NovoPagamento.jsx` | `admin.financeiro.contas-pagar.novo.tsx` | ✅ | Onda 8. Só contas a pagar são criadas manualmente; a receber nasce do faturamento (mesma lógica da linha 15) |
 | 21 | `ComprovantesList.jsx` | `admin.comprovantes.index.tsx` + `$comprovanteId` | ✅ | Onda 5 (lista) + Onda 3 (detalhe) |
 | 22 | `Manutencao.jsx` | `admin.manutencao.tsx` | 🔧 | Sem onda — última mudança real 2026-07-01 |
-| 23 | `NovaManutencao.jsx` | `registrar-manutencao-dialog.tsx` (`FormDialog`) | 🔲 | Mesma situação de `NovoCliente` |
+| 23 | `NovaManutencao.jsx` | `admin.manutencao.registrar.$registroId.tsx` | ✅ | Onda 10 — escopo reduzido por decisão do usuário: o mock modela manutenção corretiva sob demanda (tipo/prioridade/bloqueio de equipamento/fornecedor), que **não existe no produto real** (só preventiva, disparada por `PlanoManutencao`). Página dedicada cobre só o fluxo real ("Registrar Manutenção Realizada" a partir de um alerta específico, não um "+ Novo" livre) |
 | 24 | `Diesel.jsx` | `admin.diesel.tsx` | 🔧 | Sem onda — última mudança real 2026-07-02 |
 | 25 | `NovoAbastecimento.jsx` | `admin.diesel.novo.tsx` | ✅ | Onda 10 (página dedicada; sem o seletor fictício "Origem do diesel"/estoque/conta a pagar automática do mock, que não existe no produto real — decisão do usuário; botão de leitura de cupom por IA, que já existia e não está no mock, preservado) |
 | 26 | `CustoHora.jsx` | `admin.custo-hora.tsx` | 🔧 | Sem onda — última mudança real 2026-07-02 |
@@ -89,27 +89,26 @@
 
 | Status | Quantidade |
 |--------|------------|
-| ✅ Refatorado (bate com o design system) | 23 / 34 |
+| ✅ Refatorado (bate com o design system) | 24 / 34 |
 | 🔧 Funcional, visual antigo | 7 / 34 |
-| 🔲 Funcional, mas em diálogo genérico (mock pede página dedicada) | 1 / 34 |
+| 🔲 Funcional, mas em diálogo genérico (mock pede página dedicada) | 0 / 34 |
 | ⏳ Não existe | 2 / 34 |
 | ⚠️ Divergência de fluxo (não é visual) | 1 / 34 |
 
 > Nota: a contagem anterior (16/8/8/2/1 = 35) tinha um erro de soma — 34 telas no total, não 35. Corrigido junto com as Ondas 8 e 9.
 
-## Ondas de refatoração em andamento
+## Ondas de refatoração concluídas (cont.)
 
-| Onda | Telas cobertas | Status |
-|------|-----------------|--------|
-| 10 | Diálogos → páginas dedicadas: NovoOrcamento ✅ · NovoAbastecimento ✅ · NovaManutencao ⏳ | Em andamento — uma página por vez (ver `feedback_onda_por_pagina_artifact_first` na memória), não como wave única de spec/plano/SDD como as Ondas 8/9 |
+| Onda | Plano | Telas cobertas | Merge |
+|------|-------|-----------------|-------|
+| 10 | Sem plano formal — uma tela por vez, Artifact fiel antes de codar (ver `feedback_onda_por_pagina_artifact_first` na memória) | Diálogos → páginas dedicadas: NovoOrcamento, NovoAbastecimento, NovaManutencao (escopo reduzido — ver linha 23) | ✅ (commits `dc97f52`, `5d6c927`, e o de NovaManutencao) |
 
 ## O que falta, em ordem sugerida
 
-1. **🔲 Diálogos → páginas dedicadas** (1 tela restante: NovaManutencao — NovoOrcamento e NovoAbastecimento fechados na Onda 10). Fluxo: usuário traz o mock → Artifact fiel primeiro → só depois código real, uma tela por vez.
-2. **🔧 Páginas de área ainda sem refatoração** (6 telas: Manutenção, Diesel, Custo da Hora, Rentabilidade, Painel Gerencial, Dashboard + Painel Operacional) — candidatas a agrupar em ondas por afinidade, ex.: "Diesel + Manutenção" (Frota), "Custo da Hora/Rentabilidade/Painel Gerencial/Dashboard" (Analítico, a maior — 4 telas).
-3. **⏳ Parâmetros** — maior gap: não tem PRD nem rota. Precisa decisão de escopo antes de virar plano.
-4. **⏳ Sobre** — institucional, baixo esforço.
-5. **⚠️ Nova NF** — decisão de produto pendente com o Leonardo (emissão manual avulsa é necessária, ou o automático ao fechar OS já cobre?).
+1. **🔧 Páginas de área ainda sem refatoração** (6 telas: Manutenção, Diesel, Custo da Hora, Rentabilidade, Painel Gerencial, Dashboard + Painel Operacional) — candidatas a agrupar em ondas por afinidade, ex.: "Diesel + Manutenção" (Frota), "Custo da Hora/Rentabilidade/Painel Gerencial/Dashboard" (Analítico, a maior — 4 telas).
+2. **⏳ Parâmetros** — maior gap: não tem PRD nem rota. Precisa decisão de escopo antes de virar plano.
+3. **⏳ Sobre** — institucional, baixo esforço.
+4. **⚠️ Nova NF** — decisão de produto pendente com o Leonardo (emissão manual avulsa é necessária, ou o automático ao fechar OS já cobre?). Mesma categoria de divergência que apareceu em NovaManutencao (linha 23) — vale revisitar as duas juntas com o Leonardo.
 
 ---
 
@@ -124,3 +123,4 @@
 | **Atualização 2026-07-21** | Iniciada a Onda 10 (Diálogos → páginas dedicadas), agora uma tela por vez com Artifact-primeiro em vez de spec/plano/SDD. `NovoOrcamento` fechado: página dedicada em `/admin/orcamentos/novo`, com os itens do orçamento levados para a criação (divergência do mock resolvida a favor de ligar aos catálogos reais — equipamento/preço vigente, fundação, mobilização — reaproveitando `AdicionarItemOrcamento`/`OrcamentoItemRow` já existentes). |
 | **Atualização 2026-07-21 (2)** | Aprofundado `OSDetail`/`admin.ordens.$ordemId.tsx` (linha 12), fora de onda formal — pedido direto do usuário para bater mais fielmente com o mock. KPIs financeiros adicionados (reaproveitando `rentabilidadePorObra` já existente da Rentabilidade, não recalculado do zero); a seção fictícia "Medições" do mock foi substituída por um card "Faturamento vinculado" (busca reversa por `os_id`, com botão "Gerar faturamento" espelhando o já existente em `AguardandoFaturamento`); nova tabela `ApontamentosOSTabela` (Data/Horímetro, mantendo o componente `ApontamentosDaOS` original intocado por ser compartilhado com o app do operador); novo card "Histórico" montado a partir de timestamps reais (orçamento/OS/faturamento/comprovante), sem inventar um conceito de auditoria novo. |
 | **Atualização 2026-07-22** | `NovoAbastecimento` fechado (linha 25): página dedicada em `/admin/diesel/novo`, mesmo formulário/validação de horímetro que já existia (só mudou o shell, não a lógica), com resumo ao vivo estimando o custo (litros × preço) quando só um dos dois é informado. Sem o seletor "Origem do diesel" com preço fixo/estoque/conta a pagar automática do mock — decisão do usuário, não existe no produto real. `RegistrarAbastecimentoDialog` (retaguarda) removido, substituído pela página; `RegistrarAbastecimentoOperadorDialog` (app do operador, schema diferente, sem dado financeiro) não foi tocado. |
+| **Atualização 2026-07-22 (2)** | **Onda 10 fechada.** `NovaManutencao` (linha 23) — maior divergência mock×real das três telas da onda: o mock modela manutenção corretiva sob demanda (tipo, prioridade com bloqueio de equipamento, fornecedor/oficina, descrição livre), que não existe no produto real (só preventiva, disparada por `PlanoManutencao` por intervalo de horas). Por decisão do usuário, a página dedicada (`/admin/manutencao/registrar/$registroId`) cobre só o fluxo real — "Registrar Manutenção Realizada" a partir de um alerta específico da aba Alertas, não um "+ Novo" livre — sem inventar tipo/prioridade/bloqueio/fornecedor. `AlertasTab` passou a linkar direto pra rota em vez de abrir diálogo; `RegistrarManutencaoDialog` removido. |

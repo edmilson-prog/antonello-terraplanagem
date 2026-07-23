@@ -55,6 +55,7 @@ import { Route as AdminCustoHoraNovoRouteImport } from './routes/admin.custo-hor
 import { Route as AdminComprovantesComprovanteIdRouteImport } from './routes/admin.comprovantes.$comprovanteId'
 import { Route as AdminClientesNovoRouteImport } from './routes/admin.clientes.novo'
 import { Route as AdminClientesClienteIdRouteImport } from './routes/admin.clientes.$clienteId'
+import { Route as AdminManutencaoRegistrarRegistroIdRouteImport } from './routes/admin.manutencao.registrar.$registroId'
 import { Route as AdminFinanceiroContasPagarNovoRouteImport } from './routes/admin.financeiro.contas-pagar.novo'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -294,6 +295,12 @@ const AdminClientesClienteIdRoute = AdminClientesClienteIdRouteImport.update({
   path: '/clientes/$clienteId',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminManutencaoRegistrarRegistroIdRoute =
+  AdminManutencaoRegistrarRegistroIdRouteImport.update({
+    id: '/registrar/$registroId',
+    path: '/registrar/$registroId',
+    getParentRoute: () => AdminManutencaoRoute,
+  } as any)
 const AdminFinanceiroContasPagarNovoRoute =
   AdminFinanceiroContasPagarNovoRouteImport.update({
     id: '/financeiro/contas-pagar/novo',
@@ -312,7 +319,7 @@ export interface FileRoutesByFullPath {
   '/admin/diesel': typeof AdminDieselRouteWithChildren
   '/admin/gerencial': typeof AdminGerencialRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
-  '/admin/manutencao': typeof AdminManutencaoRoute
+  '/admin/manutencao': typeof AdminManutencaoRouteWithChildren
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
   '/app/entrar': typeof AppEntrarRoute
@@ -349,6 +356,7 @@ export interface FileRoutesByFullPath {
   '/app/apontamento/': typeof AppApontamentoIndexRoute
   '/app/ordens/': typeof AppOrdensIndexRoute
   '/admin/financeiro/contas-pagar/novo': typeof AdminFinanceiroContasPagarNovoRoute
+  '/admin/manutencao/registrar/$registroId': typeof AdminManutencaoRegistrarRegistroIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -359,7 +367,7 @@ export interface FileRoutesByTo {
   '/admin/diesel': typeof AdminDieselRouteWithChildren
   '/admin/gerencial': typeof AdminGerencialRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
-  '/admin/manutencao': typeof AdminManutencaoRoute
+  '/admin/manutencao': typeof AdminManutencaoRouteWithChildren
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
   '/app/entrar': typeof AppEntrarRoute
@@ -396,6 +404,7 @@ export interface FileRoutesByTo {
   '/app/apontamento': typeof AppApontamentoIndexRoute
   '/app/ordens': typeof AppOrdensIndexRoute
   '/admin/financeiro/contas-pagar/novo': typeof AdminFinanceiroContasPagarNovoRoute
+  '/admin/manutencao/registrar/$registroId': typeof AdminManutencaoRegistrarRegistroIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -409,7 +418,7 @@ export interface FileRoutesById {
   '/admin/diesel': typeof AdminDieselRouteWithChildren
   '/admin/gerencial': typeof AdminGerencialRoute
   '/admin/integracoes': typeof AdminIntegracoesRoute
-  '/admin/manutencao': typeof AdminManutencaoRoute
+  '/admin/manutencao': typeof AdminManutencaoRouteWithChildren
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
   '/app/entrar': typeof AppEntrarRoute
@@ -446,6 +455,7 @@ export interface FileRoutesById {
   '/app/apontamento/': typeof AppApontamentoIndexRoute
   '/app/ordens/': typeof AppOrdensIndexRoute
   '/admin/financeiro/contas-pagar/novo': typeof AdminFinanceiroContasPagarNovoRoute
+  '/admin/manutencao/registrar/$registroId': typeof AdminManutencaoRegistrarRegistroIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -497,6 +507,7 @@ export interface FileRouteTypes {
     | '/app/apontamento/'
     | '/app/ordens/'
     | '/admin/financeiro/contas-pagar/novo'
+    | '/admin/manutencao/registrar/$registroId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -544,6 +555,7 @@ export interface FileRouteTypes {
     | '/app/apontamento'
     | '/app/ordens'
     | '/admin/financeiro/contas-pagar/novo'
+    | '/admin/manutencao/registrar/$registroId'
   id:
     | '__root__'
     | '/'
@@ -593,6 +605,7 @@ export interface FileRouteTypes {
     | '/app/apontamento/'
     | '/app/ordens/'
     | '/admin/financeiro/contas-pagar/novo'
+    | '/admin/manutencao/registrar/$registroId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -929,6 +942,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClientesClienteIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/manutencao/registrar/$registroId': {
+      id: '/admin/manutencao/registrar/$registroId'
+      path: '/registrar/$registroId'
+      fullPath: '/admin/manutencao/registrar/$registroId'
+      preLoaderRoute: typeof AdminManutencaoRegistrarRegistroIdRouteImport
+      parentRoute: typeof AdminManutencaoRoute
+    }
     '/admin/financeiro/contas-pagar/novo': {
       id: '/admin/financeiro/contas-pagar/novo'
       path: '/financeiro/contas-pagar/novo'
@@ -963,12 +983,25 @@ const AdminDieselRouteWithChildren = AdminDieselRoute._addFileChildren(
   AdminDieselRouteChildren,
 )
 
+interface AdminManutencaoRouteChildren {
+  AdminManutencaoRegistrarRegistroIdRoute: typeof AdminManutencaoRegistrarRegistroIdRoute
+}
+
+const AdminManutencaoRouteChildren: AdminManutencaoRouteChildren = {
+  AdminManutencaoRegistrarRegistroIdRoute:
+    AdminManutencaoRegistrarRegistroIdRoute,
+}
+
+const AdminManutencaoRouteWithChildren = AdminManutencaoRoute._addFileChildren(
+  AdminManutencaoRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminCustoHoraRoute: typeof AdminCustoHoraRouteWithChildren
   AdminDieselRoute: typeof AdminDieselRouteWithChildren
   AdminGerencialRoute: typeof AdminGerencialRoute
   AdminIntegracoesRoute: typeof AdminIntegracoesRoute
-  AdminManutencaoRoute: typeof AdminManutencaoRoute
+  AdminManutencaoRoute: typeof AdminManutencaoRouteWithChildren
   AdminPrecosRoute: typeof AdminPrecosRoute
   AdminRentabilidadeRoute: typeof AdminRentabilidadeRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1001,7 +1034,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminDieselRoute: AdminDieselRouteWithChildren,
   AdminGerencialRoute: AdminGerencialRoute,
   AdminIntegracoesRoute: AdminIntegracoesRoute,
-  AdminManutencaoRoute: AdminManutencaoRoute,
+  AdminManutencaoRoute: AdminManutencaoRouteWithChildren,
   AdminPrecosRoute: AdminPrecosRoute,
   AdminRentabilidadeRoute: AdminRentabilidadeRoute,
   AdminIndexRoute: AdminIndexRoute,
