@@ -504,37 +504,46 @@ export type Database = {
       };
       equipamentos: {
         Row: {
+          ano: string | null;
           ativo: boolean;
           capacidade: string;
           created_at: string;
           horimetro_atual: number;
           id: string;
           identificador: string | null;
+          marca: string | null;
           nome: string;
+          propriedade: string | null;
           status: string;
           tipo: string;
           updated_at: string;
         };
         Insert: {
+          ano?: string | null;
           ativo?: boolean;
           capacidade: string;
           created_at?: string;
           horimetro_atual?: number;
           id?: string;
           identificador?: string | null;
+          marca?: string | null;
           nome: string;
+          propriedade?: string | null;
           status?: string;
           tipo: string;
           updated_at?: string;
         };
         Update: {
+          ano?: string | null;
           ativo?: boolean;
           capacidade?: string;
           created_at?: string;
           horimetro_atual?: number;
           id?: string;
           identificador?: string | null;
+          marca?: string | null;
           nome?: string;
+          propriedade?: string | null;
           status?: string;
           tipo?: string;
           updated_at?: string;

@@ -5,14 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/shared/components/page-header";
 import { DataList, type Column } from "@/shared/components/data-list";
-import { FormDialog } from "@/shared/components/form-dialog";
 import {
   StatusFilterChips,
   type StatusFilterChipItem,
 } from "@/shared/components/status-filter-chips";
 import { CardPill } from "@/shared/components/card-secao";
 import { orcamentosStore } from "@/features/orcamentos/orcamentos-store";
-import { OrcamentoForm } from "@/features/orcamentos/components/orcamento-form";
 import {
   StatusOrcamentoBadge,
   STATUS_ORCAMENTO,
@@ -38,7 +36,6 @@ export function OrcamentosPage() {
   const retry = orcamentosStore.retry;
   const [q, setQ] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<StatusOrcamento | "todos">("todos");
-  const [formAberto, setFormAberto] = useState(false);
   const agoraISO = new Date().toISOString();
 
   const lista = useMemo(() => {
@@ -191,12 +188,11 @@ export function OrcamentosPage() {
   };
 
   const novoBtn = (
-    <Button
-      onClick={() => setFormAberto(true)}
-      className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
-    >
-      <Icon icon="lucide:plus" className="h-4 w-4" />
-      Novo orçamento
+    <Button asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover">
+      <Link to="/admin/orcamentos/novo">
+        <Icon icon="lucide:plus" className="h-4 w-4" />
+        Novo orçamento
+      </Link>
     </Button>
   );
 
@@ -231,15 +227,6 @@ export function OrcamentosPage() {
           cta: todos.length === 0 ? novoBtn : undefined,
         }}
       />
-
-      <FormDialog
-        open={formAberto}
-        onOpenChange={setFormAberto}
-        titulo="Novo orçamento"
-        descricao="Os campos com * são obrigatórios."
-      >
-        <OrcamentoForm onCancel={() => setFormAberto(false)} />
-      </FormDialog>
     </div>
   );
 }

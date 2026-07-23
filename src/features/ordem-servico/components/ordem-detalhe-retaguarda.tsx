@@ -11,7 +11,8 @@ import { DocumentoHero } from "@/shared/components/documento-hero";
 import { StatStrip, type StatItem } from "@/shared/components/stat-strip";
 import { CardSecao } from "@/shared/components/card-secao";
 import { GerarTextoBotao } from "@/features/ia/components/gerar-texto-botao";
-import { ApontamentosDaOS } from "@/features/ordem-servico/components/apontamentos-da-os";
+import { ApontamentosOSTabela } from "@/features/ordem-servico/components/apontamentos-os-tabela";
+import { HistoricoOS, type EventoHistoricoOS } from "@/features/ordem-servico/components/historico-os";
 import { OrdemForm } from "@/features/ordem-servico/components/ordem-form";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import {
@@ -28,6 +29,17 @@ import { comprovantesStore } from "@/features/comprovantes/comprovantes-store";
 import { montarResumoServico } from "@/features/comprovantes/derivacoes";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { clientesStore } from "@/features/clientes/clientes-store";
+import { orcamentosStore } from "@/features/orcamentos/orcamentos-store";
+import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
+import { precoHoraMaquinaStore } from "@/features/precos/precos-hora-maquina-store";
+import { precoFundacaoStore } from "@/features/precos/precos-fundacao-store";
+import { abastecimentosStore } from "@/features/diesel/abastecimentos-store";
+import { registrosManutencaoStore } from "@/features/manutencao/registros-manutencao-store";
+import { componentesCustoStore } from "@/features/custo-hora/componentes-custo-store";
+import { rentabilidadePorObra, periodoDoFaturamento } from "@/features/rentabilidade/derivacoes";
+import { formatPercentual } from "@/features/rentabilidade/format";
+import { formatBRL } from "@/features/retaguarda/format";
+import { mesReferencia } from "@/shared/lib/periodo-mensal";
 import { avisosWhatsAppStore } from "@/features/aviso-whatsapp/avisos-whatsapp-store";
 import { avisoDaOS } from "@/features/aviso-whatsapp/derivacoes";
 import { PROVEDOR_WHATSAPP_LABEL, StatusAvisoBadge } from "@/features/aviso-whatsapp/labels";
@@ -102,6 +114,52 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
     },
   ];
 
+  const orcamentoOrigem = orcamentosStore.useTodos().find((o) => o.os_id === ordem.id);
+  const faturamentoVinculado = faturamentosStore.useTodos().find((f) => f.os_id === ordem.id);
+
+  const periodoRentabilidade = faturamentoVinculado
+    ? periodoDoFaturamento(faturamentoVinculado)
+    : mesReferencia(new Date());
+  const rentabilidade = rentabilidadePorObra(
+    ordem,
+    faturamentoVinculado ? [faturamentoVinculado] : [],
+    periodoRentabilidade,
+    equipamentosStore.getAll(),
+    componentesCustoStore.useAll(),
+    abastecimentosStore.useTodos(),
+    registrosManutencaoStore.useTodos(),
+    apontamentos,
+    precoHoraMaquinaStore.useAll(),
+  );
+
+  const statsFinanceiro: StatItem[] = [
+    {
+      rotulo: "Valor previsto",
+      valor: orcamentoOrigem ? formatBRL(orcamentoOrigem.valor_total) : "—",
+      icone: "lucide:file-text",
+      rodape: orcamentoOrigem?.numero ?? "sem orçamento vinculado",
+    },
+    {
+      rotulo: "Custo estimado",
+      valor: formatBRL(rentabilidade.custo),
+      icone: "lucide:calculator",
+      rodape: rentabilidade.custo_incompleto ? "config. de custo incompleta" : undefined,
+    },
+    {
+      rotulo: "Faturado",
+      valor: faturamentoVinculado ? formatBRL(faturamentoVinculado.valor_total) : "—",
+      icone: "lucide:file-check",
+      rodape: faturamentoVinculado?.numero ?? "ainda não gerado",
+    },
+    {
+      rotulo: "Margem estimada",
+      valor: formatPercentual(rentabilidade.margem_percentual),
+      icone: "lucide:trending-up",
+      alerta: rentabilidade.margem < 0,
+      rodape: formatBRL(rentabilidade.margem),
+    },
+  ];
+
   const fechar = async () => {
     const r = await ordensStore.fechar(ordem.id, apontamentos);
     if (!r.ok) {
@@ -125,8 +183,89 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
     }
   };
 
+  const gerarFaturamento = () => {
+    const fat = faturamentosStore.gerarDeOS(
+      ordem,
+      apontamentos,
+      equipamentosStore.getAll(),
+      precoHoraMaquinaStore.getAll(),
+      precoFundacaoStore.getAll(),
+    );
+    toast.success(`Rascunho ${fat.numero} gerado.`);
+    navigate({ to: "/admin/faturamento/$faturamentoId", params: { faturamentoId: fat.id } });
+  };
+
   const comprovante = comprovantesStore.useTodos().find((c) => c.os_id === ordemId);
   const aviso = avisoDaOS(ordem.id, avisosWhatsAppStore.useTodas());
+
+  const eventosHistorico: EventoHistoricoOS[] = [
+    ...(orcamentoOrigem?.decidido_em
+      ? [
+          {
+            data: orcamentoOrigem.decidido_em,
+            titulo: `Orçamento ${orcamentoOrigem.numero} ${orcamentoOrigem.status === "aprovado" ? "aprovado" : "recusado"}`,
+            subtitulo: cliente?.nome ?? "—",
+            icone: "lucide:file-text",
+          },
+        ]
+      : []),
+    {
+      data: ordem.aberta_em,
+      titulo: "OS aberta",
+      subtitulo: ordem.obra_nome,
+      icone: "lucide:clipboard-list",
+    },
+    ...(ordem.fechada_em
+      ? [
+          {
+            data: ordem.fechada_em,
+            titulo: "OS fechada",
+            subtitulo: `${daOS.length} ${daOS.length === 1 ? "apontamento" : "apontamentos"}`,
+            icone: "lucide:lock",
+          },
+        ]
+      : []),
+    ...(faturamentoVinculado
+      ? [
+          {
+            data: faturamentoVinculado.gerado_em,
+            titulo: `Faturamento ${faturamentoVinculado.numero} gerado`,
+            subtitulo: formatBRL(faturamentoVinculado.valor_total),
+            icone: "lucide:file-check",
+          },
+        ]
+      : []),
+    ...(faturamentoVinculado?.faturado_em
+      ? [
+          {
+            data: faturamentoVinculado.faturado_em,
+            titulo: `Faturamento ${faturamentoVinculado.numero} confirmado`,
+            subtitulo: formatBRL(faturamentoVinculado.valor_total),
+            icone: "lucide:check",
+          },
+        ]
+      : []),
+    ...(comprovante
+      ? [
+          {
+            data: comprovante.gerado_em,
+            titulo: `Comprovante ${comprovante.numero} gerado`,
+            subtitulo: cliente?.nome ?? "—",
+            icone: "lucide:file-check-2",
+          },
+        ]
+      : []),
+    ...(comprovante?.assinado_em
+      ? [
+          {
+            data: comprovante.assinado_em,
+            titulo: `Comprovante ${comprovante.numero} assinado`,
+            subtitulo: comprovante.assinante_nome ?? "—",
+            icone: "lucide:signature",
+          },
+        ]
+      : []),
+  ];
 
   const abrirRevisaoComprovante = () => {
     if (!ordem) return;
@@ -189,6 +328,23 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
           ...(ordem.fechada_em
             ? [{ rotulo: "Fechada em", valor: formatDataHora(ordem.fechada_em) }]
             : []),
+          ...(orcamentoOrigem
+            ? [
+                {
+                  rotulo: "Orçamento de origem",
+                  valor: (
+                    <Link
+                      to="/admin/orcamentos/$orcamentoId"
+                      params={{ orcamentoId: orcamentoOrigem.id }}
+                      className="text-primary hover:underline"
+                    >
+                      {orcamentoOrigem.numero}
+                    </Link>
+                  ),
+                  mono: true,
+                },
+              ]
+            : []),
         ]}
         acoes={
           <>
@@ -211,6 +367,7 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
       />
 
       <StatStrip itens={stats} />
+      <StatStrip itens={statsFinanceiro} />
 
       {ordem.observacao ? (
         <CardSecao titulo="Observação" icone="lucide:sticky-note">
@@ -219,9 +376,7 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
       ) : null}
 
       <CardSecao titulo={`Apontamentos (${daOS.length})`} icone="lucide:timer">
-        <div className="p-4">
-          <ApontamentosDaOS apontamentos={daOS} />
-        </div>
+        <ApontamentosOSTabela apontamentos={daOS} />
       </CardSecao>
 
       {!fechada ? (
@@ -239,6 +394,36 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
           ) : null}
         </div>
       ) : null}
+
+      {fechada ? (
+        <CardSecao titulo="Faturamento" icone="lucide:file-check">
+          <div className="p-4">
+            {faturamentoVinculado ? (
+              <Link
+                to="/admin/faturamento/$faturamentoId"
+                params={{ faturamentoId: faturamentoVinculado.id }}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+              >
+                <Icon icon="lucide:external-link" className="h-4 w-4" />
+                Ver faturamento {faturamentoVinculado.numero} ·{" "}
+                {formatBRL(faturamentoVinculado.valor_total)}
+              </Link>
+            ) : (
+              <Button
+                onClick={gerarFaturamento}
+                className="gap-1.5 bg-primary text-primary-foreground hover:bg-primary-hover"
+              >
+                <Icon icon="lucide:file-plus-2" className="h-4 w-4" />
+                Gerar faturamento
+              </Button>
+            )}
+          </div>
+        </CardSecao>
+      ) : null}
+
+      <CardSecao titulo="Histórico" icone="lucide:history">
+        <HistoricoOS eventos={eventosHistorico} />
+      </CardSecao>
 
       {fechada ? (
         <CardSecao titulo="Comprovante" icone="lucide:file-check-2">

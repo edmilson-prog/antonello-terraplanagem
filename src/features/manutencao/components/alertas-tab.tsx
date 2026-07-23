@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/shared/components/empty-state";
@@ -7,10 +8,9 @@ import type { AlertaManutencao } from "@/features/manutencao/derivacoes";
 
 interface AlertasTabProps {
   alertas: AlertaManutencao[];
-  onRegistrar: (alerta: AlertaManutencao) => void;
 }
 
-export function AlertasTab({ alertas, onRegistrar }: AlertasTabProps) {
+export function AlertasTab({ alertas }: AlertasTabProps) {
   if (alertas.length === 0) {
     return (
       <EmptyState
@@ -41,9 +41,14 @@ export function AlertasTab({ alertas, onRegistrar }: AlertasTabProps) {
               {formatHorimetro(alerta.registro.horimetro_previsto)}
             </div>
           </div>
-          <Button size="sm" onClick={() => onRegistrar(alerta)} className="gap-1.5 sm:shrink-0">
-            <Icon icon="lucide:wrench" className="h-4 w-4" />
-            Registrar manutenção
+          <Button asChild size="sm" className="gap-1.5 sm:shrink-0">
+            <Link
+              to="/admin/manutencao/registrar/$registroId"
+              params={{ registroId: alerta.registro.id }}
+            >
+              <Icon icon="lucide:wrench" className="h-4 w-4" />
+              Registrar manutenção
+            </Link>
           </Button>
         </li>
       ))}

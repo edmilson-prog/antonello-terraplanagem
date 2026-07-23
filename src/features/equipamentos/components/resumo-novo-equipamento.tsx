@@ -1,13 +1,18 @@
 import { useWatch, type Control } from "react-hook-form";
 import { Icon } from "@iconify/react";
+import { Badge } from "@/components/ui/badge";
 import { Linha } from "@/shared/components/linha-resumo";
-import { TIPO_LABEL, TIPO_ICONE, STATUS_LABEL } from "@/features/equipamentos/labels";
+import { EquipamentoStatusBadge, TIPO_LABEL, TIPO_ICONE } from "@/features/equipamentos/labels";
 import { formatHorimetro } from "@/shared/lib/format";
 import type { EquipamentoFormValues } from "@/features/equipamentos/equipamento-schema";
 
 export function ResumoNovoEquipamento({ control }: { control: Control<EquipamentoFormValues> }) {
   const valores = useWatch({ control });
   const tipo = valores.tipo ?? "escavadeira";
+  const propria = (valores.propriedade ?? "propria") === "propria";
+  const marcaValor = valores.marca?.trim()
+    ? valores.marca.trim() + (valores.ano?.trim() ? " · " + valores.ano.trim() : "")
+    : "";
 
   return (
     <div className="space-y-4">
@@ -21,7 +26,21 @@ export function ResumoNovoEquipamento({ control }: { control: Control<Equipament
               {/* useWatch captura o valor antes do onChange do campo aplicar o uppercase, então normaliza aqui também */}
               {valores.nome?.trim().toUpperCase() || "Novo equipamento"}
             </div>
-            <div className="text-xs text-muted-foreground">{TIPO_LABEL[tipo]}</div>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              <Badge variant="outline" className="border-steel/40 bg-steel/20 text-foreground">
+                {TIPO_LABEL[tipo]}
+              </Badge>
+              <Badge
+                variant="outline"
+                className={
+                  propria
+                    ? "border-primary/50 bg-primary/20 text-foreground"
+                    : "border-secondary/50 bg-secondary/20 text-foreground"
+                }
+              >
+                {propria ? "Própria" : "Locada"}
+              </Badge>
+            </div>
           </div>
         </div>
         <div className="divide-y divide-border">
@@ -30,22 +49,27 @@ export function ResumoNovoEquipamento({ control }: { control: Control<Equipament
             valor={valores.capacidade?.trim() || "a definir"}
             vazio={!valores.capacidade?.trim()}
           />
+          <Linha rotulo="Marca" valor={marcaValor || "a definir"} vazio={!marcaValor} />
           <Linha
-            rotulo="Identificador"
+            rotulo="Placa/pat."
             valor={valores.identificador?.trim() || "a definir"}
             vazio={!valores.identificador?.trim()}
           />
           <Linha rotulo="Horímetro" valor={formatHorimetro(valores.horimetro_atual ?? 0)} />
-          <Linha rotulo="Status" valor={STATUS_LABEL[valores.status ?? "disponivel"]} />
+          <div className="flex items-center justify-between gap-2 py-1.5 text-sm">
+            <span className="text-muted-foreground">Situação</span>
+            <EquipamentoStatusBadge status="disponivel" />
+          </div>
         </div>
       </div>
       <div className="flex items-start gap-2 rounded-lg border border-border bg-surface p-3 text-xs text-muted-foreground">
         <Icon icon="lucide:info" className="mt-0.5 h-4 w-4 shrink-0" />
         <p>
-          O equipamento fica disponível para <strong className="text-foreground">apontamentos</strong>{" "}
-          e <strong className="text-foreground">OS</strong>. O horímetro alimenta o{" "}
-          <strong className="text-foreground">Custo da Hora</strong> e os{" "}
-          <strong className="text-foreground">planos de manutenção</strong>.
+          O equipamento fica disponível para{" "}
+          <strong className="text-foreground">apontamentos</strong> e{" "}
+          <strong className="text-foreground">OS</strong>. O horímetro alimenta o{" "}
+          <strong className="text-foreground">Custo da Hora</strong> e dispara os{" "}
+          <strong className="text-foreground">planos de manutenção</strong> pelo intervalo definido.
         </p>
       </div>
     </div>

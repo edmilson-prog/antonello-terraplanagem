@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Fuel, Plus } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,6 @@ import {
   custoAbastecimento,
   type PeriodoFiltro,
 } from "@/features/diesel/derivacoes";
-import { RegistrarAbastecimentoDialog } from "@/features/diesel/components/registrar-abastecimento-dialog";
 import { brlExato, numero } from "@/features/retaguarda/format";
 import { formatHorimetro, formatDataHora } from "@/shared/lib/format";
 import { cn } from "@/lib/utils";
@@ -33,7 +33,6 @@ export function DieselPage() {
   const apontamentos = apontamentosStore.useTodos();
   const abastecimentos = abastecimentosStore.useTodos();
   const [preset, setPreset] = useState<PeriodoPreset>("30d");
-  const [dialogAberto, setDialogAberto] = useState(false);
 
   const periodo = useMemo(() => periodoDePreset(preset), [preset]);
   const equipamentosAtivos = useMemo(() => equipamentos.filter((e) => e.ativo), [equipamentos]);
@@ -79,12 +78,11 @@ export function DieselPage() {
         titulo="Diesel"
         descricao="Consumo e utilização por equipamento."
         acoes={
-          <Button
-            onClick={() => setDialogAberto(true)}
-            className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
-          >
-            <Plus className="h-4 w-4" />
-            Registrar abastecimento
+          <Button asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover">
+            <Link to="/admin/diesel/novo">
+              <Plus className="h-4 w-4" />
+              Registrar abastecimento
+            </Link>
           </Button>
         }
       />
@@ -230,12 +228,6 @@ export function DieselPage() {
           </Card>
         </>
       )}
-
-      <RegistrarAbastecimentoDialog
-        open={dialogAberto}
-        onOpenChange={setDialogAberto}
-        equipamentos={equipamentosAtivos}
-      />
     </div>
   );
 }
