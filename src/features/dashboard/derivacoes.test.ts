@@ -6,6 +6,16 @@ import {
   pipelineFinanceiroPeriodo,
   resumoContasPendentes,
   contagemAlertasManutencao,
+  intervaloAnterior,
+  bucketsDoIntervalo,
+  serieEmBuckets,
+  referenciaApontamentos,
+  serieSemanalHoras,
+  resumoSemanal,
+  osAtivas,
+  apontamentosDoDiaMaisRecente,
+  vencimentosProximos,
+  saldoAReceber,
 } from "./derivacoes";
 import type { IntervaloPeriodo } from "./periodo";
 import type {
@@ -356,5 +366,160 @@ describe("contagemAlertasManutencao", () => {
 
   it("retorna 0 quando não há planos", () => {
     expect(contagemAlertasManutencao([equipamento({ id: "eq-1" })], [], [])).toBe(0);
+  });
+});
+
+describe("intervaloAnterior", () => {
+  it("devolve a janela imediatamente anterior, de mesma duração", () => {
+    const anterior = intervaloAnterior(INTERVALO);
+    expect(anterior.fim.getTime()).toBe(INTERVALO.inicio.getTime() - 1);
+    expect(INTERVALO.fim.getTime() - INTERVALO.inicio.getTime()).toBe(
+      anterior.fim.getTime() + 1 - anterior.inicio.getTime(),
+    );
+  });
+});
+
+describe("bucketsDoIntervalo / serieEmBuckets", () => {
+  it("divide o intervalo em N fatias contíguas cobrindo todo o período", () => {
+    const buckets = bucketsDoIntervalo(INTERVALO, 4);
+    expect(buckets).toHaveLength(4);
+    expect(buckets[0].inicio.getTime()).toBe(INTERVALO.inicio.getTime());
+    expect(buckets[3].fim.getTime()).toBe(INTERVALO.fim.getTime());
+  });
+
+  it("soma cada item na fatia do seu período e ignora o que está fora", () => {
+    const faturamentos = [
+      fat({ id: "f1", valor_total: 100, faturado_em: "2026-07-01T06:00:00.000Z" }),
+      fat({ id: "f2", valor_total: 250, faturado_em: "2026-07-02T18:00:00.000Z" }),
+      fat({ id: "f3", valor_total: 999, faturado_em: "2026-05-01T06:00:00.000Z" }),
+    ];
+    const serie = serieEmBuckets(
+      faturamentos,
+      (f) => f.faturado_em,
+      (f) => f.valor_total,
+      INTERVALO,
+      2,
+    );
+    expect(serie).toEqual([100, 250]);
+  });
+
+  it("devolve lista vazia quando a quantidade é inválida", () => {
+    expect(bucketsDoIntervalo(INTERVALO, 0)).toEqual([]);
+  });
+});
+
+describe("referenciaApontamentos", () => {
+  it("usa o apontamento finalizado mais recente", () => {
+    const aps = [
+      ap({ id: "a1", finalizado_em: "2026-06-20T10:00:00.000Z" }),
+      ap({ id: "a2", finalizado_em: "2026-06-29T10:00:00.000Z" }),
+    ];
+    expect(referenciaApontamentos(aps, new Date("2026-08-09T00:00:00.000Z")).toISOString()).toBe(
+      "2026-06-29T10:00:00.000Z",
+    );
+  });
+
+  it("cai para `agora` quando não há apontamento finalizado", () => {
+    const agora = new Date("2026-08-09T00:00:00.000Z");
+    expect(referenciaApontamentos([], agora)).toBe(agora);
+  });
+});
+
+describe("serieSemanalHoras / resumoSemanal", () => {
+  const referencia = new Date("2026-07-29T12:00:00.000Z");
+
+  it("agrupa as horas em janelas de 7 dias terminando na referência", () => {
+    const aps = [
+      ap({ id: "a1", horas_trabalhadas: 8, finalizado_em: "2026-07-28T10:00:00.000Z" }), // última janela
+      ap({ id: "a2", horas_trabalhadas: 5, finalizado_em: "2026-07-20T10:00:00.000Z" }), // penúltima
+      ap({ id: "a3", horas_trabalhadas: 3, finalizado_em: "2026-01-01T10:00:00.000Z" }), // fora
+    ];
+    const semanas = serieSemanalHoras(aps, referencia, 3);
+    expect(semanas).toHaveLength(3);
+    expect(semanas.map((s) => s.horas)).toEqual([0, 5, 8]);
+    expect(semanas[0].rotulo).toMatch(/^\d{2}\/\d{2}$/);
+  });
+
+  it("ignora apontamentos em andamento", () => {
+    const aps = [
+      ap({ id: "a1", status: "em_andamento", horas_trabalhadas: null, finalizado_em: null }),
+    ];
+    expect(serieSemanalHoras(aps, referencia, 2).map((s) => s.horas)).toEqual([0, 0]);
+  });
+
+  it("resume média e pico da série", () => {
+    const resumo = resumoSemanal([
+      { rotulo: "01/07", horas: 10 },
+      { rotulo: "08/07", horas: 30 },
+    ]);
+    expect(resumo).toEqual({ media: 20, pico: 30, picoRotulo: "08/07" });
+  });
+
+  it("não aponta pico quando a série é toda zero", () => {
+    expect(resumoSemanal([{ rotulo: "01/07", horas: 0 }]).picoRotulo).toBeNull();
+  });
+});
+
+describe("osAtivas", () => {
+  it("lista em andamento antes das abertas e exclui as fechadas", () => {
+    const ordens = [
+      os({ id: "aberta-antiga", status: "aberta", aberta_em: "2026-07-01T10:00:00.000Z" }),
+      os({ id: "aberta-nova", status: "aberta", aberta_em: "2026-07-05T10:00:00.000Z" }),
+      os({ id: "andando", status: "aberta" }),
+      os({ id: "fechada", status: "fechada", fechada_em: "2026-07-02T10:00:00.000Z" }),
+    ];
+    const aps = [ap({ id: "a1", os_id: "andando", horas_trabalhadas: 12 })];
+    const ativas = osAtivas(ordens, aps);
+    expect(ativas.map((a) => a.os.id)).toEqual(["andando", "aberta-nova", "aberta-antiga"]);
+    expect(ativas[0]).toMatchObject({ status: "em_andamento", horas: 12 });
+  });
+
+  it("respeita o limite", () => {
+    const ordens = [os({ id: "a" }), os({ id: "b" }), os({ id: "c" })];
+    expect(osAtivas(ordens, [], 2)).toHaveLength(2);
+  });
+});
+
+describe("apontamentosDoDiaMaisRecente", () => {
+  it("devolve só os finalizados do último dia com movimento, do mais recente ao mais antigo", () => {
+    const aps = [
+      ap({ id: "velho", finalizado_em: "2026-06-20T10:00:00.000Z" }),
+      ap({ id: "novo-1", finalizado_em: "2026-06-29T08:00:00.000Z" }),
+      ap({ id: "novo-2", finalizado_em: "2026-06-29T17:00:00.000Z" }),
+      ap({ id: "aberto", status: "em_andamento", finalizado_em: null }),
+    ];
+    const dia = apontamentosDoDiaMaisRecente(aps);
+    expect(dia.data).toBe("2026-06-29");
+    expect(dia.itens.map((a) => a.id)).toEqual(["novo-2", "novo-1"]);
+  });
+
+  it("devolve data nula quando não há apontamento finalizado", () => {
+    expect(apontamentosDoDiaMaisRecente([])).toEqual({ data: null, itens: [] });
+  });
+});
+
+describe("vencimentosProximos", () => {
+  it("ordena por vencimento, marca as vencidas e resolve o número do faturamento", () => {
+    const contas = [
+      contaReceber({ id: "c2", faturamento_id: "f2", vencimento: "2026-07-20" }),
+      contaReceber({ id: "c1", faturamento_id: "f1", vencimento: "2026-06-30" }),
+      contaReceber({ id: "liquidada", status: "liquidada", vencimento: "2026-06-01" }),
+    ];
+    const faturamentos = [fat({ id: "f1", numero: "FAT-0001" })];
+    const itens = vencimentosProximos(contas, faturamentos, "2026-07-10");
+    expect(itens.map((i) => i.conta.id)).toEqual(["c1", "c2"]);
+    expect(itens[0]).toMatchObject({ documento: "FAT-0001", vencida: true });
+    expect(itens[1]).toMatchObject({ documento: "—", vencida: false });
+  });
+});
+
+describe("saldoAReceber", () => {
+  it("soma só as contas em aberto e conta quantas estão vencidas", () => {
+    const contas = [
+      contaReceber({ id: "c1", valor: 1000, vencimento: "2026-06-01" }),
+      contaReceber({ id: "c2", valor: 500, vencimento: "2026-08-01" }),
+      contaReceber({ id: "c3", valor: 9999, status: "liquidada", vencimento: "2026-06-01" }),
+    ];
+    expect(saldoAReceber(contas, "2026-07-10")).toEqual({ total: 1500, titulos: 2, vencidos: 1 });
   });
 });

@@ -5,6 +5,22 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.22.0] - 2026-08-09 - Lookout
+
+### Added
+- Dashboard da retaguarda (aba "Visão geral") refeito conforme o design system oficial (`ui_kits/retaguarda/screen-dashboard`): 4 KPIs-herói (Faturamento, Horas apontadas, OS em andamento, Saldo a receber) com variação vs. período anterior e sparkline, sobre um grid de dois blocos.
+- Cards novos no dashboard, todos com dado real: **OS em andamento** (número, obra, cliente, horas acumuladas, data de abertura e status), **Apontamentos do dia** (operador, equipamento, horímetro inicial → final, horas e OS), **Frota** (situação operacional dos equipamentos ativos), **Vencimentos próximos** (contas a receber em aberto, vencidas no topo) e **Horas por semana** (barras das últimas 8 janelas de 7 dias, com média e pico).
+- Faixa compacta de indicadores logo abaixo dos KPIs, preservando os números que o dashboard já mostrava e que não existem no novo desenho: Executado, Recebido, OS abertas, Fechadas no período, Contas vencidas/a vencer e Alertas de manutenção.
+- Atalhos "Nova OS" e "Novo orçamento" promovidos para o cabeçalho da página.
+- Novas derivações puras em `features/dashboard/derivacoes.ts` (`intervaloAnterior`, `serieEmBuckets`, `serieSemanalHoras`, `osAtivas`, `apontamentosDoDiaMaisRecente`, `vencimentosProximos`, `saldoAReceber`, entre outras), com 16 testes novos.
+
+### Changed
+- O filtro de período (hoje/semana/mês) saiu do corpo da página para o cabeçalho, no lugar da pílula estática do mock, e passou a alimentar também a variação percentual dos KPIs (comparando com a janela imediatamente anterior, de mesma duração).
+- Blocos que não seguem o filtro de período (apontamentos do dia e horas por semana) são ancorados no apontamento finalizado mais recente, e rotulam a data exibida — evita card vazio quando a base não tem movimento recente.
+
+### Removed
+- Widgets antigos do dashboard (`WidgetOsPorStatus`, `WidgetHorasPeriodo`, `WidgetPipelineFinanceiro`, `WidgetContas`, `WidgetAlertasManutencao`, `WidgetAtalhos`), substituídos pelos KPIs e pela faixa de indicadores. Nenhum indicador foi perdido.
+
 ## [0.21.0] - 2026-07-10 - Ledger
 
 ### Added
