@@ -115,9 +115,7 @@ export function OrdensRetaguardaPage({ statusInicial }: { statusInicial?: Status
     {
       header: "Cliente",
       cell: (o) => (
-        <div className="min-w-0 max-w-[20rem] truncate">
-          {clientesStore.getById(o.cliente_id)?.nome ?? "—"}
-        </div>
+        <div className="min-w-0 truncate">{clientesStore.getById(o.cliente_id)?.nome ?? "—"}</div>
       ),
     },
     { header: "Obra", cell: (o) => <span className="text-muted-foreground">{o.obra_nome}</span> },
@@ -267,6 +265,7 @@ export function OrdensRetaguardaPage({ statusInicial }: { statusInicial?: Status
         data={lista}
         columns={columns}
         getRowKey={(o) => o.id}
+        resizableKey="admin-ordens"
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}
