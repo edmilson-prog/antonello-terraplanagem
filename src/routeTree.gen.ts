@@ -18,8 +18,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as BlogTerraplanagemOuTerraplenagemRouteImport } from './routes/blog.terraplanagem-ou-terraplenagem'
+import { Route as AppSincronizacaoRouteImport } from './routes/app.sincronizacao'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
+import { Route as AppNotificacoesRouteImport } from './routes/app.notificacoes'
+import { Route as AppHistoricoRouteImport } from './routes/app.historico'
+import { Route as AppEspelhoHorasRouteImport } from './routes/app.espelho-horas'
+import { Route as AppEscalaRouteImport } from './routes/app.escala'
 import { Route as AppEntrarRouteImport } from './routes/app.entrar'
+import { Route as AppAbastecerRouteImport } from './routes/app.abastecer'
 import { Route as AdminRentabilidadeRouteImport } from './routes/admin.rentabilidade'
 import { Route as AdminPrecosRouteImport } from './routes/admin.precos'
 import { Route as AdminManutencaoRouteImport } from './routes/admin.manutencao'
@@ -104,14 +110,44 @@ const BlogTerraplanagemOuTerraplenagemRoute =
     path: '/blog/terraplanagem-ou-terraplenagem',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AppSincronizacaoRoute = AppSincronizacaoRouteImport.update({
+  id: '/sincronizacao',
+  path: '/sincronizacao',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPerfilRoute = AppPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
   getParentRoute: () => AppRoute,
 } as any)
+const AppNotificacoesRoute = AppNotificacoesRouteImport.update({
+  id: '/notificacoes',
+  path: '/notificacoes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHistoricoRoute = AppHistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEspelhoHorasRoute = AppEspelhoHorasRouteImport.update({
+  id: '/espelho-horas',
+  path: '/espelho-horas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEscalaRoute = AppEscalaRouteImport.update({
+  id: '/escala',
+  path: '/escala',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppEntrarRoute = AppEntrarRouteImport.update({
   id: '/entrar',
   path: '/entrar',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAbastecerRoute = AppAbastecerRouteImport.update({
+  id: '/abastecer',
+  path: '/abastecer',
   getParentRoute: () => AppRoute,
 } as any)
 const AdminRentabilidadeRoute = AdminRentabilidadeRouteImport.update({
@@ -322,8 +358,14 @@ export interface FileRoutesByFullPath {
   '/admin/manutencao': typeof AdminManutencaoRouteWithChildren
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
+  '/app/abastecer': typeof AppAbastecerRoute
   '/app/entrar': typeof AppEntrarRoute
+  '/app/escala': typeof AppEscalaRoute
+  '/app/espelho-horas': typeof AppEspelhoHorasRoute
+  '/app/historico': typeof AppHistoricoRoute
+  '/app/notificacoes': typeof AppNotificacoesRoute
   '/app/perfil': typeof AppPerfilRoute
+  '/app/sincronizacao': typeof AppSincronizacaoRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
@@ -370,8 +412,14 @@ export interface FileRoutesByTo {
   '/admin/manutencao': typeof AdminManutencaoRouteWithChildren
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
+  '/app/abastecer': typeof AppAbastecerRoute
   '/app/entrar': typeof AppEntrarRoute
+  '/app/escala': typeof AppEscalaRoute
+  '/app/espelho-horas': typeof AppEspelhoHorasRoute
+  '/app/historico': typeof AppHistoricoRoute
+  '/app/notificacoes': typeof AppNotificacoesRoute
   '/app/perfil': typeof AppPerfilRoute
+  '/app/sincronizacao': typeof AppSincronizacaoRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
@@ -421,8 +469,14 @@ export interface FileRoutesById {
   '/admin/manutencao': typeof AdminManutencaoRouteWithChildren
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
+  '/app/abastecer': typeof AppAbastecerRoute
   '/app/entrar': typeof AppEntrarRoute
+  '/app/escala': typeof AppEscalaRoute
+  '/app/espelho-horas': typeof AppEspelhoHorasRoute
+  '/app/historico': typeof AppHistoricoRoute
+  '/app/notificacoes': typeof AppNotificacoesRoute
   '/app/perfil': typeof AppPerfilRoute
+  '/app/sincronizacao': typeof AppSincronizacaoRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
@@ -473,8 +527,14 @@ export interface FileRouteTypes {
     | '/admin/manutencao'
     | '/admin/precos'
     | '/admin/rentabilidade'
+    | '/app/abastecer'
     | '/app/entrar'
+    | '/app/escala'
+    | '/app/espelho-horas'
+    | '/app/historico'
+    | '/app/notificacoes'
     | '/app/perfil'
+    | '/app/sincronizacao'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
     | '/app/'
@@ -521,8 +581,14 @@ export interface FileRouteTypes {
     | '/admin/manutencao'
     | '/admin/precos'
     | '/admin/rentabilidade'
+    | '/app/abastecer'
     | '/app/entrar'
+    | '/app/escala'
+    | '/app/espelho-horas'
+    | '/app/historico'
+    | '/app/notificacoes'
     | '/app/perfil'
+    | '/app/sincronizacao'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin'
     | '/app'
@@ -571,8 +637,14 @@ export interface FileRouteTypes {
     | '/admin/manutencao'
     | '/admin/precos'
     | '/admin/rentabilidade'
+    | '/app/abastecer'
     | '/app/entrar'
+    | '/app/escala'
+    | '/app/espelho-horas'
+    | '/app/historico'
+    | '/app/notificacoes'
     | '/app/perfil'
+    | '/app/sincronizacao'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
     | '/app/'
@@ -683,6 +755,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogTerraplanagemOuTerraplenagemRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/sincronizacao': {
+      id: '/app/sincronizacao'
+      path: '/sincronizacao'
+      fullPath: '/app/sincronizacao'
+      preLoaderRoute: typeof AppSincronizacaoRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/perfil': {
       id: '/app/perfil'
       path: '/perfil'
@@ -690,11 +769,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPerfilRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/notificacoes': {
+      id: '/app/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/app/notificacoes'
+      preLoaderRoute: typeof AppNotificacoesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/historico': {
+      id: '/app/historico'
+      path: '/historico'
+      fullPath: '/app/historico'
+      preLoaderRoute: typeof AppHistoricoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/espelho-horas': {
+      id: '/app/espelho-horas'
+      path: '/espelho-horas'
+      fullPath: '/app/espelho-horas'
+      preLoaderRoute: typeof AppEspelhoHorasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/escala': {
+      id: '/app/escala'
+      path: '/escala'
+      fullPath: '/app/escala'
+      preLoaderRoute: typeof AppEscalaRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/entrar': {
       id: '/app/entrar'
       path: '/entrar'
       fullPath: '/app/entrar'
       preLoaderRoute: typeof AppEntrarRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/abastecer': {
+      id: '/app/abastecer'
+      path: '/abastecer'
+      fullPath: '/app/abastecer'
+      preLoaderRoute: typeof AppAbastecerRouteImport
       parentRoute: typeof AppRoute
     }
     '/admin/rentabilidade': {
@@ -1065,8 +1179,14 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppRouteChildren {
+  AppAbastecerRoute: typeof AppAbastecerRoute
   AppEntrarRoute: typeof AppEntrarRoute
+  AppEscalaRoute: typeof AppEscalaRoute
+  AppEspelhoHorasRoute: typeof AppEspelhoHorasRoute
+  AppHistoricoRoute: typeof AppHistoricoRoute
+  AppNotificacoesRoute: typeof AppNotificacoesRoute
   AppPerfilRoute: typeof AppPerfilRoute
+  AppSincronizacaoRoute: typeof AppSincronizacaoRoute
   AppIndexRoute: typeof AppIndexRoute
   AppApontamentoApontamentoIdRoute: typeof AppApontamentoApontamentoIdRoute
   AppApontamentoNovoRoute: typeof AppApontamentoNovoRoute
@@ -1076,8 +1196,14 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAbastecerRoute: AppAbastecerRoute,
   AppEntrarRoute: AppEntrarRoute,
+  AppEscalaRoute: AppEscalaRoute,
+  AppEspelhoHorasRoute: AppEspelhoHorasRoute,
+  AppHistoricoRoute: AppHistoricoRoute,
+  AppNotificacoesRoute: AppNotificacoesRoute,
   AppPerfilRoute: AppPerfilRoute,
+  AppSincronizacaoRoute: AppSincronizacaoRoute,
   AppIndexRoute: AppIndexRoute,
   AppApontamentoApontamentoIdRoute: AppApontamentoApontamentoIdRoute,
   AppApontamentoNovoRoute: AppApontamentoNovoRoute,

@@ -4,8 +4,45 @@ import {
   formatDocumento,
   formatTelefone,
   formatDataHora,
+  formatDataExtensa,
+  formatDiaCurto,
+  formatHoraCurta,
   iniciaisDoNome,
+  rotuloDiaRelativo,
 } from "./format";
+
+describe("formatDataExtensa", () => {
+  it("usa o dia da semana sem o sufixo -feira", () => {
+    // 10/07/2026 é uma sexta-feira.
+    expect(formatDataExtensa(new Date(2026, 6, 10))).toBe("sexta, 10 de julho");
+  });
+});
+
+describe("formatDiaCurto", () => {
+  it("abrevia o dia da semana e mostra dia/mês", () => {
+    expect(formatDiaCurto(new Date(2026, 6, 10))).toBe("sex, 10/07");
+  });
+});
+
+describe("formatHoraCurta", () => {
+  it("retorna travessão para nulo e inválido", () => {
+    expect(formatHoraCurta(null)).toBe("—");
+    expect(formatHoraCurta("não-é-data")).toBe("—");
+  });
+});
+
+describe("rotuloDiaRelativo", () => {
+  const referencia = new Date(2026, 6, 10, 15);
+
+  it("nomeia hoje e ontem", () => {
+    expect(rotuloDiaRelativo("2026-07-10", referencia)).toBe("Hoje");
+    expect(rotuloDiaRelativo("2026-07-09", referencia)).toBe("Ontem");
+  });
+
+  it("usa a data curta para dias mais antigos", () => {
+    expect(rotuloDiaRelativo("2026-07-08", referencia)).toBe("qua, 08/07");
+  });
+});
 
 describe("iniciaisDoNome", () => {
   it("usa a primeira letra do primeiro e do último nome", () => {
