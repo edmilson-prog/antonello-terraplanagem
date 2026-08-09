@@ -5,6 +5,23 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.23.0] - 2026-08-09 - Klaxon
+
+### Added
+- **Central de notificações no app de campo** (`/app/notificacoes`, PRD-020), fiel ao kit `ui_kits/app-campo` (tela `notif`): sino com badge no cabeçalho, lista agrupada por Hoje / Ontem / data, ícone-tile por tipo de aviso, ponto de não lida, "Marcar lidas" e deep link para a OS quando houver.
+- **Web Push**: o celular do operador avisa mesmo com o app fechado. Tabela `push_subscriptions` (uma linha por aparelho), trigger em `notificacoes` que chama a Edge Function `enviar-push` via `pg_net`, e assinatura VAPID na função — que ainda remove inscrições mortas (404/410).
+- **PWA do app de campo**: `manifest.webmanifest`, service worker estático em `public/sw.js` (só push e clique na notificação — não intercepta `fetch`) e ícones gerados por `scripts/gerar-icones-pwa.js`. Feito sem `vite-plugin-pwa`, porque o `vite.config.ts` proíbe plugins manuais.
+- Tabela `notificacoes` com RLS ligada e **sem policy para `anon`**: o acesso do operador passa por RPCs `SECURITY DEFINER` que recebem o token da sessão como parâmetro (`listar_notificacoes`, `marcar_notificacoes_lidas`, `registrar_push_subscription`, `remover_push_subscription`), no mesmo contrato de `login_operador`.
+- Cinco produtores de aviso ligados a fluxos reais: **nova OS atribuída** (trigger em `ordens_servico.responsavel_id`), **apontamento aprovado** (ao fechar a OS na retaguarda, um aviso por operador com o total de horas dele), **abastecimento registrado** (diálogo do operador), **manutenção agendada** (cadastro de plano, avisa quem opera o equipamento) e **lembrete de apontamento** (job `pg_cron` diário às 17h).
+- Leitura offline: a lista abre sem sinal com o que já havia chegado, e o "marcar lidas" feito offline entra numa fila local que sobe ao reconectar — sem a notificação "voltar a ser nova" no meio do caminho.
+- Controle de avisos no Perfil, com atalho para a central e instrução específica para iPhone (no iOS, Web Push exige instalar o app na tela inicial).
+
+### Changed
+- Sair do app agora remove a inscrição de push e apaga o cache local de notificações — aparelho de campo é compartilhado, e o próximo operador não pode receber aviso nem ver histórico do anterior.
+
+### Security
+- `registrar_notificacao_propria` deriva o destinatário do token e restringe o tipo a `abastecimento_registrado`: sem isso, a chave `anon` (que é pública) permitiria disparar notificação arbitrária para qualquer operador.
+
 ## [0.22.0] - 2026-08-09 - Lookout
 
 ### Added

@@ -3,6 +3,7 @@ import { Home, ClipboardList, FileText, User } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { HazardStripe } from "@/shared/components/hazard-stripe";
 import { ThemeToggle } from "@/shared/components/theme-toggle";
+import { SinoNotificacoes } from "@/features/notificacoes";
 import { cn } from "@/lib/utils";
 
 /*
@@ -24,8 +25,11 @@ const itens: NavItem[] = [
   { to: "/app/perfil", label: "Perfil", icone: User },
 ];
 
+// Casado por prefixo, do mais específico para o mais genérico — "/app" fecha
+// a lista como catch-all.
 const titulos: { prefixo: string; titulo: string }[] = [
   { prefixo: "/app/apontamento", titulo: "Apontamento" },
+  { prefixo: "/app/notificacoes", titulo: "Notificações" },
   { prefixo: "/app/ordens", titulo: "Minhas OS" },
   { prefixo: "/app/perfil", titulo: "Perfil" },
   { prefixo: "/app", titulo: "Início" },
@@ -50,7 +54,10 @@ export function OperadorShell() {
             </span>
             <span className="font-display text-lg font-bold text-foreground">{titulo}</span>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-0.5">
+            <SinoNotificacoes />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
