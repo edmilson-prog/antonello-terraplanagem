@@ -8,6 +8,7 @@ import {
   TelaCampo,
   classeBotaoCampo,
 } from "@/features/operador/components/kit";
+import { useAlertasSeguranca } from "@/features/operador/hooks/use-alertas-seguranca";
 import { useNotificacoesCampo } from "@/features/operador/hooks/use-notificacoes-campo";
 import { usePendenciasSync } from "@/features/operador/hooks/use-pendencias-sync";
 import { useUltimaSincronizacao } from "@/features/operador/ultima-sincronizacao";
@@ -34,6 +35,7 @@ export function PerfilPage() {
   const navigate = useNavigate();
   const sessao = typeof window !== "undefined" ? lerSessaoOperador() : null;
   const { naoLidas } = useNotificacoesCampo();
+  const { pendentes: alertasPendentes } = useAlertasSeguranca();
   const pendentes = usePendenciasSync();
   const ultimaSincronizacao = useUltimaSincronizacao();
   const { theme, toggle } = useTheme();
@@ -78,6 +80,11 @@ export function PerfilPage() {
             <Icon icon="lucide:bell" className="h-[17px] w-[17px]" />
             Notificações
             {naoLidas > 0 ? ` · ${naoLidas} ${naoLidas === 1 ? "nova" : "novas"}` : ""}
+          </Link>
+          <Link to="/app/seguranca" className={classeBotaoCampo("ghost")}>
+            <Icon icon="lucide:hard-hat" className="h-[17px] w-[17px]" />
+            Alertas de segurança
+            {alertasPendentes > 0 ? ` · ${alertasPendentes} pendentes` : ""}
           </Link>
           <Link to="/app/sincronizacao" className={classeBotaoCampo("ghost")}>
             <Icon icon="lucide:refresh-cw" className="h-[17px] w-[17px]" />

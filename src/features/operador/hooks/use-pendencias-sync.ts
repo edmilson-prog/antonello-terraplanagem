@@ -3,6 +3,9 @@ import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { getOperadorLogadoId } from "@/features/auth/operador-session";
+import { registrosCampoStore } from "@/features/registros-campo/registros-campo-store";
+import { resumoRegistro } from "@/features/registros-campo/derivacoes";
+import { ICONE_REGISTRO, ROTULO_REGISTRO } from "@/features/registros-campo/tipos";
 import { formatHorimetro } from "@/shared/lib/format";
 
 /*
@@ -26,10 +29,22 @@ export function usePendenciasSync(): ItemPendente[] {
   const ordens = ordensStore.useTodas();
   const apontamentos = apontamentosStore.useTodos();
   const equipamentos = equipamentosStore.useAll();
+  const registrosCampo = registrosCampoStore.useTodos();
 
   return useMemo(() => {
     const operadorId = getOperadorLogadoId();
     const itens: ItemPendente[] = [];
+
+    for (const registro of registrosCampo) {
+      if (!registro.pendente_sync || registro.operador_id !== operadorId) continue;
+      const os = registro.os_id ? ordens.find((o) => o.id === registro.os_id) : null;
+      itens.push({
+        id: `rc-${registro.id}`,
+        icone: ICONE_REGISTRO[registro.tipo],
+        titulo: `${ROTULO_REGISTRO[registro.tipo]}${os ? ` · ${os.numero}` : ""}`,
+        detalhe: resumoRegistro(registro),
+      });
+    }
 
     for (const a of apontamentos) {
       if (a.operador_id !== operadorId || !a.pendente_sync) continue;
@@ -63,5 +78,5 @@ export function usePendenciasSync(): ItemPendente[] {
     }
 
     return itens;
-  }, [ordens, apontamentos, equipamentos]);
+  }, [ordens, apontamentos, equipamentos, registrosCampo]);
 }

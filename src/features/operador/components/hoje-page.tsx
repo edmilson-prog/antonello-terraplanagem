@@ -26,6 +26,7 @@ import {
   SeloSincronizacao,
   SinoNotificacoes,
 } from "@/features/operador/components/cabecalho-aba";
+import { useAlertasSeguranca } from "@/features/operador/hooks/use-alertas-seguranca";
 import { useNotificacoesCampo } from "@/features/operador/hooks/use-notificacoes-campo";
 import { usePendenciasSync } from "@/features/operador/hooks/use-pendencias-sync";
 import { useUltimaSincronizacao } from "@/features/operador/ultima-sincronizacao";
@@ -60,6 +61,7 @@ export function HojePage() {
   const apontamentos = apontamentosStore.useTodos();
   const equipamentos = equipamentosStore.useAll();
   const { naoLidas } = useNotificacoesCampo();
+  const { pendentes: alertasPendentes } = useAlertasSeguranca();
   const pendentes = usePendenciasSync();
   const ultimaSincronizacao = useUltimaSincronizacao();
 
@@ -96,6 +98,28 @@ export function HojePage() {
       />
 
       <AreaRolagem>
+        {alertasPendentes > 0 ? (
+          <Link
+            to="/app/seguranca"
+            className="mb-4 flex w-full items-center gap-[11px] rounded-[14px] border border-destructive/35 bg-destructive/15 px-3.5 py-3 text-left transition-colors hover:bg-destructive/20"
+          >
+            <span
+              aria-hidden
+              className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-[9px] bg-destructive/25 text-destructive"
+            >
+              <Icon icon="lucide:hard-hat" className="h-[17px] w-[17px]" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <b className="block text-[13.5px] font-bold text-foreground">Alertas de segurança</b>
+              <span className="mt-1 block text-[11.5px] text-destructive">
+                {alertasPendentes} {alertasPendentes === 1 ? "pendente" : "pendentes"} — confirme
+                ciência antes de operar
+              </span>
+            </span>
+            <Icon icon="lucide:chevron-right" className="h-4 w-4 shrink-0 text-destructive" />
+          </Link>
+        ) : null}
+
         <SecaoCampo className="mt-0">Em andamento agora</SecaoCampo>
         {emAndamento ? (
           <CartaoDestaque>

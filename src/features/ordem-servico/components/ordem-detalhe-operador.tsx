@@ -179,6 +179,57 @@ export function OrdemDetalheOperador({ ordemId }: { ordemId: string }) {
             </Link>
           ) : null}
           <Link
+            to="/app/ordens/$ordemId/checklist"
+            params={{ ordemId: ordem.id }}
+            className={ATALHO_CAMPO}
+          >
+            <AtalhoConteudo icone="lucide:circle-check-big">
+              Fazer checklist de pré-uso
+            </AtalhoConteudo>
+          </Link>
+          <Link
+            to="/app/ordens/$ordemId/diario"
+            params={{ ordemId: ordem.id }}
+            className={ATALHO_CAMPO}
+          >
+            <AtalhoConteudo icone="lucide:file-text">Diário de obra · hoje</AtalhoConteudo>
+          </Link>
+          <Link
+            to="/app/ordens/$ordemId/manutencao"
+            params={{ ordemId: ordem.id }}
+            className={ATALHO_CAMPO}
+          >
+            <AtalhoConteudo icone="lucide:wrench">Solicitar manutenção</AtalhoConteudo>
+          </Link>
+          <Link
+            to="/app/ordens/$ordemId/paralisacao"
+            params={{ ordemId: ordem.id }}
+            className={ATALHO_CAMPO}
+          >
+            <AtalhoConteudo icone="lucide:ban">Registrar paralisação</AtalhoConteudo>
+          </Link>
+          <Link
+            to="/app/ordens/$ordemId/viagens"
+            params={{ ordemId: ordem.id }}
+            className={ATALHO_CAMPO}
+          >
+            <AtalhoConteudo icone="lucide:truck">Viagens de basculante</AtalhoConteudo>
+          </Link>
+          <Link
+            to="/app/ordens/$ordemId/prancha"
+            params={{ ordemId: ordem.id }}
+            className={ATALHO_CAMPO}
+          >
+            <AtalhoConteudo icone="lucide:forklift">Mobilização · prancha</AtalhoConteudo>
+          </Link>
+          <Link
+            to="/app/ordens/$ordemId/medicao"
+            params={{ ordemId: ordem.id }}
+            className={ATALHO_CAMPO}
+          >
+            <AtalhoConteudo icone="lucide:pencil">Medição · assinatura do cliente</AtalhoConteudo>
+          </Link>
+          <Link
             to="/app/ordens/$ordemId/mapa"
             params={{ ordemId: ordem.id }}
             className={ATALHO_CAMPO}
