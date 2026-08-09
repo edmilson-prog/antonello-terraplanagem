@@ -1,5 +1,27 @@
 import { describe, it, expect } from "vitest";
-import { formatHorimetro, formatDocumento, formatTelefone, formatDataHora } from "./format";
+import {
+  formatHorimetro,
+  formatDocumento,
+  formatTelefone,
+  formatDataHora,
+  iniciaisDoNome,
+} from "./format";
+
+describe("iniciaisDoNome", () => {
+  it("usa a primeira letra do primeiro e do último nome", () => {
+    expect(iniciaisDoNome("Adelar Machado")).toBe("AM");
+    expect(iniciaisDoNome("Vilson dos Santos Prediger")).toBe("VP");
+  });
+  it("devolve uma letra para nome único", () => {
+    expect(iniciaisDoNome("Nelson")).toBe("N");
+  });
+  it("ignora espaços extras", () => {
+    expect(iniciaisDoNome("  ivo   scherer  ")).toBe("IS");
+  });
+  it("devolve interrogação para nome vazio", () => {
+    expect(iniciaisDoNome("   ")).toBe("?");
+  });
+});
 
 describe("formatHorimetro", () => {
   it("formata inteiro com sufixo h e milhar pt-BR", () => {

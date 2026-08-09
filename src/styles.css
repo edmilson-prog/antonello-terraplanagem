@@ -45,6 +45,7 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-sidebar: var(--sidebar);
@@ -103,6 +104,8 @@
   --destructive-foreground: #F4EFE6;
 
   --border: #D6CDBC;
+  /* Hairline de ênfase: hover de tecla/linha e borda de bottom sheet. */
+  --border-strong: #BFB39C;
   --input: #D6CDBC;
   --ring: #FFB300;
 
@@ -151,6 +154,7 @@
   --destructive-foreground: #16140F;
 
   --border: #2C2719;
+  --border-strong: #413C2C;
   --input: #2C2719;
   --ring: #FFB300;
 
@@ -204,6 +208,7 @@
   --destructive-foreground: #F4EFE6;
 
   --border: #D6CDBC;
+  --border-strong: #BFB39C;
   --input: #D6CDBC;
   --ring: #FFB300;
 }
