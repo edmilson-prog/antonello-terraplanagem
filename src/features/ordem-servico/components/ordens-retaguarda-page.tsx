@@ -265,7 +265,8 @@ export function OrdensRetaguardaPage({ statusInicial }: { statusInicial?: Status
         data={lista}
         columns={columns}
         getRowKey={(o) => o.id}
-        resizableKey="admin-ordens"
+        gridKey="admin-ordens"
+        resizable
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}

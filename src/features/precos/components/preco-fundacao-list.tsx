@@ -140,6 +140,7 @@ export function PrecoFundacaoList() {
         data={lista}
         columns={columns}
         getRowKey={(p) => p.id}
+        gridKey="admin-precos-fundacao"
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}

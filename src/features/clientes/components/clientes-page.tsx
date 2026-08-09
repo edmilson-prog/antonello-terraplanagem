@@ -289,7 +289,10 @@ export function ClientesPage() {
         titulo="Clientes"
         descricao="Para quem as obras são executadas e a cobrança é emitida."
         acoes={
-          <Button asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover">
+          <Button
+            asChild
+            className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
+          >
             <Link to="/admin/clientes/novo">
               <Icon icon="lucide:plus" className="h-4 w-4" />
               Novo cliente
@@ -302,6 +305,7 @@ export function ClientesPage() {
         data={viewsPaginados}
         columns={columns}
         getRowKey={(v) => v.cliente.id}
+        gridKey="admin-clientes"
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}
@@ -317,7 +321,10 @@ export function ClientesPage() {
               : "Ajuste a busca.",
           cta:
             todos.length === 0 ? (
-              <Button asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover">
+              <Button
+                asChild
+                className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
+              >
                 <Link to="/admin/clientes/novo">
                   <Icon icon="lucide:plus" className="h-4 w-4" />
                   Cadastrar primeiro cliente

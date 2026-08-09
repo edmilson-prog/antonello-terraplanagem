@@ -90,11 +90,7 @@ export function PrecoHoraMaquinaList() {
       className: "text-right font-mono",
       cell: (p) => {
         const custo = custoRefPorId.get(p.id);
-        return custo == null ? (
-          <span className="text-foreground-faint">—</span>
-        ) : (
-          formatBRL(custo)
-        );
+        return custo == null ? <span className="text-foreground-faint">—</span> : formatBRL(custo);
       },
     },
     {
@@ -212,6 +208,7 @@ export function PrecoHoraMaquinaList() {
         data={lista}
         columns={columns}
         getRowKey={(p) => p.id}
+        gridKey="admin-precos-hora-maquina"
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}

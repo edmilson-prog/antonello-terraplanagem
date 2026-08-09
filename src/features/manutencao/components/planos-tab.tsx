@@ -123,6 +123,7 @@ export function PlanosTab({ planos, equipamentos }: PlanosTabProps) {
         data={planos}
         columns={columns}
         getRowKey={(p) => p.id}
+        gridKey="admin-manutencao-planos"
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}

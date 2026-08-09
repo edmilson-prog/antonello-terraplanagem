@@ -146,6 +146,7 @@ export function ComponenteCustoList() {
         data={lista}
         columns={columns}
         getRowKey={(c) => c.id}
+        gridKey="admin-custo-hora-componentes"
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}
@@ -161,7 +162,10 @@ export function ComponenteCustoList() {
               : "Ajuste o filtro de inativos.",
           cta:
             todos.length === 0 ? (
-              <Button asChild className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover">
+              <Button
+                asChild
+                className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
+              >
                 <Link to="/admin/custo-hora/novo">
                   <Icon icon="lucide:plus" className="h-4 w-4" />
                   Cadastrar primeiro componente

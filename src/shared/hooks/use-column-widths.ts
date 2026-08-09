@@ -1,42 +1,23 @@
 import { useCallback, useRef, useState } from "react";
-
-const STORAGE_PREFIX = "antonello.colunas.";
+import { lerPreferencia, gravarPreferencia } from "@/shared/hooks/grid-storage";
 
 /** Abaixo disso a coluna deixa de ser legível — vale para arrasto e teclado. */
 export const LARGURA_MINIMA_COLUNA = 72;
 
 type Larguras = Record<string, number>;
 
-function ler(storageKey: string): Larguras {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = window.localStorage.getItem(STORAGE_PREFIX + storageKey);
-    if (!raw) return {};
-    const parsed: unknown = JSON.parse(raw);
-    if (!parsed || typeof parsed !== "object") return {};
-    const larguras: Larguras = {};
-    for (const [header, valor] of Object.entries(parsed as Record<string, unknown>)) {
-      if (typeof valor === "number" && Number.isFinite(valor) && valor >= LARGURA_MINIMA_COLUNA) {
-        larguras[header] = Math.round(valor);
-      }
-    }
-    return larguras;
-  } catch {
-    return {};
-  }
-}
+const chaveDe = (storageKey: string) => `colunas.${storageKey}`;
 
-function gravar(storageKey: string, larguras: Larguras) {
-  if (typeof window === "undefined") return;
-  try {
-    if (Object.keys(larguras).length === 0) {
-      window.localStorage.removeItem(STORAGE_PREFIX + storageKey);
-    } else {
-      window.localStorage.setItem(STORAGE_PREFIX + storageKey, JSON.stringify(larguras));
+function ler(storageKey: string): Larguras {
+  const bruto = lerPreferencia(chaveDe(storageKey));
+  if (!bruto || typeof bruto !== "object") return {};
+  const larguras: Larguras = {};
+  for (const [header, valor] of Object.entries(bruto as Record<string, unknown>)) {
+    if (typeof valor === "number" && Number.isFinite(valor) && valor >= LARGURA_MINIMA_COLUNA) {
+      larguras[header] = Math.round(valor);
     }
-  } catch {
-    // localStorage indisponível (modo privado, cota cheia): larguras seguem só em memória
   }
+  return larguras;
 }
 
 export interface ColumnWidths {
@@ -70,7 +51,7 @@ export function useColumnWidths(storageKey?: string): ColumnWidths {
   }, []);
 
   const persistir = useCallback(() => {
-    if (storageKey) gravar(storageKey, ajustesRef.current);
+    if (storageKey) gravarPreferencia(chaveDe(storageKey), ajustesRef.current);
   }, [storageKey]);
 
   const limpar = useCallback(
@@ -79,7 +60,7 @@ export function useColumnWidths(storageKey?: string): ColumnWidths {
       if (header) delete proximos[header];
       ajustesRef.current = proximos;
       setAjustes(proximos);
-      if (storageKey) gravar(storageKey, proximos);
+      if (storageKey) gravarPreferencia(chaveDe(storageKey), proximos);
     },
     [storageKey],
   );
