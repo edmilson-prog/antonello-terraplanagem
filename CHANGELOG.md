@@ -5,6 +5,32 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.23.0] - 2026-08-09 - Toolbelt
+
+### Added
+- **App de Campo (`/app/*`) inteiro portado para o UI kit oficial** (`ui_kits/app-campo` do Claude Design, lido via DesignSync): as 23 telas do protótipo, em três ondas.
+- Primitivas do kit como componentes tipados em `features/operador/components/kit` (superfície, ações, formulário e estados de tela) — as classes `ac-*`/`atp-*` do protótipo deixam de ser copiadas tela a tela.
+- Telas novas: **Notificações**, **Sincronização**, **Minha escala**, **Espelho de horas**, **Ficha do equipamento**, **Mapa da obra**, **Segurança**, **Checklist de pré-uso**, **Diário de obra (RDO)**, **Paralisação**, **Viagens de basculante**, **Mobilização / prancha**, **Solicitar manutenção** (lado operador) e **Assinatura da medição** em campo.
+- Notificações derivadas de fatos reais do sistema (OS atribuída, manutenção vencendo, apontamento aberto tempo demais, abastecimento registrado), com marca de leitura por aparelho.
+- Alertas de segurança derivados de risco real: máquina em manutenção alocada a uma OS ativa do operador, plano de manutenção vencido/próximo e checklist de pré-uso reprovado. A ciência de cada alerta fica registrada.
+- Fila local dos registros de campo (`features/registros-campo`), primeiro estágio do ADR-001: cada registro nasce com `op_id` e `pendente_sync`, sobrevive a fechar o app e aparece na tela de Sincronização.
+- Novas derivações puras com teste: `features/apontamento/resumo-horas.ts` (horas por dia/mês/OS/semana), `features/operador/notificacoes.ts`, `features/operador/alertas-seguranca.ts` e `features/registros-campo/derivacoes.ts`.
+- Tokens `surface-2`, `border-soft`, `primary-deep`, `primary-dim`, `success` e `info` nos três escopos de tema.
+
+### Changed
+- **Bottom nav do app do operador passa a seguir o kit:** `Hoje · Minhas OS · Abastecer · Perfil` (era `Início · Apontamento · Minhas OS · Perfil`). A barra some nas sub-telas, que ocupam a tela inteira e voltam pelo cabeçalho — como no protótipo.
+- Cabeçalho global do app sai do shell: cada tela desenha o seu (`ac-head` nas abas, `ac-form-head` nas sub-telas). O toggle de tema, obrigatório pelo CLAUDE.md, passa a viver no Perfil.
+- Apontamento vira o fechamento do turno no padrão do kit (stepper de 0,5 h partindo de +8 h), com leitura do horímetro por foto ao lado do stepper. A observação escrita no fechamento agora é realmente gravada.
+- Progresso da OS no app é `minhas horas x horas da equipe` — a OS não tem previsão de horas no schema, e essa leitura é a que faz sentido numa OS colaborativa.
+- Abastecer vira aba, com o equipamento do apontamento em andamento pré-selecionado; o diálogo com OCR de cupom continua acessível de dentro do apontamento.
+
+### Removed
+- Aba "Apontamento" e a lista `ApontamentosPage`: `/app/apontamento` redireciona para o Histórico, que passou a mostrar também o apontamento em aberto. Nada de funcionalidade foi perdido.
+
+### Notes
+- Os oito registros de campo ainda **não têm tabela no Supabase**. O app do operador roda como `anon`, que hoje não enxerga nem `ordens_servico` — o acesso do operador depende de RPCs por token (padrão de `login_operador` / `operador_do_token`), ainda não escritas para leitura de OS nem para escrita de registros. Até lá os registros ficam no aparelho, e o contrato em `features/registros-campo/tipos.ts` é o que as tabelas vão implementar.
+- Onde o kit depende de dado que o sistema não tem, a tela mostra o limite em vez de inventar: o mapa da obra cai no fallback previsto pelo próprio kit (sem lat/lon na OS) mas abre a rota no GPS pelo endereço; as viagens não exibem trajeto/jazida; e o DDS aparece com estado vazio, explicando que a retaguarda ainda não publica o tema do dia.
+
 ## [0.22.0] - 2026-08-09 - Lookout
 
 ### Added
