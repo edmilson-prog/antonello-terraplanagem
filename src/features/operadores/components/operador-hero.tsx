@@ -1,6 +1,11 @@
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
-import { formatDataHora, formatDocumento, formatTelefone } from "@/shared/lib/format";
+import {
+  formatDataHora,
+  formatDocumento,
+  formatTelefone,
+  iniciaisDoNome,
+} from "@/shared/lib/format";
 import type { Operador } from "@/shared/types";
 
 export interface OperadorHeroProps {
@@ -11,13 +16,10 @@ export interface OperadorHeroProps {
   onReativar: () => void;
 }
 
+// Reexport histórico: a implementação vive em `shared/lib/format` desde que o
+// app de campo passou a precisar das mesmas iniciais no login por PIN.
 // eslint-disable-next-line react-refresh/only-export-components
-export function iniciais(nome: string): string {
-  const partes = nome.trim().split(/\s+/);
-  const primeira = partes[0]?.[0] ?? "";
-  const ultima = partes.length > 1 ? (partes[partes.length - 1]?.[0] ?? "") : "";
-  return (primeira + ultima).toUpperCase() || "?";
-}
+export const iniciais = iniciaisDoNome;
 
 function whatsappHref(telefone: string | null): string | null {
   if (!telefone) return null;
