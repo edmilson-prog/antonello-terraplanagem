@@ -21,6 +21,10 @@ import {
 import { serieDecorativa } from "@/features/dashboard-operacional/serie-decorativa";
 import { MiniSparkline } from "@/features/dashboard-operacional/components/mini-sparkline";
 import { VariacaoBadge } from "@/features/dashboard-operacional/components/variacao-badge";
+import {
+  TileOperacional,
+  TileRodape,
+} from "@/features/dashboard-operacional/components/tile-operacional";
 import { formatBRL } from "@/features/retaguarda/format";
 
 export function CardsFinanceiroOperacional() {
@@ -141,6 +145,7 @@ export function CardsFinanceiroOperacional() {
       anterior: pipelineAnterior.executado,
       serie: serieExecutado,
       cor: "var(--color-steel)",
+      rodape: "serviço executado no mês",
     },
     {
       rotulo: "Faturado",
@@ -148,6 +153,7 @@ export function CardsFinanceiroOperacional() {
       anterior: pipelineAnterior.faturado,
       serie: serieFaturado,
       cor: "var(--color-secondary)",
+      rodape: "vs. mês anterior",
     },
     {
       rotulo: "Recebido",
@@ -155,23 +161,20 @@ export function CardsFinanceiroOperacional() {
       anterior: pipelineAnterior.recebido,
       serie: serieRecebido,
       cor: "var(--color-primary)",
+      rodape: "vs. mês anterior",
     },
   ];
 
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
       {cards.map((card) => (
-        <div key={card.rotulo} className="rounded-xl border bg-card p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-[11px] uppercase tracking-wide text-foreground-faint">
-              {card.rotulo}
+        <TileOperacional key={card.rotulo} rotulo={card.rotulo} valor={formatBRL(card.valor)} mono>
+          <TileRodape>
+            <span className="flex items-center gap-1.5">
+              <VariacaoBadge variacao={variacaoPercentual(card.valor, card.anterior)} />
+              {card.rodape}
             </span>
-            <VariacaoBadge variacao={variacaoPercentual(card.valor, card.anterior)} />
-          </div>
-          <div className="mt-2 font-mono text-xl font-bold text-card-foreground">
-            {formatBRL(card.valor)}
-          </div>
-          <p className="text-xs text-muted-foreground">no mês</p>
+          </TileRodape>
           <div className="mt-3">
             <MiniSparkline
               dados={card.serie}
@@ -180,7 +183,7 @@ export function CardsFinanceiroOperacional() {
               mostrarTooltip={false}
             />
           </div>
-        </div>
+        </TileOperacional>
       ))}
     </div>
   );

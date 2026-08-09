@@ -1,7 +1,11 @@
 import { round2, gerarItens, calcularValorTotal } from "@/features/faturamento/calculo";
 import { osFechadasSemFaturamento } from "@/features/faturamento/derivacoes";
 import { contaVencida } from "@/features/financeiro/derivacoes";
-import type { AlertaManutencao } from "@/features/manutencao/derivacoes";
+import {
+  planosParaEquipamento,
+  statusPlano,
+  type AlertaManutencao,
+} from "@/features/manutencao/derivacoes";
 import { estaNoIntervalo, type IntervaloPeriodo } from "@/features/dashboard/periodo";
 import type {
   Apontamento,
@@ -10,8 +14,11 @@ import type {
   Equipamento,
   Faturamento,
   OrdemServico,
+  PlanoManutencao,
   PrecoFundacao,
   PrecoHoraMaquina,
+  RegistroManutencao,
+  StatusManutencao,
 } from "@/shared/types";
 
 const DIA_MS = 24 * 60 * 60 * 1000;
@@ -189,4 +196,104 @@ export function horasRestantesAlerta(alerta: AlertaManutencao): number {
   return (
     Math.round((alerta.registro.horimetro_previsto - alerta.equipamento.horimetro_atual) * 10) / 10
   );
+}
+
+export interface LinhaManutencaoPreditiva {
+  equipamento: Equipamento;
+  plano: PlanoManutencao;
+  registro: RegistroManutencao;
+  status: StatusManutencao;
+  restantes: number; // horas até a marca prevista (negativo = vencida)
+  percentualCiclo: number; // 0..100 do intervalo do plano já consumido
+}
+
+// Todos os planos ativos com registro previsto, do mais urgente ao mais folgado
+// — inclui os "em dia" (o UI kit mostra a barra de saúde da frota inteira, não
+// só dos alertas). Reaproveita planosParaEquipamento/statusPlano (PRD-010).
+export function manutencaoPreditiva(
+  equipamentos: Equipamento[],
+  planos: PlanoManutencao[],
+  registros: RegistroManutencao[],
+  limite?: number,
+): LinhaManutencaoPreditiva[] {
+  const linhas: LinhaManutencaoPreditiva[] = [];
+  for (const equipamento of equipamentos.filter((e) => e.ativo)) {
+    for (const plano of planosParaEquipamento(equipamento, planos)) {
+      const resultado = statusPlano(plano, equipamento, registros);
+      if (!resultado) continue;
+      const restantes =
+        Math.round((resultado.registro.horimetro_previsto - equipamento.horimetro_atual) * 10) / 10;
+      linhas.push({
+        equipamento,
+        plano,
+        registro: resultado.registro,
+        status: resultado.status,
+        restantes,
+        percentualCiclo: percentualCiclo(restantes, plano.intervalo_horas),
+      });
+    }
+  }
+  linhas.sort((a, b) => a.restantes - b.restantes);
+  return limite === undefined ? linhas : linhas.slice(0, limite);
+}
+
+// Quanto do intervalo do plano já foi consumido, em 0..100. Vencida satura em
+// 100; intervalo inválido (<= 0) não tem barra significativa, devolve 100.
+export function percentualCiclo(restantes: number, intervaloHoras: number): number {
+  if (intervaloHoras <= 0) return 100;
+  const consumido = ((intervaloHoras - restantes) / intervaloHoras) * 100;
+  return Math.max(0, Math.min(100, Math.round(consumido)));
+}
+
+export interface FaixasContaCliente {
+  cliente_id: string;
+  cliente_nome: string;
+  vencida: number;
+  ate15: number; // a vencer em 0–15 dias
+  ate30: number; // a vencer em 16–30 dias
+  acima30: number; // a vencer em mais de 30 dias
+  total: number;
+}
+
+// Dias corridos entre duas datas "YYYY-MM-DD" (negativo = já passou).
+// Usa Date.UTC para não depender do fuso local.
+function diasEntre(deISO: string, ateISO: string): number {
+  const [a1, m1, d1] = deISO.split("-").map(Number);
+  const [a2, m2, d2] = ateISO.split("-").map(Number);
+  const de = Date.UTC(a1, m1 - 1, d1);
+  const ate = Date.UTC(a2, m2 - 1, d2);
+  return Math.round((ate - de) / DIA_MS);
+}
+
+// Contas em aberto agregadas por cliente e por faixa de vencimento — as faixas
+// do UI kit (vencida / 0–15 / 16–30) mais "acima de 30 dias", que o mock não
+// prevê mas o dado real produz. Ordenado do maior saldo para o menor.
+export function contasReceberPorClienteFaixas(
+  contasReceber: ContaReceber[],
+  clientes: Cliente[],
+  agoraISO: string, // "YYYY-MM-DD"
+  limite?: number,
+): FaixasContaCliente[] {
+  const porCliente = new Map<string, FaixasContaCliente>();
+  for (const conta of contasReceber.filter((c) => c.status === "aberta")) {
+    const nome = clientes.find((cl) => cl.id === conta.cliente_id)?.nome ?? "Cliente desconhecido";
+    const atual = porCliente.get(conta.cliente_id) ?? {
+      cliente_id: conta.cliente_id,
+      cliente_nome: nome,
+      vencida: 0,
+      ate15: 0,
+      ate30: 0,
+      acima30: 0,
+      total: 0,
+    };
+    const dias = diasEntre(agoraISO, conta.vencimento);
+    if (dias < 0) atual.vencida = round2(atual.vencida + conta.valor);
+    else if (dias <= 15) atual.ate15 = round2(atual.ate15 + conta.valor);
+    else if (dias <= 30) atual.ate30 = round2(atual.ate30 + conta.valor);
+    else atual.acima30 = round2(atual.acima30 + conta.valor);
+    atual.total = round2(atual.total + conta.valor);
+    porCliente.set(conta.cliente_id, atual);
+  }
+  const lista = Array.from(porCliente.values()).sort((a, b) => b.total - a.total);
+  return limite === undefined ? lista : lista.slice(0, limite);
 }

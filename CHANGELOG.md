@@ -5,6 +5,26 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.23.0] - 2026-08-09 - Watchtower
+
+### Added
+- Painel Operacional (aba "Operacional" do dashboard) refeito conforme o design system oficial (`ui_kits/retaguarda/DashboardOperacional`): grid de duas colunas — mapa do canteiro e manutenção preditiva à esquerda; ordens/horas, financeiro, contas a receber e atalhos à direita.
+- Faixa de condições sobre o mapa com o clima da base da operação (Santo Ângelo/RS), consultado em runtime na Open-Meteo — API pública, sem chave, que recebe apenas coordenadas fixas. Falha de rede não derruba o mapa: a faixa só omite a parte de clima.
+- Contagem de operadores em campo (apontamentos em andamento) na faixa do mapa.
+- Coluna "Saúde" na manutenção preditiva: barra do percentual do intervalo do plano já consumido, colorida por status. A tabela agora lista também os planos **em dia**, não só os alertas — é a leitura de frota que o kit propõe.
+- Faixas de vencimento em "Contas a receber por cliente": vencida, 0–15 dias, 16–30 dias e +30 dias (esta última não existe no mock, mas o dado real produz), com legenda que só mostra as faixas presentes.
+- Atalhos completos do kit: Nova O.S., Novo orçamento, Novo cliente, Registrar abastecimento e Gerar relatório.
+- Novas derivações puras (`manutencaoPreditiva`, `percentualCiclo`, `contasReceberPorClienteFaixas`) e o serviço de clima, com 17 testes novos.
+
+### Changed
+- Os cards de OS e horas viraram três tiles no formato do kit: **Abertas** (com as novas OS dos últimos 7 dias em barras), **Em andamento** (com a quebra em andamento/abertas/concluídas no mês) e **Horas apontadas** (com os apontamentos do último dia com movimento, por OS e operador).
+- Cards financeiros (Executado, Faturado, Recebido) adotaram o mesmo tile, com a variação percentual ao lado do rótulo de comparação.
+- O selo do mapa diz **"Posições ilustrativas"** em vez do "Ao vivo" do mock: as coordenadas dos equipamentos são fictícias (PRD-019 RF-003) e o selo original prometeria um rastreamento por GPS que o produto não tem.
+- As barras de "novas OS por dia" passaram a usar a série real em vez da série decorativa — barras discretas rotuladas por dia devem bater com o dado; os sparklines financeiros seguem decorativos, como decidido no PRD-016.
+
+### Removed
+- `CardOsAbertas` e `CardHorasApontadas`, substituídos pelos três tiles de "Ordens e horas".
+
 ## [0.22.0] - 2026-08-09 - Lookout
 
 ### Added
