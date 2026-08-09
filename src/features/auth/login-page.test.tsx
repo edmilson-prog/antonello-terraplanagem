@@ -24,7 +24,7 @@ describe("LoginPage", () => {
   it("renderiza o rodapé de versão no painel de marca", () => {
     render(<LoginPage />);
     expect(screen.getByText("Sistemas operacionais")).toBeInTheDocument();
-    expect(screen.getByText("v0.21.0 · Ledger")).toBeInTheDocument();
+    expect(screen.getByText("v0.22.0 · Lookout")).toBeInTheDocument();
   });
 
   it("renderiza a tagline de marca no painel de marca", () => {
