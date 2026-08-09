@@ -1,211 +1,263 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { HorimetroCapture } from "@/shared/components/horimetro-capture";
-import { MicrofoneIABotao } from "@/features/ia/components/microfone-ia-button";
-import { SyncBadge } from "@/shared/components/sync-badge";
-import { StatusApontamentoBadge } from "@/features/apontamento/components/status-apontamento-badge";
+import {
+  AreaRolagem,
+  AtalhoCampo,
+  AvisoCampo,
+  BOTAO_VOLTAR,
+  BlocoCampo,
+  BotaoCampo,
+  CabecalhoCampo,
+  CaixaCampo,
+  IconeTile,
+  InputCampo,
+  StepperCampo,
+  TagCabecalho,
+  TelaCampo,
+  TextareaCampo,
+  ValorCaixa,
+  VazioCampo,
+  classeBotaoCampo,
+} from "@/features/operador/components/kit";
+import { ConfirmacaoCampo } from "@/features/operador/components/confirmacao-campo";
+import { BotaoFotoHorimetro } from "@/shared/components/botao-foto-horimetro";
 import { RegistrarAbastecimentoOperadorDialog } from "@/features/diesel/components/registrar-abastecimento-operador-dialog";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
-import { finalizarApontamentoSchema } from "@/features/apontamento/apontamento-schema";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
+import { TIPO_ICONE } from "@/features/equipamentos/labels";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
-import { formatHorimetro, formatDataHora } from "@/shared/lib/format";
+import { formatHorimetro } from "@/shared/lib/format";
 
-interface Props {
-  apontamentoId: string;
-}
+/*
+ * Apontamento (`screen === 'apontar'` no CampoApp.jsx). No kit esta tela é o
+ * fechamento do turno: o horímetro inicial já foi registrado e o operador
+ * ajusta o final. O passo de INICIAR não existe no protótipo e continua vivo
+ * em /app/apontamento/novo — sem ele não haveria horímetro inicial.
+ */
 
-export function ApontamentoDetalhe({ apontamentoId }: Props) {
+const PASSO = 0.5;
+const JORNADA_PADRAO = 8;
+
+export function ApontamentoDetalhe({ apontamentoId }: { apontamentoId: string }) {
   const apontamento = apontamentosStore.useApontamento(apontamentoId);
-  const [horimetroFinal, setHorimetroFinal] = useState("");
-  const [fotoFinalUrl, setFotoFinalUrl] = useState<string | null>(null);
-  const [metrosExecutados, setMetrosExecutados] = useState("");
+  const equipamentos = equipamentosStore.useAll();
+  const ordens = ordensStore.useTodas();
+
+  const inicial = apontamento?.horimetro_inicial ?? 0;
+  const [horimetroFinal, setHorimetroFinal] = useState<number>(inicial + JORNADA_PADRAO);
+  const [observacao, setObservacao] = useState("");
+  const [metros, setMetros] = useState("");
   const [erro, setErro] = useState<string | null>(null);
   const [abastecimentoAberto, setAbastecimentoAberto] = useState(false);
+  const [confirmado, setConfirmado] = useState<{ horas: number; final: number } | null>(null);
 
   if (!apontamento) return <ApontamentoNaoEncontrado />;
 
-  const equipamento = equipamentosStore.getById(apontamento.equipamento_id);
-  const os = apontamento.os_id ? ordensStore.obter(apontamento.os_id) : null;
+  const equipamento = equipamentos.find((e) => e.id === apontamento.equipamento_id);
+  const os = apontamento.os_id ? ordens.find((o) => o.id === apontamento.os_id) : null;
   const exigeMetros = os?.modelo_cobranca === "por_metro";
+  const horas = Math.round((horimetroFinal - apontamento.horimetro_inicial) * 10) / 10;
 
-  function confirmarFinalizacao() {
+  const voltar = os ? (
+    <Link
+      to="/app/ordens/$ordemId"
+      params={{ ordemId: os.id }}
+      aria-label="Voltar"
+      className={BOTAO_VOLTAR}
+    >
+      <Icon icon="lucide:arrow-left" className="h-[18px] w-[18px]" />
+    </Link>
+  ) : (
+    <Link to="/app" aria-label="Voltar" className={BOTAO_VOLTAR}>
+      <Icon icon="lucide:arrow-left" className="h-[18px] w-[18px]" />
+    </Link>
+  );
+
+  if (confirmado) {
+    return (
+      <TelaCampo>
+        <ConfirmacaoCampo
+          titulo="Apontamento registrado"
+          linhas={[
+            ...(os ? [{ rotulo: os.numero, valor: equipamento?.nome ?? "Equipamento" }] : []),
+            {
+              rotulo: "Horímetro",
+              valor: `${formatHorimetro(apontamento.horimetro_inicial)} → ${formatHorimetro(confirmado.final)}`,
+            },
+            {
+              rotulo: "Horas",
+              valor: `${confirmado.horas.toLocaleString("pt-BR", { minimumFractionDigits: 1 })} h`,
+            },
+          ]}
+          acoes={
+            <>
+              <Link to="/app" className={classeBotaoCampo()}>
+                Voltar ao início
+              </Link>
+              <Link to="/app/apontamento/novo" className={classeBotaoCampo("ghost")}>
+                Novo apontamento
+              </Link>
+            </>
+          }
+        />
+      </TelaCampo>
+    );
+  }
+
+  const jaFinalizado = apontamento.status === "finalizado";
+
+  function confirmar() {
     if (!apontamento) return;
-    if (horimetroFinal.trim() === "") {
-      setErro("Informe o horímetro final.");
-      return;
-    }
-    if (exigeMetros && metrosExecutados.trim() === "") {
-      setErro("Informe a metragem executada.");
-      return;
-    }
-    const parsed = finalizarApontamentoSchema.safeParse({
-      horimetro_final: Number(horimetroFinal),
-      metros_executados: metrosExecutados.trim() === "" ? undefined : Number(metrosExecutados),
-    });
-    if (!parsed.success) {
-      setErro("Informe o horímetro final.");
+    if (exigeMetros && metros.trim() === "") {
+      setErro("Informe a metragem executada — esta OS é cobrada por metro.");
       return;
     }
     const r = apontamentosStore.finalizar(apontamento.id, {
-      horimetro_final: parsed.data.horimetro_final,
-      foto_final_url: fotoFinalUrl,
-      metros_executados: parsed.data.metros_executados ?? null,
+      horimetro_final: horimetroFinal,
+      metros_executados: metros.trim() === "" ? null : Number(metros),
+      observacao: observacao.trim() || null,
     });
     if (!r.ok) {
       setErro(
         r.erro === "final_menor_que_inicial"
-          ? `O horímetro final não pode ser menor que o inicial (${apontamento.horimetro_inicial}).`
+          ? `O horímetro final não pode ser menor que o inicial (${formatHorimetro(apontamento.horimetro_inicial)}).`
           : "Não foi possível finalizar este apontamento.",
       );
       return;
     }
-    setErro(null);
-    toast.success(`Apontamento finalizado — ${r.apontamento.horas_trabalhadas} h.`);
+    setConfirmado({ horas: r.apontamento.horas_trabalhadas ?? 0, final: horimetroFinal });
   }
 
   return (
-    <div className="space-y-5">
-      <Link
-        to="/app/apontamento"
-        className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
-      >
-        <Icon icon="lucide:arrow-left" className="h-4 w-4" />
-        Meus apontamentos
-      </Link>
-
-      <div className="rounded-xl border bg-card p-5 shadow-sm">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 space-y-1">
-            <h2 className="font-display text-xl font-bold text-card-foreground">
+    <TelaCampo>
+      <CabecalhoCampo
+        voltar={voltar}
+        titulo="Apontamento"
+        tag={os ? <TagCabecalho>{os.numero}</TagCabecalho> : undefined}
+      />
+      <AreaRolagem>
+        <BlocoCampo rotulo="Equipamento">
+          <CaixaCampo>
+            <IconeTile>
+              <Icon
+                icon={equipamento ? TIPO_ICONE[equipamento.tipo] : "lucide:truck"}
+                className="h-[18px] w-[18px]"
+              />
+            </IconeTile>
+            <b className="min-w-0 truncate text-[13.5px] font-semibold text-foreground">
               {equipamento?.nome ?? "Equipamento"}
-            </h2>
-            {os ? (
-              <p className="text-sm text-muted-foreground">
-                {os.numero} — {os.obra_nome}
-              </p>
-            ) : (
-              <p className="text-sm text-muted-foreground">Sem OS vinculada</p>
-            )}
-          </div>
-          <StatusApontamentoBadge status={apontamento.status} />
-        </div>
-        {apontamento.pendente_sync ? (
-          <div className="mt-3">
-            <SyncBadge />
-          </div>
-        ) : null}
-      </div>
+            </b>
+            <ValorCaixa>início {formatHorimetro(apontamento.horimetro_inicial)}</ValorCaixa>
+          </CaixaCampo>
+        </BlocoCampo>
 
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => setAbastecimentoAberto(true)}
-        className="w-full gap-2"
-      >
-        <Icon icon="lucide:fuel" className="h-4 w-4" />
-        Registrar abastecimento
-      </Button>
-
-      <section className="space-y-3 rounded-xl border bg-card p-5 shadow-sm">
-        <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-          Horímetro
-        </h3>
-        <div className="grid grid-cols-2 gap-3">
-          <CampoHorimetro rotulo="Inicial" valor={apontamento.horimetro_inicial} />
-          <CampoHorimetro rotulo="Final" valor={apontamento.horimetro_final} />
-        </div>
-        {apontamento.horas_trabalhadas != null ? (
-          <div className="flex items-center justify-between rounded-md bg-surface px-3 py-2 text-sm">
-            <span className="text-muted-foreground">Horas trabalhadas</span>
-            <span className="font-mono text-base font-semibold text-foreground">
-              {apontamento.horas_trabalhadas} h
-            </span>
-          </div>
-        ) : null}
-      </section>
-
-      {apontamento.observacao ? (
-        <section className="space-y-2 rounded-xl border bg-card p-5 shadow-sm">
-          <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-foreground-faint">
-            <Icon icon="lucide:sticky-note" className="h-4 w-4" />
-            Observação
-          </div>
-          <p className="text-sm text-card-foreground">{apontamento.observacao}</p>
-        </section>
-      ) : null}
-
-      <section className="space-y-2 rounded-xl border bg-card p-5 shadow-sm">
-        <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-          Registro
-        </h3>
-        <LinhaInfo rotulo="Iniciado em" valor={formatDataHora(apontamento.iniciado_em)} />
-        <LinhaInfo rotulo="Finalizado em" valor={formatDataHora(apontamento.finalizado_em)} />
-      </section>
-
-      {apontamento.status === "em_andamento" ? (
-        <section className="space-y-3 rounded-xl border bg-card p-5 shadow-sm">
-          <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
-            Finalizar apontamento
-          </h3>
-          <div className="flex items-end gap-2">
-            <div className="flex-1">
-              <HorimetroCapture
-                label="Horímetro final *"
-                value={horimetroFinal}
-                onChange={(v) => {
-                  setHorimetroFinal(v);
+        {jaFinalizado ? (
+          <>
+            <BlocoCampo rotulo="Horímetro final">
+              <CaixaCampo>
+                <IconeTile tom="muted">
+                  <Icon icon="lucide:gauge" className="h-[18px] w-[18px]" />
+                </IconeTile>
+                <b className="font-mono text-[15px] font-semibold text-foreground">
+                  {apontamento.horimetro_final != null
+                    ? formatHorimetro(apontamento.horimetro_final)
+                    : "—"}
+                </b>
+                <ValorCaixa>
+                  {apontamento.horas_trabalhadas != null
+                    ? `${apontamento.horas_trabalhadas.toLocaleString("pt-BR", { minimumFractionDigits: 1 })} h`
+                    : ""}
+                </ValorCaixa>
+              </CaixaCampo>
+            </BlocoCampo>
+            <AvisoCampo>
+              Este apontamento já foi <b className="text-foreground">encerrado</b>. Correções são
+              feitas pela retaguarda.
+            </AvisoCampo>
+          </>
+        ) : (
+          <>
+            <BlocoCampo rotulo="Horímetro final">
+              <StepperCampo
+                valor={formatHorimetro(horimetroFinal).replace(" h", "")}
+                legenda="horas máquina"
+                diminuirDesabilitado={horimetroFinal <= apontamento.horimetro_inicial}
+                onDiminuir={() => {
                   setErro(null);
+                  setHorimetroFinal((v) =>
+                    Math.max(apontamento.horimetro_inicial, Math.round((v - PASSO) * 10) / 10),
+                  );
                 }}
-                ocrBase={apontamento.horimetro_inicial}
-                onFotoCapturada={setFotoFinalUrl}
-                error={erro ?? undefined}
-              />
-            </div>
-            <MicrofoneIABotao
-              campo="horimetro"
-              horimetroBase={apontamento.horimetro_inicial}
-              onResultado={(v) => {
-                setHorimetroFinal(v);
-                setErro(null);
-              }}
-            />
-          </div>
-          {exigeMetros ? (
-            <div className="space-y-1.5">
-              <Label htmlFor="metros_executados">Metragem executada (m) *</Label>
-              <Input
-                id="metros_executados"
-                type="number"
-                inputMode="decimal"
-                step="0.1"
-                min="0"
-                className="h-12 font-mono"
-                placeholder="ex.: 30"
-                value={metrosExecutados}
-                onChange={(e) => {
-                  setMetrosExecutados(e.target.value);
+                onAumentar={() => {
                   setErro(null);
+                  setHorimetroFinal((v) => Math.round((v + PASSO) * 10) / 10);
                 }}
               />
+              <BotaoFotoHorimetro
+                base={apontamento.horimetro_inicial}
+                onLeitura={(valor) => {
+                  setHorimetroFinal(valor);
+                  setErro(null);
+                }}
+                className="mt-2"
+              />
+            </BlocoCampo>
+
+            <div className="mb-4 flex items-center gap-2.5 rounded-[10px] border border-primary/26 bg-primary/12 px-3.5 py-3">
+              <Icon icon="lucide:clock" className="h-[17px] w-[17px] shrink-0 text-primary" />
+              <b className="font-mono text-[17px] font-semibold leading-none text-primary">
+                {horas.toLocaleString("pt-BR", { minimumFractionDigits: 1 })} h
+              </b>
+              <span className="text-xs text-muted-foreground">
+                {os ? "trabalhadas nesta OS" : "trabalhadas neste turno"}
+              </span>
             </div>
-          ) : null}
-          <Button
-            type="button"
-            size="lg"
-            onClick={confirmarFinalizacao}
-            className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
-          >
-            <Icon icon="lucide:check-circle-2" className="h-4 w-4" />
-            Finalizar e calcular horas
-          </Button>
-        </section>
-      ) : null}
+
+            {exigeMetros ? (
+              <BlocoCampo rotulo="Metragem executada (m)">
+                <InputCampo
+                  type="number"
+                  value={metros}
+                  onChange={(v) => {
+                    setMetros(v);
+                    setErro(null);
+                  }}
+                  placeholder="ex.: 30"
+                />
+              </BlocoCampo>
+            ) : null}
+
+            <BlocoCampo rotulo="Observação (opcional)">
+              <TextareaCampo
+                value={observacao}
+                onChange={setObservacao}
+                placeholder="Ex.: chuva no fim da tarde, troca de frente…"
+              />
+            </BlocoCampo>
+
+            <AtalhoCampo icone="lucide:fuel" onClick={() => setAbastecimentoAberto(true)}>
+              Registrar abastecimento
+            </AtalhoCampo>
+
+            {erro ? (
+              <AvisoCampo tom="perigo" className="mt-3.5">
+                {erro}
+              </AvisoCampo>
+            ) : null}
+
+            <div className="mt-3.5">
+              <BotaoCampo
+                onClick={confirmar}
+                disabled={horimetroFinal <= apontamento.horimetro_inicial}
+              >
+                <Icon icon="lucide:check" className="h-[18px] w-[18px]" strokeWidth={2.2} />
+                Confirmar apontamento
+              </BotaoCampo>
+            </div>
+          </>
+        )}
+      </AreaRolagem>
 
       <RegistrarAbastecimentoOperadorDialog
         open={abastecimentoAberto}
@@ -213,47 +265,28 @@ export function ApontamentoDetalhe({ apontamentoId }: Props) {
         equipamentoId={apontamento.equipamento_id}
         horimetroAtual={equipamento?.horimetro_atual}
       />
-    </div>
-  );
-}
-
-function CampoHorimetro({ rotulo, valor }: { rotulo: string; valor: number | null }) {
-  return (
-    <div className="rounded-md border bg-surface/50 p-3">
-      <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wide text-foreground-faint">
-        <Icon icon="lucide:gauge" className="h-3 w-3" />
-        {rotulo}
-      </div>
-      <div className="mt-1 font-mono text-lg font-semibold text-foreground">
-        {valor != null ? formatHorimetro(valor) : "—"}
-      </div>
-    </div>
-  );
-}
-
-function LinhaInfo({ rotulo, valor }: { rotulo: string; valor: string }) {
-  return (
-    <div className="flex items-center justify-between text-sm">
-      <span className="text-muted-foreground">{rotulo}</span>
-      <span className="font-mono text-foreground">{valor}</span>
-    </div>
+    </TelaCampo>
   );
 }
 
 export function ApontamentoNaoEncontrado() {
   return (
-    <div className="space-y-4 text-center">
-      <h2 className="font-display text-xl font-bold text-foreground">Apontamento não encontrado</h2>
-      <p className="text-sm text-muted-foreground">
-        Este apontamento pode ter sido removido ou não pertence a você.
-      </p>
-      <Link
-        to="/app/apontamento"
-        className="inline-flex items-center gap-1 text-sm font-semibold text-primary"
-      >
-        <Icon icon="lucide:arrow-left" className="h-4 w-4" />
-        Voltar para Meus apontamentos
-      </Link>
-    </div>
+    <TelaCampo>
+      <CabecalhoCampo
+        voltar={
+          <Link to="/app" aria-label="Voltar" className={BOTAO_VOLTAR}>
+            <Icon icon="lucide:arrow-left" className="h-[18px] w-[18px]" />
+          </Link>
+        }
+        titulo="Apontamento"
+      />
+      <AreaRolagem>
+        <VazioCampo
+          icone="lucide:file-question"
+          titulo="Apontamento não encontrado"
+          descricao="Ele pode ter sido removido ou não pertence a você."
+        />
+      </AreaRolagem>
+    </TelaCampo>
   );
 }

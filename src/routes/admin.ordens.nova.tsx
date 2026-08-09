@@ -3,10 +3,7 @@ import { NovaOrdemPage } from "@/features/ordem-servico/components/nova-ordem-pa
 
 export const Route = createFileRoute("/admin/ordens/nova")({
   head: () => ({
-    meta: [
-      { title: "Nova OS · Antonello" },
-      { name: "robots", content: "noindex,nofollow" },
-    ],
+    meta: [{ title: "Nova OS · Antonello" }, { name: "robots", content: "noindex,nofollow" }],
   }),
   component: NovaOrdemPage,
 });

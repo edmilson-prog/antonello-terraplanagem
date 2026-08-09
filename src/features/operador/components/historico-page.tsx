@@ -8,6 +8,7 @@ import {
   CartaoCampo,
   IconeTile,
   LINHA_CAMPO,
+  LINHA_CAMPO_CLICAVEL,
   LinhaCorpo,
   LinhaMeta,
   LinhaTitulo,
@@ -17,7 +18,10 @@ import {
   TelaCampo,
   VazioCampo,
 } from "@/features/operador/components/kit";
-import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
+import {
+  apontamentoEmAndamentoDoOperador,
+  apontamentosStore,
+} from "@/features/apontamento/apontamentos-store";
 import {
   agruparPorDia,
   finalizadosDoOperador,
@@ -41,9 +45,11 @@ export function HistoricoPage() {
   const ordens = ordensStore.useTodas();
   const equipamentos = equipamentosStore.useAll();
 
+  const operadorId = getOperadorLogadoId();
+  const emAndamento = apontamentoEmAndamentoDoOperador(apontamentos, operadorId);
   const meus = useMemo(
-    () => finalizadosDoOperador(apontamentos, getOperadorLogadoId()),
-    [apontamentos],
+    () => finalizadosDoOperador(apontamentos, operadorId),
+    [apontamentos, operadorId],
   );
   const grupos = useMemo(() => agruparPorDia(meus), [meus]);
 
@@ -68,6 +74,37 @@ export function HistoricoPage() {
         }
       />
       <AreaRolagem>
+        {emAndamento ? (
+          <>
+            <SecaoCampo className="mt-0">Em andamento</SecaoCampo>
+            <CartaoCampo>
+              <Link
+                to="/app/apontamento/$apontamentoId"
+                params={{ apontamentoId: emAndamento.id }}
+                className={LINHA_CAMPO_CLICAVEL}
+              >
+                <IconeTile>
+                  <Icon icon="lucide:gauge" className="h-[17px] w-[17px]" />
+                </IconeTile>
+                <LinhaCorpo>
+                  <LinhaTitulo>
+                    {equipamentos.find((e) => e.id === emAndamento.equipamento_id)?.nome ??
+                      "Equipamento"}
+                  </LinhaTitulo>
+                  <LinhaMeta className="font-mono">
+                    início {formatHorimetro(emAndamento.horimetro_inicial)} · falta o horímetro
+                    final
+                  </LinhaMeta>
+                </LinhaCorpo>
+                <Icon
+                  icon="lucide:chevron-right"
+                  className="h-4 w-4 shrink-0 text-foreground-faint"
+                />
+              </Link>
+            </CartaoCampo>
+          </>
+        ) : null}
+
         {grupos.length === 0 ? (
           <VazioCampo
             icone="lucide:history"

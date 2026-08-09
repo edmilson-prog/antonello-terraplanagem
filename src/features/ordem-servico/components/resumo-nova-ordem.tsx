@@ -71,7 +71,11 @@ export function ResumoNovaOrdem({ control }: { control: Control<OrdemFormValues>
             valor={valores.tipo_servico ? TIPO_SERVICO_LABEL[valores.tipo_servico] : "a definir"}
             vazio={!valores.tipo_servico}
           />
-          <Linha rotulo="Equipamento" valor={equipamento?.nome ?? "a definir"} vazio={!equipamento} />
+          <Linha
+            rotulo="Equipamento"
+            valor={equipamento?.nome ?? "a definir"}
+            vazio={!equipamento}
+          />
           <Linha
             rotulo="Responsável"
             valor={responsavel?.nome ?? "a definir"}
@@ -93,8 +97,8 @@ export function ResumoNovaOrdem({ control }: { control: Control<OrdemFormValues>
       <div className="flex items-start gap-2 rounded-lg border border-border bg-surface p-3 text-xs text-muted-foreground">
         <Icon icon="lucide:smartphone" className="mt-0.5 h-4 w-4 shrink-0" />
         <p>
-          Ao abrir a OS, ela aparece no <strong className="text-foreground">app de campo</strong>{" "}
-          do operador — os apontamentos por horímetro passam a chegar em tempo real.
+          Ao abrir a OS, ela aparece no <strong className="text-foreground">app de campo</strong> do
+          operador — os apontamentos por horímetro passam a chegar em tempo real.
         </p>
       </div>
     </div>

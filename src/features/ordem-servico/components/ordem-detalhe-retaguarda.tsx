@@ -12,7 +12,10 @@ import { StatStrip, type StatItem } from "@/shared/components/stat-strip";
 import { CardSecao } from "@/shared/components/card-secao";
 import { GerarTextoBotao } from "@/features/ia/components/gerar-texto-botao";
 import { ApontamentosOSTabela } from "@/features/ordem-servico/components/apontamentos-os-tabela";
-import { HistoricoOS, type EventoHistoricoOS } from "@/features/ordem-servico/components/historico-os";
+import {
+  HistoricoOS,
+  type EventoHistoricoOS,
+} from "@/features/ordem-servico/components/historico-os";
 import { OrdemForm } from "@/features/ordem-servico/components/ordem-form";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import {
