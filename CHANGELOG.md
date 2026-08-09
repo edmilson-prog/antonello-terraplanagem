@@ -5,7 +5,12 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [0.23.0] - 2026-08-09 - Toolbelt
+## [0.24.0] - 2026-08-09 - Toolbelt
+
+> A versão 0.23.0 ("Klaxon") é do PR #18 (notificações + Web Push no app de campo), desenvolvido em
+> paralelo. As duas entregas tocam `/app/notificacoes`: ao integrar, a fonte de dados do PR #18 (a
+> real, com tabela e RPCs) prevalece — nesta branch a tela inteira foi escrita atrás de um único
+> hook (`useNotificacoesCampo`) justamente para a troca ser de um arquivo só.
 
 ### Added
 - **App de Campo (`/app/*`) inteiro portado para o UI kit oficial** (`ui_kits/app-campo` do Claude Design, lido via DesignSync): as 23 telas do protótipo, em três ondas.
