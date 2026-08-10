@@ -15,10 +15,13 @@ import { alertasManutencao } from "@/features/manutencao/derivacoes";
 import { estaNoIntervalo, type IntervaloPeriodo } from "@/features/dashboard/periodo";
 import {
   contasReceberPorCliente,
+  contasReceberPorClienteFaixas,
   dataReferenciaOperacional,
   diasDoIntervalo,
   horasRestantesAlerta,
   intervaloMesAnterior,
+  manutencaoPreditiva,
+  percentualCiclo,
   serieDiariaExecutado,
   serieDiariaFaturamento,
   serieDiariaHoras,
@@ -189,5 +192,106 @@ describe("horasRestantesAlerta", () => {
         10;
       expect(horasRestantesAlerta(alerta)).toBe(esperado);
     }
+  });
+});
+
+describe("percentualCiclo", () => {
+  it("mede quanto do intervalo do plano já foi consumido", () => {
+    expect(percentualCiclo(250, 250)).toBe(0); // acabou de zerar o ciclo
+    expect(percentualCiclo(125, 250)).toBe(50);
+    expect(percentualCiclo(20, 250)).toBe(92);
+  });
+
+  it("satura em 100 quando vencida e nunca fica negativo", () => {
+    expect(percentualCiclo(0, 250)).toBe(100);
+    expect(percentualCiclo(-40, 250)).toBe(100);
+    expect(percentualCiclo(500, 250)).toBe(0);
+  });
+
+  it("devolve 100 para intervalo inválido, em vez de dividir por zero", () => {
+    expect(percentualCiclo(10, 0)).toBe(100);
+    expect(percentualCiclo(10, -5)).toBe(100);
+  });
+});
+
+describe("manutencaoPreditiva", () => {
+  const linhas = manutencaoPreditiva(equipamentos, planosManutencao, registrosManutencao);
+
+  it("ordena da mais urgente para a mais folgada", () => {
+    const restantes = linhas.map((l) => l.restantes);
+    expect([...restantes].sort((a, b) => a - b)).toEqual(restantes);
+  });
+
+  it("inclui os planos em dia, não só os alertas", () => {
+    const alertas = alertasManutencao(equipamentos, planosManutencao, registrosManutencao);
+    expect(linhas.length).toBeGreaterThanOrEqual(alertas.length);
+    const chaveDaLinha = (e: string, p: string) => `${e}|${p}`;
+    const chavesDasLinhas = new Set(linhas.map((l) => chaveDaLinha(l.equipamento.id, l.plano.id)));
+    for (const alerta of alertas) {
+      expect(chavesDasLinhas.has(chaveDaLinha(alerta.equipamento.id, alerta.plano.id))).toBe(true);
+    }
+  });
+
+  it("respeita o limite", () => {
+    expect(manutencaoPreditiva(equipamentos, planosManutencao, registrosManutencao, 2).length).toBe(
+      Math.min(2, linhas.length),
+    );
+  });
+});
+
+describe("contasReceberPorClienteFaixas", () => {
+  const HOJE = "2026-07-10";
+  const base = {
+    faturamento_id: "fat-1",
+    status: "aberta" as const,
+    recebido_em: null,
+    forma_recebimento: null,
+    created_at: "2026-01-01T00:00:00.000Z",
+    updated_at: "2026-01-01T00:00:00.000Z",
+  };
+  const contas = [
+    { ...base, id: "c1", cliente_id: "cl-1", valor: 1000, vencimento: "2026-06-30" }, // vencida
+    { ...base, id: "c2", cliente_id: "cl-1", valor: 500, vencimento: "2026-07-20" }, // 10 dias
+    { ...base, id: "c3", cliente_id: "cl-1", valor: 300, vencimento: "2026-08-05" }, // 26 dias
+    { ...base, id: "c4", cliente_id: "cl-1", valor: 200, vencimento: "2026-09-30" }, // +30 dias
+    { ...base, id: "c5", cliente_id: "cl-2", valor: 100, vencimento: "2026-07-11" },
+    {
+      ...base,
+      id: "liq",
+      cliente_id: "cl-2",
+      valor: 9999,
+      vencimento: "2026-07-11",
+      status: "liquidada" as const,
+    },
+  ];
+  const listaClientes = [
+    { ...clientes[0], id: "cl-1", nome: "Cliente Um" },
+    { ...clientes[0], id: "cl-2", nome: "Cliente Dois" },
+  ];
+
+  it("classifica cada conta aberta na sua faixa de vencimento", () => {
+    const [primeiro] = contasReceberPorClienteFaixas(contas, listaClientes, HOJE);
+    expect(primeiro).toMatchObject({
+      cliente_id: "cl-1",
+      cliente_nome: "Cliente Um",
+      vencida: 1000,
+      ate15: 500,
+      ate30: 300,
+      acima30: 200,
+      total: 2000,
+    });
+  });
+
+  it("ignora contas liquidadas e ordena pelo maior saldo", () => {
+    const resultado = contasReceberPorClienteFaixas(contas, listaClientes, HOJE);
+    expect(resultado.map((r) => r.cliente_id)).toEqual(["cl-1", "cl-2"]);
+    expect(resultado[1].total).toBe(100);
+  });
+
+  it("trata o vencimento de hoje como a vencer, não vencida", () => {
+    const hojeMesmo = [{ ...base, id: "x", cliente_id: "cl-2", valor: 50, vencimento: HOJE }];
+    const [linha] = contasReceberPorClienteFaixas(hojeMesmo, listaClientes, HOJE);
+    expect(linha.vencida).toBe(0);
+    expect(linha.ate15).toBe(50);
   });
 });
