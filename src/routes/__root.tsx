@@ -85,6 +85,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Plataforma de gestão da Antonello Terraplanagem — controle de equipamentos pesados, ordens de serviço e faturamento por hora de máquina.",
       },
       { name: "author", content: "Antonello Terraplanagem" },
+      // App de campo instalado na tela inicial (PRD-020). O `apple-` continua
+      // necessário: só a partir do iOS 15.4 o Safari lê `display` do manifest.
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "Antonello" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "theme-color", content: "#16140F" },
       { property: "og:site_name", content: "Antonello Terraplanagem" },
       { property: "og:type", content: "website" },
       { property: "og:title", content: "Antonello Terraplanagem · Plataforma de Gestão" },
@@ -116,6 +123,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
       },
       { rel: "stylesheet", href: appCss },
+      // PWA do app de campo (PRD-020). O manifest é o que permite instalar na
+      // tela inicial — e, no iOS, instalar é pré-requisito do Web Push.
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
     ],
     scripts: [
       {

@@ -165,6 +165,7 @@ _Nenhum — todos os PRDs documentados estão implementados._
 | [PRD-019](./PRD-019-all-ia-suite-embarcada_DONE.md) | Suíte de IA Embarcada (12 features, one-shot) | Feature (suíte) | all | 0.19.0 Copilot |
 | [PRD-017](./PRD-017-ret-auth-real-rls_DONE.md) | Auth Real + Perfis + RLS (Supabase Auth + PIN/token opaco do operador) | Feature (backend) | ret | 0.20.0 Ignition |
 | [PRD-018](./PRD-018-all-schema-migrations-seed_DONE.md) | Schema + Migrations + Mock→Seed | Feature (backend) | all | 0.20.0 Ignition |
+| [PRD-020](./PRD-020-op-notificacoes-push_DONE.md) | Notificações e Web Push no App de Campo (central in-app + PWA + Edge Function) | Feature | op | 0.23.0 Klaxon |
 
 ### 🔄 Em Andamento
 
@@ -272,6 +273,9 @@ Jun/2026  ───────────────────────�
 | 0.18.0 | Beacon | 2026-07-07 | PRD-019 — Painel Operacional (segunda aba do Dashboard: mapa Leaflet/OpenStreetMap com pins de equipamento, cards com sparkline de 7 dias, contas a receber por cliente, manutenção preditiva por horímetro) | MINOR |
 | 0.19.0 | Copilot | 2026-07-07 | PRD-019 — Suíte de IA Embarcada (12 features de IA mockadas em 4 grupos: captura inteligente em campo, inteligência analítica, comercial, atendimento/operação — camada plugável `src/features/ia/`) | MINOR |
 | 0.20.0 | Ignition | 2026-07-08 | PRD-017/018 (Backend real: schema completo — 23 tabelas com RLS — auth real da retaguarda via Supabase Auth e-mail+senha, auth do operador por PIN + token opaco/`SECURITY DEFINER`, script `mocks-to-seed.ts`) | MINOR |
+| 0.21.0 | Ledger | 2026-07-10 | Importação dos 1066 clientes reais do ERP legado (FarolTI) com histórico comercial, página de detalhe do cliente, paginação e logout na retaguarda | MINOR |
+| 0.22.0 | Lookout | 2026-08-09 | Dashboard da retaguarda (aba "Visão geral") refeito conforme o design system: KPIs-herói com sparkline, cards de OS/apontamentos/frota/vencimentos e horas por semana | MINOR |
+| 0.23.0 | Klaxon | 2026-08-09 | PRD-020 (Notificações e Web Push no app de campo: central in-app com cache offline, tabelas `notificacoes`/`push_subscriptions` acessadas por RPC `SECURITY DEFINER`, PWA sem `vite-plugin-pwa` e Edge Function `enviar-push` com VAPID) | MINOR |
 
 ---
 

@@ -16,6 +16,7 @@ import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { TIPOS, TIPO_LABEL } from "@/features/equipamentos/labels";
 import { planosManutencaoStore } from "@/features/manutencao/planos-manutencao-store";
 import { registrosManutencaoStore } from "@/features/manutencao/registros-manutencao-store";
+import { notificarManutencaoAgendada } from "@/features/notificacoes/eventos";
 import { VINCULOS_PLANO, VINCULO_PLANO_LABEL } from "@/features/manutencao/labels";
 import {
   planoManutencaoSchema,
@@ -70,10 +71,20 @@ export function PlanoManutencaoForm({ inicial, onSuccess, onCancel }: Props) {
         (e) => e.id === plano.equipamento_id || e.tipo === plano.tipo_equipamento,
       );
       for (const equipamento of alvos) {
-        registrosManutencaoStore.criarPrevista({
+        const registro = registrosManutencaoStore.criarPrevista({
           equipamento_id: equipamento.id,
           plano_id: plano.id,
           horimetro_previsto: equipamento.horimetro_atual + plano.intervalo_horas,
+        });
+
+        // Avisa quem opera a máquina (PRD-020). Não aguardado de propósito: o
+        // plano já está cadastrado e a retaguarda não deve esperar o envio.
+        void notificarManutencaoAgendada({
+          registroId: registro.id,
+          equipamentoId: equipamento.id,
+          equipamentoNome: equipamento.nome,
+          descricaoPlano: plano.descricao,
+          horimetroPrevisto: registro.horimetro_previsto,
         });
       }
       toast.success("Plano cadastrado.");
