@@ -19,6 +19,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as BlogTerraplanagemOuTerraplenagemRouteImport } from './routes/blog.terraplanagem-ou-terraplenagem'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
+import { Route as AppNotificacoesRouteImport } from './routes/app.notificacoes'
 import { Route as AppEntrarRouteImport } from './routes/app.entrar'
 import { Route as AdminRentabilidadeRouteImport } from './routes/admin.rentabilidade'
 import { Route as AdminPrecosRouteImport } from './routes/admin.precos'
@@ -107,6 +108,11 @@ const BlogTerraplanagemOuTerraplenagemRoute =
 const AppPerfilRoute = AppPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNotificacoesRoute = AppNotificacoesRouteImport.update({
+  id: '/notificacoes',
+  path: '/notificacoes',
   getParentRoute: () => AppRoute,
 } as any)
 const AppEntrarRoute = AppEntrarRouteImport.update({
@@ -323,6 +329,7 @@ export interface FileRoutesByFullPath {
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
   '/app/entrar': typeof AppEntrarRoute
+  '/app/notificacoes': typeof AppNotificacoesRoute
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
@@ -371,6 +378,7 @@ export interface FileRoutesByTo {
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
   '/app/entrar': typeof AppEntrarRoute
+  '/app/notificacoes': typeof AppNotificacoesRoute
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin': typeof AdminIndexRoute
@@ -422,6 +430,7 @@ export interface FileRoutesById {
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
   '/app/entrar': typeof AppEntrarRoute
+  '/app/notificacoes': typeof AppNotificacoesRoute
   '/app/perfil': typeof AppPerfilRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
@@ -474,6 +483,7 @@ export interface FileRouteTypes {
     | '/admin/precos'
     | '/admin/rentabilidade'
     | '/app/entrar'
+    | '/app/notificacoes'
     | '/app/perfil'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
@@ -522,6 +532,7 @@ export interface FileRouteTypes {
     | '/admin/precos'
     | '/admin/rentabilidade'
     | '/app/entrar'
+    | '/app/notificacoes'
     | '/app/perfil'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin'
@@ -572,6 +583,7 @@ export interface FileRouteTypes {
     | '/admin/precos'
     | '/admin/rentabilidade'
     | '/app/entrar'
+    | '/app/notificacoes'
     | '/app/perfil'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
@@ -688,6 +700,13 @@ declare module '@tanstack/react-router' {
       path: '/perfil'
       fullPath: '/app/perfil'
       preLoaderRoute: typeof AppPerfilRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/notificacoes': {
+      id: '/app/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/app/notificacoes'
+      preLoaderRoute: typeof AppNotificacoesRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/entrar': {
@@ -1066,6 +1085,7 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface AppRouteChildren {
   AppEntrarRoute: typeof AppEntrarRoute
+  AppNotificacoesRoute: typeof AppNotificacoesRoute
   AppPerfilRoute: typeof AppPerfilRoute
   AppIndexRoute: typeof AppIndexRoute
   AppApontamentoApontamentoIdRoute: typeof AppApontamentoApontamentoIdRoute
@@ -1077,6 +1097,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppEntrarRoute: AppEntrarRoute,
+  AppNotificacoesRoute: AppNotificacoesRoute,
   AppPerfilRoute: AppPerfilRoute,
   AppIndexRoute: AppIndexRoute,
   AppApontamentoApontamentoIdRoute: AppApontamentoApontamentoIdRoute,

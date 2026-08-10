@@ -12,7 +12,10 @@ import { StatStrip, type StatItem } from "@/shared/components/stat-strip";
 import { CardSecao } from "@/shared/components/card-secao";
 import { GerarTextoBotao } from "@/features/ia/components/gerar-texto-botao";
 import { ApontamentosOSTabela } from "@/features/ordem-servico/components/apontamentos-os-tabela";
-import { HistoricoOS, type EventoHistoricoOS } from "@/features/ordem-servico/components/historico-os";
+import {
+  HistoricoOS,
+  type EventoHistoricoOS,
+} from "@/features/ordem-servico/components/historico-os";
 import { OrdemForm } from "@/features/ordem-servico/components/ordem-form";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import {
@@ -25,6 +28,7 @@ import {
 import { StatusOSBadge, MODELO_LABEL, STATUS_OS_LABEL } from "@/features/ordem-servico/labels";
 import { formatDataHora, formatHorimetro } from "@/shared/lib/format";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
+import { notificarHorasConfirmadas } from "@/features/notificacoes/eventos";
 import { comprovantesStore } from "@/features/comprovantes/comprovantes-store";
 import { montarResumoServico } from "@/features/comprovantes/derivacoes";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
@@ -169,6 +173,14 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
     }
     toast.success(`OS ${r.ordem.numero} fechada.`);
     setConfirmarFechar(false);
+
+    // Fechar a OS é o que confirma as horas de campo (PRD-020) — cada operador
+    // que apontou nela recebe o aviso com o próprio total.
+    void notificarHorasConfirmadas({
+      osId: r.ordem.id,
+      osNumero: r.ordem.numero,
+      apontamentos: daOS,
+    });
 
     const cliente = clientesStore.getById(r.ordem.cliente_id);
     if (cliente) {

@@ -8,6 +8,9 @@ import { HorimetroCapture } from "@/shared/components/horimetro-capture";
 import { CupomCaptureButton } from "@/features/ia/components/cupom-capture-button";
 import { abastecimentosStore } from "@/features/diesel/abastecimentos-store";
 import { abastecimentoOperadorSchema } from "@/features/diesel/abastecimento-schema";
+import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
+import { notificarAbastecimentoRegistrado } from "@/features/notificacoes/eventos";
+import { carregarNotificacoes } from "@/features/notificacoes";
 import { getOperadorLogadoId } from "@/features/auth/operador-session";
 
 interface RegistrarAbastecimentoOperadorDialogProps {
@@ -73,6 +76,19 @@ export function RegistrarAbastecimentoOperadorDialog({
     }
     toast.success("Abastecimento registrado.");
     onOpenChange(false);
+
+    // Comprovante no sino. Efeito colateral deliberado e não aguardado: o
+    // abastecimento já está gravado e o dialog já fechou — uma falha aqui não
+    // pode voltar atrás nem travar o operador.
+    void (async () => {
+      await notificarAbastecimentoRegistrado({
+        abastecimentoId: r.abastecimento.id,
+        litros: parsed.data.litros,
+        equipamentoNome: equipamentosStore.getById(equipamentoId)?.nome ?? "Equipamento",
+        local: local.trim() || null,
+      });
+      await carregarNotificacoes();
+    })();
   }
 
   return (
