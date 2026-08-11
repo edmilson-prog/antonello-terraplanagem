@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-const URL_PAGINA =
-  "https://www.antonelloterraplanagem.com.br/blog/terraplanagem-ou-terraplenagem";
+const URL_PAGINA = "https://www.antonelloterraplanagem.com.br/blog/terraplanagem-ou-terraplenagem";
 
 export const Route = createFileRoute("/blog/terraplanagem-ou-terraplenagem")({
   head: () => ({

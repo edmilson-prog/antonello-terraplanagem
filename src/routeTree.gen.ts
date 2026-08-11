@@ -18,9 +18,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as BlogTerraplanagemOuTerraplenagemRouteImport } from './routes/blog.terraplanagem-ou-terraplenagem'
+import { Route as AppSincronizacaoRouteImport } from './routes/app.sincronizacao'
+import { Route as AppSegurancaRouteImport } from './routes/app.seguranca'
 import { Route as AppPerfilRouteImport } from './routes/app.perfil'
 import { Route as AppNotificacoesRouteImport } from './routes/app.notificacoes'
+import { Route as AppHistoricoRouteImport } from './routes/app.historico'
+import { Route as AppEspelhoHorasRouteImport } from './routes/app.espelho-horas'
+import { Route as AppEscalaRouteImport } from './routes/app.escala'
 import { Route as AppEntrarRouteImport } from './routes/app.entrar'
+import { Route as AppAbastecerRouteImport } from './routes/app.abastecer'
 import { Route as AdminRentabilidadeRouteImport } from './routes/admin.rentabilidade'
 import { Route as AdminPrecosRouteImport } from './routes/admin.precos'
 import { Route as AdminManutencaoRouteImport } from './routes/admin.manutencao'
@@ -56,6 +62,16 @@ import { Route as AdminCustoHoraNovoRouteImport } from './routes/admin.custo-hor
 import { Route as AdminComprovantesComprovanteIdRouteImport } from './routes/admin.comprovantes.$comprovanteId'
 import { Route as AdminClientesNovoRouteImport } from './routes/admin.clientes.novo'
 import { Route as AdminClientesClienteIdRouteImport } from './routes/admin.clientes.$clienteId'
+import { Route as AppOrdensOrdemIdIndexRouteImport } from './routes/app.ordens.$ordemId.index'
+import { Route as AppOrdensOrdemIdViagensRouteImport } from './routes/app.ordens.$ordemId.viagens'
+import { Route as AppOrdensOrdemIdPranchaRouteImport } from './routes/app.ordens.$ordemId.prancha'
+import { Route as AppOrdensOrdemIdParalisacaoRouteImport } from './routes/app.ordens.$ordemId.paralisacao'
+import { Route as AppOrdensOrdemIdMedicaoRouteImport } from './routes/app.ordens.$ordemId.medicao'
+import { Route as AppOrdensOrdemIdMapaRouteImport } from './routes/app.ordens.$ordemId.mapa'
+import { Route as AppOrdensOrdemIdManutencaoRouteImport } from './routes/app.ordens.$ordemId.manutencao'
+import { Route as AppOrdensOrdemIdEquipamentoRouteImport } from './routes/app.ordens.$ordemId.equipamento'
+import { Route as AppOrdensOrdemIdDiarioRouteImport } from './routes/app.ordens.$ordemId.diario'
+import { Route as AppOrdensOrdemIdChecklistRouteImport } from './routes/app.ordens.$ordemId.checklist'
 import { Route as AdminManutencaoRegistrarRegistroIdRouteImport } from './routes/admin.manutencao.registrar.$registroId'
 import { Route as AdminFinanceiroContasPagarNovoRouteImport } from './routes/admin.financeiro.contas-pagar.novo'
 
@@ -105,6 +121,16 @@ const BlogTerraplanagemOuTerraplenagemRoute =
     path: '/blog/terraplanagem-ou-terraplenagem',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AppSincronizacaoRoute = AppSincronizacaoRouteImport.update({
+  id: '/sincronizacao',
+  path: '/sincronizacao',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSegurancaRoute = AppSegurancaRouteImport.update({
+  id: '/seguranca',
+  path: '/seguranca',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPerfilRoute = AppPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
@@ -115,9 +141,29 @@ const AppNotificacoesRoute = AppNotificacoesRouteImport.update({
   path: '/notificacoes',
   getParentRoute: () => AppRoute,
 } as any)
+const AppHistoricoRoute = AppHistoricoRouteImport.update({
+  id: '/historico',
+  path: '/historico',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEspelhoHorasRoute = AppEspelhoHorasRouteImport.update({
+  id: '/espelho-horas',
+  path: '/espelho-horas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEscalaRoute = AppEscalaRouteImport.update({
+  id: '/escala',
+  path: '/escala',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppEntrarRoute = AppEntrarRouteImport.update({
   id: '/entrar',
   path: '/entrar',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAbastecerRoute = AppAbastecerRouteImport.update({
+  id: '/abastecer',
+  path: '/abastecer',
   getParentRoute: () => AppRoute,
 } as any)
 const AdminRentabilidadeRoute = AdminRentabilidadeRouteImport.update({
@@ -301,6 +347,60 @@ const AdminClientesClienteIdRoute = AdminClientesClienteIdRouteImport.update({
   path: '/clientes/$clienteId',
   getParentRoute: () => AdminRoute,
 } as any)
+const AppOrdensOrdemIdIndexRoute = AppOrdensOrdemIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppOrdensOrdemIdRoute,
+} as any)
+const AppOrdensOrdemIdViagensRoute = AppOrdensOrdemIdViagensRouteImport.update({
+  id: '/viagens',
+  path: '/viagens',
+  getParentRoute: () => AppOrdensOrdemIdRoute,
+} as any)
+const AppOrdensOrdemIdPranchaRoute = AppOrdensOrdemIdPranchaRouteImport.update({
+  id: '/prancha',
+  path: '/prancha',
+  getParentRoute: () => AppOrdensOrdemIdRoute,
+} as any)
+const AppOrdensOrdemIdParalisacaoRoute =
+  AppOrdensOrdemIdParalisacaoRouteImport.update({
+    id: '/paralisacao',
+    path: '/paralisacao',
+    getParentRoute: () => AppOrdensOrdemIdRoute,
+  } as any)
+const AppOrdensOrdemIdMedicaoRoute = AppOrdensOrdemIdMedicaoRouteImport.update({
+  id: '/medicao',
+  path: '/medicao',
+  getParentRoute: () => AppOrdensOrdemIdRoute,
+} as any)
+const AppOrdensOrdemIdMapaRoute = AppOrdensOrdemIdMapaRouteImport.update({
+  id: '/mapa',
+  path: '/mapa',
+  getParentRoute: () => AppOrdensOrdemIdRoute,
+} as any)
+const AppOrdensOrdemIdManutencaoRoute =
+  AppOrdensOrdemIdManutencaoRouteImport.update({
+    id: '/manutencao',
+    path: '/manutencao',
+    getParentRoute: () => AppOrdensOrdemIdRoute,
+  } as any)
+const AppOrdensOrdemIdEquipamentoRoute =
+  AppOrdensOrdemIdEquipamentoRouteImport.update({
+    id: '/equipamento',
+    path: '/equipamento',
+    getParentRoute: () => AppOrdensOrdemIdRoute,
+  } as any)
+const AppOrdensOrdemIdDiarioRoute = AppOrdensOrdemIdDiarioRouteImport.update({
+  id: '/diario',
+  path: '/diario',
+  getParentRoute: () => AppOrdensOrdemIdRoute,
+} as any)
+const AppOrdensOrdemIdChecklistRoute =
+  AppOrdensOrdemIdChecklistRouteImport.update({
+    id: '/checklist',
+    path: '/checklist',
+    getParentRoute: () => AppOrdensOrdemIdRoute,
+  } as any)
 const AdminManutencaoRegistrarRegistroIdRoute =
   AdminManutencaoRegistrarRegistroIdRouteImport.update({
     id: '/registrar/$registroId',
@@ -328,9 +428,15 @@ export interface FileRoutesByFullPath {
   '/admin/manutencao': typeof AdminManutencaoRouteWithChildren
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
+  '/app/abastecer': typeof AppAbastecerRoute
   '/app/entrar': typeof AppEntrarRoute
+  '/app/escala': typeof AppEscalaRoute
+  '/app/espelho-horas': typeof AppEspelhoHorasRoute
+  '/app/historico': typeof AppHistoricoRoute
   '/app/notificacoes': typeof AppNotificacoesRoute
   '/app/perfil': typeof AppPerfilRoute
+  '/app/seguranca': typeof AppSegurancaRoute
+  '/app/sincronizacao': typeof AppSincronizacaoRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
@@ -351,7 +457,7 @@ export interface FileRoutesByFullPath {
   '/admin/ordens/nova': typeof AdminOrdensNovaRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
-  '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
+  '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRouteWithChildren
   '/admin/clientes/': typeof AdminClientesIndexRoute
   '/admin/comprovantes/': typeof AdminComprovantesIndexRoute
   '/admin/equipamentos/': typeof AdminEquipamentosIndexRoute
@@ -364,6 +470,16 @@ export interface FileRoutesByFullPath {
   '/app/ordens/': typeof AppOrdensIndexRoute
   '/admin/financeiro/contas-pagar/novo': typeof AdminFinanceiroContasPagarNovoRoute
   '/admin/manutencao/registrar/$registroId': typeof AdminManutencaoRegistrarRegistroIdRoute
+  '/app/ordens/$ordemId/checklist': typeof AppOrdensOrdemIdChecklistRoute
+  '/app/ordens/$ordemId/diario': typeof AppOrdensOrdemIdDiarioRoute
+  '/app/ordens/$ordemId/equipamento': typeof AppOrdensOrdemIdEquipamentoRoute
+  '/app/ordens/$ordemId/manutencao': typeof AppOrdensOrdemIdManutencaoRoute
+  '/app/ordens/$ordemId/mapa': typeof AppOrdensOrdemIdMapaRoute
+  '/app/ordens/$ordemId/medicao': typeof AppOrdensOrdemIdMedicaoRoute
+  '/app/ordens/$ordemId/paralisacao': typeof AppOrdensOrdemIdParalisacaoRoute
+  '/app/ordens/$ordemId/prancha': typeof AppOrdensOrdemIdPranchaRoute
+  '/app/ordens/$ordemId/viagens': typeof AppOrdensOrdemIdViagensRoute
+  '/app/ordens/$ordemId/': typeof AppOrdensOrdemIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -377,9 +493,15 @@ export interface FileRoutesByTo {
   '/admin/manutencao': typeof AdminManutencaoRouteWithChildren
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
+  '/app/abastecer': typeof AppAbastecerRoute
   '/app/entrar': typeof AppEntrarRoute
+  '/app/escala': typeof AppEscalaRoute
+  '/app/espelho-horas': typeof AppEspelhoHorasRoute
+  '/app/historico': typeof AppHistoricoRoute
   '/app/notificacoes': typeof AppNotificacoesRoute
   '/app/perfil': typeof AppPerfilRoute
+  '/app/seguranca': typeof AppSegurancaRoute
+  '/app/sincronizacao': typeof AppSincronizacaoRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin': typeof AdminIndexRoute
   '/app': typeof AppIndexRoute
@@ -400,7 +522,6 @@ export interface FileRoutesByTo {
   '/admin/ordens/nova': typeof AdminOrdensNovaRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
-  '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
   '/admin/clientes': typeof AdminClientesIndexRoute
   '/admin/comprovantes': typeof AdminComprovantesIndexRoute
   '/admin/equipamentos': typeof AdminEquipamentosIndexRoute
@@ -413,6 +534,16 @@ export interface FileRoutesByTo {
   '/app/ordens': typeof AppOrdensIndexRoute
   '/admin/financeiro/contas-pagar/novo': typeof AdminFinanceiroContasPagarNovoRoute
   '/admin/manutencao/registrar/$registroId': typeof AdminManutencaoRegistrarRegistroIdRoute
+  '/app/ordens/$ordemId/checklist': typeof AppOrdensOrdemIdChecklistRoute
+  '/app/ordens/$ordemId/diario': typeof AppOrdensOrdemIdDiarioRoute
+  '/app/ordens/$ordemId/equipamento': typeof AppOrdensOrdemIdEquipamentoRoute
+  '/app/ordens/$ordemId/manutencao': typeof AppOrdensOrdemIdManutencaoRoute
+  '/app/ordens/$ordemId/mapa': typeof AppOrdensOrdemIdMapaRoute
+  '/app/ordens/$ordemId/medicao': typeof AppOrdensOrdemIdMedicaoRoute
+  '/app/ordens/$ordemId/paralisacao': typeof AppOrdensOrdemIdParalisacaoRoute
+  '/app/ordens/$ordemId/prancha': typeof AppOrdensOrdemIdPranchaRoute
+  '/app/ordens/$ordemId/viagens': typeof AppOrdensOrdemIdViagensRoute
+  '/app/ordens/$ordemId': typeof AppOrdensOrdemIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -429,9 +560,15 @@ export interface FileRoutesById {
   '/admin/manutencao': typeof AdminManutencaoRouteWithChildren
   '/admin/precos': typeof AdminPrecosRoute
   '/admin/rentabilidade': typeof AdminRentabilidadeRoute
+  '/app/abastecer': typeof AppAbastecerRoute
   '/app/entrar': typeof AppEntrarRoute
+  '/app/escala': typeof AppEscalaRoute
+  '/app/espelho-horas': typeof AppEspelhoHorasRoute
+  '/app/historico': typeof AppHistoricoRoute
   '/app/notificacoes': typeof AppNotificacoesRoute
   '/app/perfil': typeof AppPerfilRoute
+  '/app/seguranca': typeof AppSegurancaRoute
+  '/app/sincronizacao': typeof AppSincronizacaoRoute
   '/blog/terraplanagem-ou-terraplenagem': typeof BlogTerraplanagemOuTerraplenagemRoute
   '/admin/': typeof AdminIndexRoute
   '/app/': typeof AppIndexRoute
@@ -452,7 +589,7 @@ export interface FileRoutesById {
   '/admin/ordens/nova': typeof AdminOrdensNovaRoute
   '/app/apontamento/$apontamentoId': typeof AppApontamentoApontamentoIdRoute
   '/app/apontamento/novo': typeof AppApontamentoNovoRoute
-  '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRoute
+  '/app/ordens/$ordemId': typeof AppOrdensOrdemIdRouteWithChildren
   '/admin/clientes/': typeof AdminClientesIndexRoute
   '/admin/comprovantes/': typeof AdminComprovantesIndexRoute
   '/admin/equipamentos/': typeof AdminEquipamentosIndexRoute
@@ -465,6 +602,16 @@ export interface FileRoutesById {
   '/app/ordens/': typeof AppOrdensIndexRoute
   '/admin/financeiro/contas-pagar/novo': typeof AdminFinanceiroContasPagarNovoRoute
   '/admin/manutencao/registrar/$registroId': typeof AdminManutencaoRegistrarRegistroIdRoute
+  '/app/ordens/$ordemId/checklist': typeof AppOrdensOrdemIdChecklistRoute
+  '/app/ordens/$ordemId/diario': typeof AppOrdensOrdemIdDiarioRoute
+  '/app/ordens/$ordemId/equipamento': typeof AppOrdensOrdemIdEquipamentoRoute
+  '/app/ordens/$ordemId/manutencao': typeof AppOrdensOrdemIdManutencaoRoute
+  '/app/ordens/$ordemId/mapa': typeof AppOrdensOrdemIdMapaRoute
+  '/app/ordens/$ordemId/medicao': typeof AppOrdensOrdemIdMedicaoRoute
+  '/app/ordens/$ordemId/paralisacao': typeof AppOrdensOrdemIdParalisacaoRoute
+  '/app/ordens/$ordemId/prancha': typeof AppOrdensOrdemIdPranchaRoute
+  '/app/ordens/$ordemId/viagens': typeof AppOrdensOrdemIdViagensRoute
+  '/app/ordens/$ordemId/': typeof AppOrdensOrdemIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -482,9 +629,15 @@ export interface FileRouteTypes {
     | '/admin/manutencao'
     | '/admin/precos'
     | '/admin/rentabilidade'
+    | '/app/abastecer'
     | '/app/entrar'
+    | '/app/escala'
+    | '/app/espelho-horas'
+    | '/app/historico'
     | '/app/notificacoes'
     | '/app/perfil'
+    | '/app/seguranca'
+    | '/app/sincronizacao'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
     | '/app/'
@@ -518,6 +671,16 @@ export interface FileRouteTypes {
     | '/app/ordens/'
     | '/admin/financeiro/contas-pagar/novo'
     | '/admin/manutencao/registrar/$registroId'
+    | '/app/ordens/$ordemId/checklist'
+    | '/app/ordens/$ordemId/diario'
+    | '/app/ordens/$ordemId/equipamento'
+    | '/app/ordens/$ordemId/manutencao'
+    | '/app/ordens/$ordemId/mapa'
+    | '/app/ordens/$ordemId/medicao'
+    | '/app/ordens/$ordemId/paralisacao'
+    | '/app/ordens/$ordemId/prancha'
+    | '/app/ordens/$ordemId/viagens'
+    | '/app/ordens/$ordemId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -531,9 +694,15 @@ export interface FileRouteTypes {
     | '/admin/manutencao'
     | '/admin/precos'
     | '/admin/rentabilidade'
+    | '/app/abastecer'
     | '/app/entrar'
+    | '/app/escala'
+    | '/app/espelho-horas'
+    | '/app/historico'
     | '/app/notificacoes'
     | '/app/perfil'
+    | '/app/seguranca'
+    | '/app/sincronizacao'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin'
     | '/app'
@@ -554,7 +723,6 @@ export interface FileRouteTypes {
     | '/admin/ordens/nova'
     | '/app/apontamento/$apontamentoId'
     | '/app/apontamento/novo'
-    | '/app/ordens/$ordemId'
     | '/admin/clientes'
     | '/admin/comprovantes'
     | '/admin/equipamentos'
@@ -567,6 +735,16 @@ export interface FileRouteTypes {
     | '/app/ordens'
     | '/admin/financeiro/contas-pagar/novo'
     | '/admin/manutencao/registrar/$registroId'
+    | '/app/ordens/$ordemId/checklist'
+    | '/app/ordens/$ordemId/diario'
+    | '/app/ordens/$ordemId/equipamento'
+    | '/app/ordens/$ordemId/manutencao'
+    | '/app/ordens/$ordemId/mapa'
+    | '/app/ordens/$ordemId/medicao'
+    | '/app/ordens/$ordemId/paralisacao'
+    | '/app/ordens/$ordemId/prancha'
+    | '/app/ordens/$ordemId/viagens'
+    | '/app/ordens/$ordemId'
   id:
     | '__root__'
     | '/'
@@ -582,9 +760,15 @@ export interface FileRouteTypes {
     | '/admin/manutencao'
     | '/admin/precos'
     | '/admin/rentabilidade'
+    | '/app/abastecer'
     | '/app/entrar'
+    | '/app/escala'
+    | '/app/espelho-horas'
+    | '/app/historico'
     | '/app/notificacoes'
     | '/app/perfil'
+    | '/app/seguranca'
+    | '/app/sincronizacao'
     | '/blog/terraplanagem-ou-terraplenagem'
     | '/admin/'
     | '/app/'
@@ -618,6 +802,16 @@ export interface FileRouteTypes {
     | '/app/ordens/'
     | '/admin/financeiro/contas-pagar/novo'
     | '/admin/manutencao/registrar/$registroId'
+    | '/app/ordens/$ordemId/checklist'
+    | '/app/ordens/$ordemId/diario'
+    | '/app/ordens/$ordemId/equipamento'
+    | '/app/ordens/$ordemId/manutencao'
+    | '/app/ordens/$ordemId/mapa'
+    | '/app/ordens/$ordemId/medicao'
+    | '/app/ordens/$ordemId/paralisacao'
+    | '/app/ordens/$ordemId/prancha'
+    | '/app/ordens/$ordemId/viagens'
+    | '/app/ordens/$ordemId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -695,6 +889,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogTerraplanagemOuTerraplenagemRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/sincronizacao': {
+      id: '/app/sincronizacao'
+      path: '/sincronizacao'
+      fullPath: '/app/sincronizacao'
+      preLoaderRoute: typeof AppSincronizacaoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/seguranca': {
+      id: '/app/seguranca'
+      path: '/seguranca'
+      fullPath: '/app/seguranca'
+      preLoaderRoute: typeof AppSegurancaRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/perfil': {
       id: '/app/perfil'
       path: '/perfil'
@@ -709,11 +917,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppNotificacoesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/historico': {
+      id: '/app/historico'
+      path: '/historico'
+      fullPath: '/app/historico'
+      preLoaderRoute: typeof AppHistoricoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/espelho-horas': {
+      id: '/app/espelho-horas'
+      path: '/espelho-horas'
+      fullPath: '/app/espelho-horas'
+      preLoaderRoute: typeof AppEspelhoHorasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/escala': {
+      id: '/app/escala'
+      path: '/escala'
+      fullPath: '/app/escala'
+      preLoaderRoute: typeof AppEscalaRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/entrar': {
       id: '/app/entrar'
       path: '/entrar'
       fullPath: '/app/entrar'
       preLoaderRoute: typeof AppEntrarRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/abastecer': {
+      id: '/app/abastecer'
+      path: '/abastecer'
+      fullPath: '/app/abastecer'
+      preLoaderRoute: typeof AppAbastecerRouteImport
       parentRoute: typeof AppRoute
     }
     '/admin/rentabilidade': {
@@ -961,6 +1197,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminClientesClienteIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/app/ordens/$ordemId/': {
+      id: '/app/ordens/$ordemId/'
+      path: '/'
+      fullPath: '/app/ordens/$ordemId/'
+      preLoaderRoute: typeof AppOrdensOrdemIdIndexRouteImport
+      parentRoute: typeof AppOrdensOrdemIdRoute
+    }
+    '/app/ordens/$ordemId/viagens': {
+      id: '/app/ordens/$ordemId/viagens'
+      path: '/viagens'
+      fullPath: '/app/ordens/$ordemId/viagens'
+      preLoaderRoute: typeof AppOrdensOrdemIdViagensRouteImport
+      parentRoute: typeof AppOrdensOrdemIdRoute
+    }
+    '/app/ordens/$ordemId/prancha': {
+      id: '/app/ordens/$ordemId/prancha'
+      path: '/prancha'
+      fullPath: '/app/ordens/$ordemId/prancha'
+      preLoaderRoute: typeof AppOrdensOrdemIdPranchaRouteImport
+      parentRoute: typeof AppOrdensOrdemIdRoute
+    }
+    '/app/ordens/$ordemId/paralisacao': {
+      id: '/app/ordens/$ordemId/paralisacao'
+      path: '/paralisacao'
+      fullPath: '/app/ordens/$ordemId/paralisacao'
+      preLoaderRoute: typeof AppOrdensOrdemIdParalisacaoRouteImport
+      parentRoute: typeof AppOrdensOrdemIdRoute
+    }
+    '/app/ordens/$ordemId/medicao': {
+      id: '/app/ordens/$ordemId/medicao'
+      path: '/medicao'
+      fullPath: '/app/ordens/$ordemId/medicao'
+      preLoaderRoute: typeof AppOrdensOrdemIdMedicaoRouteImport
+      parentRoute: typeof AppOrdensOrdemIdRoute
+    }
+    '/app/ordens/$ordemId/mapa': {
+      id: '/app/ordens/$ordemId/mapa'
+      path: '/mapa'
+      fullPath: '/app/ordens/$ordemId/mapa'
+      preLoaderRoute: typeof AppOrdensOrdemIdMapaRouteImport
+      parentRoute: typeof AppOrdensOrdemIdRoute
+    }
+    '/app/ordens/$ordemId/manutencao': {
+      id: '/app/ordens/$ordemId/manutencao'
+      path: '/manutencao'
+      fullPath: '/app/ordens/$ordemId/manutencao'
+      preLoaderRoute: typeof AppOrdensOrdemIdManutencaoRouteImport
+      parentRoute: typeof AppOrdensOrdemIdRoute
+    }
+    '/app/ordens/$ordemId/equipamento': {
+      id: '/app/ordens/$ordemId/equipamento'
+      path: '/equipamento'
+      fullPath: '/app/ordens/$ordemId/equipamento'
+      preLoaderRoute: typeof AppOrdensOrdemIdEquipamentoRouteImport
+      parentRoute: typeof AppOrdensOrdemIdRoute
+    }
+    '/app/ordens/$ordemId/diario': {
+      id: '/app/ordens/$ordemId/diario'
+      path: '/diario'
+      fullPath: '/app/ordens/$ordemId/diario'
+      preLoaderRoute: typeof AppOrdensOrdemIdDiarioRouteImport
+      parentRoute: typeof AppOrdensOrdemIdRoute
+    }
+    '/app/ordens/$ordemId/checklist': {
+      id: '/app/ordens/$ordemId/checklist'
+      path: '/checklist'
+      fullPath: '/app/ordens/$ordemId/checklist'
+      preLoaderRoute: typeof AppOrdensOrdemIdChecklistRouteImport
+      parentRoute: typeof AppOrdensOrdemIdRoute
+    }
     '/admin/manutencao/registrar/$registroId': {
       id: '/admin/manutencao/registrar/$registroId'
       path: '/registrar/$registroId'
@@ -1083,26 +1389,67 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface AppOrdensOrdemIdRouteChildren {
+  AppOrdensOrdemIdChecklistRoute: typeof AppOrdensOrdemIdChecklistRoute
+  AppOrdensOrdemIdDiarioRoute: typeof AppOrdensOrdemIdDiarioRoute
+  AppOrdensOrdemIdEquipamentoRoute: typeof AppOrdensOrdemIdEquipamentoRoute
+  AppOrdensOrdemIdManutencaoRoute: typeof AppOrdensOrdemIdManutencaoRoute
+  AppOrdensOrdemIdMapaRoute: typeof AppOrdensOrdemIdMapaRoute
+  AppOrdensOrdemIdMedicaoRoute: typeof AppOrdensOrdemIdMedicaoRoute
+  AppOrdensOrdemIdParalisacaoRoute: typeof AppOrdensOrdemIdParalisacaoRoute
+  AppOrdensOrdemIdPranchaRoute: typeof AppOrdensOrdemIdPranchaRoute
+  AppOrdensOrdemIdViagensRoute: typeof AppOrdensOrdemIdViagensRoute
+  AppOrdensOrdemIdIndexRoute: typeof AppOrdensOrdemIdIndexRoute
+}
+
+const AppOrdensOrdemIdRouteChildren: AppOrdensOrdemIdRouteChildren = {
+  AppOrdensOrdemIdChecklistRoute: AppOrdensOrdemIdChecklistRoute,
+  AppOrdensOrdemIdDiarioRoute: AppOrdensOrdemIdDiarioRoute,
+  AppOrdensOrdemIdEquipamentoRoute: AppOrdensOrdemIdEquipamentoRoute,
+  AppOrdensOrdemIdManutencaoRoute: AppOrdensOrdemIdManutencaoRoute,
+  AppOrdensOrdemIdMapaRoute: AppOrdensOrdemIdMapaRoute,
+  AppOrdensOrdemIdMedicaoRoute: AppOrdensOrdemIdMedicaoRoute,
+  AppOrdensOrdemIdParalisacaoRoute: AppOrdensOrdemIdParalisacaoRoute,
+  AppOrdensOrdemIdPranchaRoute: AppOrdensOrdemIdPranchaRoute,
+  AppOrdensOrdemIdViagensRoute: AppOrdensOrdemIdViagensRoute,
+  AppOrdensOrdemIdIndexRoute: AppOrdensOrdemIdIndexRoute,
+}
+
+const AppOrdensOrdemIdRouteWithChildren =
+  AppOrdensOrdemIdRoute._addFileChildren(AppOrdensOrdemIdRouteChildren)
+
 interface AppRouteChildren {
+  AppAbastecerRoute: typeof AppAbastecerRoute
   AppEntrarRoute: typeof AppEntrarRoute
+  AppEscalaRoute: typeof AppEscalaRoute
+  AppEspelhoHorasRoute: typeof AppEspelhoHorasRoute
+  AppHistoricoRoute: typeof AppHistoricoRoute
   AppNotificacoesRoute: typeof AppNotificacoesRoute
   AppPerfilRoute: typeof AppPerfilRoute
+  AppSegurancaRoute: typeof AppSegurancaRoute
+  AppSincronizacaoRoute: typeof AppSincronizacaoRoute
   AppIndexRoute: typeof AppIndexRoute
   AppApontamentoApontamentoIdRoute: typeof AppApontamentoApontamentoIdRoute
   AppApontamentoNovoRoute: typeof AppApontamentoNovoRoute
-  AppOrdensOrdemIdRoute: typeof AppOrdensOrdemIdRoute
+  AppOrdensOrdemIdRoute: typeof AppOrdensOrdemIdRouteWithChildren
   AppApontamentoIndexRoute: typeof AppApontamentoIndexRoute
   AppOrdensIndexRoute: typeof AppOrdensIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAbastecerRoute: AppAbastecerRoute,
   AppEntrarRoute: AppEntrarRoute,
+  AppEscalaRoute: AppEscalaRoute,
+  AppEspelhoHorasRoute: AppEspelhoHorasRoute,
+  AppHistoricoRoute: AppHistoricoRoute,
   AppNotificacoesRoute: AppNotificacoesRoute,
   AppPerfilRoute: AppPerfilRoute,
+  AppSegurancaRoute: AppSegurancaRoute,
+  AppSincronizacaoRoute: AppSincronizacaoRoute,
   AppIndexRoute: AppIndexRoute,
   AppApontamentoApontamentoIdRoute: AppApontamentoApontamentoIdRoute,
   AppApontamentoNovoRoute: AppApontamentoNovoRoute,
-  AppOrdensOrdemIdRoute: AppOrdensOrdemIdRoute,
+  AppOrdensOrdemIdRoute: AppOrdensOrdemIdRouteWithChildren,
   AppApontamentoIndexRoute: AppApontamentoIndexRoute,
   AppOrdensIndexRoute: AppOrdensIndexRoute,
 }

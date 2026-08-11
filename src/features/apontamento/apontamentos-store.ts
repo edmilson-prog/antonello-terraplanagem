@@ -17,6 +17,8 @@ export interface FinalizarInput {
   horimetro_final: number;
   foto_final_url?: string | null;
   metros_executados?: number | null;
+  /** Nota escrita no fechamento; soma-se à observação da abertura, não a substitui. */
+  observacao?: string | null;
 }
 
 export type FinalizarResultado =
@@ -84,8 +86,12 @@ export function criarApontamentosStore(seed: Apontamento[]): ApontamentosStore {
       return { ok: false, erro: "final_menor_que_inicial" };
     }
     const agora = new Date().toISOString();
+    const notaFinal = input.observacao?.trim();
     const atualizado: Apontamento = {
       ...atual,
+      observacao: notaFinal
+        ? [atual.observacao, notaFinal].filter(Boolean).join("\n")
+        : atual.observacao,
       horimetro_final: input.horimetro_final,
       horas_trabalhadas: calcularHoras(atual.horimetro_inicial, input.horimetro_final),
       foto_final_url: input.foto_final_url ?? atual.foto_final_url,

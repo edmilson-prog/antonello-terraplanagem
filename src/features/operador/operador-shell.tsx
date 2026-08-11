@@ -1,98 +1,89 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { Home, ClipboardList, FileText, User } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import { HazardStripe } from "@/shared/components/hazard-stripe";
-import { ThemeToggle } from "@/shared/components/theme-toggle";
-import { SinoNotificacoes } from "@/features/notificacoes";
+import { Icon } from "@iconify/react";
+import { useCicloNotificacoes } from "@/features/notificacoes";
 import { cn } from "@/lib/utils";
 
 /*
- * Shell do Ambiente OPERADOR (campo, mobile-first).
+ * Shell do Ambiente OPERADOR (campo, mobile-first) — UI kit `ui_kits/app-campo`.
+ *
  * REGRA RÍGIDA: nenhuma tela deste ambiente pode exibir preço, valor ou
  * qualquer informação financeira — restrição comercial do projeto.
+ *
+ * Estrutura do kit: a coluna ocupa a altura da viewport, cada tela rola por
+ * dentro e a barra de abas é um item flex (não `fixed`) — assim o teclado do
+ * celular não empurra a barra por cima do conteúdo. Cabeçalho é de cada tela:
+ * as abas usam `ac-head` e as sub-telas usam `ac-form-head`.
  */
 
-interface NavItem {
-  to: string;
+interface Aba {
+  to: "/app" | "/app/ordens" | "/app/abastecer" | "/app/perfil";
   label: string;
-  icone: LucideIcon;
+  icone: string;
 }
 
-const itens: NavItem[] = [
-  { to: "/app", label: "Início", icone: Home },
-  { to: "/app/apontamento", label: "Apontamento", icone: ClipboardList },
-  { to: "/app/ordens", label: "Minhas OS", icone: FileText },
-  { to: "/app/perfil", label: "Perfil", icone: User },
+const ABAS: Aba[] = [
+  { to: "/app", label: "Hoje", icone: "lucide:layout-dashboard" },
+  { to: "/app/ordens", label: "Minhas OS", icone: "lucide:clipboard-list" },
+  { to: "/app/abastecer", label: "Abastecer", icone: "lucide:fuel" },
+  { to: "/app/perfil", label: "Perfil", icone: "lucide:user" },
 ];
 
-// Casado por prefixo, do mais específico para o mais genérico — "/app" fecha
-// a lista como catch-all.
-const titulos: { prefixo: string; titulo: string }[] = [
-  { prefixo: "/app/apontamento", titulo: "Apontamento" },
-  { prefixo: "/app/notificacoes", titulo: "Notificações" },
-  { prefixo: "/app/ordens", titulo: "Minhas OS" },
-  { prefixo: "/app/perfil", titulo: "Perfil" },
-  { prefixo: "/app", titulo: "Início" },
-];
+function normalizar(pathname: string): string {
+  return pathname.length > 1 && pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+}
 
 export function OperadorShell() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const titulo = titulos.find((t) => pathname.startsWith(t.prefixo))?.titulo ?? "Antonello";
+  const pathname = normalizar(useRouterState({ select: (s) => s.location.pathname }));
+
+  // Ciclo das notificações (PRD-020) montado uma vez, aqui: o sino agora vive
+  // no cabeçalho da aba "Hoje", que desmonta ao trocar de aba, e o service
+  // worker / reconsulta não podem morrer junto.
+  useCicloNotificacoes({ ativo: pathname !== "/app/entrar" });
 
   if (pathname === "/app/entrar") {
     return <Outlet />;
   }
 
+  // A barra só aparece nas quatro raízes de aba: sub-telas do kit ocupam a
+  // tela inteira e voltam pelo cabeçalho.
+  const emAba = ABAS.some((a) => a.to === pathname);
+
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur">
-        <HazardStripe />
-        <div className="mx-auto flex w-full max-w-md items-center justify-between px-4 py-3">
-          <div className="flex flex-col leading-tight">
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-foreground-faint">
-              Antonello · Campo
-            </span>
-            <span className="font-display text-lg font-bold text-foreground">{titulo}</span>
-          </div>
-          <div className="flex items-center gap-0.5">
-            <SinoNotificacoes />
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-1 pb-24">
-        <div className="mx-auto w-full max-w-md px-4 py-5">
-          <h1 className="sr-only">Antonello Terraplanagem · Painel do Operador — {titulo}</h1>
-          <Outlet />
-        </div>
-      </main>
-
-      <nav
-        aria-label="Navegação principal"
-        className="fixed inset-x-0 bottom-0 z-30 border-t bg-background/95 backdrop-blur"
-      >
-        <ul className="mx-auto grid w-full max-w-md grid-cols-4">
-          {itens.map((item) => {
-            const ativo = item.to === "/app" ? pathname === "/app" : pathname.startsWith(item.to);
-            const Icone = item.icone;
-            return (
-              <li key={item.to}>
-                <Link
-                  to={item.to}
-                  className={cn(
-                    "flex min-h-[64px] flex-col items-center justify-center gap-1 px-2 py-2 text-[11px] font-medium transition-colors",
-                    ativo ? "text-primary" : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  <Icone className="h-6 w-6" strokeWidth={ativo ? 2.5 : 2} />
-                  <span>{item.label}</span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+    <div className="flex h-dvh flex-col overflow-hidden bg-background">
+      <h1 className="sr-only">Antonello Terraplanagem · App de Campo</h1>
+      <Outlet />
+      {emAba ? <AbasOperador pathname={pathname} /> : null}
     </div>
+  );
+}
+
+function AbasOperador({ pathname }: { pathname: string }) {
+  return (
+    <nav aria-label="Navegação principal" className="shrink-0 border-t bg-surface">
+      <ul className="grid grid-cols-4">
+        {ABAS.map((aba) => {
+          const ativo = aba.to === pathname;
+          return (
+            <li key={aba.to}>
+              <Link
+                to={aba.to}
+                aria-current={ativo ? "page" : undefined}
+                className={cn(
+                  "flex min-h-[62px] flex-col items-center justify-center gap-1.5 text-[10.5px] font-semibold transition-colors",
+                  ativo ? "text-primary" : "text-foreground-faint hover:text-muted-foreground",
+                )}
+              >
+                <Icon icon={aba.icone} className="h-[19px] w-[19px]" />
+                <span>{aba.label}</span>
+                <span
+                  aria-hidden
+                  className={cn("h-1 w-1 rounded-full", ativo ? "bg-primary" : "bg-transparent")}
+                />
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
   );
 }

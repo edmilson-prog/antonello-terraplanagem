@@ -23,6 +23,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
@@ -30,6 +31,12 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-hover: var(--primary-hover);
+  --color-primary-deep: var(--primary-deep);
+  --color-primary-dim: var(--primary-dim);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary-soft: var(--secondary-soft);
@@ -45,6 +52,7 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
   --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -68,6 +76,8 @@
   /* Concreto / fundos claros */
   --background: #F4EFE6;
   --surface: #E8E2D5;
+  /* Encaixe (tecla, chip, linha ativa) — um degrau abaixo de --surface. */
+  --surface-2: #DDD5C3;
   --card: #FFFFFF;
   --card-foreground: #1B1912;
   --popover: #FFFFFF;
@@ -82,6 +92,15 @@
   --primary: #FFB300;
   --primary-foreground: #1B1912;
   --primary-hover: #E09600;
+  --primary-deep: #E39A00;
+  /* Âmbar de baixa ênfase (texto/ícone auxiliar) — escurecido para o fundo claro. */
+  --primary-dim: #9A6F12;
+
+  /* Semânticos de estado do app de campo (checklist, DDS, sincronização). */
+  --success: #4C7A3F;
+  --success-foreground: #3A6130;
+  --info: #5A7FA6;
+  --info-foreground: #3B5B7B;
 
   /* Terra */
   --secondary: #A2622F;
@@ -104,6 +123,8 @@
   --destructive-foreground: #F4EFE6;
 
   --border: #D6CDBC;
+  /* Divisória fraca entre linhas de uma mesma lista. */
+  --border-soft: #E2DACB;
   /* Hairline de ênfase: hover de tecla/linha e borda de bottom sheet. */
   --border-strong: #BFB39C;
   --input: #D6CDBC;
@@ -123,6 +144,7 @@
   /* Alto contraste para uso em campo / sob sol */
   --background: #16140F;
   --surface: #211D15;
+  --surface-2: #2C2712;
   --card: #211D15;
   --card-foreground: #F4EFE6;
   --popover: #211D15;
@@ -135,6 +157,13 @@
   --primary: #FFB300;
   --primary-foreground: #16140F;
   --primary-hover: #FFC233;
+  --primary-deep: #E39A00;
+  --primary-dim: #C8901A;
+
+  --success: #4C7A3F;
+  --success-foreground: #9BD08E;
+  --info: #5A7FA6;
+  --info-foreground: #9DB8D6;
 
   --secondary: #C07B43;
   --secondary-foreground: #16140F;
@@ -154,6 +183,7 @@
   --destructive-foreground: #16140F;
 
   --border: #2C2719;
+  --border-soft: #241F18;
   --border-strong: #413C2C;
   --input: #2C2719;
   --ring: #FFB300;
@@ -180,6 +210,7 @@
 .theme-light {
   --background: #F4EFE6;
   --surface: #E8E2D5;
+  --surface-2: #DDD5C3;
   --card: #FFFFFF;
   --card-foreground: #1B1912;
   --popover: #FFFFFF;
@@ -192,6 +223,13 @@
   --primary: #FFB300;
   --primary-foreground: #1B1912;
   --primary-hover: #E09600;
+  --primary-deep: #E39A00;
+  --primary-dim: #9A6F12;
+
+  --success: #4C7A3F;
+  --success-foreground: #3A6130;
+  --info: #5A7FA6;
+  --info-foreground: #3B5B7B;
 
   --secondary: #A2622F;
   --secondary-foreground: #F4EFE6;
@@ -208,6 +246,7 @@
   --destructive-foreground: #F4EFE6;
 
   --border: #D6CDBC;
+  --border-soft: #E2DACB;
   --border-strong: #BFB39C;
   --input: #D6CDBC;
   --ring: #FFB300;

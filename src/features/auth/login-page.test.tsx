@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { LoginPage } from "./login-page";
+import { CODINOME_SISTEMA, VERSAO_SISTEMA } from "./versao-sistema";
 import { supabase } from "@/lib/supabase";
 import { STORAGE_KEY_LEMBRAR } from "@/lib/supabase-storage";
 
@@ -24,7 +25,7 @@ describe("LoginPage", () => {
   it("renderiza o rodapé de versão no painel de marca", () => {
     render(<LoginPage />);
     expect(screen.getByText("Sistemas operacionais")).toBeInTheDocument();
-    expect(screen.getByText("v0.24.0 · Watchtower")).toBeInTheDocument();
+    expect(screen.getByText(`v${VERSAO_SISTEMA} · ${CODINOME_SISTEMA}`)).toBeInTheDocument();
   });
 
   it("renderiza a tagline de marca no painel de marca", () => {

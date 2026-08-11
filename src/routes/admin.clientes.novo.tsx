@@ -3,10 +3,7 @@ import { NovoClientePage } from "@/features/clientes/components/novo-cliente-pag
 
 export const Route = createFileRoute("/admin/clientes/novo")({
   head: () => ({
-    meta: [
-      { title: "Novo cliente · Antonello" },
-      { name: "robots", content: "noindex,nofollow" },
-    ],
+    meta: [{ title: "Novo cliente · Antonello" }, { name: "robots", content: "noindex,nofollow" }],
   }),
   component: NovoClientePage,
 });

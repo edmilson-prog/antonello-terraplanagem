@@ -48,6 +48,46 @@ export function formatDataHora(iso: string | null): string {
   });
 }
 
+// "sexta, 11 de julho" — cabeçalho do App de Campo. `weekday: "long"` em
+// pt-BR devolve "sexta-feira"; o kit usa a forma curta sem o sufixo.
+export function formatDataExtensa(data: Date): string {
+  const texto = data.toLocaleDateString("pt-BR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  return texto.replace("-feira", "");
+}
+
+// "sex, 11/07" — usado nos agrupamentos por dia (histórico, escala, diário).
+export function formatDiaCurto(data: Date): string {
+  const semana = data
+    .toLocaleDateString("pt-BR", { weekday: "short" })
+    .replace(".", "")
+    .replace("-feira", "");
+  const dia = data.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+  return `${semana}, ${dia}`;
+}
+
+// "Hoje", "Ontem" ou "qua, 09/07" — cabeçalho dos grupos por dia.
+// `dia` e `referencia` são datas locais no formato "YYYY-MM-DD".
+export function rotuloDiaRelativo(dia: string, referencia: Date = new Date()): string {
+  const base = new Date(`${dia}T12:00:00`);
+  if (Number.isNaN(base.getTime())) return dia;
+  const hoje = new Date(referencia.getFullYear(), referencia.getMonth(), referencia.getDate(), 12);
+  const diferenca = Math.round((hoje.getTime() - base.getTime()) / (24 * 60 * 60 * 1000));
+  if (diferenca === 0) return "Hoje";
+  if (diferenca === 1) return "Ontem";
+  return formatDiaCurto(base);
+}
+
+export function formatHoraCurta(iso: string | null): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+  return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
+
 // Para colunas `date` (sem hora, ex.: legado_primeira_os) — evita o bug de
 // fuso horário de `new Date("YYYY-MM-DD")` (interpretada como UTC meia-noite,
 // pode "voltar um dia" em fusos negativos como o do Brasil).
