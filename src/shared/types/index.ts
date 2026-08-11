@@ -453,3 +453,43 @@ export interface AvisoWhatsApp {
   enviado_em: string; // ISO 8601
   created_at: string;
 }
+
+// Notificações do app de campo (PRD-020).
+// Entidade lateral: nunca altera OS nem apontamento, só referencia. O operador
+// não tem sessão nativa do Supabase, então a leitura/escrita passa pelas RPCs
+// SECURITY DEFINER (listar_notificacoes, marcar_notificacoes_lidas) em vez de
+// query direta na tabela — ver features/notificacoes/notificacoes-store.ts.
+export type TipoNotificacao =
+  | "os_atribuida"
+  | "manutencao_agendada"
+  | "apontamento_aprovado"
+  | "lembrete_apontamento"
+  | "abastecimento_registrado"
+  | "correcao_solicitada";
+
+export interface Notificacao {
+  id: string;
+  operador_id: string; // FK → Operador
+  tipo: TipoNotificacao;
+  titulo: string;
+  mensagem: string;
+  os_id: string | null; // FK → OrdemServico; quando presente, a linha é tocável
+  origem_id: string | null; // registro que originou (apontamento, abastecimento…), polimórfico
+  lida_em: string | null; // ISO 8601; null = não lida
+  created_at: string;
+  updated_at: string;
+}
+
+// Inscrição de Web Push de um aparelho. Um operador pode ter várias (celular,
+// tablet). O endpoint é a chave natural — reinstalar o app no mesmo aparelho
+// atualiza a linha em vez de duplicar.
+export interface PushSubscriptionRegistrada {
+  id: string;
+  operador_id: string; // FK → Operador
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+  user_agent: string | null;
+  created_at: string;
+  updated_at: string;
+}

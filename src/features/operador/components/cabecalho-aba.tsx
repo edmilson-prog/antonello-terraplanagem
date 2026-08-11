@@ -36,23 +36,6 @@ export function CabecalhoAba({
   );
 }
 
-export function SinoNotificacoes({ naoLidas }: { naoLidas: number }) {
-  return (
-    <Link
-      to="/app/notificacoes"
-      aria-label={naoLidas > 0 ? `Notificações — ${naoLidas} não lidas` : "Notificações"}
-      className="relative grid h-11 w-11 shrink-0 place-items-center rounded-[11px] border text-muted-foreground transition-colors hover:border-border-strong hover:text-primary"
-    >
-      <Icon icon="lucide:bell" className="h-[19px] w-[19px]" />
-      {naoLidas > 0 ? (
-        <span className="absolute -right-1 -top-1 grid h-[17px] min-w-[17px] place-items-center rounded-[9px] bg-primary px-1 font-mono text-[10px] font-bold text-primary-foreground">
-          {naoLidas > 9 ? "9+" : naoLidas}
-        </span>
-      ) : null}
-    </Link>
-  );
-}
-
 export function SeloSincronizacao({
   pendentes,
   ultimaSincronizacao,

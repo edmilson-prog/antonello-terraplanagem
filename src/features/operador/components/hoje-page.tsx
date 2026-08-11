@@ -21,13 +21,9 @@ import {
   TilesCampo,
   VazioCampo,
 } from "@/features/operador/components/kit";
-import {
-  CabecalhoAba,
-  SeloSincronizacao,
-  SinoNotificacoes,
-} from "@/features/operador/components/cabecalho-aba";
+import { CabecalhoAba, SeloSincronizacao } from "@/features/operador/components/cabecalho-aba";
+import { SinoNotificacoes } from "@/features/notificacoes";
 import { useAlertasSeguranca } from "@/features/operador/hooks/use-alertas-seguranca";
-import { useNotificacoesCampo } from "@/features/operador/hooks/use-notificacoes-campo";
 import { usePendenciasSync } from "@/features/operador/hooks/use-pendencias-sync";
 import { useUltimaSincronizacao } from "@/features/operador/ultima-sincronizacao";
 import { primeiroNome, saudacaoPorHora } from "@/features/operador/saudacao";
@@ -60,7 +56,6 @@ export function HojePage() {
   const { isLoading, error } = ordensStore.useEstado();
   const apontamentos = apontamentosStore.useTodos();
   const equipamentos = equipamentosStore.useAll();
-  const { naoLidas } = useNotificacoesCampo();
   const { pendentes: alertasPendentes } = useAlertasSeguranca();
   const pendentes = usePendenciasSync();
   const ultimaSincronizacao = useUltimaSincronizacao();
@@ -88,7 +83,7 @@ export function HojePage() {
         avatar={<AvatarCampo iniciais={iniciaisDoNome(nome)} tamanho={40} />}
         acoes={
           <>
-            <SinoNotificacoes naoLidas={naoLidas} />
+            <SinoNotificacoes />
             <SeloSincronizacao
               pendentes={pendentes.length}
               ultimaSincronizacao={formatHoraCurta(ultimaSincronizacao)}

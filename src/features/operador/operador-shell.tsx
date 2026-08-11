@@ -1,5 +1,6 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
+import { useCicloNotificacoes } from "@/features/notificacoes";
 import { cn } from "@/lib/utils";
 
 /*
@@ -33,6 +34,11 @@ function normalizar(pathname: string): string {
 
 export function OperadorShell() {
   const pathname = normalizar(useRouterState({ select: (s) => s.location.pathname }));
+
+  // Ciclo das notificações (PRD-020) montado uma vez, aqui: o sino agora vive
+  // no cabeçalho da aba "Hoje", que desmonta ao trocar de aba, e o service
+  // worker / reconsulta não podem morrer junto.
+  useCicloNotificacoes({ ativo: pathname !== "/app/entrar" });
 
   if (pathname === "/app/entrar") {
     return <Outlet />;

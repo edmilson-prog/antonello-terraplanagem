@@ -5,24 +5,19 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [0.24.0] - 2026-08-09 - Toolbelt
-
-> A versão 0.23.0 ("Klaxon") é do PR #18 (notificações + Web Push no app de campo), desenvolvido em
-> paralelo. As duas entregas tocam `/app/notificacoes`: ao integrar, a fonte de dados do PR #18 (a
-> real, com tabela e RPCs) prevalece — nesta branch a tela inteira foi escrita atrás de um único
-> hook (`useNotificacoesCampo`) justamente para a troca ser de um arquivo só.
+## [0.25.0] - 2026-08-11 - Toolbelt
 
 ### Added
-- **App de Campo (`/app/*`) inteiro portado para o UI kit oficial** (`ui_kits/app-campo` do Claude Design, lido via DesignSync): as 23 telas do protótipo, em três ondas.
+- **App de Campo (`/app/*`) inteiro portado para o UI kit oficial** (`ui_kits/app-campo` do Claude Design, lido via DesignSync): as 23 telas do protótipo, em três ondas. A tela de login saiu antes, sozinha, pelo PR #19.
 - Primitivas do kit como componentes tipados em `features/operador/components/kit` (superfície, ações, formulário e estados de tela) — as classes `ac-*`/`atp-*` do protótipo deixam de ser copiadas tela a tela.
-- Telas novas: **Notificações**, **Sincronização**, **Minha escala**, **Espelho de horas**, **Ficha do equipamento**, **Mapa da obra**, **Segurança**, **Checklist de pré-uso**, **Diário de obra (RDO)**, **Paralisação**, **Viagens de basculante**, **Mobilização / prancha**, **Solicitar manutenção** (lado operador) e **Assinatura da medição** em campo.
-- Notificações derivadas de fatos reais do sistema (OS atribuída, manutenção vencendo, apontamento aberto tempo demais, abastecimento registrado), com marca de leitura por aparelho.
+- Telas novas: **Sincronização**, **Minha escala**, **Espelho de horas**, **Ficha do equipamento**, **Mapa da obra**, **Segurança**, **Checklist de pré-uso**, **Diário de obra (RDO)**, **Paralisação**, **Viagens de basculante**, **Mobilização / prancha**, **Solicitar manutenção** (lado operador) e **Assinatura da medição** em campo.
 - Alertas de segurança derivados de risco real: máquina em manutenção alocada a uma OS ativa do operador, plano de manutenção vencido/próximo e checklist de pré-uso reprovado. A ciência de cada alerta fica registrada.
 - Fila local dos registros de campo (`features/registros-campo`), primeiro estágio do ADR-001: cada registro nasce com `op_id` e `pendente_sync`, sobrevive a fechar o app e aparece na tela de Sincronização.
 - Novas derivações puras com teste: `features/apontamento/resumo-horas.ts` (horas por dia/mês/OS/semana), `features/operador/notificacoes.ts`, `features/operador/alertas-seguranca.ts` e `features/registros-campo/derivacoes.ts`.
 - Tokens `surface-2`, `border-soft`, `primary-deep`, `primary-dim`, `success` e `info` nos três escopos de tema.
 
 ### Changed
+- **Notificações (PRD-020, 0.23.0) ganham a roupa do kit sem trocar de motor:** a tela e o store continuam sendo os do PRD-020 (tabela `notificacoes` + RPCs por token + Web Push). O que mudou é onde o sino mora — agora no cabeçalho da aba "Hoje", como no protótipo. O ciclo de vida (service worker, reinscrição de push, reconsulta periódica) foi extraído para `useCicloNotificacoes` e montado no shell, para continuar vivo em todas as telas mesmo com o sino fora do cabeçalho global.
 - **Bottom nav do app do operador passa a seguir o kit:** `Hoje · Minhas OS · Abastecer · Perfil` (era `Início · Apontamento · Minhas OS · Perfil`). A barra some nas sub-telas, que ocupam a tela inteira e voltam pelo cabeçalho — como no protótipo.
 - Cabeçalho global do app sai do shell: cada tela desenha o seu (`ac-head` nas abas, `ac-form-head` nas sub-telas). O toggle de tema, obrigatório pelo CLAUDE.md, passa a viver no Perfil.
 - Apontamento vira o fechamento do turno no padrão do kit (stepper de 0,5 h partindo de +8 h), com leitura do horímetro por foto ao lado do stepper. A observação escrita no fechamento agora é realmente gravada.
@@ -35,6 +30,42 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 ### Notes
 - Os oito registros de campo ainda **não têm tabela no Supabase**. O app do operador roda como `anon`, que hoje não enxerga nem `ordens_servico` — o acesso do operador depende de RPCs por token (padrão de `login_operador` / `operador_do_token`), ainda não escritas para leitura de OS nem para escrita de registros. Até lá os registros ficam no aparelho, e o contrato em `features/registros-campo/tipos.ts` é o que as tabelas vão implementar.
 - Onde o kit depende de dado que o sistema não tem, a tela mostra o limite em vez de inventar: o mapa da obra cai no fallback previsto pelo próprio kit (sem lat/lon na OS) mas abre a rota no GPS pelo endereço; as viagens não exibem trajeto/jazida; e o DDS aparece com estado vazio, explicando que a retaguarda ainda não publica o tema do dia.
+## [0.24.0] - 2026-08-09 - Watchtower
+
+### Added
+- Painel Operacional (aba "Operacional" do dashboard) refeito conforme o design system oficial (`ui_kits/retaguarda/DashboardOperacional`): grid de duas colunas — mapa do canteiro e manutenção preditiva à esquerda; ordens/horas, financeiro, contas a receber e atalhos à direita.
+- Faixa de condições sobre o mapa com o clima da base da operação (Santo Ângelo/RS), consultado em runtime na Open-Meteo — API pública, sem chave, que recebe apenas coordenadas fixas. Falha de rede não derruba o mapa: a faixa só omite a parte de clima.
+- Contagem de operadores em campo (apontamentos em andamento) na faixa do mapa.
+- Coluna "Saúde" na manutenção preditiva: barra do percentual do intervalo do plano já consumido, colorida por status. A tabela agora lista também os planos **em dia**, não só os alertas — é a leitura de frota que o kit propõe.
+- Faixas de vencimento em "Contas a receber por cliente": vencida, 0–15 dias, 16–30 dias e +30 dias (esta última não existe no mock, mas o dado real produz), com legenda que só mostra as faixas presentes.
+- Atalhos completos do kit: Nova O.S., Novo orçamento, Novo cliente, Registrar abastecimento e Gerar relatório.
+- Novas derivações puras (`manutencaoPreditiva`, `percentualCiclo`, `contasReceberPorClienteFaixas`) e o serviço de clima, com 17 testes novos.
+
+### Changed
+- Os cards de OS e horas viraram três tiles no formato do kit: **Abertas** (com as novas OS dos últimos 7 dias em barras), **Em andamento** (com a quebra em andamento/abertas/concluídas no mês) e **Horas apontadas** (com os apontamentos do último dia com movimento, por OS e operador).
+- Cards financeiros (Executado, Faturado, Recebido) adotaram o mesmo tile, com a variação percentual ao lado do rótulo de comparação.
+- O selo do mapa diz **"Posições ilustrativas"** em vez do "Ao vivo" do mock: as coordenadas dos equipamentos são fictícias (PRD-019 RF-003) e o selo original prometeria um rastreamento por GPS que o produto não tem.
+- As barras de "novas OS por dia" passaram a usar a série real em vez da série decorativa — barras discretas rotuladas por dia devem bater com o dado; os sparklines financeiros seguem decorativos, como decidido no PRD-016.
+
+### Removed
+- `CardOsAbertas` e `CardHorasApontadas`, substituídos pelos três tiles de "Ordens e horas".
+
+## [0.23.0] - 2026-08-09 - Klaxon
+
+### Added
+- **Central de notificações no app de campo** (`/app/notificacoes`, PRD-020), fiel ao kit `ui_kits/app-campo` (tela `notif`): sino com badge no cabeçalho, lista agrupada por Hoje / Ontem / data, ícone-tile por tipo de aviso, ponto de não lida, "Marcar lidas" e deep link para a OS quando houver.
+- **Web Push**: o celular do operador avisa mesmo com o app fechado. Tabela `push_subscriptions` (uma linha por aparelho), trigger em `notificacoes` que chama a Edge Function `enviar-push` via `pg_net`, e assinatura VAPID na função — que ainda remove inscrições mortas (404/410).
+- **PWA do app de campo**: `manifest.webmanifest`, service worker estático em `public/sw.js` (só push e clique na notificação — não intercepta `fetch`) e ícones gerados por `scripts/gerar-icones-pwa.js`. Feito sem `vite-plugin-pwa`, porque o `vite.config.ts` proíbe plugins manuais.
+- Tabela `notificacoes` com RLS ligada e **sem policy para `anon`**: o acesso do operador passa por RPCs `SECURITY DEFINER` que recebem o token da sessão como parâmetro (`listar_notificacoes`, `marcar_notificacoes_lidas`, `registrar_push_subscription`, `remover_push_subscription`), no mesmo contrato de `login_operador`.
+- Cinco produtores de aviso ligados a fluxos reais: **nova OS atribuída** (trigger em `ordens_servico.responsavel_id`), **apontamento aprovado** (ao fechar a OS na retaguarda, um aviso por operador com o total de horas dele), **abastecimento registrado** (diálogo do operador), **manutenção agendada** (cadastro de plano, avisa quem opera o equipamento) e **lembrete de apontamento** (job `pg_cron` diário às 17h).
+- Leitura offline: a lista abre sem sinal com o que já havia chegado, e o "marcar lidas" feito offline entra numa fila local que sobe ao reconectar — sem a notificação "voltar a ser nova" no meio do caminho.
+- Controle de avisos no Perfil, com atalho para a central e instrução específica para iPhone (no iOS, Web Push exige instalar o app na tela inicial).
+
+### Changed
+- Sair do app agora remove a inscrição de push e apaga o cache local de notificações — aparelho de campo é compartilhado, e o próximo operador não pode receber aviso nem ver histórico do anterior.
+
+### Security
+- `registrar_notificacao_propria` deriva o destinatário do token e restringe o tipo a `abastecimento_registrado`: sem isso, a chave `anon` (que é pública) permitiria disparar notificação arbitrária para qualquer operador.
 
 ## [0.22.0] - 2026-08-09 - Lookout
 

@@ -9,7 +9,8 @@ import {
   classeBotaoCampo,
 } from "@/features/operador/components/kit";
 import { useAlertasSeguranca } from "@/features/operador/hooks/use-alertas-seguranca";
-import { useNotificacoesCampo } from "@/features/operador/hooks/use-notificacoes-campo";
+import { ConfiguracaoPush, limparNotificacoesLocais, useNaoLidas } from "@/features/notificacoes";
+import { desativarPush } from "@/features/notificacoes/push";
 import { usePendenciasSync } from "@/features/operador/hooks/use-pendencias-sync";
 import { useUltimaSincronizacao } from "@/features/operador/ultima-sincronizacao";
 import { useTheme } from "@/shared/hooks/use-theme";
@@ -34,7 +35,7 @@ import type { ReactNode } from "react";
 export function PerfilPage() {
   const navigate = useNavigate();
   const sessao = typeof window !== "undefined" ? lerSessaoOperador() : null;
-  const { naoLidas } = useNotificacoesCampo();
+  const naoLidas = useNaoLidas();
   const { pendentes: alertasPendentes } = useAlertasSeguranca();
   const pendentes = usePendenciasSync();
   const ultimaSincronizacao = useUltimaSincronizacao();
@@ -43,6 +44,12 @@ export function PerfilPage() {
   const nome = sessao?.operadorNome ?? "Operador";
 
   async function sair() {
+    // Antes de encerrar: tira o push e apaga o cache local. Este aparelho é
+    // compartilhado — o próximo operador não pode receber aviso nem ver
+    // notificação de quem usou antes (PRD-020).
+    await desativarPush();
+    limparNotificacoesLocais();
+
     if (sessao) {
       await supabase.rpc("logout_operador", { p_token: sessao.token });
     }
@@ -103,6 +110,7 @@ export function PerfilPage() {
             <Icon icon="lucide:calendar-clock" className="h-[17px] w-[17px]" />
             Espelho de horas
           </Link>
+          <ConfiguracaoPush />
           <BotaoCampo variante="ghost" onClick={toggle}>
             <Icon
               icon={theme === "dark" ? "lucide:sun" : "lucide:moon"}

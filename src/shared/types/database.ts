@@ -660,6 +660,60 @@ export type Database = {
           },
         ];
       };
+      notificacoes: {
+        Row: {
+          created_at: string;
+          id: string;
+          lida_em: string | null;
+          mensagem: string;
+          operador_id: string;
+          origem_id: string | null;
+          os_id: string | null;
+          tipo: string;
+          titulo: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          lida_em?: string | null;
+          mensagem: string;
+          operador_id: string;
+          origem_id?: string | null;
+          os_id?: string | null;
+          tipo: string;
+          titulo: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          lida_em?: string | null;
+          mensagem?: string;
+          operador_id?: string;
+          origem_id?: string | null;
+          os_id?: string | null;
+          tipo?: string;
+          titulo?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notificacoes_operador_id_fkey";
+            columns: ["operador_id"];
+            isOneToOne: false;
+            referencedRelation: "operadores";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notificacoes_os_id_fkey";
+            columns: ["os_id"];
+            isOneToOne: false;
+            referencedRelation: "ordens_servico";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       operador_sessoes: {
         Row: {
           criado_em: string;
@@ -1116,6 +1170,47 @@ export type Database = {
         };
         Relationships: [];
       };
+      push_subscriptions: {
+        Row: {
+          auth: string;
+          created_at: string;
+          endpoint: string;
+          id: string;
+          operador_id: string;
+          p256dh: string;
+          updated_at: string;
+          user_agent: string | null;
+        };
+        Insert: {
+          auth: string;
+          created_at?: string;
+          endpoint: string;
+          id?: string;
+          operador_id: string;
+          p256dh: string;
+          updated_at?: string;
+          user_agent?: string | null;
+        };
+        Update: {
+          auth?: string;
+          created_at?: string;
+          endpoint?: string;
+          id?: string;
+          operador_id?: string;
+          p256dh?: string;
+          updated_at?: string;
+          user_agent?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_operador_id_fkey";
+            columns: ["operador_id"];
+            isOneToOne: false;
+            referencedRelation: "operadores";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       registros_manutencao: {
         Row: {
           created_at: string;
@@ -1202,6 +1297,28 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      criar_notificacao: {
+        Args: {
+          p_mensagem: string;
+          p_operador_id: string;
+          p_origem_id?: string;
+          p_os_id?: string;
+          p_tipo: string;
+          p_titulo: string;
+        };
+        Returns: string;
+      };
+      criar_notificacao_interna: {
+        Args: {
+          p_mensagem: string;
+          p_operador_id: string;
+          p_origem_id?: string;
+          p_os_id?: string;
+          p_tipo: string;
+          p_titulo: string;
+        };
+        Returns: string;
+      };
       criar_operador: {
         Args: {
           p_ativo?: boolean;
@@ -1217,12 +1334,65 @@ export type Database = {
         };
         Returns: Json;
       };
+      gerar_lembretes_apontamento: { Args: never; Returns: number };
       is_retaguarda: { Args: never; Returns: boolean };
+      limpar_push_subscriptions_expiradas: { Args: never; Returns: number };
+      listar_notificacoes: {
+        Args: { p_limite?: number; p_token: string };
+        Returns: {
+          created_at: string;
+          id: string;
+          lida_em: string | null;
+          mensagem: string;
+          operador_id: string;
+          origem_id: string | null;
+          os_id: string | null;
+          tipo: string;
+          titulo: string;
+          updated_at: string;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "notificacoes";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
       login_operador: {
         Args: { p_operador_id: string; p_pin: string };
         Returns: Json;
       };
       logout_operador: { Args: { p_token: string }; Returns: undefined };
+      marcar_notificacoes_lidas: {
+        Args: { p_ids?: string[]; p_token: string };
+        Returns: number;
+      };
+      operador_do_token: { Args: { p_token: string }; Returns: string };
+      registrar_notificacao_propria: {
+        Args: {
+          p_mensagem: string;
+          p_origem_id?: string;
+          p_os_id?: string;
+          p_tipo: string;
+          p_titulo: string;
+          p_token: string;
+        };
+        Returns: string;
+      };
+      registrar_push_subscription: {
+        Args: {
+          p_auth: string;
+          p_endpoint: string;
+          p_p256dh: string;
+          p_token: string;
+          p_user_agent?: string;
+        };
+        Returns: undefined;
+      };
+      remover_push_subscription: {
+        Args: { p_endpoint: string; p_token: string };
+        Returns: undefined;
+      };
     };
     Enums: {
       [_ in never]: never;
