@@ -1,4 +1,5 @@
 const STORAGE_KEY = "antonello.sessao_operador";
+const ULTIMO_OPERADOR_KEY = "antonello.ultimo_operador";
 
 export interface OperadorSessao {
   token: string;
@@ -29,6 +30,34 @@ export function gravarSessaoOperador(sessao: OperadorSessao) {
 
 export function encerrarSessaoOperador() {
   window.localStorage.removeItem(STORAGE_KEY);
+}
+
+export interface UltimoOperador {
+  id: string;
+  nome: string;
+}
+
+/*
+ * Quem entrou por último NESTE aparelho. Sobrevive ao logout de propósito: o
+ * celular é do operador (ou fica na máquina), então o login abre direto no PIN
+ * dele em vez de pedir a escolha toda vez. Só id e nome — nada além do que a
+ * RLS `operadores_anon_login_list` já expõe à role anon.
+ */
+export function lembrarUltimoOperador(operador: UltimoOperador) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(ULTIMO_OPERADOR_KEY, JSON.stringify(operador));
+}
+
+export function lerUltimoOperador(): UltimoOperador | null {
+  if (typeof window === "undefined") return null;
+  const raw = window.localStorage.getItem(ULTIMO_OPERADOR_KEY);
+  if (!raw) return null;
+  try {
+    const operador = JSON.parse(raw) as UltimoOperador;
+    return operador.id && operador.nome ? operador : null;
+  } catch {
+    return null;
+  }
 }
 
 // Lança se chamado fora de uma rota protegida por /app (nunca deveria acontecer

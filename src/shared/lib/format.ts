@@ -26,6 +26,15 @@ export function formatTelefone(tel: string | null): string {
   return tel;
 }
 
+// Iniciais para avatar: primeira letra do primeiro nome + primeira do último.
+// Nome com uma só palavra devolve uma letra; vazio devolve "?".
+export function iniciaisDoNome(nome: string): string {
+  const partes = nome.trim().split(/\s+/);
+  const primeira = partes[0]?.[0] ?? "";
+  const ultima = partes.length > 1 ? (partes[partes.length - 1]?.[0] ?? "") : "";
+  return (primeira + ultima).toUpperCase() || "?";
+}
+
 export function formatDataHora(iso: string | null): string {
   if (!iso) return "—";
   const d = new Date(iso);
