@@ -22,6 +22,10 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 - **O operador via zero OS em produção.** `ordens_servico` e `apontamentos` só tinham policy para `authenticated`; como o app roda com a anon key e RLS sem policy que case devolve lista vazia em vez de erro, as telas de campo apareciam vazias sem nenhum sinal de erro.
 - A metragem executada e as fotos do apontamento, que antes só existiam em memória, agora persistem.
 
+### Security
+- **As funções internas do banco não estavam protegidas de verdade.** As migrations usavam `revoke all on function ... from public`, que no Supabase não tem efeito: o projeto vem com `alter default privileges ... grant all on functions to anon, authenticated`, então toda função em `public` nasce com EXECUTE concedido explicitamente a essas roles, e revogar de PUBLIC não mexe nisso. Na prática, qualquer visitante com a anon key podia chamar `criar_operador` (criar operador com CPF, sem autenticação), `criar_notificacao_interna` (notificar qualquer operador, pulando a checagem de `criar_notificacao`) e as rotinas agendadas. Revogado explicitamente de `anon` e `authenticated`.
+- A superfície que a role `anon` alcança passa a ser exatamente a API do app de campo: 11 funções, das quais 10 exigem e validam o token da sessão, mais `login_operador` (que exige operador e PIN). Verificado executando como `anon`: as RPCs públicas respondem, as internas devolvem `permission denied`.
+
 ### Notes
 - As telas da retaguarda que somam horas (Dashboard, Rentabilidade, Faturamento, Painel Gerencial, Custo da Hora) passam a refletir a tabela real, hoje vazia — os ~30 apontamentos que apareciam ali eram do mock e referenciavam equipamentos e OS que não existem no banco. Os números voltam a crescer conforme os operadores apontam.
 
