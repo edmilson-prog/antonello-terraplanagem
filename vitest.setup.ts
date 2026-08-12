@@ -6,6 +6,7 @@ import { ordensServico as ordensFixture } from "./src/mocks/ordens-servico";
 import { orcamentos as orcamentosFixture } from "./src/mocks/orcamentos";
 import { avisosWhatsApp as avisosWhatsAppFixture } from "./src/mocks/avisos-whatsapp";
 import { operadores as operadoresFixture } from "./src/mocks/operadores";
+import { apontamentos as apontamentosFixture } from "./src/mocks/apontamentos";
 
 // jsdom (ambiente de teste deste projeto) não implementa window.matchMedia por
 // padrão. Vários componentes/hooks usam prefers-color-scheme (useTheme) e
@@ -75,6 +76,7 @@ vi.mock("./src/lib/supabase", () => {
     avisos_whatsapp: avisosWhatsAppFixture.map((a) => ({ ...a })),
     operadores: operadoresFixture.map((o) => ({ ...o })),
     operadores_equipamentos: [],
+    apontamentos: apontamentosFixture.map((a) => ({ ...a })),
   };
 
   class FakeQueryBuilder implements PromiseLike<{ data: unknown; error: null }> {
@@ -166,10 +168,180 @@ vi.mock("./src/lib/supabase", () => {
     }
   }
 
+  interface RespostaRpc {
+    data: unknown;
+    error: { message: string; code?: string } | null;
+  }
+
+  // As RPCs do operador são consumidas como `.rpc(...).returns<T>()`, então o
+  // dublê precisa devolver algo encadeável — e não uma Promise crua.
+  const respostaRpc = (data: unknown, error: RespostaRpc["error"] = null) => {
+    const resultado: RespostaRpc = { data, error };
+    const thenable = {
+      returns: () => thenable,
+      then: <T>(onfulfilled?: ((valor: RespostaRpc) => T | PromiseLike<T>) | null) =>
+        Promise.resolve(onfulfilled ? onfulfilled(resultado) : (resultado as never)),
+    };
+    return thenable;
+  };
+
+  // Espelha operador_do_token() lendo a sessão que o teste gravou com
+  // gravarSessaoOperador(). Valida o token de fato: um store que mandasse o
+  // token errado cairia aqui, como cairia no banco.
+  const operadorDoToken = (token: string): string | null => {
+    try {
+      const raw = globalThis.localStorage?.getItem("antonello.sessao_operador");
+      if (!raw) return null;
+      const sessao = JSON.parse(raw) as { token: string; operadorId: string; expiraEm: string };
+      if (sessao.token !== token) return null;
+      if (new Date(sessao.expiraEm).getTime() <= Date.now()) return null;
+      return sessao.operadorId;
+    } catch {
+      return null;
+    }
+  };
+
+  const SESSAO_INVALIDA = { message: "Sessão inválida ou expirada", code: "28000" };
+
+  // Mesma regra de ordens_do_operador_ids() no banco: responsável OU com
+  // apontamento meu. A fonte da verdade é o SQL da migration; aqui é só o
+  // suficiente para os testes exercitarem o caminho do operador.
+  const idsOrdensDoOperador = (operadorId: string) =>
+    (tabelas.ordens_servico ?? [])
+      .filter(
+        (os) =>
+          os.responsavel_id === operadorId ||
+          (tabelas.apontamentos ?? []).some(
+            (a) => a.os_id === os.id && a.operador_id === operadorId,
+          ),
+      )
+      .map((os) => os.id as string);
+
+  const porCampoDesc =
+    (campo: string) => (a: Record<string, unknown>, b: Record<string, unknown>) =>
+      String(b[campo] ?? "").localeCompare(String(a[campo] ?? ""));
+
   return {
     supabase: {
       from: (table: string) => new FakeQueryBuilder(table),
       rpc: (fn: string, args: Record<string, unknown> = {}) => {
+        if (fn === "listar_ordens_operador") {
+          const operadorId = operadorDoToken(String(args.p_token ?? ""));
+          if (!operadorId) return respostaRpc(null, SESSAO_INVALIDA);
+          const ids = idsOrdensDoOperador(operadorId);
+          return respostaRpc(
+            (tabelas.ordens_servico ?? [])
+              .filter((os) => ids.includes(os.id as string))
+              .sort(porCampoDesc("aberta_em")),
+          );
+        }
+
+        if (fn === "listar_apontamentos_operador") {
+          const operadorId = operadorDoToken(String(args.p_token ?? ""));
+          if (!operadorId) return respostaRpc(null, SESSAO_INVALIDA);
+          const ids = idsOrdensDoOperador(operadorId);
+          return respostaRpc(
+            (tabelas.apontamentos ?? [])
+              .filter((a) => a.operador_id === operadorId || ids.includes(a.os_id as string))
+              .sort(porCampoDesc("iniciado_em")),
+          );
+        }
+
+        if (fn === "iniciar_apontamento") {
+          const operadorId = operadorDoToken(String(args.p_token ?? ""));
+          if (!operadorId) return respostaRpc(null, SESSAO_INVALIDA);
+
+          const existente = (tabelas.apontamentos ?? []).find((a) => a.id === args.p_id);
+          if (existente) {
+            // Reenvio da fila offline: devolve o que já existe, sem duplicar.
+            if (existente.operador_id !== operadorId) {
+              return respostaRpc(null, {
+                message: "Apontamento de outro operador",
+                code: "42501",
+              });
+            }
+            return respostaRpc([existente]);
+          }
+
+          if (
+            (tabelas.apontamentos ?? []).some(
+              (a) => a.operador_id === operadorId && a.status === "em_andamento",
+            )
+          ) {
+            return respostaRpc(null, {
+              message: "Já existe apontamento em andamento",
+              code: "55006",
+            });
+          }
+
+          const agora = new Date().toISOString();
+          const observacao = String(args.p_observacao ?? "").trim();
+          const novo = {
+            id: args.p_id,
+            equipamento_id: args.p_equipamento_id,
+            operador_id: operadorId,
+            os_id: args.p_os_id ?? null,
+            horimetro_inicial: args.p_horimetro_inicial,
+            horimetro_final: null,
+            horas_trabalhadas: null,
+            foto_inicial_url: args.p_foto_inicial_url ?? null,
+            foto_final_url: null,
+            observacao: observacao === "" ? null : observacao,
+            modalidade: args.p_modalidade ?? null,
+            metros_executados: null,
+            status: "em_andamento",
+            pendente_sync: false,
+            iniciado_em: agora,
+            finalizado_em: null,
+            created_at: agora,
+            updated_at: agora,
+          };
+          tabelas.apontamentos = [novo, ...(tabelas.apontamentos ?? [])];
+          return respostaRpc([novo]);
+        }
+
+        if (fn === "finalizar_apontamento") {
+          const operadorId = operadorDoToken(String(args.p_token ?? ""));
+          if (!operadorId) return respostaRpc(null, SESSAO_INVALIDA);
+
+          const atual = (tabelas.apontamentos ?? []).find((a) => a.id === args.p_id);
+          if (!atual || atual.operador_id !== operadorId) {
+            return respostaRpc(null, { message: "Apontamento não encontrado", code: "P0002" });
+          }
+
+          const final = Number(args.p_horimetro_final);
+          if (atual.status === "finalizado") {
+            if (Number(atual.horimetro_final) === final) return respostaRpc([atual]);
+            return respostaRpc(null, { message: "Apontamento já finalizado", code: "55000" });
+          }
+          if (!Number.isFinite(final) || final < Number(atual.horimetro_inicial)) {
+            return respostaRpc(null, {
+              message: "Horímetro final menor que o inicial",
+              code: "22023",
+            });
+          }
+
+          const agora = new Date().toISOString();
+          const nota = String(args.p_observacao ?? "").trim();
+          const atualizado = {
+            ...atual,
+            horimetro_final: final,
+            horas_trabalhadas: Math.round((final - Number(atual.horimetro_inicial)) * 10) / 10,
+            foto_final_url: args.p_foto_final_url ?? atual.foto_final_url,
+            metros_executados: args.p_metros_executados ?? atual.metros_executados,
+            observacao:
+              nota === "" ? atual.observacao : [atual.observacao, nota].filter(Boolean).join("\n"),
+            status: "finalizado",
+            pendente_sync: false,
+            finalizado_em: agora,
+            updated_at: agora,
+          };
+          tabelas.apontamentos = (tabelas.apontamentos ?? []).map((a) =>
+            a.id === args.p_id ? atualizado : a,
+          );
+          return respostaRpc([atualizado]);
+        }
+
         if (fn === "criar_operador") {
           const agora = new Date().toISOString();
           const id = `operadores-teste-${(tabelas.operadores?.length ?? 0) + 1}`;
@@ -197,12 +369,9 @@ vi.mock("./src/lib/supabase", () => {
               created_at: agora,
             })),
           ];
-          return Promise.resolve({ data: novo, error: null });
+          return respostaRpc(novo);
         }
-        return Promise.resolve({
-          data: null,
-          error: { message: `RPC "${fn}" não mockada em vitest.setup.ts` },
-        });
+        return respostaRpc(null, { message: `RPC "${fn}" não mockada em vitest.setup.ts` });
       },
       functions: {
         invoke: vi.fn().mockResolvedValue({ data: { ok: true }, error: null }),

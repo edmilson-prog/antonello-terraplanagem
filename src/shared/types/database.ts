@@ -192,7 +192,7 @@ export type Database = {
           {
             foreignKeyName: "avisos_whatsapp_os_id_fkey";
             columns: ["os_id"];
-            isOneToOne: false;
+            isOneToOne: true;
             referencedRelation: "ordens_servico";
             referencedColumns: ["id"];
           },
@@ -1334,9 +1334,112 @@ export type Database = {
         };
         Returns: Json;
       };
+      finalizar_apontamento: {
+        Args: {
+          p_foto_final_url?: string;
+          p_horimetro_final: number;
+          p_id: string;
+          p_metros_executados?: number;
+          p_observacao?: string;
+          p_token: string;
+        };
+        Returns: {
+          created_at: string;
+          equipamento_id: string;
+          finalizado_em: string | null;
+          foto_final_url: string | null;
+          foto_inicial_url: string | null;
+          horas_trabalhadas: number | null;
+          horimetro_final: number | null;
+          horimetro_inicial: number;
+          id: string;
+          iniciado_em: string;
+          metros_executados: number | null;
+          modalidade: string | null;
+          observacao: string | null;
+          operador_id: string;
+          os_id: string | null;
+          pendente_sync: boolean;
+          status: string;
+          updated_at: string;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "apontamentos";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
       gerar_lembretes_apontamento: { Args: never; Returns: number };
+      iniciar_apontamento: {
+        Args: {
+          p_equipamento_id: string;
+          p_foto_inicial_url?: string;
+          p_horimetro_inicial: number;
+          p_id: string;
+          p_modalidade?: string;
+          p_observacao?: string;
+          p_os_id?: string;
+          p_token: string;
+        };
+        Returns: {
+          created_at: string;
+          equipamento_id: string;
+          finalizado_em: string | null;
+          foto_final_url: string | null;
+          foto_inicial_url: string | null;
+          horas_trabalhadas: number | null;
+          horimetro_final: number | null;
+          horimetro_inicial: number;
+          id: string;
+          iniciado_em: string;
+          metros_executados: number | null;
+          modalidade: string | null;
+          observacao: string | null;
+          operador_id: string;
+          os_id: string | null;
+          pendente_sync: boolean;
+          status: string;
+          updated_at: string;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "apontamentos";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
       is_retaguarda: { Args: never; Returns: boolean };
       limpar_push_subscriptions_expiradas: { Args: never; Returns: number };
+      listar_apontamentos_operador: {
+        Args: { p_token: string };
+        Returns: {
+          created_at: string;
+          equipamento_id: string;
+          finalizado_em: string | null;
+          foto_final_url: string | null;
+          foto_inicial_url: string | null;
+          horas_trabalhadas: number | null;
+          horimetro_final: number | null;
+          horimetro_inicial: number;
+          id: string;
+          iniciado_em: string;
+          metros_executados: number | null;
+          modalidade: string | null;
+          observacao: string | null;
+          operador_id: string;
+          os_id: string | null;
+          pendente_sync: boolean;
+          status: string;
+          updated_at: string;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "apontamentos";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
       listar_notificacoes: {
         Args: { p_limite?: number; p_token: string };
         Returns: {
@@ -1358,6 +1461,35 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      listar_ordens_operador: {
+        Args: { p_token: string };
+        Returns: {
+          aberta_em: string;
+          cliente_id: string;
+          created_at: string;
+          diametro_broca_mm: number | null;
+          endereco: string | null;
+          equipamento_previsto_id: string | null;
+          fechada_em: string | null;
+          id: string;
+          inicio_previsto: string | null;
+          modelo_cobranca: string;
+          numero: string;
+          obra_nome: string;
+          observacao: string | null;
+          pendente_sync: boolean;
+          responsavel_id: string | null;
+          status: string;
+          tipo_servico: string | null;
+          updated_at: string;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "ordens_servico";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
       login_operador: {
         Args: { p_operador_id: string; p_pin: string };
         Returns: Json;
@@ -1368,6 +1500,10 @@ export type Database = {
         Returns: number;
       };
       operador_do_token: { Args: { p_token: string }; Returns: string };
+      ordens_do_operador_ids: {
+        Args: { p_operador_id: string };
+        Returns: string[];
+      };
       registrar_notificacao_propria: {
         Args: {
           p_mensagem: string;

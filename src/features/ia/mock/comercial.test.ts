@@ -6,13 +6,17 @@ import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { gravarSessaoOperador } from "@/features/auth/operador-session";
 import type { OrdemServico } from "@/shared/types";
 
+// Operador próprio deste teste: op-001 já tem apontamento em andamento nos
+// mocks, e abrir um segundo é recusado pela RPC iniciar_apontamento.
+const OPERADOR_TESTE = "op-teste-comercial";
+
 describe("sugerirOrcamento", () => {
   beforeEach(() => {
     gravarSessaoOperador({
       token: "t",
-      operadorId: "op-001",
+      operadorId: OPERADOR_TESTE,
       operadorNome: "Teste",
-      expiraEm: new Date(Date.now() + 1000).toISOString(),
+      expiraEm: new Date(Date.now() + 60_000).toISOString(),
     });
   });
 
@@ -33,7 +37,7 @@ describe("sugerirOrcamento", () => {
       obra_nome: "Obra teste C9",
       endereco: null,
       modelo_cobranca: "hora_maquina",
-      responsavel_id: null,
+      responsavel_id: OPERADOR_TESTE,
       observacao: null,
       diametro_broca_mm: null,
       tipo_servico: null,
@@ -41,13 +45,17 @@ describe("sugerirOrcamento", () => {
       inicio_previsto: null,
       numero: "OS-TESTE-C9",
     });
-    apontamentosStore.iniciar({
+    // A OS nasce com este operador como responsável para que ela entre em
+    // "minhas OS" — o store, sob sessão de operador, lê pela RPC e só traz as
+    // OS dele.
+    await ordensStore.retry();
+
+    const novo = await apontamentosStore.iniciar({
       equipamento_id: equipamento.id,
       horimetro_inicial: 100,
       os_id: ordem.id,
     });
-    const emAndamento = apontamentosStore.listar()[0];
-    apontamentosStore.finalizar(emAndamento.id, { horimetro_final: 110 });
+    await apontamentosStore.finalizar(novo.id, { horimetro_final: 110 });
 
     const sugestao = await sugerirOrcamento(
       { clienteId: "cliente-teste-c9", modeloCobranca: "hora_maquina" },

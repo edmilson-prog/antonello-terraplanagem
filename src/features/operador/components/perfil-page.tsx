@@ -16,6 +16,8 @@ import { useUltimaSincronizacao } from "@/features/operador/ultima-sincronizacao
 import { useTheme } from "@/shared/hooks/use-theme";
 import { supabase } from "@/lib/supabase";
 import { encerrarSessaoOperador, lerSessaoOperador } from "@/features/auth/operador-session";
+import { ordensStore } from "@/features/ordem-servico/ordens-store";
+import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { CODINOME_SISTEMA, VERSAO_SISTEMA } from "@/features/auth/versao-sistema";
 import { formatDataHora, iniciaisDoNome } from "@/shared/lib/format";
 import type { ReactNode } from "react";
@@ -54,6 +56,9 @@ export function PerfilPage() {
       await supabase.rpc("logout_operador", { p_token: sessao.token });
     }
     encerrarSessaoOperador();
+    // Pelo mesmo motivo, esvazia o cache de OS e apontamentos: sem token, as
+    // consultas voltam a sair como `anon` e não trazem nada — é o que se quer.
+    await Promise.all([ordensStore.retry(), apontamentosStore.retry()]);
     await navigate({ to: "/app/entrar" });
   }
 

@@ -1,8 +1,21 @@
 import { useSyncExternalStore } from "react";
-import { apontamentos as apontamentosIniciais } from "@/mocks/apontamentos";
-import { calcularHoras } from "@/features/apontamento/calcular-horas";
-import { getOperadorLogadoId } from "@/features/auth/operador-session";
+import { supabase, sessaoRestaurada } from "@/lib/supabase";
+import { lerSessaoOperador } from "@/features/auth/operador-session";
 import type { Apontamento } from "@/shared/types";
+
+/*
+ * Store de apontamentos respaldado pelo Supabase. Dois caminhos de acesso por
+ * trás da mesma API pública, escolhidos pela sessão que existe no aparelho:
+ *
+ * - retaguarda (/admin): sessão do Supabase Auth, lê a tabela direto sob a
+ *   policy `apontamentos_retaguarda_all`;
+ * - app de campo (/app): login por PIN com token opaco, role `anon`, que não
+ *   enxerga tabela de negócio — lê e escreve pelas RPCs SECURITY DEFINER que
+ *   recebem o token (supabase/migrations/20260812120000_operador_dados_rpcs.sql).
+ *
+ * O id é gerado aqui, no cliente, e é a chave de idempotência do ADR-001:
+ * reenviar o mesmo apontamento depois de reconectar não duplica horas.
+ */
 
 export interface IniciarInput {
   equipamento_id: string;
@@ -21,110 +34,179 @@ export interface FinalizarInput {
   observacao?: string | null;
 }
 
+export type ErroFinalizar =
+  | "nao_encontrado"
+  | "ja_finalizado"
+  | "final_menor_que_inicial"
+  /** Rede fora, sessão expirada, qualquer outra falha — traz a mensagem junto. */
+  | "falha";
+
 export type FinalizarResultado =
   | { ok: true; apontamento: Apontamento }
-  | { ok: false; erro: "nao_encontrado" | "ja_finalizado" | "final_menor_que_inicial" };
+  | { ok: false; erro: ErroFinalizar; mensagem?: string };
 
-export interface ApontamentosStore {
-  listar: () => Apontamento[];
-  obter: (id: string) => Apontamento | undefined;
-  useTodos: () => Apontamento[];
-  useApontamento: (id: string) => Apontamento | undefined;
-  iniciar: (input: IniciarInput) => Apontamento;
-  finalizar: (id: string, input: FinalizarInput) => FinalizarResultado;
+interface Estado {
+  isLoading: boolean;
+  error: Error | null;
 }
 
-// Store dedicado em memória. Não usa createMockStore porque Apontamento tem
-// ciclo de vida (status em_andamento → finalizado), não soft-delete (ativo).
-// Espelha o padrão de features/ordem-servico/ordens-store.ts.
-export function criarApontamentosStore(seed: Apontamento[]): ApontamentosStore {
-  let itens: Apontamento[] = seed.map((a) => ({ ...a }));
-  const ouvintes = new Set<() => void>();
-  const notificar = () => ouvintes.forEach((fn) => fn());
-  const inscrever = (fn: () => void) => {
-    ouvintes.add(fn);
-    return () => {
-      ouvintes.delete(fn);
-    };
-  };
+// SQLSTATEs levantados pelas RPCs, traduzidos para o vocabulário da tela.
+const ERRO_POR_CODIGO: Record<string, ErroFinalizar> = {
+  P0002: "nao_encontrado",
+  "55000": "ja_finalizado",
+  "22023": "final_menor_que_inicial",
+};
 
-  const listar = () => itens;
-  const obter = (id: string) => itens.find((a) => a.id === id);
+const MENSAGEM_POR_CODIGO: Record<string, string> = {
+  "28000": "Sua sessão expirou. Entre novamente para continuar.",
+  "55006": "Você já tem um apontamento em andamento. Encerre-o antes de abrir outro.",
+  "22023": "Horímetro inválido.",
+};
 
-  const iniciar: ApontamentosStore["iniciar"] = (input) => {
-    const agora = new Date().toISOString();
-    const novo: Apontamento = {
-      id: crypto.randomUUID(),
-      equipamento_id: input.equipamento_id,
-      operador_id: getOperadorLogadoId(),
-      os_id: input.os_id ?? null,
-      horimetro_inicial: input.horimetro_inicial,
-      horimetro_final: null,
-      horas_trabalhadas: null,
-      foto_inicial_url: input.foto_inicial_url ?? null,
-      foto_final_url: null,
-      observacao: input.observacao?.trim() ? input.observacao.trim() : null,
-      modalidade: input.modalidade ?? null,
-      metros_executados: null,
-      status: "em_andamento",
-      pendente_sync: true,
-      iniciado_em: agora,
-      finalizado_em: null,
-      created_at: agora,
-      updated_at: agora,
-    };
-    itens = [novo, ...itens];
-    notificar();
-    return novo;
-  };
-
-  const finalizar: ApontamentosStore["finalizar"] = (id, input) => {
-    const atual = itens.find((a) => a.id === id);
-    if (!atual) return { ok: false, erro: "nao_encontrado" };
-    if (atual.status === "finalizado") return { ok: false, erro: "ja_finalizado" };
-    if (input.horimetro_final < atual.horimetro_inicial) {
-      return { ok: false, erro: "final_menor_que_inicial" };
-    }
-    const agora = new Date().toISOString();
-    const notaFinal = input.observacao?.trim();
-    const atualizado: Apontamento = {
-      ...atual,
-      observacao: notaFinal
-        ? [atual.observacao, notaFinal].filter(Boolean).join("\n")
-        : atual.observacao,
-      horimetro_final: input.horimetro_final,
-      horas_trabalhadas: calcularHoras(atual.horimetro_inicial, input.horimetro_final),
-      foto_final_url: input.foto_final_url ?? atual.foto_final_url,
-      metros_executados: input.metros_executados ?? atual.metros_executados,
-      status: "finalizado",
-      pendente_sync: true,
-      finalizado_em: agora,
-      updated_at: agora,
-    };
-    itens = itens.map((a) => (a.id === id ? atualizado : a));
-    notificar();
-    return { ok: true, apontamento: atualizado };
-  };
-
-  const useTodos = () => useSyncExternalStore(inscrever, listar, listar);
-  const useApontamento = (id: string) =>
-    useSyncExternalStore(
-      inscrever,
-      () => itens.find((a) => a.id === id),
-      () => itens.find((a) => a.id === id),
-    );
-
-  return { listar, obter, useTodos, useApontamento, iniciar, finalizar };
+function mensagemDoErro(erro: { code?: string; message: string }): string {
+  return MENSAGEM_POR_CODIGO[erro.code ?? ""] ?? erro.message;
 }
 
-export const apontamentosStore = criarApontamentosStore(apontamentosIniciais);
+let itens: Apontamento[] = [];
+let estado: Estado = { isLoading: true, error: null };
+const ouvintes = new Set<() => void>();
+
+const notificar = () => ouvintes.forEach((fn) => fn());
+const inscrever = (fn: () => void) => {
+  ouvintes.add(fn);
+  return () => {
+    ouvintes.delete(fn);
+  };
+};
+
+interface Resposta {
+  data: Apontamento[] | null;
+  error: { message: string } | null;
+}
+
+function buscar(): PromiseLike<Resposta> {
+  const sessao = lerSessaoOperador();
+  if (sessao) {
+    return supabase
+      .rpc("listar_apontamentos_operador", { p_token: sessao.token })
+      .returns<Apontamento[]>();
+  }
+  return supabase
+    .from("apontamentos")
+    .select("*")
+    .order("iniciado_em", { ascending: false })
+    .returns<Apontamento[]>();
+}
+
+async function carregar() {
+  estado = { isLoading: true, error: null };
+  notificar();
+
+  const { data, error } = await buscar();
+
+  if (error) {
+    estado = { isLoading: false, error: new Error(error.message) };
+  } else {
+    itens = data ?? [];
+    estado = { isLoading: false, error: null };
+  }
+  notificar();
+}
+
+sessaoRestaurada.then(carregar);
+
+const listar = () => itens;
+const obter = (id: string) => itens.find((a) => a.id === id);
+const useTodos = () => useSyncExternalStore(inscrever, listar, listar);
+const useApontamento = (id: string) =>
+  useSyncExternalStore(
+    inscrever,
+    () => obter(id),
+    () => obter(id),
+  );
+const useEstado = () =>
+  useSyncExternalStore(
+    inscrever,
+    () => estado,
+    () => estado,
+  );
+
+function exigirSessaoOperador() {
+  const sessao = lerSessaoOperador();
+  if (!sessao) throw new Error("Nenhum operador logado.");
+  return sessao;
+}
+
+async function iniciar(input: IniciarInput): Promise<Apontamento> {
+  const sessao = exigirSessaoOperador();
+  const { data, error } = await supabase
+    .rpc("iniciar_apontamento", {
+      p_token: sessao.token,
+      p_id: crypto.randomUUID(),
+      p_equipamento_id: input.equipamento_id,
+      p_horimetro_inicial: input.horimetro_inicial,
+      p_os_id: input.os_id ?? undefined,
+      p_observacao: input.observacao ?? undefined,
+      p_foto_inicial_url: input.foto_inicial_url ?? undefined,
+      p_modalidade: input.modalidade ?? undefined,
+    })
+    .returns<Apontamento[]>();
+
+  if (error) throw new Error(mensagemDoErro(error));
+  const criado = data?.[0];
+  if (!criado) throw new Error("Não foi possível iniciar o apontamento.");
+
+  await carregar();
+  return criado;
+}
+
+async function finalizar(id: string, input: FinalizarInput): Promise<FinalizarResultado> {
+  const sessao = lerSessaoOperador();
+  if (!sessao) return { ok: false, erro: "falha", mensagem: "Nenhum operador logado." };
+
+  const { data, error } = await supabase
+    .rpc("finalizar_apontamento", {
+      p_token: sessao.token,
+      p_id: id,
+      p_horimetro_final: input.horimetro_final,
+      p_foto_final_url: input.foto_final_url ?? undefined,
+      p_metros_executados: input.metros_executados ?? undefined,
+      p_observacao: input.observacao ?? undefined,
+    })
+    .returns<Apontamento[]>();
+
+  if (error) {
+    return {
+      ok: false,
+      erro: ERRO_POR_CODIGO[error.code ?? ""] ?? "falha",
+      mensagem: mensagemDoErro(error),
+    };
+  }
+  const atualizado = data?.[0];
+  if (!atualizado) return { ok: false, erro: "nao_encontrado" };
+
+  await carregar();
+  return { ok: true, apontamento: atualizado };
+}
+
+export const apontamentosStore = {
+  listar,
+  obter,
+  useTodos,
+  useApontamento,
+  useEstado,
+  iniciar,
+  finalizar,
+  retry: carregar,
+};
 
 // Filtro puro (testável) — usado pela tela "Meus apontamentos".
 export function apontamentosDoOperador(lista: Apontamento[], operadorId: string): Apontamento[] {
   return lista.filter((a) => a.operador_id === operadorId);
 }
 
-// Apontamento em andamento do operador (premissa do domínio: no máximo 1 por vez).
+// Apontamento em andamento do operador (premissa do domínio: no máximo 1 por vez,
+// garantida pela RPC iniciar_apontamento).
 export function apontamentoEmAndamentoDoOperador(
   lista: Apontamento[],
   operadorId: string,
