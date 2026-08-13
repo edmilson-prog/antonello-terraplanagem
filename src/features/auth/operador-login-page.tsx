@@ -11,6 +11,8 @@ import {
   lembrarUltimoOperador,
   lerUltimoOperador,
 } from "@/features/auth/operador-session";
+import { ordensStore } from "@/features/ordem-servico/ordens-store";
+import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { iniciaisDoNome } from "@/shared/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -108,6 +110,11 @@ export function OperadorLoginPage() {
       expiraEm: new Date(Date.now() + VALIDADE_SESSAO_MS).toISOString(),
     });
     lembrarUltimoOperador({ id: resultado.operador.id, nome: resultado.operador.nome });
+
+    // Os stores carregaram na abertura do app, quando ainda não havia token —
+    // como `anon` não enxerga OS nem apontamento, o cache está vazio. Recarrega
+    // agora, já pelas RPCs do operador, senão ele entra num app em branco.
+    await Promise.all([ordensStore.retry(), apontamentosStore.retry()]);
 
     toast.success(`Bem-vindo, ${resultado.operador.nome.split(" ")[0]}!`);
     void navigate({ to: "/app" });

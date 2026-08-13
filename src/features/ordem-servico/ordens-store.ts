@@ -1,11 +1,18 @@
 import { useSyncExternalStore } from "react";
 import { supabase, sessaoRestaurada } from "@/lib/supabase";
+import { lerSessaoOperador } from "@/features/auth/operador-session";
 import { podeFecharOS } from "@/features/ordem-servico/derivacoes";
 import type { Apontamento, OrdemServico } from "@/shared/types";
 
 // Store reativo respaldado pelo Supabase (mesma API pública do antigo mock
 // em memória) — cache em memória + notificação via useSyncExternalStore,
 // recarregado do banco após cada mutação. Nada aqui lê src/mocks/ mais.
+//
+// A leitura tem dois caminhos: a retaguarda lê a tabela sob a sessão do Supabase
+// Auth; o app de campo, que roda como `anon` e não enxerga `ordens_servico`, lê
+// pela RPC `listar_ordens_operador` com o token da sessão por PIN. As mutações
+// (criar/atualizar/fechar) são exclusivas da retaguarda — pelo ADR-001 o
+// operador nunca fecha uma OS.
 
 export type ResultadoFecharOrdem =
   | { ok: true; ordem: OrdemServico }
@@ -34,15 +41,25 @@ const inscrever = (fn: () => void) => {
   };
 };
 
-async function carregar() {
-  estado = { isLoading: true, error: null };
-  notificar();
-
-  const { data, error } = await supabase
+function buscar(): PromiseLike<{ data: OrdemServico[] | null; error: { message: string } | null }> {
+  const sessao = lerSessaoOperador();
+  if (sessao) {
+    return supabase
+      .rpc("listar_ordens_operador", { p_token: sessao.token })
+      .returns<OrdemServico[]>();
+  }
+  return supabase
     .from("ordens_servico")
     .select("*")
     .order("aberta_em", { ascending: false })
     .returns<OrdemServico[]>();
+}
+
+async function carregar() {
+  estado = { isLoading: true, error: null };
+  notificar();
+
+  const { data, error } = await buscar();
 
   if (error) {
     estado = { isLoading: false, error: new Error(error.message) };

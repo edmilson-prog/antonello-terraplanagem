@@ -51,6 +51,7 @@ export function ApontamentoDetalhe({ apontamentoId }: { apontamentoId: string })
   const [erro, setErro] = useState<string | null>(null);
   const [abastecimentoAberto, setAbastecimentoAberto] = useState(false);
   const [confirmado, setConfirmado] = useState<{ horas: number; final: number } | null>(null);
+  const [encerrando, setEncerrando] = useState(false);
 
   if (!apontamento) return <ApontamentoNaoEncontrado />;
 
@@ -107,22 +108,24 @@ export function ApontamentoDetalhe({ apontamentoId }: { apontamentoId: string })
 
   const jaFinalizado = apontamento.status === "finalizado";
 
-  function confirmar() {
+  async function confirmar() {
     if (!apontamento) return;
     if (exigeMetros && metros.trim() === "") {
       setErro("Informe a metragem executada — esta OS é cobrada por metro.");
       return;
     }
-    const r = apontamentosStore.finalizar(apontamento.id, {
+    setEncerrando(true);
+    const r = await apontamentosStore.finalizar(apontamento.id, {
       horimetro_final: horimetroFinal,
       metros_executados: metros.trim() === "" ? null : Number(metros),
       observacao: observacao.trim() || null,
     });
+    setEncerrando(false);
     if (!r.ok) {
       setErro(
         r.erro === "final_menor_que_inicial"
           ? `O horímetro final não pode ser menor que o inicial (${formatHorimetro(apontamento.horimetro_inicial)}).`
-          : "Não foi possível finalizar este apontamento.",
+          : (r.mensagem ?? "Não foi possível finalizar este apontamento."),
       );
       return;
     }
@@ -248,11 +251,11 @@ export function ApontamentoDetalhe({ apontamentoId }: { apontamentoId: string })
 
             <div className="mt-3.5">
               <BotaoCampo
-                onClick={confirmar}
-                disabled={horimetroFinal <= apontamento.horimetro_inicial}
+                onClick={() => void confirmar()}
+                disabled={encerrando || horimetroFinal <= apontamento.horimetro_inicial}
               >
                 <Icon icon="lucide:check" className="h-[18px] w-[18px]" strokeWidth={2.2} />
-                Confirmar apontamento
+                {encerrando ? "Encerrando…" : "Confirmar apontamento"}
               </BotaoCampo>
             </div>
           </>

@@ -33,7 +33,7 @@ export interface RegistrosManutencaoStore {
 // Store dedicado (não usa createMockStore: RegistroManutencao não tem `ativo`).
 // Pura por injeção: registrarRealizada recebe `intervaloHoras` do chamador em
 // vez de importar planosManutencaoStore, mantendo o factory testável isolado
-// (mesmo padrão de criarApontamentosStore/criarContasPagarStore).
+// (mesmo padrão de criarContasPagarStore).
 export function criarRegistrosManutencaoStore(
   inicial: RegistroManutencao[],
 ): RegistrosManutencaoStore {

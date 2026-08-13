@@ -5,6 +5,30 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.26.0] - 2026-08-12 - Handshake
+
+### Added
+- **O App de Campo passa a enxergar e gravar dados reais.** Quatro RPCs `SECURITY DEFINER` que recebem o token da sessão por PIN — `listar_ordens_operador`, `listar_apontamentos_operador`, `iniciar_apontamento` e `finalizar_apontamento` — no mesmo contrato já usado pelo login e pelas notificações (PRD-020). Nenhuma policy de escrita foi aberta para `anon` em tabela de negócio.
+- Índices `idx_apontamentos_operador_id`, `idx_apontamentos_os_id` e `idx_ordens_servico_responsavel_id`, que sustentam os filtros dessas funções.
+- Idempotência de apontamento conforme o ADR-001: o id é gerado no cliente e serve de `opId`. Reenviar a abertura não duplica horas; refechar com o mesmo horímetro é no-op bem-sucedido, e com horímetro diferente é recusado como conflito de leitura.
+
+### Changed
+- **`apontamentos` deixa de ser mock e passa a viver no banco** — foi o último store do fluxo de campo ainda alimentado por `src/mocks/`. O store ganhou dois caminhos por trás da mesma API: a retaguarda lê a tabela sob a sessão do Supabase Auth; o app de campo lê e escreve pelas RPCs por token. `ordensStore` seguiu o mesmo desenho na leitura.
+- Abrir e encerrar apontamento agora são operações assíncronas contra o servidor, com estado de "Encerrando…" no botão e erro na tela em vez de sucesso presumido.
+- `pendente_sync` passa a dizer a verdade: o que o servidor aceitou volta marcado como sincronizado.
+- Entrar e sair recarregam OS e apontamentos. O aparelho é compartilhado — ao sair, o cache esvazia, e o operador seguinte não herda as OS de quem usou antes.
+
+### Fixed
+- **O operador via zero OS em produção.** `ordens_servico` e `apontamentos` só tinham policy para `authenticated`; como o app roda com a anon key e RLS sem policy que case devolve lista vazia em vez de erro, as telas de campo apareciam vazias sem nenhum sinal de erro.
+- A metragem executada e as fotos do apontamento, que antes só existiam em memória, agora persistem.
+
+### Security
+- **As funções internas do banco não estavam protegidas de verdade.** As migrations usavam `revoke all on function ... from public`, que no Supabase não tem efeito: o projeto vem com `alter default privileges ... grant all on functions to anon, authenticated`, então toda função em `public` nasce com EXECUTE concedido explicitamente a essas roles, e revogar de PUBLIC não mexe nisso. Na prática, qualquer visitante com a anon key podia chamar `criar_operador` (criar operador com CPF, sem autenticação), `criar_notificacao_interna` (notificar qualquer operador, pulando a checagem de `criar_notificacao`) e as rotinas agendadas. Revogado explicitamente de `anon` e `authenticated`.
+- A superfície que a role `anon` alcança passa a ser exatamente a API do app de campo: 11 funções, das quais 10 exigem e validam o token da sessão, mais `login_operador` (que exige operador e PIN). Verificado executando como `anon`: as RPCs públicas respondem, as internas devolvem `permission denied`.
+
+### Notes
+- As telas da retaguarda que somam horas (Dashboard, Rentabilidade, Faturamento, Painel Gerencial, Custo da Hora) passam a refletir a tabela real, hoje vazia — os ~30 apontamentos que apareciam ali eram do mock e referenciavam equipamentos e OS que não existem no banco. Os números voltam a crescer conforme os operadores apontam.
+
 ## [0.25.0] - 2026-08-11 - Toolbelt
 
 ### Added

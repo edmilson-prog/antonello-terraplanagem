@@ -82,15 +82,22 @@ export function IniciarApontamentoForm({ osIdInicial }: { osIdInicial?: string }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [equipamentoId]);
 
-  const onSubmit = (values: IniciarApontamentoValues) => {
-    apontamentosStore.iniciar({
-      equipamento_id: values.equipamento_id,
-      horimetro_inicial: values.horimetro_inicial,
-      os_id: values.os_id && values.os_id !== SEM_OS ? values.os_id : null,
-      observacao: values.observacao ?? null,
-      foto_inicial_url: fotoInicialUrl,
-      modalidade: mostrarModalidade ? (values.modalidade ?? "operada") : null,
-    });
+  const onSubmit = async (values: IniciarApontamentoValues) => {
+    try {
+      await apontamentosStore.iniciar({
+        equipamento_id: values.equipamento_id,
+        horimetro_inicial: values.horimetro_inicial,
+        os_id: values.os_id && values.os_id !== SEM_OS ? values.os_id : null,
+        observacao: values.observacao ?? null,
+        foto_inicial_url: fotoInicialUrl,
+        modalidade: mostrarModalidade ? (values.modalidade ?? "operada") : null,
+      });
+    } catch (e) {
+      // O horímetro digitado é trabalho do operador em campo: falhou, ele fica
+      // na tela com o que preencheu, em vez de perder tudo e voltar ao início.
+      toast.error(e instanceof Error ? e.message : "Não foi possível iniciar o apontamento.");
+      return;
+    }
     toast.success("Apontamento iniciado.");
     // Volta para "Hoje": é lá que o apontamento aberto fica em destaque, com o
     // atalho para encerrar no fim do turno.
