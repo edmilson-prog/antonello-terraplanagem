@@ -65,6 +65,15 @@ if (!Element.prototype.releasePointerCapture) {
 // em src/mocks/. orcamento_itens é a tabela filha de orcamentos (itens vêm
 // normalizados no banco real, não embutidos na linha).
 vi.mock("./src/lib/supabase", () => {
+  /*
+   * A retaguarda entra logada por padrão: as telas do /admin só existem sob
+   * sessão, e os stores dessas tabelas agora só consultam quando há credencial
+   * (ver src/lib/credencial.ts). Testes que precisam do cenário oposto — boot
+   * sem sessão, como a landing pública ou o app de campo — derrubam a sessão
+   * com emitirAuthStateParaTeste("SIGNED_OUT", null).
+   */
+  const SESSAO_RETAGUARDA = { user: { id: "usuario-retaguarda-teste" } };
+
   const tabelas: Record<string, Record<string, unknown>[]> = {
     equipamentos: equipamentosFixture.map((e) => ({ ...e })),
     clientes: clientesFixture.map((c) => ({ ...c })),
@@ -77,12 +86,16 @@ vi.mock("./src/lib/supabase", () => {
     operadores: operadoresFixture.map((o) => ({ ...o })),
     operadores_equipamentos: [],
     apontamentos: apontamentosFixture.map((a) => ({ ...a })),
+    usuarios_retaguarda: [
+      { id: "usuario-retaguarda-teste", nome: "Admin Teste", perfil: "admin" },
+    ],
   };
 
   class FakeQueryBuilder implements PromiseLike<{ data: unknown; error: null }> {
     private op: "select" | "insert" | "update" | "delete" = "select";
     private payload: Record<string, unknown> | Record<string, unknown>[] | undefined;
     private isSingle = false;
+    private isMaybeSingle = false;
     private filtros: Array<[string, unknown]> = [];
     private ordem: { coluna: string; ascending: boolean } | null = null;
 
@@ -115,6 +128,11 @@ vi.mock("./src/lib/supabase", () => {
     }
     single() {
       this.isSingle = true;
+      return this;
+    }
+    // Usado por useUsuarioRetaguarda() para resolver o perfil do usuário logado.
+    maybeSingle() {
+      this.isMaybeSingle = true;
       return this;
     }
     returns() {
@@ -160,7 +178,7 @@ vi.mock("./src/lib/supabase", () => {
             return ascending ? cmp : -cmp;
           });
         }
-        data = selecionadas;
+        data = this.isMaybeSingle ? (selecionadas[0] ?? null) : selecionadas;
       }
       return Promise.resolve(
         onfulfilled ? onfulfilled({ data, error: null }) : ({ data, error: null } as never),
@@ -202,6 +220,13 @@ vi.mock("./src/lib/supabase", () => {
   };
 
   const SESSAO_INVALIDA = { message: "Sessão inválida ou expirada", code: "28000" };
+
+  // Assinantes de onAuthStateChange. O login da retaguarda não recarrega a
+  // página (navigate({ to: "/admin" })), então quem depende da sessão só fica
+  // sabendo por este canal — é o que os testes emitem com
+  // emitirAuthStateParaTeste() para simular "entrou sem reload".
+  type OuvinteAuth = (evento: string, session: { user: { id: string } } | null) => void;
+  const ouvintesAuth = new Set<OuvinteAuth>();
 
   // Mesma regra de ordens_do_operador_ids() no banco: responsável OU com
   // apontamento meu. A fonte da verdade é o SQL da migration; aqui é só o
@@ -381,11 +406,24 @@ vi.mock("./src/lib/supabase", () => {
         signOut: vi.fn().mockResolvedValue({ error: null }),
         resetPasswordForEmail: vi.fn().mockResolvedValue({ data: {}, error: null }),
         updateUser: vi.fn().mockResolvedValue({ data: {}, error: null }),
-        getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
+        getSession: vi
+          .fn()
+          .mockResolvedValue({ data: { session: SESSAO_RETAGUARDA }, error: null }),
+        onAuthStateChange: (ouvinte: OuvinteAuth) => {
+          ouvintesAuth.add(ouvinte);
+          return {
+            data: { subscription: { unsubscribe: () => ouvintesAuth.delete(ouvinte) } },
+          };
+        },
       },
     },
     // Stores (ex.: operadoresStore, orcamentosStore) aguardam esta promise
     // antes da carga inicial — ver src/lib/supabase.ts.
-    sessaoRestaurada: Promise.resolve({ data: { session: null }, error: null }),
+    sessaoRestaurada: Promise.resolve({ data: { session: SESSAO_RETAGUARDA }, error: null }),
+    // Só para os testes: simula o login/logout da retaguarda acontecendo com a
+    // aplicação já de pé, sem reload.
+    emitirAuthStateParaTeste: (evento: string, session: { user: { id: string } } | null) => {
+      ouvintesAuth.forEach((ouvinte) => ouvinte(evento, session));
+    },
   };
 });

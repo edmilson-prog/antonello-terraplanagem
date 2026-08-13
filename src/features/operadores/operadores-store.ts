@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
-import { supabase, sessaoRestaurada } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
+import { assinarCredencial, credencialAtual } from "@/lib/credencial";
 import type { Operador } from "@/shared/types";
 
 // Store reativo respaldado pelo Supabase (mesma API pública do antigo
@@ -33,6 +34,16 @@ const inscrever = (fn: () => void) => {
 };
 
 async function carregar() {
+  // Cadastro é da retaguarda. O app de campo enxerga só id e nome pela lista de
+  // login (RLS `operadores_anon_login_list`); estas colunas — CPF e telefone —
+  // exigem sessão, e sem ela a consulta voltaria 401.
+  if (credencialAtual() !== "retaguarda") {
+    itens = [];
+    estado = { isLoading: false, error: null };
+    notificar();
+    return;
+  }
+
   estado = { isLoading: true, error: null };
   notificar();
 
@@ -51,7 +62,7 @@ async function carregar() {
   notificar();
 }
 
-sessaoRestaurada.then(carregar);
+assinarCredencial(carregar);
 
 const getAll = () => itens;
 const getById = (id: string) => itens.find((i) => i.id === id);

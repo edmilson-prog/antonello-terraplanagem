@@ -1,5 +1,18 @@
+import { EVENTO_CREDENCIAL_OPERADOR } from "@/lib/eventos";
+
 const STORAGE_KEY = "antonello.sessao_operador";
 const ULTIMO_OPERADOR_KEY = "antonello.ultimo_operador";
+
+/*
+ * Entrar e sair pelo PIN não recarrega a página, e localStorage não avisa a
+ * própria aba. Sem este aviso, os stores continuariam com o resultado de antes
+ * do login — no app de campo, com a lista vazia que a falta de credencial
+ * produz — até alguém dar F5.
+ */
+function avisarMudancaDeCredencial() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(EVENTO_CREDENCIAL_OPERADOR));
+}
 
 export interface OperadorSessao {
   token: string;
@@ -26,10 +39,12 @@ export function lerSessaoOperador(): OperadorSessao | null {
 
 export function gravarSessaoOperador(sessao: OperadorSessao) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(sessao));
+  avisarMudancaDeCredencial();
 }
 
 export function encerrarSessaoOperador() {
   window.localStorage.removeItem(STORAGE_KEY);
+  avisarMudancaDeCredencial();
 }
 
 export interface UltimoOperador {

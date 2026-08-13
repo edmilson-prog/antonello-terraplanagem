@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
-import { supabase, sessaoRestaurada } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
+import { assinarCredencial, credencialAtual } from "@/lib/credencial";
 import { calcularTotalOrcamento } from "@/features/orcamentos/calculo";
 import { proximoNumeroORC } from "@/features/orcamentos/numero-orcamento";
 import { podeDecidir, podeEnviar } from "@/features/orcamentos/derivacoes";
@@ -47,6 +48,16 @@ const inscrever = (fn: () => void) => {
 };
 
 async function carregar() {
+  // Orçamento é dado comercial: nunca chega ao app de campo, e `orcamentos` e
+  // `orcamento_itens` só têm GRANT SELECT para `authenticated`. Sem sessão, as
+  // duas consultas voltariam 401.
+  if (credencialAtual() !== "retaguarda") {
+    itens = [];
+    estado = { isLoading: false, error: null };
+    notificar();
+    return;
+  }
+
   estado = { isLoading: true, error: null };
   notificar();
 
@@ -76,7 +87,7 @@ async function carregar() {
   notificar();
 }
 
-sessaoRestaurada.then(carregar);
+assinarCredencial(carregar);
 
 const listar = () => itens;
 const obter = (id: string) => itens.find((o) => o.id === id);

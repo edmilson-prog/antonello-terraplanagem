@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
-import { supabase, sessaoRestaurada } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
+import { assinarCredencial, credencialAtual } from "@/lib/credencial";
 import { lerSessaoOperador } from "@/features/auth/operador-session";
 import type { Apontamento } from "@/shared/types";
 
@@ -99,6 +100,16 @@ function buscar(): PromiseLike<Resposta> {
 }
 
 async function carregar() {
+  // Os dois caminhos de `buscar()` precisam de credencial: a RPC valida o token
+  // do operador, e a tabela só tem GRANT SELECT para `authenticated`. Sem
+  // nenhuma das duas, a consulta só renderia 401.
+  if (credencialAtual() === "nenhuma") {
+    itens = [];
+    estado = { isLoading: false, error: null };
+    notificar();
+    return;
+  }
+
   estado = { isLoading: true, error: null };
   notificar();
 
@@ -113,7 +124,7 @@ async function carregar() {
   notificar();
 }
 
-sessaoRestaurada.then(carregar);
+assinarCredencial(carregar);
 
 const listar = () => itens;
 const obter = (id: string) => itens.find((a) => a.id === id);
