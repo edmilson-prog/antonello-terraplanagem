@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
-import { supabase, sessaoRestaurada } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
+import { assinarCredencial, credencialAtual } from "@/lib/credencial";
 import type { Cliente } from "@/shared/types";
 
 // Store reativo respaldado pelo Supabase (mesma API pública do antigo
@@ -27,6 +28,17 @@ const inscrever = (fn: () => void) => {
 };
 
 async function carregar() {
+  // `clientes` é tabela da retaguarda: o GRANT SELECT é só para
+  // `authenticated`. Sem sessão a consulta voltaria 401 e o erro ficaria na
+  // tela até um F5 — melhor não sair. `assinarCredencial` chama de novo quando
+  // a sessão entra.
+  if (credencialAtual() !== "retaguarda") {
+    itens = [];
+    estado = { isLoading: false, error: null };
+    notificar();
+    return;
+  }
+
   estado = { isLoading: true, error: null };
   notificar();
 
@@ -45,7 +57,7 @@ async function carregar() {
   notificar();
 }
 
-sessaoRestaurada.then(carregar);
+assinarCredencial(carregar);
 
 const getAll = () => itens;
 const getById = (id: string) => itens.find((i) => i.id === id);
