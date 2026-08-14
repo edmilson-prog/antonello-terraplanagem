@@ -189,6 +189,7 @@ export function ComprovantesPage() {
         data={lista}
         columns={columns}
         getRowKey={(c) => c.id}
+        gridKey="admin-comprovantes"
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}

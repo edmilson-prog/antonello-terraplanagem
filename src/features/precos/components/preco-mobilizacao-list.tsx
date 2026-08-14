@@ -126,6 +126,7 @@ export function PrecoMobilizacaoList() {
         data={lista}
         columns={columns}
         getRowKey={(p) => p.id}
+        gridKey="admin-precos-mobilizacao"
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}

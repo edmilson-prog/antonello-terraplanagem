@@ -140,6 +140,7 @@ export function FaturasList({ faturamentos }: { faturamentos: Faturamento[] }) {
       data={lista}
       columns={columns}
       getRowKey={(f) => f.id}
+      gridKey="admin-faturamento"
       renderCard={renderCard}
       isLoading={isLoading}
       error={error}

@@ -272,6 +272,7 @@ export function OperadoresPage() {
         data={views}
         columns={columns}
         getRowKey={(v) => v.operador.id}
+        gridKey="admin-operadores"
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}

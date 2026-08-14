@@ -12,8 +12,18 @@ import {
 import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { EmptyState } from "@/shared/components/empty-state";
 import { useColumnWidths, LARGURA_MINIMA_COLUNA } from "@/shared/hooks/use-column-widths";
+import { useColumnVisibility } from "@/shared/hooks/use-column-visibility";
 import { cn } from "@/lib/utils";
 
 /** Header da coluna de ações — participa do redimensionamento como as demais. */
@@ -26,6 +36,8 @@ export interface Column<T> {
   cell: (item: T) => ReactNode;
   className?: string;
   headerClassName?: string;
+  /** Coluna essencial: fica de fora do menu de exibir/ocultar. */
+  fixa?: boolean;
 }
 
 interface DataListProps<T> {
@@ -40,11 +52,13 @@ interface DataListProps<T> {
   toolbar?: ReactNode;
   rowActions?: (item: T) => ReactNode;
   /**
-   * Ativa colunas com largura ajustável pelo usuário (arrastar a borda do cabeçalho).
-   * O valor é a chave de persistência no localStorage — use algo estável por lista,
-   * ex.: "admin-ordens".
+   * Chave de persistência das preferências da grade (colunas ocultas e larguras).
+   * Use algo estável por lista, ex.: "admin-ordens". Sem ela, as escolhas do
+   * usuário valem só enquanto a tela estiver aberta.
    */
-  resizableKey?: string;
+  gridKey?: string;
+  /** Permite ajustar a largura das colunas arrastando a borda do cabeçalho. */
+  resizable?: boolean;
 }
 
 export function DataList<T>({
@@ -58,10 +72,11 @@ export function DataList<T>({
   empty,
   toolbar,
   rowActions,
-  resizableKey,
+  gridKey,
+  resizable = false,
 }: DataListProps<T>) {
-  const redimensionavel = Boolean(resizableKey);
-  const { ajustes, temAjustes, definir, persistir, limpar } = useColumnWidths(resizableKey);
+  const { ajustes, temAjustes, definir, persistir, limpar } = useColumnWidths(gridKey);
+  const { ocultas, alternar, mostrarTodas } = useColumnVisibility(gridKey);
 
   // Larguras naturais medidas na primeira renderização da tabela: servem de base
   // enquanto o usuário não arrasta nada, e de valor de reset no duplo clique.
@@ -74,9 +89,17 @@ export function DataList<T>({
   const larguraWrapperRef = useRef(0);
   const thRefs = useRef(new Map<string, HTMLTableCellElement>());
 
+  const ocultaveis = useMemo(() => columns.filter((c) => !c.fixa), [columns]);
+  const visiveis = useMemo(() => {
+    const restantes = columns.filter((c) => c.fixa || !ocultas.includes(c.header));
+    // Rede de segurança: uma grade sem nenhuma coluna não seria recuperável.
+    return restantes.length > 0 ? restantes : columns;
+  }, [columns, ocultas]);
+  const qtdOcultas = columns.length - visiveis.length;
+
   const headers = useMemo(
-    () => [...columns.map((c) => c.header), ...(rowActions ? [HEADER_ACOES] : [])],
-    [columns, rowActions],
+    () => [...visiveis.map((c) => c.header), ...(rowActions ? [HEADER_ACOES] : [])],
+    [visiveis, rowActions],
   );
   const headersKey = headers.join("|");
 
@@ -92,7 +115,7 @@ export function DataList<T>({
 
   // Mede o cabeçalho renderizado em layout automático e congela essas larguras.
   useLayoutEffect(() => {
-    if (!redimensionavel || naturais !== null) return;
+    if (!resizable || naturais !== null) return;
     const medidas: Record<string, number> = {};
     for (const header of headers) {
       const el = thRefs.current.get(header);
@@ -104,11 +127,11 @@ export function DataList<T>({
     }
     larguraWrapperRef.current = Math.round(wrapperRef.current?.getBoundingClientRect().width ?? 0);
     setMedicao({ chave: headersKey, larguras: medidas });
-  }, [redimensionavel, naturais, headers, headersKey, isLoading, error, data.length]);
+  }, [resizable, naturais, headers, headersKey, isLoading, error, data.length]);
 
   // Enquanto o usuário não ajustou nada, a tabela continua acompanhando a janela.
   useEffect(() => {
-    if (!redimensionavel || temAjustes) return;
+    if (!resizable || temAjustes) return;
     const el = wrapperRef.current;
     if (!el || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(() => {
@@ -119,16 +142,16 @@ export function DataList<T>({
     });
     observer.observe(el);
     return () => observer.disconnect();
-  }, [redimensionavel, temAjustes]);
+  }, [resizable, temAjustes]);
 
   const larguras = useMemo(() => {
-    if (!redimensionavel || !naturais) return null;
+    if (!resizable || !naturais) return null;
     const efetivas: Record<string, number> = {};
     for (const header of headers) {
       efetivas[header] = ajustes[header] ?? naturais[header] ?? LARGURA_MINIMA_COLUNA;
     }
     return efetivas;
-  }, [redimensionavel, naturais, ajustes, headers]);
+  }, [resizable, naturais, ajustes, headers]);
 
   const larguraTotal = larguras ? headers.reduce((soma, h) => soma + larguras[h], 0) : 0;
 
@@ -216,102 +239,155 @@ export function DataList<T>({
         />
       ) : (
         <>
-          {/* Desktop: tabela */}
-          <div
-            ref={wrapperRef}
-            className="hidden overflow-x-auto rounded-xl border bg-card shadow-sm md:block"
-          >
-            <table
-              className={cn("w-full text-sm", larguras && "table-fixed")}
-              style={larguras ? { minWidth: larguraTotal } : undefined}
-            >
-              {larguras ? (
-                <colgroup>
-                  {headers.map((h) => (
-                    <col key={h} style={{ width: larguras[h] }} />
-                  ))}
-                  {/* Sobra: absorve o espaço quando as colunas somam menos que a tabela. */}
-                  <col />
-                </colgroup>
-              ) : null}
-              <thead>
-                <tr className="border-b text-left text-xs font-mono uppercase tracking-wide text-foreground-faint">
-                  {columns.map((c) => (
-                    <th
-                      key={c.header}
-                      ref={redimensionavel ? registrarTh(c.header) : undefined}
-                      scope="col"
-                      className={cn(
-                        "px-4 py-3 font-medium",
-                        redimensionavel && "relative",
-                        c.headerClassName,
-                      )}
-                    >
-                      {redimensionavel ? (
-                        <span className="block truncate" title={c.header}>
-                          {c.header}
-                        </span>
-                      ) : (
-                        c.header
-                      )}
-                      {redimensionavel ? alcaDe(c.header) : null}
-                    </th>
-                  ))}
-                  {rowActions ? (
-                    <th
-                      ref={redimensionavel ? registrarTh(HEADER_ACOES) : undefined}
-                      scope="col"
-                      className={cn(
-                        "px-4 py-3 text-right font-medium",
-                        redimensionavel && "relative",
-                      )}
-                    >
-                      {HEADER_ACOES}
-                      {redimensionavel ? alcaDe(HEADER_ACOES) : null}
-                    </th>
-                  ) : null}
-                  {larguras ? <th aria-hidden className="p-0" /> : null}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((item) => (
-                  <tr
-                    key={getRowKey(item)}
-                    className="border-b last:border-b-0 hover:bg-surface/50"
-                  >
-                    {columns.map((c) => (
-                      <td
-                        key={c.header}
-                        className={cn(
-                          "px-4 py-3 align-middle",
-                          redimensionavel && "break-words",
-                          c.className,
-                        )}
-                      >
-                        {c.cell(item)}
-                      </td>
-                    ))}
-                    {rowActions ? (
-                      <td className="px-4 py-3 text-right">{rowActions(item)}</td>
-                    ) : null}
-                    {larguras ? <td aria-hidden className="p-0" /> : null}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {temAjustes ? (
-            <div className="hidden justify-end md:flex">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => limpar()}
-                className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+          {/* Desktop: tabela. Botão direito em qualquer ponto abre o seletor de colunas. */}
+          <ContextMenu>
+            <ContextMenuTrigger asChild>
+              <div
+                ref={wrapperRef}
+                className="hidden overflow-x-auto rounded-xl border bg-card shadow-sm md:block"
               >
-                <Icon icon="lucide:columns-3" className="h-3.5 w-3.5" />
-                Restaurar largura das colunas
-              </Button>
+                <table
+                  className={cn("w-full text-sm", larguras && "table-fixed")}
+                  style={larguras ? { minWidth: larguraTotal } : undefined}
+                >
+                  {larguras ? (
+                    <colgroup>
+                      {headers.map((h) => (
+                        <col key={h} style={{ width: larguras[h] }} />
+                      ))}
+                      {/* Sobra: absorve o espaço quando as colunas somam menos que a tabela. */}
+                      <col />
+                    </colgroup>
+                  ) : null}
+                  <thead title="Clique com o botão direito para escolher as colunas">
+                    <tr className="border-b text-left text-xs font-mono uppercase tracking-wide text-foreground-faint">
+                      {visiveis.map((c) => (
+                        <th
+                          key={c.header}
+                          ref={resizable ? registrarTh(c.header) : undefined}
+                          scope="col"
+                          className={cn(
+                            "px-4 py-3 font-medium",
+                            resizable && "relative",
+                            c.headerClassName,
+                          )}
+                        >
+                          {resizable ? (
+                            <span className="block truncate" title={c.header}>
+                              {c.header}
+                            </span>
+                          ) : (
+                            c.header
+                          )}
+                          {resizable ? alcaDe(c.header) : null}
+                        </th>
+                      ))}
+                      {rowActions ? (
+                        <th
+                          ref={resizable ? registrarTh(HEADER_ACOES) : undefined}
+                          scope="col"
+                          className={cn(
+                            "px-4 py-3 text-right font-medium",
+                            resizable && "relative",
+                          )}
+                        >
+                          {HEADER_ACOES}
+                          {resizable ? alcaDe(HEADER_ACOES) : null}
+                        </th>
+                      ) : null}
+                      {larguras ? <th aria-hidden className="p-0" /> : null}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.map((item) => (
+                      <tr
+                        key={getRowKey(item)}
+                        className="border-b last:border-b-0 hover:bg-surface/50"
+                      >
+                        {visiveis.map((c) => (
+                          <td
+                            key={c.header}
+                            className={cn(
+                              "px-4 py-3 align-middle",
+                              resizable && "break-words",
+                              c.className,
+                            )}
+                          >
+                            {c.cell(item)}
+                          </td>
+                        ))}
+                        {rowActions ? (
+                          <td className="px-4 py-3 text-right">{rowActions(item)}</td>
+                        ) : null}
+                        {larguras ? <td aria-hidden className="p-0" /> : null}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </ContextMenuTrigger>
+
+            <ContextMenuContent className="w-60">
+              <ContextMenuLabel>Colunas</ContextMenuLabel>
+              <ContextMenuSeparator />
+              {ocultaveis.map((c) => {
+                const marcada = !ocultas.includes(c.header);
+                return (
+                  <ContextMenuCheckboxItem
+                    key={c.header}
+                    checked={marcada}
+                    // Impede esconder a última coluna que sobrou.
+                    disabled={marcada && visiveis.length === 1}
+                    onSelect={(e) => e.preventDefault()}
+                    onCheckedChange={() => alternar(c.header)}
+                  >
+                    {c.header}
+                  </ContextMenuCheckboxItem>
+                );
+              })}
+              <ContextMenuSeparator />
+              <ContextMenuItem disabled={qtdOcultas === 0} onSelect={() => mostrarTodas()}>
+                <Icon icon="lucide:eye" className="mr-2 h-4 w-4" />
+                Mostrar todas as colunas
+              </ContextMenuItem>
+              {resizable ? (
+                <ContextMenuItem disabled={!temAjustes} onSelect={() => limpar()}>
+                  <Icon icon="lucide:columns-3" className="mr-2 h-4 w-4" />
+                  Restaurar largura das colunas
+                </ContextMenuItem>
+              ) : null}
+            </ContextMenuContent>
+          </ContextMenu>
+
+          {qtdOcultas > 0 || (resizable && temAjustes) ? (
+            <div className="hidden flex-wrap items-center justify-end gap-2 md:flex">
+              {qtdOcultas > 0 ? (
+                <>
+                  <span className="text-xs text-muted-foreground">
+                    {qtdOcultas === 1 ? "1 coluna oculta" : `${qtdOcultas} colunas ocultas`}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => mostrarTodas()}
+                    className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    <Icon icon="lucide:eye" className="h-3.5 w-3.5" />
+                    Mostrar todas
+                  </Button>
+                </>
+              ) : null}
+              {resizable && temAjustes ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => limpar()}
+                  className="gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  <Icon icon="lucide:columns-3" className="h-3.5 w-3.5" />
+                  Restaurar largura das colunas
+                </Button>
+              ) : null}
             </div>
           ) : null}
 

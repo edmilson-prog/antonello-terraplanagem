@@ -212,6 +212,7 @@ export function OrcamentosPage() {
         data={lista}
         columns={columns}
         getRowKey={(o) => o.id}
+        gridKey="admin-orcamentos"
         renderCard={renderCard}
         isLoading={isLoading}
         error={error}
