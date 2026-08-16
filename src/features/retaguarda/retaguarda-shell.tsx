@@ -16,7 +16,7 @@ import {
   Calculator,
   TrendingUp,
   LineChart,
-  Plug,
+  SlidersHorizontal,
   Menu,
   ChevronRight,
   MessageCircle,
@@ -102,7 +102,9 @@ const grupos: NavGroup[] = [
   {
     titulo: null,
     itens: [
-      { to: "/admin/integracoes", label: "Integrações", icone: Plug },
+      // Integrações deixou de ter item próprio: virou seção de Parâmetros,
+      // que é onde o UI kit coloca provedores e conexão do WhatsApp.
+      { to: "/admin/parametros", label: "Parâmetros", icone: SlidersHorizontal },
       { to: "/admin/ia/chatbot", label: "Chatbot IA", icone: MessageCircle },
     ],
   },

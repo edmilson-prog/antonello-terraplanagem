@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useParametroTexto } from "@/features/parametros/uso";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,9 +32,16 @@ interface DarBaixaReceberDialogProps {
 
 export function DarBaixaReceberDialog({ conta, onOpenChange }: DarBaixaReceberDialogProps) {
   const hoje = new Date().toISOString().slice(0, 10);
+  const formaPadrao = useParametroTexto("recebimento_padrao", "pix") as FormaRecebimento;
   const [recebidoEm, setRecebidoEm] = useState(hoje);
-  const [forma, setForma] = useState<FormaRecebimento>("pix");
+  const [forma, setForma] = useState<FormaRecebimento>(formaPadrao);
   const [salvando, setSalvando] = useState(false);
+
+  // Cada abertura do diálogo parte da forma padrão configurada em Parâmetros,
+  // em vez de guardar a escolha da baixa anterior.
+  useEffect(() => {
+    if (conta) setForma(formaPadrao);
+  }, [conta, formaPadrao]);
 
   function handleConfirmar() {
     if (!conta) return;

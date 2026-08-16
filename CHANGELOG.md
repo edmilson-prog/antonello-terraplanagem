@@ -5,6 +5,27 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.27.0] - 2026-08-16 - Levers
+
+### Added
+- **Parâmetros da plataforma, as duas telas do UI kit.** `/admin/parametros` mostra os parâmetros em cards de leitura; `/admin/parametros/editar` edita, com navegação por seção, contador de campos alterados por seção, diff "antes → depois" antes de salvar e card de registro (última alteração, autor, versão). Fecham as linhas 33–34 do roadmap do UI kit.
+- Tabela `parametros` (linha única, garantida por índice) com as 6 seções do kit: Empresa, Operação, Custos & preços, Faturamento, Integrações e Acesso & segurança. Os defaults seguem o comportamento real do sistema, não os valores ilustrativos do mock — criar a tabela não muda o comportamento de nada.
+- Histórico de alterações (`parametros_historico` + diálogo agrupado por versão): quem mudou o quê, de qual valor para qual. As linhas são gravadas por trigger no banco, então nenhuma alteração escapa do registro — inclusive as feitas fora da tela.
+- Selo **"só cadastro"** nos parâmetros que o kit desenha mas o produto ainda não consulta. Mesma postura do selo "Posições ilustrativas" do Painel Operacional (0.23.0): quando o mock promete um controle que não existe, a tela diz isso em vez de copiar o rótulo.
+
+### Changed
+- **Quatro parâmetros deixaram de ser constante hardcodada e passaram a valer de verdade:** antecedência do alerta de manutenção (era `ANTECEDENCIA_HORAS_PADRAO = 20`), margem mínima e o alerta de margem baixa em Preços (era `MARGEM_MINIMA_PADRAO = 0.3`), horas/mês de referência do rateio de custo fixo (era o `160` embutido em `custoEstimadoHoraEquipamento`) e a forma de recebimento padrão do diálogo de baixa. Cada leitura mantém a constante antiga como fallback, para o intervalo antes da store carregar.
+- **`/admin/integracoes` foi absorvida pela seção Integrações de Parâmetros** e saiu da sidebar, que ganhou "Parâmetros" no lugar. Os provedores de gateway e de WhatsApp e o painel de conexão WAHA continuam funcionando como antes — mudou o lugar onde aparecem, não a lógica.
+- `DataRow` (linha ícone + rótulo + valor dos cards de leitura) foi para `shared/components`, em vez de mais uma cópia local por feature.
+
+### Security
+- As três funções novas do banco nascem com `search_path` fixo e sem `EXECUTE` para `anon`/`authenticated` — revogado também de `PUBLIC`, que é o que faltava nas trigger functions de versões anteriores. Auditado com `has_function_privilege` antes e depois.
+- `parametros_historico` é somente leitura para a retaguarda: as linhas vêm do trigger `SECURITY DEFINER`, nunca do cliente.
+
+### Notas
+- `jornada_horas` fica marcada como "só cadastro": ela só é usada no app do operador (pré-preenche o horímetro final), e o app não enxerga a tabela `parametros` — a RLS é de retaguarda. Ligá-la exige expor o valor por uma RPC de operador.
+- A "Chave de API" do mock não virou campo: sem uma API real para autenticar, o input só serviria para alguém colar um segredo em texto claro numa tabela que toda a retaguarda lê.
+
 ## [0.26.0] - 2026-08-12 - Handshake
 
 ### Added

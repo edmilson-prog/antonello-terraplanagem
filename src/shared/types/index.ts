@@ -493,3 +493,98 @@ export interface PushSubscriptionRegistrada {
   created_at: string;
   updated_at: string;
 }
+
+// Parâmetros da plataforma — linha única (singleton). Reúne o que antes vivia
+// como constante espalhada pelo código (antecedência do alerta de manutenção,
+// margem mínima, horas/mês de referência, jornada) e o cadastro institucional
+// desenhado no UI kit. RETAGUARDA-ONLY: o app do operador nunca lê esta tabela.
+//
+// Nem todo campo tem efeito no sistema hoje — `CAMPOS_SEM_EFEITO` em
+// features/parametros/campos.ts é o que a UI usa para rotular honestamente o
+// que ainda é só cadastro.
+export type AprovacaoApontamento = "supervisor" | "encarregado" | "automatica";
+export type DiasUteis = "seg_sex" | "seg_sab" | "personalizado";
+export type ArredondamentoPreco = "nenhum" | "1" | "5" | "10";
+export type RegimeTributario = "simples_nacional" | "lucro_presumido" | "lucro_real";
+export type SincronizacaoApp = "tempo_real" | "5min" | "15min";
+export type PoliticaSenha = "padrao" | "forte";
+export type PerfilPadraoNovoUsuario = "operador" | "recepcao" | "proprietario";
+
+export interface Parametros {
+  id: string;
+
+  // Empresa
+  razao_social: string;
+  nome_fantasia: string;
+  cnpj: string;
+  inscricao_estadual: string;
+  telefone: string;
+  email: string;
+  sede: string;
+
+  // Operação
+  jornada_horas: number;
+  tolerancia_horimetro: number;
+  alerta_manutencao_horas: number;
+  fechamento_dia: string; // "HH:MM:SS"
+  aprovacao_apontamento: AprovacaoApontamento;
+  dias_uteis: DiasUteis;
+  apontamento_via_app: boolean;
+  foto_obrigatoria: boolean;
+  registrar_gps: boolean;
+
+  // Custos & preços
+  depreciacao_anual_pct: number;
+  custo_operador_hora: number;
+  margem_minima_pct: number;
+  horas_mes_referencia: number;
+  diesel_preco_litro: number;
+  arredondamento_preco: ArredondamentoPreco;
+  reajuste_automatico_precos: boolean;
+  alertar_margem_baixa: boolean;
+
+  // Faturamento
+  vencimento_dias: number;
+  juros_mes_pct: number;
+  multa_atraso_pct: number;
+  nf_serie: string;
+  nf_proxima_numeracao: string;
+  regime_tributario: RegimeTributario;
+  recebimento_padrao: FormaRecebimento;
+  chave_pix: string;
+  nf_numeracao_automatica: boolean;
+  nf_envio_email: boolean;
+
+  // Integrações
+  whatsapp_numero: string;
+  email_remetente: string;
+  sincronizacao_app: SincronizacaoApp;
+  webhook_url: string;
+  canal_whatsapp_ativo: boolean;
+  backup_diario: boolean;
+
+  // Acesso & segurança
+  sessao_expira_min: number;
+  retencao_logs_dias: number;
+  politica_senha: PoliticaSenha;
+  perfil_padrao_novo_usuario: PerfilPadraoNovoUsuario;
+  dupla_verificacao: boolean;
+  particionamento_financeiro: boolean;
+
+  // Registro (card "Registro" da tela de Configurações)
+  versao: number;
+  atualizado_por: string | null; // FK → usuarios_retaguarda
+  created_at: string;
+  updated_at: string;
+}
+
+// Uma linha por campo alterado, gravada por trigger — nunca pelo cliente.
+export interface ParametroAlteracao {
+  id: string;
+  campo: string; // nome da coluna em Parametros
+  valor_anterior: string | null;
+  valor_novo: string | null;
+  versao: number;
+  alterado_por: string | null; // FK → usuarios_retaguarda
+  alterado_em: string;
+}
