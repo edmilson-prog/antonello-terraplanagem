@@ -238,6 +238,25 @@ npm run lint     # Linter
 | `style:` | Formatação |
 | `test:` | Testes |
 
+## Isolamento do Trabalho — Worktree
+
+**Toda feature nova ou mudança substancial começa em um worktree isolado.** Não trabalhar direto na
+árvore principal nesses casos — o worktree evita que trabalho em andamento colida com a cópia de
+trabalho do usuário ou com outras sessões rodando em paralelo.
+
+| Situação | Onde trabalhar |
+|----------|----------------|
+| Feature nova, PRD, onda do UI kit | **Worktree isolado** (`EnterWorktree`, uma branch por trabalho) |
+| Refatoração ampla, migração, mudança de schema | **Worktree isolado** |
+| Correção pontual, ajuste de texto/estilo, doc curto | Árvore atual — sem worktree |
+| Só leitura, investigação, responder pergunta | Árvore atual — sem worktree |
+
+Regras de fechamento:
+
+- Commitar **antes** de encerrar (o worktree pode ser apagado junto com a sessão) e dar push se houver remote.
+- Nunca commitar direto em `main`, nunca force-push, nunca merge sem pedido.
+- Abrir PR (draft quando o trabalho ainda não estiver pronto para review).
+
 ## Grafo de Conhecimento (graphify)
 
 O projeto mantém um grafo de conhecimento navegável (código + docs + PRDs), útil para achar conceitos duplicados entre PRDs, rastrear o "porquê" de uma decisão antiga e medir impacto antes de mexer em algo compartilhado (ex.: `cn()`, `Button`, `OrdemServico`).
