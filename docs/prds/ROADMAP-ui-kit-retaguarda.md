@@ -1,7 +1,6 @@
 # Roadmap — UI Kit Retaguarda × Refatoração Visual
 
-> Cruza as 34 telas do protótipo estático em
-> `docs/html/Antonello Terraplanagem — Design System/ui_kits/retaguarda/`
+> Cruza as 38 telas do UI kit da retaguarda (projeto Claude Design, via `DesignSync`)
 > com o estado real de `/admin/*`. Não é "existe ou não existe" — a funcionalidade
 > de quase tudo já existia antes deste UI kit chegar (PRDs 001–019, Fase 2/3).
 > O que este roadmap rastreia é **onda de refatoração visual**: quais telas já foram
@@ -14,9 +13,10 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Fonte do design** | `docs/html/Antonello Terraplanagem — Design System/ui_kits/retaguarda/` |
+| **Fonte do design** | Projeto Claude Design `2ede574c-b344-4984-8c24-88e1130720be`, pasta `ui_kits/retaguarda/`, lido via `DesignSync` — **é a fonte da verdade** |
+| **Espelho local** | `docs/html/Antonello Terraplanagem — Design System/ui_kits/retaguarda/` — cópia, fica atrás do remoto (em 2026-08-16 estava 4 telas atrasada). Conferir o remoto antes de confiar nele |
 | **Fonte do real** | `src/routes/admin.*.tsx` + `src/features/*/components/` |
-| **Telas no UI kit** | 34 (excluindo shell `App/Header/Sidebar`, `data.js` e `Placeholder.jsx`) |
+| **Telas no UI kit** | 38 (excluindo shell `App/Header/Sidebar`, `data.js` e `Placeholder.jsx`) |
 | **Gerado em** | 2026-07-15 |
 
 **Legenda:**
@@ -80,8 +80,12 @@
 | 30 | `DashboardOperacional.jsx` | `admin.index.tsx` (aba "Operacional") | ✅ | Onda 12 — grid 2 colunas do kit, tiles de ordens/horas, coluna Saúde na manutenção preditiva (agora inclui planos em dia), faixas de vencimento nas contas por cliente, clima real via Open-Meteo e 5 atalhos. Selo do mapa rotulado "Posições ilustrativas" em vez de "Ao vivo" — as coordenadas são fictícias (PRD-019 RF-003) |
 | 31 | `PainelGerencial.jsx` | `admin.gerencial.tsx` | 🔧 | Sem onda — última mudança real 2026-07-06 |
 | 32 | `Login.jsx` / `LoginV2.jsx` | `src/features/auth/login-page.tsx` | ✅ | Onda 6 |
-| 33 | `Parametros.jsx` | — | ⏳ | Não existe rota nem feature. Sem PRD |
-| 34 | `Sobre.jsx` | — | ⏳ | Não existe rota nem feature. Sem PRD, baixa prioridade |
+| 33 | `Parametros.jsx` | — | ⏳ | Não existe rota nem feature. Sem PRD. Forma par com a linha 34 (Parâmetros é a visão; Configurações é a edição) |
+| 34 | `Configuracoes.jsx` | — | ⏳ | **Tela nova no kit** (não estava na varredura de 2026-07-15). Edição dos parâmetros da plataforma: nav por 6 seções (Empresa, Operação, Custos & preços, Faturamento, Integrações, Acesso & segurança), campos + toggles, diff ao vivo do que mudou antes de salvar, card de Registro (última alteração/autor/versão). Sem rota nem feature |
+| 35 | `Notificacoes.jsx` | — | ⏳ | **Tela nova no kit.** Não existe contraparte na retaguarda — mas a feature `src/features/notificacoes/` já existe por inteiro (schema, RPCs, triggers de push, store), exposta só em `/app/notificacoes` (PRD-020). O gap é de UI da retaguarda, não de backend |
+| 36 | `NotificacoesPrefs.jsx` | — | ⏳ | **Tela nova no kit.** Mesma observação da linha 35 |
+| 37 | `NovaNotificacao.jsx` | — | ⏳ | **Tela nova no kit.** Mesma observação da linha 35 |
+| 38 | `Sobre.jsx` | — | ⏳ | Não existe rota nem feature. Sem PRD, baixa prioridade |
 
 ---
 
@@ -89,13 +93,14 @@
 
 | Status | Quantidade |
 |--------|------------|
-| ✅ Refatorado (bate com o design system) | 26 / 34 |
-| 🔧 Funcional, visual antigo | 5 / 34 |
-| 🔲 Funcional, mas em diálogo genérico (mock pede página dedicada) | 0 / 34 |
-| ⏳ Não existe | 2 / 34 |
-| ⚠️ Divergência de fluxo (não é visual) | 1 / 34 |
+| ✅ Refatorado (bate com o design system) | 26 / 38 |
+| 🔧 Funcional, visual antigo | 5 / 38 |
+| 🔲 Funcional, mas em diálogo genérico (mock pede página dedicada) | 0 / 38 |
+| ⏳ Não existe | 6 / 38 |
+| ⚠️ Divergência de fluxo (não é visual) | 1 / 38 |
 
 > Nota: a contagem anterior (16/8/8/2/1 = 35) tinha um erro de soma — 34 telas no total, não 35. Corrigido junto com as Ondas 8 e 9.
+> Em 2026-08-16 o denominador subiu de 34 para 38: o kit remoto ganhou 4 telas (`Configuracoes`, `Notificacoes`, `NotificacoesPrefs`, `NovaNotificacao`) que o espelho local ainda não tinha.
 
 ## Ondas de refatoração concluídas (cont.)
 
@@ -107,10 +112,11 @@
 
 ## O que falta, em ordem sugerida
 
-1. **🔧 Páginas de área ainda sem refatoração** (5 telas: Manutenção, Diesel, Custo da Hora, Rentabilidade, Painel Gerencial) — candidatas a agrupar por afinidade, ex.: "Diesel + Manutenção" (Frota) e "Custo da Hora/Rentabilidade/Painel Gerencial" (Analítico).
-2. **⏳ Parâmetros** — maior gap: não tem PRD nem rota. Precisa decisão de escopo antes de virar plano.
-3. **⏳ Sobre** — institucional, baixo esforço.
-4. **⚠️ Nova NF** — decisão de produto pendente com o Leonardo (emissão manual avulsa é necessária, ou o automático ao fechar OS já cobre?). Mesma categoria de divergência que apareceu em NovaManutencao (linha 23) — vale revisitar as duas juntas com o Leonardo.
+1. **⏳ Parâmetros + Configurações** (linhas 33–34) — *em andamento desde 2026-08-16*. Escolhida como próxima por ser a única pendência que não é reskin: a tela de Configurações do kit já traz desenhado o modelo de parâmetros da plataforma (jornada, tolerância de horímetro, margem mínima, vencimento padrão, particionamento financeiro) que hoje está espalhado como constante no código.
+2. **🔧 Páginas de área ainda sem refatoração** (5 telas: Manutenção, Diesel, Custo da Hora, Rentabilidade, Painel Gerencial) — candidatas a agrupar por afinidade, ex.: "Diesel + Manutenção" (Frota) e "Custo da Hora/Rentabilidade/Painel Gerencial" (Analítico).
+3. **⏳ Notificações na retaguarda** (linhas 35–37: central, preferências, nova notificação) — backend já pronto (PRD-020); falta só a UI de `/admin`.
+4. **⏳ Sobre** — institucional, baixo esforço.
+5. **⚠️ Nova NF** — decisão de produto pendente com o Leonardo (emissão manual avulsa é necessária, ou o automático ao fechar OS já cobre?). Mesma categoria de divergência que apareceu em NovaManutencao (linha 23) — vale revisitar as duas juntas com o Leonardo.
 
 ---
 
@@ -127,4 +133,5 @@
 | **Atualização 2026-07-22** | `NovoAbastecimento` fechado (linha 25): página dedicada em `/admin/diesel/novo`, mesmo formulário/validação de horímetro que já existia (só mudou o shell, não a lógica), com resumo ao vivo estimando o custo (litros × preço) quando só um dos dois é informado. Sem o seletor "Origem do diesel" com preço fixo/estoque/conta a pagar automática do mock — decisão do usuário, não existe no produto real. `RegistrarAbastecimentoDialog` (retaguarda) removido, substituído pela página; `RegistrarAbastecimentoOperadorDialog` (app do operador, schema diferente, sem dado financeiro) não foi tocado. |
 | **Atualização 2026-08-09 (2)** | **Onda 12 — Painel Operacional (aba "Operacional"), linha 30.** Fecha as duas abas de `/admin`. Todos os blocos já existiam; o que mudou foi o layout (grid 2 colunas do kit: mapa + manutenção preditiva à esquerda, gestão à direita) e o formato dos tiles. Três divergências mock×real resolvidas explicitamente: (a) o selo "Ao vivo" do mapa virou "Posições ilustrativas", porque as coordenadas são fictícias (PRD-019 RF-003) e o selo original prometeria GPS inexistente — decisão do usuário; (b) o clima do overlay, que o produto não tinha, passou a vir da Open-Meteo (API pública sem chave, só coordenadas fixas saem na requisição), degradando em silêncio se a rede falhar — decisão do usuário; (c) as contas a receber por cliente ganharam uma quarta faixa "+30 dias" além das três do mock, porque o dado real produz vencimentos nessa janela. A manutenção preditiva passou a listar também os planos em dia (o kit mostra a saúde da frota inteira, não só os alertas). As barras de "novas OS por dia" usam série real; os sparklines financeiros seguem decorativos (PRD-016). |
 | **Atualização 2026-08-09** | **Onda 11 — Dashboard (aba "Visão geral"), linha 29.** Primeira tela portada com o projeto Claude Design (`DesignSync`) como fonte da verdade de design, sem a etapa intermediária de Artifact (regra nova do usuário). Layout do kit adotado por inteiro: 4 KPIs-herói com variação vs. período anterior e sparkline + grid de dois blocos (OS em andamento e Apontamentos do dia à esquerda; Frota, Vencimentos próximos e Horas por semana à direita). Nenhum KPI antigo foi descartado — Executado, Recebido, OS abertas, Fechadas no período, Contas vencidas/a vencer e Alertas de manutenção migraram para uma faixa compacta logo abaixo dos KPIs (decisão do usuário). Duas divergências mock×real resolvidas a favor do real: o filtro de período (hoje/semana/mês) foi mantido no lugar da pílula estática `julho/2025` do mock, e os blocos que não seguem o filtro (apontamentos do dia, horas por semana) são ancorados no apontamento finalizado mais recente e rotulam a data exibida, em vez de mostrar card vazio rotulado "de hoje". Os 6 widgets antigos do dashboard foram removidos. |
+| **Atualização 2026-08-16** | **Revarredura contra o kit remoto** (`DesignSync`, não o espelho `docs/html/`). O kit cresceu de 34 para 38 telas: `Configuracoes`, `Notificacoes`, `NotificacoesPrefs` e `NovaNotificacao` entraram e não estavam catalogadas aqui — o espelho local estava 4 arquivos atrás do remoto, então a partir de agora **o remoto é a fonte da verdade** e o `docs/html/` é só cópia. Resumo recontado sobre 38 (⏳ passou de 2 para 6). Nenhuma tela mudou de status por implementação nesta atualização — só o denominador e o inventário. Registrado também que as 3 telas de notificação têm backend pronto (`src/features/notificacoes/`, PRD-020), exposto hoje apenas em `/app/notificacoes`: o que falta ali é UI de retaguarda, não schema. |
 | **Atualização 2026-07-22 (2)** | **Onda 10 fechada.** `NovaManutencao` (linha 23) — maior divergência mock×real das três telas da onda: o mock modela manutenção corretiva sob demanda (tipo, prioridade com bloqueio de equipamento, fornecedor/oficina, descrição livre), que não existe no produto real (só preventiva, disparada por `PlanoManutencao` por intervalo de horas). Por decisão do usuário, a página dedicada (`/admin/manutencao/registrar/$registroId`) cobre só o fluxo real — "Registrar Manutenção Realizada" a partir de um alerta específico da aba Alertas, não um "+ Novo" livre — sem inventar tipo/prioridade/bloqueio/fornecedor. `AlertasTab` passou a linkar direto pra rota em vez de abrir diálogo; `RegistrarManutencaoDialog` removido. |
