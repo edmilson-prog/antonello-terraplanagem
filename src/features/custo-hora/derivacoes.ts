@@ -174,6 +174,54 @@ export function custoHoraPorEquipamento(
     );
 }
 
+// Números do cabeçalho da tela (UI kit `screen-custohora`): agregam o resultado
+// por equipamento num resumo do mês. Ficam aqui, e não no componente, para
+// serem testáveis sem renderizar.
+export interface ResumoCustoHora {
+  custoTotal: number;
+  horas: number;
+  /** Ponderado pelas horas — null quando ninguém trabalhou no mês. */
+  custoMedioHora: number | null;
+  custoDiesel: number;
+  /** Média das margens percentuais dos equipamentos que têm preço e horas. */
+  margemMediaPct: number | null;
+  margensNegativas: number;
+}
+
+export function resumoCustoHora(resultados: CustoHoraEquipamento[]): ResumoCustoHora {
+  const custoTotal = round2(resultados.reduce((s, r) => s + r.custo_total, 0));
+  const horas = round2(resultados.reduce((s, r) => s + r.horas_trabalhadas, 0));
+  const custoDiesel = round2(resultados.reduce((s, r) => s + r.custo_diesel, 0));
+
+  // Margem percentual sobre o preço, como em Preços — só entram os equipamentos
+  // com preço ativo e custo apurado, senão a média mediria ausência de dado.
+  const comMargem = resultados.filter(
+    (r) => r.preco_hora != null && r.preco_hora > 0 && r.custo_por_hora != null,
+  );
+  const margemMediaPct =
+    comMargem.length > 0
+      ? round2(
+          (comMargem.reduce(
+            (s, r) =>
+              s +
+              ((r.preco_hora as number) - (r.custo_por_hora as number)) / (r.preco_hora as number),
+            0,
+          ) /
+            comMargem.length) *
+            100,
+        )
+      : null;
+
+  return {
+    custoTotal,
+    horas,
+    custoMedioHora: horas > 0 ? round2(custoTotal / horas) : null,
+    custoDiesel,
+    margemMediaPct,
+    margensNegativas: resultados.filter((r) => r.margem_hora != null && r.margem_hora < 0).length,
+  };
+}
+
 // Estimativa de custo/hora INDEPENDENTE do uso real do período — soma os
 // componentes ativos do equipamento usando horas/mês de referência fixas em
 // vez de horas_trabalhadas reais (que podem ser 0 e zerar custo_por_hora em

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -29,6 +30,8 @@ import {
 } from "@/features/custo-hora/labels";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { ResumoNovoCusto } from "@/features/custo-hora/components/resumo-novo-custo";
+import { useParametroNumero } from "@/features/parametros/uso";
+import { HORAS_MES_REFERENCIA_PADRAO } from "@/features/custo-hora/derivacoes";
 import type { ComponenteCusto } from "@/shared/types";
 
 interface Props {
@@ -39,9 +42,13 @@ interface Props {
 
 export function ComponenteCustoForm({ inicial, onSuccess, onCancel }: Props) {
   const equipamentos = equipamentosStore.useAll().filter((e) => e.ativo);
-  // Horas/mês de referência é só um auxílio de cálculo do "impacto no custo/h"
-  // do resumo — não persiste em ComponenteCusto (não há coluna pra isso).
-  const [horasReferencia, setHorasReferencia] = useState("160");
+  // Horas/mês de referência é auxílio de cálculo do "impacto no custo/h" do
+  // resumo — continua sem coluna em ComponenteCusto, mas o valor inicial deixou
+  // de ser um 160 solto: vem de Parâmetros, o mesmo número que Preços usa para
+  // estimar o custo de referência. Editar aqui vale só para esta simulação;
+  // mudar o padrão do sistema é em /admin/parametros.
+  const horasPadrao = useParametroNumero("horas_mes_referencia", HORAS_MES_REFERENCIA_PADRAO);
+  const [horasReferencia, setHorasReferencia] = useState(String(horasPadrao));
   const {
     handleSubmit,
     control,
@@ -202,6 +209,13 @@ export function ComponenteCustoForm({ inicial, onSuccess, onCancel }: Props) {
               value={horasReferencia}
               onChange={(e) => setHorasReferencia(e.target.value)}
             />
+            <p className="text-xs text-muted-foreground">
+              Só para simular o impacto aqui. O padrão do sistema ({horasPadrao} h) está em{" "}
+              <Link to="/admin/parametros" className="font-medium text-primary hover:underline">
+                Parâmetros
+              </Link>
+              .
+            </p>
           </div>
         ) : null}
       </div>

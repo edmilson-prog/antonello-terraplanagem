@@ -36,7 +36,11 @@ export function ResumoNovoCusto({ control, equipamentoNome, impactoPorHora }: Pr
         <div className="divide-y divide-border">
           <Linha
             rotulo="Valor"
-            valor={valores.valor ? `${formatBRL(valores.valor)}${unidadeComponente(valores.tipo ?? "fixo_mensal")}` : "a definir"}
+            valor={
+              valores.valor
+                ? `${formatBRL(valores.valor)}${unidadeComponente(valores.tipo ?? "fixo_mensal")}`
+                : "a definir"
+            }
             vazio={!valores.valor}
           />
           <Linha
