@@ -59,6 +59,7 @@ import { Route as AdminFaturamentoFaturamentoIdRouteImport } from './routes/admi
 import { Route as AdminEquipamentosNovoRouteImport } from './routes/admin.equipamentos.novo'
 import { Route as AdminEquipamentosEquipamentoIdRouteImport } from './routes/admin.equipamentos.$equipamentoId'
 import { Route as AdminDieselNovoRouteImport } from './routes/admin.diesel.novo'
+import { Route as AdminDieselCompraRouteImport } from './routes/admin.diesel.compra'
 import { Route as AdminCustoHoraNovoRouteImport } from './routes/admin.custo-hora.novo'
 import { Route as AdminComprovantesComprovanteIdRouteImport } from './routes/admin.comprovantes.$comprovanteId'
 import { Route as AdminClientesNovoRouteImport } from './routes/admin.clientes.novo'
@@ -332,6 +333,11 @@ const AdminDieselNovoRoute = AdminDieselNovoRouteImport.update({
   path: '/novo',
   getParentRoute: () => AdminDieselRoute,
 } as any)
+const AdminDieselCompraRoute = AdminDieselCompraRouteImport.update({
+  id: '/compra',
+  path: '/compra',
+  getParentRoute: () => AdminDieselRoute,
+} as any)
 const AdminCustoHoraNovoRoute = AdminCustoHoraNovoRouteImport.update({
   id: '/novo',
   path: '/novo',
@@ -449,6 +455,7 @@ export interface FileRoutesByFullPath {
   '/admin/clientes/novo': typeof AdminClientesNovoRoute
   '/admin/comprovantes/$comprovanteId': typeof AdminComprovantesComprovanteIdRoute
   '/admin/custo-hora/novo': typeof AdminCustoHoraNovoRoute
+  '/admin/diesel/compra': typeof AdminDieselCompraRoute
   '/admin/diesel/novo': typeof AdminDieselNovoRoute
   '/admin/equipamentos/$equipamentoId': typeof AdminEquipamentosEquipamentoIdRoute
   '/admin/equipamentos/novo': typeof AdminEquipamentosNovoRoute
@@ -515,6 +522,7 @@ export interface FileRoutesByTo {
   '/admin/clientes/novo': typeof AdminClientesNovoRoute
   '/admin/comprovantes/$comprovanteId': typeof AdminComprovantesComprovanteIdRoute
   '/admin/custo-hora/novo': typeof AdminCustoHoraNovoRoute
+  '/admin/diesel/compra': typeof AdminDieselCompraRoute
   '/admin/diesel/novo': typeof AdminDieselNovoRoute
   '/admin/equipamentos/$equipamentoId': typeof AdminEquipamentosEquipamentoIdRoute
   '/admin/equipamentos/novo': typeof AdminEquipamentosNovoRoute
@@ -583,6 +591,7 @@ export interface FileRoutesById {
   '/admin/clientes/novo': typeof AdminClientesNovoRoute
   '/admin/comprovantes/$comprovanteId': typeof AdminComprovantesComprovanteIdRoute
   '/admin/custo-hora/novo': typeof AdminCustoHoraNovoRoute
+  '/admin/diesel/compra': typeof AdminDieselCompraRoute
   '/admin/diesel/novo': typeof AdminDieselNovoRoute
   '/admin/equipamentos/$equipamentoId': typeof AdminEquipamentosEquipamentoIdRoute
   '/admin/equipamentos/novo': typeof AdminEquipamentosNovoRoute
@@ -653,6 +662,7 @@ export interface FileRouteTypes {
     | '/admin/clientes/novo'
     | '/admin/comprovantes/$comprovanteId'
     | '/admin/custo-hora/novo'
+    | '/admin/diesel/compra'
     | '/admin/diesel/novo'
     | '/admin/equipamentos/$equipamentoId'
     | '/admin/equipamentos/novo'
@@ -719,6 +729,7 @@ export interface FileRouteTypes {
     | '/admin/clientes/novo'
     | '/admin/comprovantes/$comprovanteId'
     | '/admin/custo-hora/novo'
+    | '/admin/diesel/compra'
     | '/admin/diesel/novo'
     | '/admin/equipamentos/$equipamentoId'
     | '/admin/equipamentos/novo'
@@ -786,6 +797,7 @@ export interface FileRouteTypes {
     | '/admin/clientes/novo'
     | '/admin/comprovantes/$comprovanteId'
     | '/admin/custo-hora/novo'
+    | '/admin/diesel/compra'
     | '/admin/diesel/novo'
     | '/admin/equipamentos/$equipamentoId'
     | '/admin/equipamentos/novo'
@@ -1188,6 +1200,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDieselNovoRouteImport
       parentRoute: typeof AdminDieselRoute
     }
+    '/admin/diesel/compra': {
+      id: '/admin/diesel/compra'
+      path: '/compra'
+      fullPath: '/admin/diesel/compra'
+      preLoaderRoute: typeof AdminDieselCompraRouteImport
+      parentRoute: typeof AdminDieselRoute
+    }
     '/admin/custo-hora/novo': {
       id: '/admin/custo-hora/novo'
       path: '/novo'
@@ -1316,10 +1335,12 @@ const AdminCustoHoraRouteWithChildren = AdminCustoHoraRoute._addFileChildren(
 )
 
 interface AdminDieselRouteChildren {
+  AdminDieselCompraRoute: typeof AdminDieselCompraRoute
   AdminDieselNovoRoute: typeof AdminDieselNovoRoute
 }
 
 const AdminDieselRouteChildren: AdminDieselRouteChildren = {
+  AdminDieselCompraRoute: AdminDieselCompraRoute,
   AdminDieselNovoRoute: AdminDieselNovoRoute,
 }
 

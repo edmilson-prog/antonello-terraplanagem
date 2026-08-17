@@ -26,6 +26,7 @@ const parametros: Parametros = {
   margem_minima_pct: 30,
   horas_mes_referencia: 160,
   diesel_preco_litro: 5.84,
+  tanque_capacidade_litros: 2000,
   arredondamento_preco: "nenhum",
   reajuste_automatico_precos: false,
   alertar_margem_baixa: true,

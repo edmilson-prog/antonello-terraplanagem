@@ -336,6 +336,11 @@ export interface RegistroManutencao {
 // RETAGUARDA-ONLY. Consumo médio (l/h) e utilização (horas trabalhadas no
 // período) são DERIVADOS cruzando Abastecimento[] com Apontamento[] — nunca
 // armazenados.
+// De onde saiu o diesel de um abastecimento. "tanque" dá baixa no estoque
+// interno e custa o preço médio do tanque; "externo" é posto/fornecedor, com
+// o preço pago na hora.
+export type OrigemDiesel = "tanque" | "externo";
+
 export interface Abastecimento {
   id: string;
   equipamento_id: string;
@@ -345,7 +350,26 @@ export interface Abastecimento {
   preco_litro: number | null; // R$/l — RETAGUARDA-ONLY (opcional), nunca em /app/*
   custo_total: number | null; // R$ — RETAGUARDA-ONLY (opcional), nunca em /app/*
   local: string | null; // posto/obra/comboio próprio
+  origem: OrigemDiesel; // de onde saiu o combustível
   abastecido_em: string; // ISO
+  created_at: string;
+  updated_at: string;
+}
+
+// Compra de diesel para o tanque interno (Onda 17). Entrada de estoque: o
+// saldo e o custo médio do tanque são DERIVADOS de compras × abastecimentos
+// com origem "tanque", processados em ordem cronológica — nunca persistidos,
+// pelo mesmo princípio do custo/hora (PRD-013).
+export interface CompraDiesel {
+  id: string;
+  litros: number;
+  preco_litro: number; // R$/L pago nesta compra
+  valor_total: number; // R$
+  fornecedor: string | null;
+  documento: string | null; // nº da nota/cupom
+  observacao: string | null;
+  comprado_em: string; // ISO
+  conta_pagar_id: string | null; // FK → ContaPagar gerada por esta compra
   created_at: string;
   updated_at: string;
 }
@@ -539,6 +563,7 @@ export interface Parametros {
   margem_minima_pct: number;
   horas_mes_referencia: number;
   diesel_preco_litro: number;
+  tanque_capacidade_litros: number;
   arredondamento_preco: ArredondamentoPreco;
   reajuste_automatico_precos: boolean;
   alertar_margem_baixa: boolean;

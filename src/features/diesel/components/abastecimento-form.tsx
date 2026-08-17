@@ -16,6 +16,7 @@ import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { abastecimentosStore } from "@/features/diesel/abastecimentos-store";
 import { CupomCaptureButton } from "@/features/ia/components/cupom-capture-button";
 import { ResumoNovoAbastecimento } from "@/features/diesel/components/resumo-novo-abastecimento";
+import type { OrigemDiesel } from "@/shared/types";
 
 interface Props {
   onCancel: () => void;
@@ -31,6 +32,10 @@ export function AbastecimentoForm({ onCancel }: Props) {
   const [precoLitro, setPrecoLitro] = useState("");
   const [custoTotal, setCustoTotal] = useState("");
   const [local, setLocal] = useState("");
+  // Origem voltou na Onda 17, agora com lastro: "tanque" dá baixa no estoque
+  // interno e custa o preço médio do tanque. A Onda 10 tinha removido o campo
+  // justamente porque nada disso existia.
+  const [origem, setOrigem] = useState<OrigemDiesel>("externo");
   const [salvando, setSalvando] = useState(false);
 
   const equipamento = equipamentos.find((e) => e.id === equipamentoId);
@@ -60,6 +65,7 @@ export function AbastecimentoForm({ onCancel }: Props) {
       preco_litro: precoLitro.trim() ? Number(precoLitro) : null,
       custo_total: custoTotal.trim() ? Number(custoTotal) : null,
       local: local.trim() || null,
+      origem,
     });
     setSalvando(false);
     if (!r.ok) {
@@ -163,6 +169,24 @@ export function AbastecimentoForm({ onCancel }: Props) {
                 onChange={(e) => setCustoTotal(e.target.value)}
               />
             </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="origem">Origem do diesel</Label>
+            <Select value={origem} onValueChange={(v) => setOrigem(v as OrigemDiesel)}>
+              <SelectTrigger id="origem">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="externo">Posto / fornecedor externo</SelectItem>
+                <SelectItem value="tanque">Tanque interno</SelectItem>
+              </SelectContent>
+            </Select>
+            {origem === "tanque" ? (
+              <p className="text-xs text-muted-foreground">
+                Dá baixa no estoque do tanque e custa o preço médio do que está lá.
+              </p>
+            ) : null}
           </div>
 
           <div className="space-y-1.5">

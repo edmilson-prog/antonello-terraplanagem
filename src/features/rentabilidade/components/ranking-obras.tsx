@@ -9,9 +9,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { Icon } from "@iconify/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { KpiCard } from "@/features/dashboard/components/kpi-card";
+import { KpiHeroi } from "@/shared/components/kpi-heroi";
+import { CardSecao, CardPill } from "@/shared/components/card-secao";
 import { EmptyState } from "@/shared/components/empty-state";
 import { useMockResource } from "@/shared/hooks/use-mock-resource";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
@@ -24,12 +26,17 @@ import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import {
+  margemPorCliente,
   rentabilidadePorTodasAsObras,
+  resumoRentabilidade,
   type RentabilidadeObra,
 } from "@/features/rentabilidade/derivacoes";
 import { formatPercentual } from "@/features/rentabilidade/format";
 import { DetalheObraDialog } from "@/features/rentabilidade/components/detalhe-obra-dialog";
+import { MargemClienteCard } from "@/features/rentabilidade/components/margem-cliente-card";
 import { formatBRL } from "@/features/retaguarda/format";
+import { mesAnterior } from "@/shared/lib/periodo-mensal";
+import { variacaoPercentual } from "@/features/gerencial/derivacoes";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -49,23 +56,22 @@ export function RankingObras({ periodo }: Props) {
 
   const [selecionado, setSelecionado] = useState<RentabilidadeObra | null>(null);
 
-  const resultados = useMemo(
-    () =>
+  const calcular = useMemo(
+    () => (mes: string) =>
       rentabilidadePorTodasAsObras(
         ordens,
         faturamentos,
-        periodo,
+        mes,
         equipamentos,
         componentesCusto,
         abastecimentos,
         registrosManutencao,
         apontamentos,
         precosHoraMaquina,
-      ).sort((a, b) => b.margem - a.margem),
+      ),
     [
       ordens,
       faturamentos,
-      periodo,
       equipamentos,
       componentesCusto,
       abastecimentos,
@@ -75,6 +81,46 @@ export function RankingObras({ periodo }: Props) {
     ],
   );
 
+  const resultados = useMemo(
+    () => calcular(periodo).sort((a, b) => b.margem - a.margem),
+    [calcular, periodo],
+  );
+
+  const resumo = useMemo(() => resumoRentabilidade(resultados), [resultados]);
+  const resumoAnterior = useMemo(
+    () => resumoRentabilidade(calcular(mesAnterior(periodo))),
+    [calcular, periodo],
+  );
+
+  // Sparklines: os 6 meses até o período. Recálculo em memória, sem consulta.
+  const series = useMemo(() => {
+    const meses: string[] = [];
+    let m = periodo;
+    for (let i = 0; i < 6; i++) {
+      meses.unshift(m);
+      m = mesAnterior(m);
+    }
+    const resumos = meses.map((mes) => resumoRentabilidade(calcular(mes)));
+    return {
+      margem: resumos.map((r) => r.margemPercentual ?? 0),
+      resultado: resumos.map((r) => r.resultado),
+      receita: resumos.map((r) => r.receita),
+    };
+  }, [calcular, periodo]);
+
+  // O card de cliente olha o ano até o mês selecionado — ver a nota no card.
+  const { clientes: margensCliente, rotuloAno } = useMemo(() => {
+    const [ano, mes] = periodo.split("-");
+    const meses = Array.from(
+      { length: Number(mes) },
+      (_, i) => `${ano}-${String(i + 1).padStart(2, "0")}`,
+    );
+    return {
+      clientes: margemPorCliente(meses.flatMap((m) => calcular(m))),
+      rotuloAno: `período: ${ano}`,
+    };
+  }, [calcular, periodo]);
+
   const { isLoading, error, retry } = useMockResource(resultados);
 
   const nomeDoEquipamento = (equipamentoId: string) =>
@@ -82,11 +128,6 @@ export function RankingObras({ periodo }: Props) {
   const obraNome = (osId: string) => ordens.find((o) => o.id === osId)?.obra_nome ?? null;
   const nomeDoCliente = (clienteId: string) =>
     clientes.find((c) => c.id === clienteId)?.nome ?? "Cliente";
-
-  const receitaTotal = resultados.reduce((s, r) => s + r.receita, 0);
-  const custoTotal = resultados.reduce((s, r) => s + r.custo, 0);
-  const margemTotal = receitaTotal - custoTotal;
-  const comPrejuizo = resultados.filter((r) => r.margem < 0).length;
 
   if (error) {
     return (
@@ -119,34 +160,76 @@ export function RankingObras({ periodo }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-4">
-        <KpiCard
-          rotulo="Receita faturada"
-          valor={formatBRL(receitaTotal)}
-          icone="lucide:receipt"
-          isLoading={isLoading}
-        />
-        <KpiCard
-          rotulo="Custo total"
-          valor={formatBRL(custoTotal)}
-          icone="lucide:wallet"
-          isLoading={isLoading}
-        />
-        <KpiCard
-          rotulo="Margem total"
-          valor={formatBRL(margemTotal)}
+      {/* KPIs-herói do kit */}
+      <section className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+        <KpiHeroi
+          rotulo="Margem média"
+          valor={formatPercentual(resumo.margemPercentual)}
           icone="lucide:trending-up"
-          variante={margemTotal < 0 ? "alerta" : "neutro"}
-          isLoading={isLoading}
+          alerta={resumo.margemPercentual != null && resumo.margemPercentual < 0}
+          variacao={
+            resumo.margemPercentual != null && resumoAnterior.margemPercentual != null
+              ? variacaoPercentual(resumo.margemPercentual, resumoAnterior.margemPercentual)
+              : null
+          }
+          rodape="vs. mês anterior"
+          spark={series.margem}
         />
-        <KpiCard
-          rotulo="Obras com prejuízo"
-          valor={String(comPrejuizo)}
-          icone="lucide:triangle-alert"
-          variante={comPrejuizo > 0 ? "alerta" : "neutro"}
-          isLoading={isLoading}
+        <KpiHeroi
+          rotulo="Resultado no mês"
+          valor={formatBRL(resumo.resultado)}
+          icone="lucide:wallet"
+          alerta={resumo.resultado < 0}
+          rodape="receita − custo"
+          spark={series.resultado}
         />
-      </div>
+        <KpiHeroi
+          rotulo="Receita"
+          valor={formatBRL(resumo.receita)}
+          icone="lucide:credit-card"
+          variacao={variacaoPercentual(resumo.receita, resumoAnterior.receita)}
+          rodape="vs. mês anterior"
+          spark={series.receita}
+          para="/admin/faturamento"
+        />
+        <KpiHeroi
+          rotulo="Custo total"
+          valor={formatBRL(resumo.custo)}
+          icone="lucide:calculator"
+          rodape="diesel + manutenção + componentes"
+          para="/admin/custo-hora"
+        />
+      </section>
+
+      {/* Indicador que a tela já tinha e não está entre os KPIs do kit */}
+      <section className="overflow-hidden rounded-xl border bg-card shadow-sm">
+        <div className="flex items-center gap-2.5 px-3.5 py-3">
+          <Icon
+            icon="lucide:triangle-alert"
+            aria-hidden
+            className={cn(
+              "h-4 w-4 shrink-0",
+              resumo.comPrejuizo > 0 ? "text-destructive" : "text-primary",
+            )}
+          />
+          <div className="min-w-0">
+            <div className="font-display text-[9.5px] font-semibold uppercase tracking-widest text-foreground-faint">
+              Obras com prejuízo
+            </div>
+            <div
+              className={cn(
+                "truncate font-mono text-sm font-bold",
+                resumo.comPrejuizo > 0 ? "text-destructive" : "text-foreground",
+              )}
+            >
+              {resumo.comPrejuizo}{" "}
+              <span className="text-[11px] font-normal text-muted-foreground">
+                {resumo.comPrejuizo === 1 ? "obra no vermelho" : "obras no vermelho"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {!isLoading ? (
         <div className="rounded-xl border bg-card p-5 shadow-sm">
@@ -194,69 +277,101 @@ export function RankingObras({ periodo }: Props) {
         </div>
       ) : null}
 
-      <div className="overflow-x-auto rounded-xl border bg-card shadow-sm">
-        {isLoading ? (
-          <div className="space-y-3 p-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full" />
-            ))}
+      <div className="grid items-start gap-4 lg:grid-cols-[1.7fr_1fr]">
+        <div className="space-y-4">
+          <CardSecao
+            titulo="Rentabilidade por obra"
+            icone="lucide:trending-up"
+            acessorio={
+              <CardPill>
+                {resultados.length} {resultados.length === 1 ? "no período" : "no período"}
+              </CardPill>
+            }
+          >
+            <div className="overflow-x-auto">
+              {isLoading ? (
+                <div className="space-y-3 p-4">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <Skeleton key={i} className="h-10 w-full" />
+                  ))}
+                </div>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-xs font-mono uppercase tracking-wide text-foreground-faint">
+                      <th className="px-4 py-3 font-medium">Obra</th>
+                      <th className="px-4 py-3 font-medium">Cliente</th>
+                      <th className="px-4 py-3 font-medium">Receita</th>
+                      <th className="px-4 py-3 font-medium">Custo</th>
+                      <th className="px-4 py-3 font-medium">Margem</th>
+                      <th className="px-4 py-3 font-medium">Margem %</th>
+                      <th className="px-4 py-3 font-medium" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {resultados.map((r) => (
+                      <tr key={r.os_id} className="border-b last:border-b-0 hover:bg-surface/50">
+                        <td className="px-4 py-3 font-medium text-foreground">
+                          {r.os_numero}
+                          {obraNome(r.os_id) ? (
+                            <span className="block text-xs font-normal text-muted-foreground">
+                              {obraNome(r.os_id)}
+                            </span>
+                          ) : null}
+                          {r.custo_incompleto ? (
+                            <span className="ml-2 rounded-full border border-border bg-surface px-2 py-0.5 text-[11px] font-normal text-foreground-faint">
+                              Custo incompleto
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="px-4 py-3 text-foreground">{nomeDoCliente(r.cliente_id)}</td>
+                        <td className="px-4 py-3 font-mono">{formatBRL(r.receita)}</td>
+                        <td className="px-4 py-3 font-mono">{formatBRL(r.custo)}</td>
+                        <td
+                          className={cn(
+                            "px-4 py-3 font-mono font-semibold",
+                            r.margem < 0 && "text-destructive",
+                          )}
+                        >
+                          {formatBRL(r.margem)}
+                          {r.margem < 0 ? (
+                            <span className="ml-2 rounded-full bg-destructive/15 px-2 py-0.5 text-[11px] font-normal text-destructive">
+                              Prejuízo
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="px-4 py-3 font-mono">
+                          {formatPercentual(r.margem_percentual)}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <Button variant="ghost" size="sm" onClick={() => setSelecionado(r)}>
+                            Ver detalhamento
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </CardSecao>
+
+          <div className="flex items-start gap-3 rounded-xl border border-dashed bg-surface/60 p-4 text-sm text-muted-foreground">
+            <Icon icon="lucide:lock" className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <p>
+              Receita, custo e margem existem só na retaguarda — o app de campo não tem estas telas
+              nem lê estas tabelas. O parâmetro{" "}
+              <strong className="text-foreground">particionamento financeiro</strong> ainda não
+              separa perfis <em>dentro</em> da retaguarda: recepção e proprietário veem o mesmo.
+            </p>
           </div>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b text-left text-xs font-mono uppercase tracking-wide text-foreground-faint">
-                <th className="px-4 py-3 font-medium">Obra</th>
-                <th className="px-4 py-3 font-medium">Cliente</th>
-                <th className="px-4 py-3 font-medium">Receita</th>
-                <th className="px-4 py-3 font-medium">Custo</th>
-                <th className="px-4 py-3 font-medium">Margem</th>
-                <th className="px-4 py-3 font-medium">Margem %</th>
-                <th className="px-4 py-3 font-medium" />
-              </tr>
-            </thead>
-            <tbody>
-              {resultados.map((r) => (
-                <tr key={r.os_id} className="border-b last:border-b-0 hover:bg-surface/50">
-                  <td className="px-4 py-3 font-medium text-foreground">
-                    {r.os_numero}
-                    {obraNome(r.os_id) ? (
-                      <span className="block text-xs font-normal text-muted-foreground">
-                        {obraNome(r.os_id)}
-                      </span>
-                    ) : null}
-                    {r.custo_incompleto ? (
-                      <span className="ml-2 rounded-full border border-border bg-surface px-2 py-0.5 text-[11px] font-normal text-foreground-faint">
-                        Custo incompleto
-                      </span>
-                    ) : null}
-                  </td>
-                  <td className="px-4 py-3 text-foreground">{nomeDoCliente(r.cliente_id)}</td>
-                  <td className="px-4 py-3 font-mono">{formatBRL(r.receita)}</td>
-                  <td className="px-4 py-3 font-mono">{formatBRL(r.custo)}</td>
-                  <td
-                    className={cn(
-                      "px-4 py-3 font-mono font-semibold",
-                      r.margem < 0 && "text-destructive",
-                    )}
-                  >
-                    {formatBRL(r.margem)}
-                    {r.margem < 0 ? (
-                      <span className="ml-2 rounded-full bg-destructive/15 px-2 py-0.5 text-[11px] font-normal text-destructive">
-                        Prejuízo
-                      </span>
-                    ) : null}
-                  </td>
-                  <td className="px-4 py-3 font-mono">{formatPercentual(r.margem_percentual)}</td>
-                  <td className="px-4 py-3 text-right">
-                    <Button variant="ghost" size="sm" onClick={() => setSelecionado(r)}>
-                      Ver detalhamento
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        </div>
+
+        <MargemClienteCard
+          linhas={margensCliente}
+          nomeDoCliente={nomeDoCliente}
+          rotuloPeriodo={rotuloAno}
+        />
       </div>
 
       <DetalheObraDialog

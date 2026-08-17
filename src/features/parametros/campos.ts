@@ -46,14 +46,14 @@ export interface SecaoParametros {
 export const CAMPOS_SEM_EFEITO = new Set<ChaveParametro>([
   // Operação — não há validação de tolerância, fechamento do dia, fluxo de
   // aprovação, nem captura de GPS ou obrigatoriedade de foto no apontamento.
-  // `jornada_horas` é usada só no app do operador (pré-preenche o horímetro
-  // final), e o app não enxerga esta tabela: a RLS é de retaguarda. Ligá-la
-  // exigiria expor o valor por RPC de operador — fora do escopo desta onda.
-  "jornada_horas",
+  //
+  // `jornada_horas` e `dias_uteis` saíram desta lista na Onda 16: a Utilização
+  // da Frota (Painel Gerencial) usa os dois para calcular as horas disponíveis
+  // do período. No app do operador a jornada segue no valor fixo — lá a tabela
+  // não é legível (RLS de retaguarda) —, mas na retaguarda o parâmetro vale.
   "tolerancia_horimetro",
   "fechamento_dia",
   "aprovacao_apontamento",
-  "dias_uteis",
   "apontamento_via_app",
   "foto_obrigatoria",
   "registrar_gps",

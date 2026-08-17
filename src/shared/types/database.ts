@@ -18,6 +18,7 @@ export type Database = {
           id: string;
           litros: number;
           local: string | null;
+          origem: string;
           operador_id: string | null;
           preco_litro: number | null;
           updated_at: string;
@@ -31,6 +32,7 @@ export type Database = {
           id?: string;
           litros: number;
           local?: string | null;
+          origem?: string;
           operador_id?: string | null;
           preco_litro?: number | null;
           updated_at?: string;
@@ -44,6 +46,7 @@ export type Database = {
           id?: string;
           litros?: number;
           local?: string | null;
+          origem?: string;
           operador_id?: string | null;
           preco_litro?: number | null;
           updated_at?: string;
@@ -409,11 +412,64 @@ export type Database = {
           },
         ];
       };
+      compras_diesel: {
+        Row: {
+          comprado_em: string;
+          conta_pagar_id: string | null;
+          created_at: string;
+          documento: string | null;
+          fornecedor: string | null;
+          id: string;
+          litros: number;
+          observacao: string | null;
+          preco_litro: number;
+          updated_at: string;
+          valor_total: number;
+        };
+        Insert: {
+          comprado_em?: string;
+          conta_pagar_id?: string | null;
+          created_at?: string;
+          documento?: string | null;
+          fornecedor?: string | null;
+          id?: string;
+          litros: number;
+          observacao?: string | null;
+          preco_litro: number;
+          updated_at?: string;
+          valor_total: number;
+        };
+        Update: {
+          comprado_em?: string;
+          conta_pagar_id?: string | null;
+          created_at?: string;
+          documento?: string | null;
+          fornecedor?: string | null;
+          id?: string;
+          litros?: number;
+          observacao?: string | null;
+          preco_litro?: number;
+          updated_at?: string;
+          valor_total?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "compras_diesel_conta_pagar_id_fkey";
+            columns: ["conta_pagar_id"];
+            isOneToOne: false;
+            referencedRelation: "contas_pagar";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       contas_pagar: {
         Row: {
           categoria: string;
           created_at: string;
           descricao: string;
+          documento: string | null;
+          forma_pagamento: string | null;
+          observacao: string | null;
           fornecedor: string | null;
           id: string;
           pago_em: string | null;
@@ -426,6 +482,9 @@ export type Database = {
           categoria: string;
           created_at?: string;
           descricao: string;
+          documento?: string | null;
+          forma_pagamento?: string | null;
+          observacao?: string | null;
           fornecedor?: string | null;
           id?: string;
           pago_em?: string | null;
@@ -438,6 +497,9 @@ export type Database = {
           categoria?: string;
           created_at?: string;
           descricao?: string;
+          documento?: string | null;
+          forma_pagamento?: string | null;
+          observacao?: string | null;
           fornecedor?: string | null;
           id?: string;
           pago_em?: string | null;
@@ -1077,6 +1139,7 @@ export type Database = {
           sede: string;
           sessao_expira_min: number;
           sincronizacao_app: string;
+          tanque_capacidade_litros: number;
           telefone: string;
           tolerancia_horimetro: number;
           updated_at: string;
@@ -1130,6 +1193,7 @@ export type Database = {
           sede?: string;
           sessao_expira_min?: number;
           sincronizacao_app?: string;
+          tanque_capacidade_litros?: number;
           telefone?: string;
           tolerancia_horimetro?: number;
           updated_at?: string;
@@ -1183,6 +1247,7 @@ export type Database = {
           sede?: string;
           sessao_expira_min?: number;
           sincronizacao_app?: string;
+          tanque_capacidade_litros?: number;
           telefone?: string;
           tolerancia_horimetro?: number;
           updated_at?: string;

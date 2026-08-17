@@ -245,6 +245,82 @@ export function rentabilidadePorObra(
   };
 }
 
+// Números do cabeçalho da tela (UI kit `screen-rentabilidade`). Servem tanto
+// para o recorte por equipamento quanto por obra: os dois expõem receita,
+// custo e margem, então o resumo é o mesmo cálculo sobre qualquer um dos dois.
+export interface ResumoRentabilidade {
+  receita: number;
+  custo: number;
+  resultado: number;
+  /**
+   * Margem do conjunto: resultado ÷ receita, como FRAÇÃO (0.38 = 38%), na
+   * mesma escala de `margem_percentual` das linhas — é o que `formatPercentual`
+   * espera. Null quando não houve receita.
+   */
+  margemPercentual: number | null;
+  comPrejuizo: number;
+}
+
+export function resumoRentabilidade(
+  linhas: { receita: number; custo: number; margem: number }[],
+): ResumoRentabilidade {
+  const receita = round2(linhas.reduce((s, l) => s + l.receita, 0));
+  const custo = round2(linhas.reduce((s, l) => s + l.custo, 0));
+  const resultado = round2(receita - custo);
+  return {
+    receita,
+    custo,
+    resultado,
+    // Margem do agregado, não média das margens: uma obra de R$ 100 com 90% não
+    // pode pesar igual a uma de R$ 100.000 com 10%.
+    margemPercentual: receita > 0 ? resultado / receita : null,
+    comPrejuizo: linhas.filter((l) => l.margem < 0).length,
+  };
+}
+
+export interface MargemCliente {
+  cliente_id: string;
+  receita: number;
+  custo: number;
+  margem: number;
+  /** Fração (0.38 = 38%), como `margem_percentual` das linhas. */
+  margemPercentual: number | null;
+  obras: number;
+}
+
+/**
+ * Margem consolidada por cliente — o card "Margem por cliente" do kit. Agrupa
+ * as obras já calculadas, então serve para qualquer recorte de período que o
+ * chamador tenha montado (o kit mostra o ano, a tabela ao lado mostra o mês).
+ * Ordenado da maior margem para a menor, como no desenho.
+ */
+export function margemPorCliente(obras: RentabilidadeObra[]): MargemCliente[] {
+  const porCliente = new Map<string, MargemCliente>();
+
+  for (const obra of obras) {
+    const atual = porCliente.get(obra.cliente_id) ?? {
+      cliente_id: obra.cliente_id,
+      receita: 0,
+      custo: 0,
+      margem: 0,
+      margemPercentual: null,
+      obras: 0,
+    };
+    atual.receita = round2(atual.receita + obra.receita);
+    atual.custo = round2(atual.custo + obra.custo);
+    atual.margem = round2(atual.receita - atual.custo);
+    atual.obras += 1;
+    porCliente.set(obra.cliente_id, atual);
+  }
+
+  return [...porCliente.values()]
+    .map((c) => ({
+      ...c,
+      margemPercentual: c.receita > 0 ? c.margem / c.receita : null,
+    }))
+    .sort((a, b) => (b.margemPercentual ?? -Infinity) - (a.margemPercentual ?? -Infinity));
+}
+
 export function rentabilidadePorTodasAsObras(
   ordens: OrdemServico[],
   faturamentos: Faturamento[],

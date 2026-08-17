@@ -65,9 +65,7 @@ export interface RecebimentoPorForma {
 // Agrupa contas a receber liquidadas por forma de recebimento, ordenado por
 // valor desc. Usado pelo card "Recebimentos por forma" do Financeiro.
 export function recebimentosPorForma(contas: ContaReceber[]): RecebimentoPorForma[] {
-  const liquidadas = contas.filter(
-    (c) => c.status === "liquidada" && c.forma_recebimento != null,
-  );
+  const liquidadas = contas.filter((c) => c.status === "liquidada" && c.forma_recebimento != null);
   const mapa = new Map<FormaRecebimento, { valor: number; quantidade: number }>();
   for (const c of liquidadas) {
     const forma = c.forma_recebimento as FormaRecebimento;

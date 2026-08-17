@@ -5,14 +5,65 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-## [0.28.1] - 2026-08-17 - Ledger
+## [0.31.1] - 2026-08-17 - Cistern
 
 ### Changed
-- **Faturamento e Financeiro passam a usar o `KpiHeroi` compartilhado**, fechando a extração começada na 0.28.0 — os dois eram os últimos a manter cada um a sua cópia do tile de KPI e da função de escala do sparkline. As quatro telas com indicadores-herói (Dashboard, Custo da Hora, Faturamento e Financeiro) agora renderizam o mesmo componente. Nada muda na tela: os tiles locais batiam classe a classe com o compartilhado.
+- **Faturamento e Financeiro passam a usar o `KpiHeroi` compartilhado**, fechando a extração começada na 0.28.0 — os dois eram os últimos a manter cada um a sua cópia do tile de KPI e da função de escala do sparkline. Com isso, todas as telas de indicador-herói (Dashboard, Custo da Hora, Rentabilidade, Painel Gerencial, Diesel, Faturamento e Financeiro) renderizam o mesmo componente, e `escalar0a100` passa a existir num lugar só. Nada muda na tela: os tiles locais batiam classe a classe com o compartilhado.
 - As séries passam a entrar nos KPIs em valores absolutos — o `KpiHeroi` escala internamente, então nem o import de `escalar0a100` sobra nas features.
 
 ### Notas
 - Única diferença de comportamento, e em série que não ocorre em produção: o tile compartilhado só desenha o sparkline com dois pontos ou mais, enquanto as cópias locais desenhavam uma linha reta com um ponto só. As séries de Faturamento e Financeiro vêm sempre com os 6 meses do agregado mensal.
+
+## [0.31.0] - 2026-08-17 - Cistern
+
+Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita do usuário: o controle de estoque do tanque interno, que na época foi removido do formulário por não existir no produto, agora existe de verdade.
+
+### Added
+- **Estoque do tanque interno de diesel.** Compras entram, abastecimentos com origem "tanque" saem, e o saldo é derivado — nunca persistido. Corrigir uma compra lançada errada corrige o histórico inteiro sozinho.
+- **Custo por média móvel ponderada**: cada compra recalcula o custo médio do que está no tanque, e cada saída baixa por esse médio. É o que faz o Custo da Hora refletir o que foi realmente pago — comprar barato e o mercado subir não encarece a máquina que queimou o diesel antigo.
+- **Compra de diesel** em `/admin/diesel/compra`, com resumo ao vivo do saldo resultante e aviso quando a compra passaria da capacidade do tanque.
+- **Geração automática de conta a pagar** a cada compra, na categoria Diesel, com vencimento vindo do parâmetro de prazo padrão. A compra guarda o `conta_pagar_id` para o vínculo ficar rastreável.
+- **Diesel conforme o design system**: 4 KPIs-herói, tabela de abastecimentos com coluna Origem, consumo por equipamento em barras e o card "Tanque interno" com nível, capacidade e última compra. Export CSV.
+- Campo **Origem do diesel** de volta no formulário de abastecimento — agora com lastro: escolher "tanque interno" dá baixa no estoque.
+
+### Changed
+- **`contas_pagar` saiu do mock em memória para o Supabase.** Era pré-requisito: uma conta gerada automaticamente que some no primeiro F5 não serve para nada. A tabela também estava três colunas atrás do contrato — `documento`, `forma_pagamento` e `observacao` entraram em `ContaPagar` na 0.19.0 mas só no mock.
+- `contasPagarStore.criar` e `.darBaixaPagar` viraram assíncronas; os dois chamadores foram ajustados.
+
+### Notas
+- Abastecimentos já registrados ficaram como origem "externo". Marcá-los como tanque criaria baixas retroativas de um estoque que não existia.
+- O saldo pode ficar negativo, e a tela avisa em vez de esconder: quase sempre significa abastecimento marcado como tanque sem a compra correspondente lançada.
+- A conta a pagar é criada **antes** da compra. Se ela falhar, nada é gravado; o contrário deixaria uma conta órfã no Financeiro, pior de desfazer do que repetir o lançamento.
+
+## [0.30.0] - 2026-08-17 - Bridge
+
+### Added
+- **Painel Gerencial conforme o design system**, em duas abas. **Visão executiva** é o desenho do kit por inteiro: 4 KPIs-herói (receita, resultado, margem média, horas apontadas) com sparkline, "Resultado por mês" em barras com média e pico, "Top clientes", "Curva ABC de clientes" e "Utilização da frota". **Análises** guarda, intactos, os 7 blocos do PRD-016 que o kit não desenha — insight por IA, gráficos de evolução e de receita×custo×margem, horas por equipamento, utilização de diesel, os dois rankings de margem, pipeline consolidado e previsão de caixa.
+- **Curva ABC de clientes** com corte clássico de Pareto (A concentra até 80% da receita, B até 95%, C o resto). O cliente que cruza o corte fecha a faixa que ele completa — senão o corte nunca seria atingido e um cliente único cairia em C.
+- **Utilização da frota**: horas apontadas ÷ horas disponíveis, por equipamento. Deixa passar de 100% em vez de truncar — hora extra e sábado existem, e esconder isso apagaria a informação mais útil do card.
+
+### Changed
+- **`jornada_horas` e `dias_uteis` saíram do selo "só cadastro"**: a Utilização da Frota é o primeiro lugar do sistema que os consulta, para calcular as horas disponíveis do período. No app do operador a jornada segue no valor fixo — lá a tabela de parâmetros não é legível (RLS de retaguarda).
+- `LinhaBarra` (rótulo + valor + barra de proporção) foi para `shared/components`, na quarta vez que o padrão apareceu. Os cards de composição de custo e de margem por cliente ainda usam a versão local deles.
+
+### Notas
+- O cálculo de dias úteis **não desconta feriados** — o sistema não tem calendário deles, e inventar um daria precisão falsa. O card diz isso no rodapé.
+- `dias_uteis` com valor "personalizado" cai em segunda a sexta: não há onde configurar quais dias seriam.
+
+## [0.29.0] - 2026-08-17 - Compass
+
+### Added
+- **Rentabilidade conforme o design system.** As duas abas ganharam os 4 KPIs-herói do kit — margem média, resultado no mês, receita e custo total — com sparkline dos últimos 6 meses e variação vs. mês anterior, mais faixa preservando o indicador de itens no prejuízo que a tela já tinha.
+- Card **"Margem por cliente"** na aba de obras, ao lado da tabela: consolida as obras de cada cliente e ordena da maior margem para a menor, com barra proporcional. O recorte é o **ano até o mês selecionado**, não o mês — como indica o mock, e porque a margem de um cliente num mês isolado diz pouco quando ele tem uma ou duas obras faturadas.
+- **Exportar em CSV**, seguindo o padrão da 0.28.0. Exporta a aba aberta: as colunas de obras e de equipamentos são diferentes, então não há um CSV único.
+
+### Changed
+- A margem do período passou a ser a **margem do agregado** (resultado ÷ receita), não a média das margens individuais. Uma obra de R$ 100 com 90% não pode pesar igual a uma de R$ 100.000 com 10%.
+- A mecânica do CSV (separador, decimal, BOM, escape) foi para `shared/lib/exportar-csv`, em vez de ficar só no Custo da Hora — agora são duas telas exportando.
+
+### Notas
+- A nota de rodapé sobre particionamento financeiro diz o que é verdade hoje: os valores não aparecem no app de campo porque estas telas não existem lá, mas o parâmetro ainda **não separa perfis dentro da retaguarda** — recepção e proprietário veem o mesmo. O mock sugeria uma separação por perfil que o sistema não tem.
+- As duas abas foram mantidas: o kit desenha só a visão por OS, mas rentabilidade por equipamento é metade do PRD-014 ("por máquina e por obra").
 
 ## [0.28.0] - 2026-08-17 - Ledger
 

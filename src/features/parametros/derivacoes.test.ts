@@ -37,6 +37,7 @@ const base: Parametros = {
   margem_minima_pct: 30,
   horas_mes_referencia: 160,
   diesel_preco_litro: 5.84,
+  tanque_capacidade_litros: 2000,
   arredondamento_preco: "nenhum",
   reajuste_automatico_precos: false,
   alertar_margem_baixa: true,
@@ -212,6 +213,9 @@ describe("catálogo de campos", () => {
 
   it("não marca como sem efeito nenhum parâmetro que o sistema já consulta", () => {
     const ligados = [
+      // Jornada e dias úteis passaram a valer na Onda 16 (Utilização da Frota).
+      "jornada_horas",
+      "dias_uteis",
       "alerta_manutencao_horas",
       "margem_minima_pct",
       "horas_mes_referencia",

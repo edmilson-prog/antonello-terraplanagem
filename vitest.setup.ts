@@ -7,6 +7,7 @@ import { orcamentos as orcamentosFixture } from "./src/mocks/orcamentos";
 import { avisosWhatsApp as avisosWhatsAppFixture } from "./src/mocks/avisos-whatsapp";
 import { operadores as operadoresFixture } from "./src/mocks/operadores";
 import { apontamentos as apontamentosFixture } from "./src/mocks/apontamentos";
+import { contasPagar as contasPagarFixture } from "./src/mocks/contas-pagar";
 
 // jsdom (ambiente de teste deste projeto) não implementa window.matchMedia por
 // padrão. Vários componentes/hooks usam prefers-color-scheme (useTheme) e
@@ -86,9 +87,11 @@ vi.mock("./src/lib/supabase", () => {
     operadores: operadoresFixture.map((o) => ({ ...o })),
     operadores_equipamentos: [],
     apontamentos: apontamentosFixture.map((a) => ({ ...a })),
-    usuarios_retaguarda: [
-      { id: "usuario-retaguarda-teste", nome: "Admin Teste", perfil: "admin" },
-    ],
+    // contas_pagar saiu do mock em memória na Onda 17; o dublê passa a servir
+    // as mesmas linhas que o banco foi semeado.
+    contas_pagar: contasPagarFixture.map((c) => ({ ...c })),
+    compras_diesel: [],
+    usuarios_retaguarda: [{ id: "usuario-retaguarda-teste", nome: "Admin Teste", perfil: "admin" }],
   };
 
   class FakeQueryBuilder implements PromiseLike<{ data: unknown; error: null }> {
