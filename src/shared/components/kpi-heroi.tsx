@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils";
 
 // Indicador-herói do UI kit: rótulo, valor em mono, selo de variação, rodapé e
 // sparkline no canto. Nasceu local no dashboard (Onda 11) e virou compartilhado
-// quando o Custo da Hora (Onda 14) precisou do mesmo tile — em vez de uma
-// quarta cópia (Faturamento e Financeiro ainda têm as suas).
+// quando o Custo da Hora (Onda 14) precisou do mesmo tile. Dashboard,
+// Faturamento e Financeiro usam este componente — não há mais cópias locais.
 //
 // `para` é opcional: sem ele o tile é um bloco estático, com ele vira link.
 
