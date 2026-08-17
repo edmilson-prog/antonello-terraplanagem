@@ -16,7 +16,7 @@ e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 ### Changed
 - **Quatro parâmetros deixaram de ser constante hardcodada e passaram a valer de verdade:** antecedência do alerta de manutenção (era `ANTECEDENCIA_HORAS_PADRAO = 20`), margem mínima e o alerta de margem baixa em Preços (era `MARGEM_MINIMA_PADRAO = 0.3`), horas/mês de referência do rateio de custo fixo (era o `160` embutido em `custoEstimadoHoraEquipamento`) e a forma de recebimento padrão do diálogo de baixa. Cada leitura mantém a constante antiga como fallback, para o intervalo antes da store carregar.
 - **`/admin/integracoes` foi absorvida pela seção Integrações de Parâmetros** e saiu da sidebar, que ganhou "Parâmetros" no lugar. Os provedores de gateway e de WhatsApp e o painel de conexão WAHA continuam funcionando como antes — mudou o lugar onde aparecem, não a lógica.
-- `DataRow` (linha ícone + rótulo + valor dos cards de leitura) foi para `shared/components`, em vez de mais uma cópia local por feature.
+- `DataRow` (linha ícone + rótulo + valor dos cards de leitura) foi para `shared/components`, em vez de mais uma cópia local por feature. As três cópias que ainda existiam — Dados cadastrais do cliente, Dados cadastrais do operador e Ficha técnica do equipamento — passaram a usar a versão compartilhada. Nas três telas o resultado é idêntico ao anterior; o que muda é que um valor longo demais para a coluna agora quebra dentro do card em vez de vazar para fora dele.
 
 ### Security
 - As três funções novas do banco nascem com `search_path` fixo e sem `EXECUTE` para `anon`/`authenticated` — revogado também de `PUBLIC`, que é o que faltava nas trigger functions de versões anteriores. Auditado com `has_function_privilege` antes e depois.
