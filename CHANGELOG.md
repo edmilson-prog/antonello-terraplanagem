@@ -5,6 +5,15 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.28.1] - 2026-08-17 - Ledger
+
+### Changed
+- **Faturamento e Financeiro passam a usar o `KpiHeroi` compartilhado**, fechando a extração começada na 0.28.0 — os dois eram os últimos a manter cada um a sua cópia do tile de KPI e da função de escala do sparkline. As quatro telas com indicadores-herói (Dashboard, Custo da Hora, Faturamento e Financeiro) agora renderizam o mesmo componente. Nada muda na tela: os tiles locais batiam classe a classe com o compartilhado.
+- As séries passam a entrar nos KPIs em valores absolutos — o `KpiHeroi` escala internamente, então nem o import de `escalar0a100` sobra nas features.
+
+### Notas
+- Única diferença de comportamento, e em série que não ocorre em produção: o tile compartilhado só desenha o sparkline com dois pontos ou mais, enquanto as cópias locais desenhavam uma linha reta com um ponto só. As séries de Faturamento e Financeiro vêm sempre com os 6 meses do agregado mensal.
+
 ## [0.28.0] - 2026-08-17 - Ledger
 
 ### Added
