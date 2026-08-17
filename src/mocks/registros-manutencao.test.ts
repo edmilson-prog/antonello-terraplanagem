@@ -10,13 +10,13 @@ describe("mocks/registros-manutencao", () => {
   it("rm-001 (eq-001) está vencido: horímetro atual passou do previsto", () => {
     const registro = registrosManutencao.find((r) => r.id === "rm-001")!;
     const equipamento = equipamentos.find((e) => e.id === registro.equipamento_id)!;
-    expect(equipamento.horimetro_atual).toBeGreaterThan(registro.horimetro_previsto);
+    expect(equipamento.horimetro_atual).toBeGreaterThan(registro.horimetro_previsto!);
   });
 
   it("rm-003 (eq-002) está próximo: faltam 20h ou menos", () => {
     const registro = registrosManutencao.find((r) => r.id === "rm-003")!;
     const equipamento = equipamentos.find((e) => e.id === registro.equipamento_id)!;
-    const faltam = registro.horimetro_previsto - equipamento.horimetro_atual;
+    const faltam = registro.horimetro_previsto! - equipamento.horimetro_atual;
     expect(faltam).toBeGreaterThan(0);
     expect(faltam).toBeLessThanOrEqual(20);
   });
@@ -24,7 +24,7 @@ describe("mocks/registros-manutencao", () => {
   it("rm-005 (eq-006) está em dia: faltam mais de 20h", () => {
     const registro = registrosManutencao.find((r) => r.id === "rm-005")!;
     const equipamento = equipamentos.find((e) => e.id === registro.equipamento_id)!;
-    const faltam = registro.horimetro_previsto - equipamento.horimetro_atual;
+    const faltam = registro.horimetro_previsto! - equipamento.horimetro_atual;
     expect(faltam).toBeGreaterThan(20);
   });
 
@@ -39,6 +39,17 @@ describe("mocks/registros-manutencao", () => {
     const registro = registrosManutencao.find((r) => r.id === "rm-004")!;
     expect(registro.status).toBe("realizada");
     expect(registro.custo).toBeNull();
+  });
+
+  it("todos são preventivos de plano, com marca de horímetro", () => {
+    // Espelha registros_manutencao_forma_check: registro com plano é preventivo
+    // e tem marca prevista. A corretiva (sem plano) tem fixture própria em
+    // src/features/manutencao/derivacoes.test.ts.
+    for (const registro of registrosManutencao) {
+      expect(registro.tipo).toBe("preventiva");
+      expect(registro.plano_id).not.toBeNull();
+      expect(registro.horimetro_previsto).not.toBeNull();
+    }
   });
 
   it("apenas um registro 'prevista' por par plano/equipamento", () => {

@@ -60,7 +60,7 @@ export function EquipamentosPage() {
   const { isLoading, error } = equipamentosStore.useEstado();
   const retry = equipamentosStore.retry;
   const planos = planosManutencaoStore.useAll();
-  const registros = registrosManutencaoStore.useTodos();
+  const registros = registrosManutencaoStore.useCompletos();
 
   const [q, setQ] = useState("");
   const [filtroTipo, setFiltroTipo] = useState<TipoEquipamento | "todos">("todos");

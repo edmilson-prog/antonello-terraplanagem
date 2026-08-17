@@ -18,8 +18,8 @@ export type Database = {
           id: string;
           litros: number;
           local: string | null;
-          origem: string;
           operador_id: string | null;
+          origem: string;
           preco_litro: number | null;
           updated_at: string;
         };
@@ -32,8 +32,8 @@ export type Database = {
           id?: string;
           litros: number;
           local?: string | null;
-          origem?: string;
           operador_id?: string | null;
+          origem?: string;
           preco_litro?: number | null;
           updated_at?: string;
         };
@@ -46,8 +46,8 @@ export type Database = {
           id?: string;
           litros?: number;
           local?: string | null;
-          origem?: string;
           operador_id?: string | null;
+          origem?: string;
           preco_litro?: number | null;
           updated_at?: string;
         };
@@ -349,6 +349,56 @@ export type Database = {
           },
         ];
       };
+      compras_diesel: {
+        Row: {
+          comprado_em: string;
+          conta_pagar_id: string | null;
+          created_at: string;
+          documento: string | null;
+          fornecedor: string | null;
+          id: string;
+          litros: number;
+          observacao: string | null;
+          preco_litro: number;
+          updated_at: string;
+          valor_total: number;
+        };
+        Insert: {
+          comprado_em?: string;
+          conta_pagar_id?: string | null;
+          created_at?: string;
+          documento?: string | null;
+          fornecedor?: string | null;
+          id?: string;
+          litros: number;
+          observacao?: string | null;
+          preco_litro: number;
+          updated_at?: string;
+          valor_total: number;
+        };
+        Update: {
+          comprado_em?: string;
+          conta_pagar_id?: string | null;
+          created_at?: string;
+          documento?: string | null;
+          fornecedor?: string | null;
+          id?: string;
+          litros?: number;
+          observacao?: string | null;
+          preco_litro?: number;
+          updated_at?: string;
+          valor_total?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "compras_diesel_conta_pagar_id_fkey";
+            columns: ["conta_pagar_id"];
+            isOneToOne: false;
+            referencedRelation: "contas_pagar";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       comprovantes: {
         Row: {
           assinado_em: string | null;
@@ -412,56 +462,6 @@ export type Database = {
           },
         ];
       };
-      compras_diesel: {
-        Row: {
-          comprado_em: string;
-          conta_pagar_id: string | null;
-          created_at: string;
-          documento: string | null;
-          fornecedor: string | null;
-          id: string;
-          litros: number;
-          observacao: string | null;
-          preco_litro: number;
-          updated_at: string;
-          valor_total: number;
-        };
-        Insert: {
-          comprado_em?: string;
-          conta_pagar_id?: string | null;
-          created_at?: string;
-          documento?: string | null;
-          fornecedor?: string | null;
-          id?: string;
-          litros: number;
-          observacao?: string | null;
-          preco_litro: number;
-          updated_at?: string;
-          valor_total: number;
-        };
-        Update: {
-          comprado_em?: string;
-          conta_pagar_id?: string | null;
-          created_at?: string;
-          documento?: string | null;
-          fornecedor?: string | null;
-          id?: string;
-          litros?: number;
-          observacao?: string | null;
-          preco_litro?: number;
-          updated_at?: string;
-          valor_total?: number;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "compras_diesel_conta_pagar_id_fkey";
-            columns: ["conta_pagar_id"];
-            isOneToOne: false;
-            referencedRelation: "contas_pagar";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
       contas_pagar: {
         Row: {
           categoria: string;
@@ -469,9 +469,9 @@ export type Database = {
           descricao: string;
           documento: string | null;
           forma_pagamento: string | null;
-          observacao: string | null;
           fornecedor: string | null;
           id: string;
+          observacao: string | null;
           pago_em: string | null;
           status: string;
           updated_at: string;
@@ -484,9 +484,9 @@ export type Database = {
           descricao: string;
           documento?: string | null;
           forma_pagamento?: string | null;
-          observacao?: string | null;
           fornecedor?: string | null;
           id?: string;
+          observacao?: string | null;
           pago_em?: string | null;
           status?: string;
           updated_at?: string;
@@ -499,9 +499,9 @@ export type Database = {
           descricao?: string;
           documento?: string | null;
           forma_pagamento?: string | null;
-          observacao?: string | null;
           fornecedor?: string | null;
           id?: string;
+          observacao?: string | null;
           pago_em?: string | null;
           status?: string;
           updated_at?: string;
@@ -1486,42 +1486,60 @@ export type Database = {
       };
       registros_manutencao: {
         Row: {
+          aberta_em: string;
           created_at: string;
           custo: number | null;
+          descricao: string | null;
           equipamento_id: string;
-          horimetro_previsto: number;
+          fornecedor: string | null;
+          horimetro_abertura: number | null;
+          horimetro_previsto: number | null;
           horimetro_realizado: number | null;
           id: string;
           observacao: string | null;
-          plano_id: string;
+          plano_id: string | null;
+          prioridade: string;
           realizada_em: string | null;
           status: string;
+          tipo: string;
           updated_at: string;
         };
         Insert: {
+          aberta_em?: string;
           created_at?: string;
           custo?: number | null;
+          descricao?: string | null;
           equipamento_id: string;
-          horimetro_previsto: number;
+          fornecedor?: string | null;
+          horimetro_abertura?: number | null;
+          horimetro_previsto?: number | null;
           horimetro_realizado?: number | null;
           id?: string;
           observacao?: string | null;
-          plano_id: string;
+          plano_id?: string | null;
+          prioridade?: string;
           realizada_em?: string | null;
           status?: string;
+          tipo?: string;
           updated_at?: string;
         };
         Update: {
+          aberta_em?: string;
           created_at?: string;
           custo?: number | null;
+          descricao?: string | null;
           equipamento_id?: string;
-          horimetro_previsto?: number;
+          fornecedor?: string | null;
+          horimetro_abertura?: number | null;
+          horimetro_previsto?: number | null;
           horimetro_realizado?: number | null;
           id?: string;
           observacao?: string | null;
-          plano_id?: string;
+          plano_id?: string | null;
+          prioridade?: string;
           realizada_em?: string | null;
           status?: string;
+          tipo?: string;
           updated_at?: string;
         };
         Relationships: [
@@ -1763,6 +1781,44 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      listar_planos_manutencao_operador: {
+        Args: { p_token: string };
+        Returns: {
+          ativo: boolean;
+          created_at: string;
+          descricao: string;
+          equipamento_id: string | null;
+          id: string;
+          intervalo_horas: number;
+          tipo_equipamento: string | null;
+          updated_at: string;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "planos_manutencao";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
+      listar_registros_manutencao_operador: {
+        Args: { p_token: string };
+        Returns: {
+          aberta_em: string;
+          created_at: string;
+          descricao: string;
+          equipamento_id: string;
+          horimetro_abertura: number;
+          horimetro_previsto: number;
+          horimetro_realizado: number;
+          id: string;
+          plano_id: string;
+          prioridade: string;
+          realizada_em: string;
+          status: string;
+          tipo: string;
+          updated_at: string;
+        }[];
+      };
       login_operador: {
         Args: { p_operador_id: string; p_pin: string };
         Returns: Json;
@@ -1776,6 +1832,10 @@ export type Database = {
       ordens_do_operador_ids: {
         Args: { p_operador_id: string };
         Returns: string[];
+      };
+      parametros_campos_de_negocio: {
+        Args: { registro: Database["public"]["Tables"]["parametros"]["Row"] };
+        Returns: Json;
       };
       registrar_notificacao_propria: {
         Args: {

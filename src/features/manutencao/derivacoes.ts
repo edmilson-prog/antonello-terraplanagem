@@ -2,9 +2,15 @@ import { parametroNumero } from "@/features/parametros/uso";
 import type {
   Equipamento,
   PlanoManutencao,
-  RegistroManutencao,
+  RegistroManutencaoOperador,
   StatusManutencao,
 } from "@/shared/types";
+
+// Tudo aqui recebe RegistroManutencaoOperador (o recorte sem custo/fornecedor/
+// observação), e não RegistroManutencao. Não é frescura de tipo: esta cadeia é
+// chamada de dentro do app de campo, onde a RPC nem devolve os campos
+// financeiros. Declarar o recorte faz o compilador provar que nenhuma derivação
+// de manutenção depende de dado que /app/* não pode ver.
 
 export const ANTECEDENCIA_HORAS_PADRAO = 20;
 
@@ -42,25 +48,34 @@ export function planosParaEquipamento(
   );
 }
 
+// Registro de ciclo de plano ainda aberto. O check do banco garante que todo
+// registro com plano tem marca de horímetro; o predicado é o que traz essa
+// garantia para o TypeScript, já que a coluna é anulável por causa da corretiva.
+export type RegistroPrevisto = RegistroManutencaoOperador & { horimetro_previsto: number };
+
 export function registroPrevisto(
-  registros: RegistroManutencao[],
+  registros: RegistroManutencaoOperador[],
   planoId: string,
   equipamentoId: string,
-): RegistroManutencao | undefined {
+): RegistroPrevisto | undefined {
   return registros.find(
-    (r) => r.plano_id === planoId && r.equipamento_id === equipamentoId && r.status === "prevista",
+    (r): r is RegistroPrevisto =>
+      r.plano_id === planoId &&
+      r.equipamento_id === equipamentoId &&
+      r.status === "prevista" &&
+      r.horimetro_previsto !== null,
   );
 }
 
 export interface StatusPlanoResultado {
   status: StatusManutencao;
-  registro: RegistroManutencao;
+  registro: RegistroPrevisto;
 }
 
 export function statusPlano(
   plano: PlanoManutencao,
   equipamento: Equipamento,
-  registros: RegistroManutencao[],
+  registros: RegistroManutencaoOperador[],
 ): StatusPlanoResultado | null {
   const registro = registroPrevisto(registros, plano.id, equipamento.id);
   if (!registro) return null;
@@ -75,7 +90,7 @@ const PESO_STATUS: Record<StatusManutencao, number> = { em_dia: 0, proxima: 1, v
 export function statusEquipamento(
   equipamento: Equipamento,
   planos: PlanoManutencao[],
-  registros: RegistroManutencao[],
+  registros: RegistroManutencaoOperador[],
 ): StatusManutencao | null {
   const resultados = planosParaEquipamento(equipamento, planos)
     .map((p) => statusPlano(p, equipamento, registros))
@@ -89,7 +104,7 @@ export function statusEquipamento(
 export interface AlertaManutencao {
   equipamento: Equipamento;
   plano: PlanoManutencao;
-  registro: RegistroManutencao;
+  registro: RegistroPrevisto;
   status: "proxima" | "vencida";
 }
 
@@ -98,7 +113,7 @@ export interface AlertaManutencao {
 export function alertasManutencao(
   equipamentos: Equipamento[],
   planos: PlanoManutencao[],
-  registros: RegistroManutencao[],
+  registros: RegistroManutencaoOperador[],
 ): AlertaManutencao[] {
   const alertas: AlertaManutencao[] = [];
   for (const equipamento of equipamentos.filter((e) => e.ativo)) {
@@ -132,7 +147,7 @@ export interface ResumoProximaManutencao {
 export function resumoProximaManutencao(
   equipamento: Equipamento,
   planos: PlanoManutencao[],
-  registros: RegistroManutencao[],
+  registros: RegistroManutencaoOperador[],
 ): ResumoProximaManutencao | null {
   const candidatos = planosParaEquipamento(equipamento, planos).reduce<
     { plano: PlanoManutencao; resultado: StatusPlanoResultado }[]

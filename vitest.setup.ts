@@ -8,6 +8,8 @@ import { avisosWhatsApp as avisosWhatsAppFixture } from "./src/mocks/avisos-what
 import { operadores as operadoresFixture } from "./src/mocks/operadores";
 import { apontamentos as apontamentosFixture } from "./src/mocks/apontamentos";
 import { contasPagar as contasPagarFixture } from "./src/mocks/contas-pagar";
+import { planosManutencao as planosManutencaoFixture } from "./src/mocks/planos-manutencao";
+import { registrosManutencao as registrosManutencaoFixture } from "./src/mocks/registros-manutencao";
 
 // jsdom (ambiente de teste deste projeto) não implementa window.matchMedia por
 // padrão. Vários componentes/hooks usam prefers-color-scheme (useTheme) e
@@ -91,6 +93,9 @@ vi.mock("./src/lib/supabase", () => {
     // as mesmas linhas que o banco foi semeado.
     contas_pagar: contasPagarFixture.map((c) => ({ ...c })),
     compras_diesel: [],
+    // Manutenção saiu do mock em memória na Onda 18 (planos e registros).
+    planos_manutencao: planosManutencaoFixture.map((p) => ({ ...p })),
+    registros_manutencao: registrosManutencaoFixture.map((r) => ({ ...r })),
     usuarios_retaguarda: [{ id: "usuario-retaguarda-teste", nome: "Admin Teste", perfil: "admin" }],
   };
 
@@ -253,6 +258,29 @@ vi.mock("./src/lib/supabase", () => {
     supabase: {
       from: (table: string) => new FakeQueryBuilder(table),
       rpc: (fn: string, args: Record<string, unknown> = {}) => {
+        if (fn === "listar_planos_manutencao_operador") {
+          const operadorId = operadorDoToken(String(args.p_token ?? ""));
+          if (!operadorId) return respostaRpc(null, SESSAO_INVALIDA);
+          return respostaRpc(
+            [...(tabelas.planos_manutencao ?? [])].sort((a, b) =>
+              String(a.descricao ?? "").localeCompare(String(b.descricao ?? "")),
+            ),
+          );
+        }
+
+        if (fn === "listar_registros_manutencao_operador") {
+          const operadorId = operadorDoToken(String(args.p_token ?? ""));
+          if (!operadorId) return respostaRpc(null, SESSAO_INVALIDA);
+          // Espelha a RPC real: /app/* nunca recebe custo, fornecedor nem
+          // observação. Um teste de tela de campo que dependesse disso quebra
+          // aqui, como quebraria contra o banco.
+          return respostaRpc(
+            (tabelas.registros_manutencao ?? [])
+              .map(({ custo: _c, fornecedor: _f, observacao: _o, ...resto }) => resto)
+              .sort(porCampoDesc("aberta_em")),
+          );
+        }
+
         if (fn === "listar_ordens_operador") {
           const operadorId = operadorDoToken(String(args.p_token ?? ""));
           if (!operadorId) return respostaRpc(null, SESSAO_INVALIDA);

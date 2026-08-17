@@ -23,7 +23,7 @@ const BARRA_POR_STATUS: Record<StatusManutencao, string> = {
 export function TabelaManutencaoPreditiva() {
   const equipamentos = equipamentosStore.useAll();
   const planos = planosManutencaoStore.useAll();
-  const registros = registrosManutencaoStore.useTodos();
+  const registros = registrosManutencaoStore.useCompletos();
   const { isLoading, error, retry } = useMockResource(equipamentos);
 
   const linhas = useMemo(

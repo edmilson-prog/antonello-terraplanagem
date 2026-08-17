@@ -158,7 +158,7 @@ function respostaMaisRentavel(pergunta: string): RespostaAssistente | null {
     periodo,
     componentesCustoStore.getAll(),
     abastecimentosStore.listar(),
-    registrosManutencaoStore.listar(),
+    registrosManutencaoStore.listarCompletos(),
     apontamentosStore.listar(),
     precoHoraMaquinaStore.getAll(),
     faturamentosStore.listar(),
@@ -215,7 +215,7 @@ function respostaManutencoesVencidas(pergunta: string): RespostaAssistente | nul
   const alertas = alertasManutencao(
     equipamentosStore.getAll(),
     planosManutencaoStore.getAll(),
-    registrosManutencaoStore.listar(),
+    registrosManutencaoStore.listarCompletos(),
   );
   const vencidas = alertas.filter((a) => a.status === "vencida").length;
   return {

@@ -65,7 +65,7 @@ export function AdminDashboardPage() {
   const precosHM = precoHoraMaquinaStore.useAll();
   const precosFund = precoFundacaoStore.useAll();
   const planos = planosManutencaoStore.useAll();
-  const registros = registrosManutencaoStore.useTodos();
+  const registros = registrosManutencaoStore.useCompletos();
   const { isLoading, error, retry } = useMockResource(ordens);
 
   const agora = useMemo(() => new Date(), []);
