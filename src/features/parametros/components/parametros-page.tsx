@@ -149,8 +149,7 @@ function Cards({ parametros: p }: { parametros: Parametros }) {
 
         <CardSecao titulo="Operação" icone="lucide:clipboard-list" bodyClassName="px-4 py-1.5">
           <DataRow icone="lucide:clock" rotulo="Jornada padrão">
-            <Mono>{num(p.jornada_horas)} h</Mono> · <Fraco>por dia útil</Fraco>{" "}
-            <SemEfeito chave="jornada_horas" />
+            <Mono>{num(p.jornada_horas)} h</Mono> · <Fraco>base da utilização da frota</Fraco>
           </DataRow>
           <DataRow icone="lucide:gauge" rotulo="Tolerância de horímetro">
             <Mono>± {num(p.tolerancia_horimetro, 2)} h</Mono>{" "}

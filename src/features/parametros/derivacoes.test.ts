@@ -212,6 +212,9 @@ describe("catálogo de campos", () => {
 
   it("não marca como sem efeito nenhum parâmetro que o sistema já consulta", () => {
     const ligados = [
+      // Jornada e dias úteis passaram a valer na Onda 16 (Utilização da Frota).
+      "jornada_horas",
+      "dias_uteis",
       "alerta_manutencao_horas",
       "margem_minima_pct",
       "horas_mes_referencia",

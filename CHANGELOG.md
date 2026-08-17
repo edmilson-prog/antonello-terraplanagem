@@ -5,6 +5,21 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.30.0] - 2026-08-17 - Bridge
+
+### Added
+- **Painel Gerencial conforme o design system**, em duas abas. **Visão executiva** é o desenho do kit por inteiro: 4 KPIs-herói (receita, resultado, margem média, horas apontadas) com sparkline, "Resultado por mês" em barras com média e pico, "Top clientes", "Curva ABC de clientes" e "Utilização da frota". **Análises** guarda, intactos, os 7 blocos do PRD-016 que o kit não desenha — insight por IA, gráficos de evolução e de receita×custo×margem, horas por equipamento, utilização de diesel, os dois rankings de margem, pipeline consolidado e previsão de caixa.
+- **Curva ABC de clientes** com corte clássico de Pareto (A concentra até 80% da receita, B até 95%, C o resto). O cliente que cruza o corte fecha a faixa que ele completa — senão o corte nunca seria atingido e um cliente único cairia em C.
+- **Utilização da frota**: horas apontadas ÷ horas disponíveis, por equipamento. Deixa passar de 100% em vez de truncar — hora extra e sábado existem, e esconder isso apagaria a informação mais útil do card.
+
+### Changed
+- **`jornada_horas` e `dias_uteis` saíram do selo "só cadastro"**: a Utilização da Frota é o primeiro lugar do sistema que os consulta, para calcular as horas disponíveis do período. No app do operador a jornada segue no valor fixo — lá a tabela de parâmetros não é legível (RLS de retaguarda).
+- `LinhaBarra` (rótulo + valor + barra de proporção) foi para `shared/components`, na quarta vez que o padrão apareceu. Os cards de composição de custo e de margem por cliente ainda usam a versão local deles.
+
+### Notas
+- O cálculo de dias úteis **não desconta feriados** — o sistema não tem calendário deles, e inventar um daria precisão falsa. O card diz isso no rodapé.
+- `dias_uteis` com valor "personalizado" cai em segunda a sexta: não há onde configurar quais dias seriam.
+
 ## [0.29.0] - 2026-08-17 - Compass
 
 ### Added
