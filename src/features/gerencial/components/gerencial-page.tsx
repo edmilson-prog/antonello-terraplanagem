@@ -1,5 +1,8 @@
 import { useMemo, useState } from "react";
-import { mesReferencia } from "@/shared/lib/periodo-mensal";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CardPill } from "@/shared/components/card-secao";
+import { VisaoExecutiva } from "@/features/gerencial/components/visao-executiva";
+import { mesReferencia, rotuloMes } from "@/shared/lib/periodo-mensal";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
@@ -118,60 +121,84 @@ export function GerencialPage() {
     ],
   );
 
+  const rotuloPeriodo =
+    periodo.mesInicio === periodo.mesFim
+      ? rotuloMes(periodo.mesFim)
+      : `${rotuloMes(periodo.mesInicio)} — ${rotuloMes(periodo.mesFim)}`;
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">Painel Gerencial</h1>
-          <p className="text-sm text-muted-foreground">
-            Evolução, margem e rankings — visão consolidada para decisão.
-          </p>
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+          Painel Gerencial
+        </h1>
+        <CardPill>{rotuloPeriodo}</CardPill>
+        <div className="ml-auto">
+          <SeletorPeriodoGerencial
+            periodo={periodo}
+            mesMaisRecente={mesMaisRecente}
+            onChange={setPeriodo}
+          />
         </div>
-        <SeletorPeriodoGerencial
-          periodo={periodo}
-          mesMaisRecente={mesMaisRecente}
-          onChange={setPeriodo}
-        />
       </div>
 
-      <CardInsight
-        vazio={totalAtual === 0 && margemAtual === 0}
-        gerar={() => gerarInsight({ totalAtual, totalAnterior, margemAtual, margemAnterior })}
-      />
+      <p className="text-sm text-muted-foreground md:text-base">
+        Evolução, margem e rankings — visão consolidada para decisão.
+      </p>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <NumeroChaveCard
-          rotulo="Faturado no período"
-          valorAtual={totalAtual}
-          valorAnterior={totalAnterior}
-          formatar={(v) => brl.format(v)}
-          icone="lucide:receipt"
-        />
-        <NumeroChaveCard
-          rotulo="Margem no período (hora-máquina)"
-          valorAtual={margemAtual}
-          valorAnterior={margemAnterior}
-          formatar={(v) => brl.format(v)}
-          icone="lucide:trending-up"
-        />
-      </div>
+      {/* A aba executiva é o desenho do UI kit; a de análises guarda os blocos
+          do PRD-016, que o kit não desenha mas o Leonardo já usa. */}
+      <Tabs defaultValue="executiva" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="executiva">Visão executiva</TabsTrigger>
+          <TabsTrigger value="analises">Análises</TabsTrigger>
+        </TabsList>
 
-      <GraficoEvolucaoFaturamento meses={meses} />
-      <GraficoReceitaCustoMargem meses={meses} />
+        <TabsContent value="executiva">
+          <VisaoExecutiva periodo={periodo} />
+        </TabsContent>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <GraficoHorasEquipamento periodo={periodo} />
-        <GraficoUtilizacaoDiesel periodo={periodo} />
-      </div>
+        <TabsContent value="analises" className="space-y-4">
+          <CardInsight
+            vazio={totalAtual === 0 && margemAtual === 0}
+            gerar={() => gerarInsight({ totalAtual, totalAnterior, margemAtual, margemAnterior })}
+          />
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <RankingMargem tipo="equipamento" periodo={periodo} />
-        <RankingMargem tipo="obra" periodo={periodo} />
-      </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <NumeroChaveCard
+              rotulo="Faturado no período"
+              valorAtual={totalAtual}
+              valorAnterior={totalAnterior}
+              formatar={(v) => brl.format(v)}
+              icone="lucide:receipt"
+            />
+            <NumeroChaveCard
+              rotulo="Margem no período (hora-máquina)"
+              valorAtual={margemAtual}
+              valorAnterior={margemAnterior}
+              formatar={(v) => brl.format(v)}
+              icone="lucide:trending-up"
+            />
+          </div>
 
-      <PipelineConsolidadoCard periodo={periodo} />
+          <GraficoEvolucaoFaturamento meses={meses} />
+          <GraficoReceitaCustoMargem meses={meses} />
 
-      <PrevisaoCaixaCard contasReceber={contasReceber} clientes={clientes} />
+          <div className="grid gap-4 lg:grid-cols-2">
+            <GraficoHorasEquipamento periodo={periodo} />
+            <GraficoUtilizacaoDiesel periodo={periodo} />
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <RankingMargem tipo="equipamento" periodo={periodo} />
+            <RankingMargem tipo="obra" periodo={periodo} />
+          </div>
+
+          <PipelineConsolidadoCard periodo={periodo} />
+
+          <PrevisaoCaixaCard contasReceber={contasReceber} clientes={clientes} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
