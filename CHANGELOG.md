@@ -5,6 +5,23 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.28.0] - 2026-08-17 - Ledger
+
+### Added
+- **Custo da Hora conforme o design system.** 4 KPIs-herói (custo médio da hora, horas apontadas, diesel no mês, margem média) com sparkline dos últimos 6 meses e variação vs. mês anterior, e grid de duas colunas: tabela clicável de custo por equipamento à esquerda, composição do custo e preço de tabela à direita.
+- **Composição do custo em barras**, no lugar do diálogo de detalhamento. Escolher um equipamento na tabela mostra para onde o custo vai, com percentual e valor por hora de cada item. Diferença deliberada em relação ao mock: as linhas são os componentes realmente cadastrados, pelo nome que o usuário deu ("Parcela FINAME", "Material rodante"), mais Diesel e Manutenção, que são derivados — em vez das 4 categorias fixas do desenho.
+- Card **"Preço de tabela"** com o preço praticado do equipamento e selo de margem saudável ou apertada. O limiar é o mesmo de Preços, lido de Parâmetros.
+- **Exportar em CSV** a tabela de custo do mês, em convenção pt-BR (ponto e vírgula, vírgula decimal, BOM) para abrir direto no Excel.
+
+### Changed
+- O campo "Horas/mês de referência" do formulário de componente de custo passa a partir do valor definido em Parâmetros, com link para lá — antes era um `160` fixo no código. Continua valendo só para a simulação daquela tela; o que mudou é de onde vem o padrão. Fecha o laço aberto na 0.27.0.
+- `KpiHeroi` (o tile do UI kit, com trend e sparkline) e `escalar0a100` foram para `shared`, em vez de virarem a quarta cópia. Dashboard já usa a versão compartilhada; Faturamento e Financeiro ainda têm as suas.
+
+### Notas
+- O botão **"Recalcular custos"** do kit ficou visível e desabilitado, com a explicação no hover: o custo da hora é sempre derivado na leitura, nunca persistido (PRD-013), então não existe o que recalcular. Decisão do usuário entre omitir, renomear ou manter inerte.
+- As duas abas (Custo por Equipamento e Componentes de Custo) foram mantidas — o mock desenha só a primeira, mas o cadastro de componentes é feature real, sem outra porta de entrada.
+- Corrigido de passagem: `CODINOME_SISTEMA` tinha ficado em "Handshake" na 0.27.0, que deveria ser "Levers". O rodapé do login mostrava o codinome errado.
+
 ## [0.27.0] - 2026-08-16 - Levers
 
 ### Added
