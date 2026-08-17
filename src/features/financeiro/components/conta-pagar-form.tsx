@@ -45,23 +45,31 @@ export function ContaPagarForm({ onSuccess, onCancel }: Props) {
     defaultValues: { categoria: "diesel" },
   });
 
-  const onSubmit = (values: ContaPagarFormValues) => {
-    contasPagarStore.criar({
-      descricao: values.descricao,
-      fornecedor: values.fornecedor?.trim() || null,
-      categoria: values.categoria,
-      valor: values.valor,
-      vencimento: values.vencimento,
-      documento: values.documento?.trim() || null,
-      forma_pagamento: values.forma_pagamento ?? null,
-      observacao: values.observacao?.trim() || null,
-    });
+  const onSubmit = async (values: ContaPagarFormValues) => {
+    try {
+      await contasPagarStore.criar({
+        descricao: values.descricao,
+        fornecedor: values.fornecedor?.trim() || null,
+        categoria: values.categoria,
+        valor: values.valor,
+        vencimento: values.vencimento,
+        documento: values.documento?.trim() || null,
+        forma_pagamento: values.forma_pagamento ?? null,
+        observacao: values.observacao?.trim() || null,
+      });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível registrar a conta.");
+      return;
+    }
     toast.success("Conta a pagar registrada.");
     onSuccess();
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]"
+    >
       <Card>
         <CardHeader>
           <CardTitle>Dados do título</CardTitle>
@@ -130,11 +138,7 @@ export function ContaPagarForm({ onSuccess, onCancel }: Props) {
 
           <div className="space-y-1.5">
             <Label htmlFor="fornecedor">Fornecedor / beneficiário</Label>
-            <Input
-              id="fornecedor"
-              placeholder="Ex.: Posto Missões"
-              {...register("fornecedor")}
-            />
+            <Input id="fornecedor" placeholder="Ex.: Posto Missões" {...register("fornecedor")} />
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -173,7 +177,9 @@ export function ContaPagarForm({ onSuccess, onCancel }: Props) {
               {...register("valor")}
               aria-invalid={!!errors.valor}
             />
-            {errors.valor ? <p className="text-xs text-destructive">{errors.valor.message}</p> : null}
+            {errors.valor ? (
+              <p className="text-xs text-destructive">{errors.valor.message}</p>
+            ) : null}
           </div>
 
           <div className="space-y-1.5">

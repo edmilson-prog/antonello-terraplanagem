@@ -17,10 +17,10 @@ export function DarBaixaPagarDialog({ conta, onOpenChange }: DarBaixaPagarDialog
   const [pagoEm, setPagoEm] = useState(hoje);
   const [salvando, setSalvando] = useState(false);
 
-  function handleConfirmar() {
+  async function handleConfirmar() {
     if (!conta) return;
     setSalvando(true);
-    const r = contasPagarStore.darBaixaPagar(conta.id, pagoEm);
+    const r = await contasPagarStore.darBaixaPagar(conta.id, pagoEm);
     setSalvando(false);
     if (r.ok) {
       toast.success("Pagamento registrado com sucesso.");

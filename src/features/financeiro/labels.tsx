@@ -1,5 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
-import type { StatusConta, CategoriaDespesa, FormaRecebimento, FormaPagamento } from "@/shared/types";
+import type {
+  StatusConta,
+  CategoriaDespesa,
+  FormaRecebimento,
+  FormaPagamento,
+} from "@/shared/types";
 import { cn } from "@/lib/utils";
 
 export const STATUS_CONTA_LABEL: Record<StatusConta, string> = {

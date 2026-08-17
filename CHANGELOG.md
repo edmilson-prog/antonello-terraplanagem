@@ -5,6 +5,27 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.31.0] - 2026-08-17 - Cistern
+
+Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita do usuário: o controle de estoque do tanque interno, que na época foi removido do formulário por não existir no produto, agora existe de verdade.
+
+### Added
+- **Estoque do tanque interno de diesel.** Compras entram, abastecimentos com origem "tanque" saem, e o saldo é derivado — nunca persistido. Corrigir uma compra lançada errada corrige o histórico inteiro sozinho.
+- **Custo por média móvel ponderada**: cada compra recalcula o custo médio do que está no tanque, e cada saída baixa por esse médio. É o que faz o Custo da Hora refletir o que foi realmente pago — comprar barato e o mercado subir não encarece a máquina que queimou o diesel antigo.
+- **Compra de diesel** em `/admin/diesel/compra`, com resumo ao vivo do saldo resultante e aviso quando a compra passaria da capacidade do tanque.
+- **Geração automática de conta a pagar** a cada compra, na categoria Diesel, com vencimento vindo do parâmetro de prazo padrão. A compra guarda o `conta_pagar_id` para o vínculo ficar rastreável.
+- **Diesel conforme o design system**: 4 KPIs-herói, tabela de abastecimentos com coluna Origem, consumo por equipamento em barras e o card "Tanque interno" com nível, capacidade e última compra. Export CSV.
+- Campo **Origem do diesel** de volta no formulário de abastecimento — agora com lastro: escolher "tanque interno" dá baixa no estoque.
+
+### Changed
+- **`contas_pagar` saiu do mock em memória para o Supabase.** Era pré-requisito: uma conta gerada automaticamente que some no primeiro F5 não serve para nada. A tabela também estava três colunas atrás do contrato — `documento`, `forma_pagamento` e `observacao` entraram em `ContaPagar` na 0.19.0 mas só no mock.
+- `contasPagarStore.criar` e `.darBaixaPagar` viraram assíncronas; os dois chamadores foram ajustados.
+
+### Notas
+- Abastecimentos já registrados ficaram como origem "externo". Marcá-los como tanque criaria baixas retroativas de um estoque que não existia.
+- O saldo pode ficar negativo, e a tela avisa em vez de esconder: quase sempre significa abastecimento marcado como tanque sem a compra correspondente lançada.
+- A conta a pagar é criada **antes** da compra. Se ela falhar, nada é gravado; o contrário deixaria uma conta órfã no Financeiro, pior de desfazer do que repetir o lançamento.
+
 ## [0.30.0] - 2026-08-17 - Bridge
 
 ### Added
