@@ -5,6 +5,34 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.32.0] - 2026-08-17 - Overhaul
+
+Segunda versão seguida a **reverter uma decisão da 0.24.0 (Onda 10)** por escolha explícita do usuário. Lá, a manutenção corretiva foi tirada do escopo por "não existir no produto real"; o UI kit da tela de Manutenção insiste nela — Tipo e Situação são 2 das 6 colunas da tabela de ordens e 2 dos 4 KPIs — e o argumento de negócio confirmou: sem corretiva, vazamento hidráulico e troca de embreagem ficavam fora do Custo da Hora, que saía subestimado.
+
+Fecha a última tela 🔧 do [roadmap do UI kit](docs/prds/ROADMAP-ui-kit-retaguarda.md).
+
+### Added
+- **Manutenção corretiva.** `registros_manutencao` ganhou `tipo`, `descricao` própria, `prioridade`, `fornecedor`, `horimetro_abertura` e `aberta_em`, mais a situação **em andamento** — a máquina parada na oficina, entre a abertura e a conclusão. É ela que alimenta o KPI "Em manutenção".
+- **Nova manutenção** em `/admin/manutencao/nova`, com resumo ao vivo: equipamento, tipo, prioridade, horímetro, custo estimado e oficina. Abre a ordem já em andamento e leva direto para a conclusão — serviço rápido é aberto e fechado na mesma sentada.
+- **Preventiva avulsa**: serviço preventivo fora de plano, que antes não tinha como ser lançado. O check `registros_manutencao_forma_check` é quem separa as duas formas — com plano é preventiva e tem marca de horímetro; sem plano, precisa descrever a si mesma.
+- **Manutenção conforme o design system**: 4 KPIs-herói (manutenções no mês com sparkline de 6 meses, custo com comparativo, equipamentos parados, planos a vencer), tabela "Ordens de manutenção" com Tipo/Descrição/Custo/Situação e card "Planos por horímetro" com a contagem regressiva de cada ciclo. Export CSV do mês.
+- **RPCs de manutenção para o app de campo** (`listar_planos_manutencao_operador`, `listar_registros_manutencao_operador`), no mesmo padrão de OS e apontamento: `SECURITY DEFINER` com token opaco da sessão por PIN.
+
+### Changed
+- **`planos_manutencao` e `registros_manutencao` saíram do mock em memória para o Supabase.** Era pré-requisito: uma ordem corretiva que some no primeiro F5 não serve para nada. Fechou de quebra um buraco antigo — `equipamentosStore.create` já gravava o plano preventivo no banco, mas a lista vinha do mock, então o plano nascia invisível.
+- A tela passou a ter as abas **Manutenção** (o kit), **Planos** (o cadastro, intacto) e **Consumo (IA)** (intacta). A aba "Alertas" saiu: o card "Planos por horímetro" mostra os mesmos ciclos com a mesma ação, e ainda os que estão em dia.
+- `RegistrarManutencaoPage` atende os dois fluxos — fechar ciclo de plano (reinicia o ciclo) e concluir ordem avulsa (sem sucessora).
+- `planosManutencaoStore.create/update/setAtivo` e `registrosManutencaoStore.criarPrevista/registrarRealizada` viraram assíncronas; os chamadores foram ajustados.
+
+### Security
+- A RPC do operador **não devolve `custo`** — nem para o cliente descartar depois. `fornecedor` e `observacao` também ficam de fora, por minimização. As colunas são listadas uma a uma na função, de propósito: `select r.*` passaria a vazar qualquer coluna financeira futura no dia em que ela fosse criada.
+- O espelho disso no TypeScript é `RegistroManutencaoOperador`, o tipo que as derivações de manutenção passaram a receber. Com isso o compilador prova que a cadeia `statusEquipamento → statusPlano` não alcança dado financeiro — e ela roda em 4 telas de `/app/*`.
+
+### Notas
+- Os 5 registros que já existiam são preventivos de plano e tiveram `aberta_em` preenchido com o `created_at`.
+- Duas ordens corretivas de demonstração foram semeadas (uma em andamento, uma concluída), porque sem elas a tela abriria com todos os KPIs zerados. Podem ser apagadas quando a operação real começar a lançar as suas.
+- Ordem concluída não é clicável na tabela: não há o que fazer nela.
+
 ## [0.31.0] - 2026-08-17 - Cistern
 
 Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita do usuário: o controle de estoque do tanque interno, que na época foi removido do formulário por não existir no produto, agora existe de verdade.

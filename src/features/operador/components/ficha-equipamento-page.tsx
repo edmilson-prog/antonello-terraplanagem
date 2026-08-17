@@ -33,6 +33,7 @@ import {
 import { planosManutencaoStore } from "@/features/manutencao/planos-manutencao-store";
 import { registrosManutencaoStore } from "@/features/manutencao/registros-manutencao-store";
 import { resumoProximaManutencao } from "@/features/manutencao/derivacoes";
+import { descreverManutencao } from "@/features/manutencao/labels";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { formatData, formatHorimetro } from "@/shared/lib/format";
 import type { ReactNode } from "react";
@@ -180,14 +181,14 @@ export function FichaEquipamentoPage({ ordemId }: { ordemId: string }) {
         ) : (
           <CartaoCampo>
             {realizadas.map((r) => {
-              const plano = planos.find((p) => p.id === r.plano_id);
               return (
                 <div key={r.id} className={LINHA_CAMPO}>
                   <IconeTile tom="muted">
                     <Icon icon="lucide:wrench" className="h-4 w-4" />
                   </IconeTile>
                   <LinhaCorpo>
-                    <LinhaTitulo>{plano?.descricao ?? "Manutenção"}</LinhaTitulo>
+                    {/* Corretiva traz descrição própria; preventiva herda do plano. */}
+                    <LinhaTitulo>{descreverManutencao(r, planos)}</LinhaTitulo>
                     <LinhaMeta className="font-mono">
                       {r.realizada_em ? formatData(r.realizada_em.slice(0, 10)) : "—"}
                       {r.horimetro_realizado != null
