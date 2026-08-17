@@ -71,7 +71,7 @@
 | 21 | `ComprovantesList.jsx` | `admin.comprovantes.index.tsx` + `$comprovanteId` | ✅ | Onda 5 (lista) + Onda 3 (detalhe) |
 | 22 | `Manutencao.jsx` | `admin.manutencao.tsx` | 🔧 | Sem onda — última mudança real 2026-07-01 |
 | 23 | `NovaManutencao.jsx` | `admin.manutencao.registrar.$registroId.tsx` | ✅ | Onda 10 — escopo reduzido por decisão do usuário: o mock modela manutenção corretiva sob demanda (tipo/prioridade/bloqueio de equipamento/fornecedor), que **não existe no produto real** (só preventiva, disparada por `PlanoManutencao`). Página dedicada cobre só o fluxo real ("Registrar Manutenção Realizada" a partir de um alerta específico, não um "+ Novo" livre) |
-| 24 | `Diesel.jsx` | `admin.diesel.tsx` | 🔧 | Sem onda — última mudança real 2026-07-02 |
+| 24 | `Diesel.jsx` | `admin.diesel.tsx` | ✅ | Onda 17 — 4 KPIs-herói, tabela com coluna Origem, consumo por equipamento em barras e card "Tanque interno" com estoque real. **Deixou de ser reskin**: criou o controle de tanque (compras, saldo por média ponderada, conta a pagar automática) que a Onda 10 tinha descartado, por decisão do usuário |
 | 25 | `NovoAbastecimento.jsx` | `admin.diesel.novo.tsx` | ✅ | Onda 10 (página dedicada; sem o seletor fictício "Origem do diesel"/estoque/conta a pagar automática do mock, que não existe no produto real — decisão do usuário; botão de leitura de cupom por IA, que já existia e não está no mock, preservado) |
 | 26 | `CustoHora.jsx` | `admin.custo-hora.tsx` | ✅ | Onda 14 — 4 KPIs-herói com sparkline de 6 meses + faixa com os indicadores antigos, tabela clicável e painel lateral (composição em barras + preço de tabela) no lugar do diálogo de detalhamento, export CSV. As duas abas mantidas; "Recalcular custos" fica desabilitado (o custo é sempre derivado, PRD-013) |
 | 27 | `NovoCusto.jsx` | `admin.custo-hora.novo.tsx` | ✅ | Onda 8 (+categoria/competência/observação, e coluna Custo ref./Margem em Preços na Onda 9 reaproveita a mesma estimativa de custo) |
@@ -93,8 +93,8 @@
 
 | Status | Quantidade |
 |--------|------------|
-| ✅ Refatorado (bate com o design system) | 31 / 38 |
-| 🔧 Funcional, visual antigo | 2 / 38 |
+| ✅ Refatorado (bate com o design system) | 32 / 38 |
+| 🔧 Funcional, visual antigo | 1 / 38 |
 | 🔲 Funcional, mas em diálogo genérico (mock pede página dedicada) | 0 / 38 |
 | ⏳ Não existe | 4 / 38 |
 | ⚠️ Divergência de fluxo (não é visual) | 1 / 38 |
@@ -110,13 +110,14 @@
 | 11 | Sem plano formal — tela lida direto do projeto Claude Design via `DesignSync` (que passou a ser a fonte da verdade de design), sem etapa de Artifact | Dashboard (aba "Visão geral") | ✅ (PR #14, merge `459842e`, v0.22.0 "Lookout") |
 | 12 | Idem — mesma sub-onda do Dashboard, fechando as duas abas de `/admin` | Painel Operacional (aba "Operacional") | branch `worktree-painel-operacional-designsync`, v0.23.0 "Watchtower" |
 | 13 | Idem — lida do `DesignSync`, sem Artifact | Parâmetros + Configurações (par de telas, linhas 33–34). Primeira onda que criou schema em vez de só re-vestir: tabela `parametros` (singleton) + `parametros_historico` com trigger de versão e histórico | ✅ (PR #24, merge `018ea69`, v0.27.0 "Levers") |
+| 17 | Idem, mas virou feature | Diesel (linha 24) + controle de estoque do tanque + migração de contas a pagar para o Supabase | branch `worktree-diesel-designsync`, v0.31.0 "Cistern" |
 | 16 | Idem | Painel Gerencial (linha 31) — **fecha o bloco Analítico** (Custo da Hora, Rentabilidade, Painel Gerencial) | branch `worktree-painel-gerencial-designsync`, v0.30.0 "Bridge" |
 | 15 | Idem | Rentabilidade (linha 28) — segunda do bloco Analítico, vizinha direta do Custo da Hora | branch `worktree-rentabilidade-designsync`, v0.29.0 "Compass" |
 | 14 | Idem | Custo da Hora (linha 26) — primeira das 5 páginas de área analíticas. Escolhida por afinidade com a Onda 13: consome os parâmetros que acabaram de ser ligados (horas/mês de referência, margem mínima) | branch `worktree-custo-hora-designsync`, v0.28.0 "Ledger" |
 
 ## O que falta, em ordem sugerida
 
-1. **🔧 Frota — as duas últimas de reskin** (Manutenção e Diesel). O bloco Analítico fechou nas Ondas 14–16; estas duas são o que resta do agrupamento por afinidade, e fazem par natural entre si.
+1. **🔧 Manutenção** — a última tela de reskin. Diesel fechou na Onda 17 (virando feature, não só reskin).
 2. **⏳ Notificações na retaguarda** (linhas 35–37: central, preferências, nova notificação) — backend já pronto (PRD-020); falta só a UI de `/admin`.
 3. **⏳ Sobre** — institucional, baixo esforço.
 4. **⚠️ Nova NF** — decisão de produto pendente com o Leonardo (emissão manual avulsa é necessária, ou o automático ao fechar OS já cobre?). Mesma categoria de divergência que apareceu em NovaManutencao (linha 23) — vale revisitar as duas juntas com o Leonardo.
