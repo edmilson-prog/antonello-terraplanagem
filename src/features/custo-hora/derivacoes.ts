@@ -1,5 +1,6 @@
 import { precoHoraDoEquipamento, round2 } from "@/features/faturamento/calculo";
 import { custoAbastecimento } from "@/features/diesel/derivacoes";
+import { parametroNumero } from "@/features/parametros/uso";
 import type {
   Abastecimento,
   Apontamento,
@@ -179,10 +180,17 @@ export function custoHoraPorEquipamento(
 // custoHoraEquipamento). Mesma fórmula do "impacto no custo/h" já usada no
 // formulário de Componente de Custo, generalizada para todos os componentes
 // do equipamento. Usada em Preços (coluna Custo ref./Margem).
+export const HORAS_MES_REFERENCIA_PADRAO = 160;
+
+/** Horas/mês de referência configuradas em Parâmetros, com o valor histórico como piso. */
+export function horasReferenciaConfiguradas(): number {
+  return parametroNumero("horas_mes_referencia", HORAS_MES_REFERENCIA_PADRAO);
+}
+
 export function custoEstimadoHoraEquipamento(
   equipamentoId: string,
   componentes: ComponenteCusto[],
-  horasReferencia = 160,
+  horasReferencia = horasReferenciaConfiguradas(),
 ): number | null {
   const ativos = componentesAtivosDoEquipamento(componentes, equipamentoId);
   if (ativos.length === 0) return null;

@@ -14,6 +14,7 @@ import { descreverVinculo, margemPercentual, MARGEM_MINIMA_PADRAO } from "@/feat
 import { historicoPrecosStore } from "@/features/precos/historico-precos-store";
 import { componentesCustoStore } from "@/features/custo-hora/componentes-custo-store";
 import { custoEstimadoHoraEquipamento } from "@/features/custo-hora/derivacoes";
+import { useParametroBooleano, useParametroNumero } from "@/features/parametros/uso";
 import { PrecoHoraMaquinaForm } from "@/features/precos/components/preco-hora-maquina-form";
 import type { PrecoHoraMaquina } from "@/shared/types";
 import { cn } from "@/lib/utils";
@@ -23,6 +24,11 @@ export function PrecoHoraMaquinaList() {
   const equipamentos = equipamentosStore.useAll();
   const componentes = componentesCustoStore.useAll();
   const { isLoading, error, retry } = useMockResource(todos);
+
+  // Limiar e destaque vêm de Parâmetros; MARGEM_MINIMA_PADRAO segue como
+  // fallback enquanto a store não carregou.
+  const margemMinima = useParametroNumero("margem_minima_pct", MARGEM_MINIMA_PADRAO * 100) / 100;
+  const alertarMargem = useParametroBooleano("alertar_margem_baixa", true);
 
   const custoRefPorId = useMemo(() => {
     const mapa = new Map<string, number | null>();
@@ -34,6 +40,13 @@ export function PrecoHoraMaquinaList() {
     }
     return mapa;
   }, [todos, componentes]);
+
+  const abaixoDoMinimo = (preco: PrecoHoraMaquina) => {
+    if (!alertarMargem) return false;
+    const custo = custoRefPorId.get(preco.id);
+    if (custo == null) return false;
+    return margemPercentual(preco.valor_hora_operada, custo) < margemMinima;
+  };
 
   const [mostrarInativos, setMostrarInativos] = useState(true);
   const [formAberto, setFormAberto] = useState(false);
@@ -101,7 +114,7 @@ export function PrecoHoraMaquinaList() {
         if (custo == null) return <span className="text-foreground-faint">—</span>;
         const margem = margemPercentual(p.valor_hora_operada, custo);
         return (
-          <span className={cn(margem < MARGEM_MINIMA_PADRAO && "text-destructive")}>
+          <span className={cn(abaixoDoMinimo(p) && "text-destructive")}>
             {Math.round(margem * 100)}%
           </span>
         );
@@ -160,16 +173,7 @@ export function PrecoHoraMaquinaList() {
         </div>
         <div>
           <dt className="text-foreground-faint">Margem</dt>
-          <dd
-            className={cn(
-              "font-mono text-foreground",
-              (() => {
-                const custo = custoRefPorId.get(p.id);
-                if (custo == null) return false;
-                return margemPercentual(p.valor_hora_operada, custo) < MARGEM_MINIMA_PADRAO;
-              })() && "text-destructive",
-            )}
-          >
+          <dd className={cn("font-mono text-foreground", abaixoDoMinimo(p) && "text-destructive")}>
             {(() => {
               const custo = custoRefPorId.get(p.id);
               if (custo == null) return "—";

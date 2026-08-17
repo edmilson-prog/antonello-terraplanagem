@@ -1,3 +1,4 @@
+import { parametroNumero } from "@/features/parametros/uso";
 import type {
   Equipamento,
   PlanoManutencao,
@@ -7,12 +8,23 @@ import type {
 
 export const ANTECEDENCIA_HORAS_PADRAO = 20;
 
+/**
+ * Antecedência configurada em Parâmetros, com a constante como piso. A leitura
+ * é aqui, e não propagada por props, porque a cadeia
+ * statusEquipamento → statusPlano → calcularStatusManutencao é chamada de cinco
+ * telas, uma delas no app do operador — que por RLS não enxerga `parametros` e
+ * portanto segue no valor histórico de 20h.
+ */
+export function antecedenciaConfigurada(): number {
+  return parametroNumero("alerta_manutencao_horas", ANTECEDENCIA_HORAS_PADRAO);
+}
+
 // Status é sempre DERIVADO do horímetro atual vs. a marca prevista — nunca
 // armazenado (RF-004). Antecedência inclusiva: faltam <= antecedência → próxima.
 export function calcularStatusManutencao(
   horimetroAtual: number,
   horimetroPrevisto: number,
-  antecedenciaHoras: number = ANTECEDENCIA_HORAS_PADRAO,
+  antecedenciaHoras: number = antecedenciaConfigurada(),
 ): StatusManutencao {
   const horasRestantes = horimetroPrevisto - horimetroAtual;
   if (horasRestantes <= 0) return "vencida";

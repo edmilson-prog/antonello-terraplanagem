@@ -1,4 +1,3 @@
-import { PageHeader } from "@/shared/components/page-header";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -14,6 +13,11 @@ import { PROVEDOR_GATEWAY_LABEL } from "@/features/cobranca-gateway/labels";
 import { PROVEDOR_WHATSAPP_LABEL } from "@/features/aviso-whatsapp/labels";
 import type { ProvedorGateway, ProvedorWhatsApp } from "@/shared/types";
 
+// Provedores externos e conexão do WhatsApp. Era a página /admin/integracoes;
+// virou bloco da seção "Integrações" de Configurações, que é onde o UI kit
+// coloca esse assunto. A lógica (localStorage por provedor, sessão WAHA) não
+// mudou — só o lugar onde aparece.
+
 const PROVEDORES_GATEWAY: ProvedorGateway[] = ["mercado_pago", "asaas"];
 const PROVEDORES_WHATSAPP: ProvedorWhatsApp[] = [
   "evolution_api",
@@ -23,19 +27,17 @@ const PROVEDORES_WHATSAPP: ProvedorWhatsApp[] = [
   "waha",
 ];
 
-export function IntegracoesPage() {
+export function ProvedoresIntegracoes() {
   const { provedor, setProvedor } = useProvedorGatewayAtivo();
   const { provedor: provedorWhatsApp, setProvedor: setProvedorWhatsApp } =
     useProvedorWhatsAppAtivo();
 
   return (
-    <div className="space-y-6">
-      <PageHeader titulo="Integrações" descricao="Provedores externos usados pela plataforma" />
-
-      <section className="space-y-3 rounded-xl border bg-card p-5 shadow-sm">
-        <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
+    <div className="space-y-5">
+      <section className="space-y-3 rounded-xl border bg-surface/50 p-4">
+        <h4 className="font-display text-xs font-bold uppercase tracking-wide text-foreground-faint">
           Gateway de Cobrança
-        </h3>
+        </h4>
         <p className="text-sm text-muted-foreground">
           Provedor padrão sugerido ao emitir uma nova cobrança (boleto/PIX). Pode ser trocado a cada
           emissão.
@@ -57,10 +59,10 @@ export function IntegracoesPage() {
         </div>
       </section>
 
-      <section className="space-y-3 rounded-xl border bg-card p-5 shadow-sm">
-        <h3 className="font-display text-sm font-bold uppercase tracking-wide text-foreground-faint">
+      <section className="space-y-3 rounded-xl border bg-surface/50 p-4">
+        <h4 className="font-display text-xs font-bold uppercase tracking-wide text-foreground-faint">
           WhatsApp
-        </h3>
+        </h4>
         <p className="text-sm text-muted-foreground">
           Provedor padrão usado para avisar o cliente quando uma OS é fechada.
         </p>

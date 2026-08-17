@@ -1,1 +1,1 @@
-export { IntegracoesPage } from "@/features/integracoes/components/integracoes-page";
+export { ProvedoresIntegracoes } from "@/features/integracoes/components/provedores-integracoes";
