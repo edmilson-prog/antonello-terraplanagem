@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { contaVencida, resumoCaixa, agregadoMensalPorData, recebimentosPorForma, comprovantesRecentes } from "./derivacoes";
+import {
+  contaVencida,
+  resumoCaixa,
+  agregadoMensalPorData,
+  recebimentosPorForma,
+  comprovantesRecentes,
+} from "./derivacoes";
 import type { ContaReceber, ContaPagar } from "@/shared/types";
 
 describe("contaVencida", () => {
@@ -166,7 +172,11 @@ describe("comprovantesRecentes", () => {
   });
 
   it("respeita o limite informado", () => {
-    const outraLiquidada: ContaReceber = { ...CR_LIQUIDADA, id: "cr-009", recebido_em: "2026-06-26" };
+    const outraLiquidada: ContaReceber = {
+      ...CR_LIQUIDADA,
+      id: "cr-009",
+      recebido_em: "2026-06-26",
+    };
     const resultado = comprovantesRecentes([CR_LIQUIDADA, outraLiquidada], 1);
     expect(resultado).toHaveLength(1);
     expect(resultado[0].id).toBe("cr-009");

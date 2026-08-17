@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { abastecimentos as seed } from "@/mocks/abastecimentos";
-import type { Abastecimento } from "@/shared/types";
+import type { Abastecimento, OrigemDiesel } from "@/shared/types";
 
 export interface NovoAbastecimento {
   equipamento_id: string;
@@ -10,6 +10,8 @@ export interface NovoAbastecimento {
   preco_litro?: number | null;
   custo_total?: number | null;
   local?: string | null;
+  /** Omitido = "externo", que era o único caso antes do controle de tanque. */
+  origem?: OrigemDiesel;
 }
 
 export type ResultadoAbastecimento =
@@ -69,6 +71,9 @@ export function criarAbastecimentosStore(inicial: Abastecimento[]): Abasteciment
       preco_litro: input.preco_litro ?? null,
       custo_total: input.custo_total ?? null,
       local: input.local?.trim() ? input.local.trim() : null,
+      // Sem origem informada, assume externo — é o comportamento de antes do
+      // controle de tanque existir (Onda 17).
+      origem: input.origem ?? "externo",
       abastecido_em: agora,
       created_at: agora,
       updated_at: agora,

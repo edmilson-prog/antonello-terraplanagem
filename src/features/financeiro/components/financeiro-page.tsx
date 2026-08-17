@@ -117,7 +117,11 @@ export function FinanceiroPage() {
           <CardSecao
             titulo="Contas a receber"
             icone="lucide:hand-coins"
-            acessorio={<CardPill>{formatBRL(aReceberAbertas.reduce((s, c) => s + c.valor, 0))} em aberto</CardPill>}
+            acessorio={
+              <CardPill>
+                {formatBRL(aReceberAbertas.reduce((s, c) => s + c.valor, 0))} em aberto
+              </CardPill>
+            }
             bodyClassName="p-4"
           >
             <ContasReceberTab
@@ -130,7 +134,11 @@ export function FinanceiroPage() {
           <CardSecao
             titulo="Contas a pagar"
             icone="lucide:wallet"
-            acessorio={<CardPill>{formatBRL(aPagarAbertas.reduce((s, c) => s + c.valor, 0))} em aberto</CardPill>}
+            acessorio={
+              <CardPill>
+                {formatBRL(aPagarAbertas.reduce((s, c) => s + c.valor, 0))} em aberto
+              </CardPill>
+            }
             bodyClassName="p-4"
           >
             <ContasPagarTab contasPagar={contasPagar} onDarBaixa={setContaPagarSelecionada} />

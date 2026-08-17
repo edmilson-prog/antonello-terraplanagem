@@ -52,8 +52,8 @@ export function ResumoNovoPagamento({ control }: { control: Control<ContaPagarFo
       <div className="flex items-start gap-2 rounded-lg border border-border bg-surface p-3 text-xs text-muted-foreground">
         <Icon icon="lucide:info" className="mt-0.5 h-4 w-4 shrink-0" />
         <p>
-          Entra em <strong className="text-foreground">Financeiro › Contas a pagar</strong>. Pagamentos
-          de <strong className="text-foreground">diesel</strong> e{" "}
+          Entra em <strong className="text-foreground">Financeiro › Contas a pagar</strong>.
+          Pagamentos de <strong className="text-foreground">diesel</strong> e{" "}
           <strong className="text-foreground">manutenção</strong> são rateados no{" "}
           <strong className="text-foreground">Custo da Hora</strong> do equipamento.
         </p>

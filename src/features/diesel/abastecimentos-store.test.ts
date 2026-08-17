@@ -15,6 +15,7 @@ const SEED: Abastecimento[] = [
     preco_litro: null,
     custo_total: null,
     local: null,
+    origem: "externo",
     abastecido_em: "2026-06-01T08:00:00.000Z",
     created_at: "2026-06-01T08:00:00.000Z",
     updated_at: "2026-06-01T08:00:00.000Z",
@@ -72,6 +73,7 @@ describe("criarAbastecimentosStore", () => {
         preco_litro: null,
         custo_total: null,
         local: null,
+        origem: "externo",
         abastecido_em: "2026-06-20T08:00:00.000Z",
         created_at: "2026-06-20T08:00:00.000Z",
         updated_at: "2026-06-20T08:00:00.000Z",
@@ -85,6 +87,7 @@ describe("criarAbastecimentosStore", () => {
         preco_litro: null,
         custo_total: null,
         local: null,
+        origem: "externo",
         abastecido_em: "2026-06-01T08:00:00.000Z",
         created_at: "2026-06-01T08:00:00.000Z",
         updated_at: "2026-06-01T08:00:00.000Z",
@@ -104,6 +107,7 @@ describe("criarAbastecimentosStore", () => {
       preco_litro: 6.5,
       custo_total: 520,
       local: "Posto X",
+      origem: "externo",
     });
     expect(r.ok).toBe(true);
     if (r.ok) {
