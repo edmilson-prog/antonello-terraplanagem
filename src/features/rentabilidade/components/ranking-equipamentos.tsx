@@ -11,7 +11,8 @@ import {
 } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { KpiCard } from "@/features/dashboard/components/kpi-card";
+import { Icon } from "@iconify/react";
+import { KpiHeroi } from "@/shared/components/kpi-heroi";
 import { EmptyState } from "@/shared/components/empty-state";
 import { useMockResource } from "@/shared/hooks/use-mock-resource";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
@@ -23,6 +24,7 @@ import { componentesCustoStore } from "@/features/custo-hora/componentes-custo-s
 import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import {
+  resumoRentabilidade,
   rentabilidadePorTodosEquipamentos,
   type RentabilidadeEquipamento,
 } from "@/features/rentabilidade/derivacoes";
@@ -30,6 +32,8 @@ import { formatPercentual } from "@/features/rentabilidade/format";
 import { DetalheEquipamentoDialog } from "@/features/rentabilidade/components/detalhe-equipamento-dialog";
 import { formatBRL } from "@/features/retaguarda/format";
 import { formatHorimetro } from "@/shared/lib/format";
+import { mesAnterior } from "@/shared/lib/periodo-mensal";
+import { variacaoPercentual } from "@/features/gerencial/derivacoes";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -48,21 +52,20 @@ export function RankingEquipamentos({ periodo }: Props) {
 
   const [selecionado, setSelecionado] = useState<RentabilidadeEquipamento | null>(null);
 
-  const resultados = useMemo(
-    () =>
+  const calcular = useMemo(
+    () => (mes: string) =>
       rentabilidadePorTodosEquipamentos(
         equipamentos,
-        periodo,
+        mes,
         componentesCusto,
         abastecimentos,
         registrosManutencao,
         apontamentos,
         precosHoraMaquina,
         faturamentos,
-      ).sort((a, b) => b.margem - a.margem),
+      ),
     [
       equipamentos,
-      periodo,
       componentesCusto,
       abastecimentos,
       registrosManutencao,
@@ -72,16 +75,38 @@ export function RankingEquipamentos({ periodo }: Props) {
     ],
   );
 
+  const resultados = useMemo(
+    () => calcular(periodo).sort((a, b) => b.margem - a.margem),
+    [calcular, periodo],
+  );
+
+  const resumo = useMemo(() => resumoRentabilidade(resultados), [resultados]);
+  const resumoAnterior = useMemo(
+    () => resumoRentabilidade(calcular(mesAnterior(periodo))),
+    [calcular, periodo],
+  );
+
+  // Sparklines: os 6 meses até o período, como na aba de obras.
+  const series = useMemo(() => {
+    const meses: string[] = [];
+    let m = periodo;
+    for (let i = 0; i < 6; i++) {
+      meses.unshift(m);
+      m = mesAnterior(m);
+    }
+    const resumos = meses.map((mes) => resumoRentabilidade(calcular(mes)));
+    return {
+      margem: resumos.map((r) => r.margemPercentual ?? 0),
+      resultado: resumos.map((r) => r.resultado),
+      receita: resumos.map((r) => r.receita),
+    };
+  }, [calcular, periodo]);
+
   const { isLoading, error, retry } = useMockResource(resultados);
 
   const nomeDoEquipamento = (equipamentoId: string) =>
     equipamentos.find((e) => e.id === equipamentoId)?.nome ?? "Equipamento";
   const numeroDaOS = (osId: string) => ordens.find((o) => o.id === osId)?.numero ?? osId;
-
-  const receitaTotal = resultados.reduce((s, r) => s + r.receita, 0);
-  const custoTotal = resultados.reduce((s, r) => s + r.custo, 0);
-  const margemTotal = receitaTotal - custoTotal;
-  const comPrejuizo = resultados.filter((r) => r.margem < 0).length;
 
   const semFaturamentoNoPeriodo = !faturamentos.some((f) => f.gerado_em.slice(0, 7) === periodo);
 
@@ -116,34 +141,76 @@ export function RankingEquipamentos({ periodo }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-4">
-        <KpiCard
-          rotulo="Receita no período"
-          valor={formatBRL(receitaTotal)}
-          icone="lucide:receipt"
-          isLoading={isLoading}
-        />
-        <KpiCard
-          rotulo="Custo no período"
-          valor={formatBRL(custoTotal)}
-          icone="lucide:wallet"
-          isLoading={isLoading}
-        />
-        <KpiCard
-          rotulo="Margem no período"
-          valor={formatBRL(margemTotal)}
+      {/* Mesmos KPIs-herói da aba de obras — o kit desenha só a visão por OS,
+          mas as duas abas mostram o mesmo tipo de número. */}
+      <section className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+        <KpiHeroi
+          rotulo="Margem média"
+          valor={formatPercentual(resumo.margemPercentual)}
           icone="lucide:trending-up"
-          variante={margemTotal < 0 ? "alerta" : "neutro"}
-          isLoading={isLoading}
+          alerta={resumo.margemPercentual != null && resumo.margemPercentual < 0}
+          variacao={
+            resumo.margemPercentual != null && resumoAnterior.margemPercentual != null
+              ? variacaoPercentual(resumo.margemPercentual, resumoAnterior.margemPercentual)
+              : null
+          }
+          rodape="vs. mês anterior"
+          spark={series.margem}
         />
-        <KpiCard
-          rotulo="Equipamentos com prejuízo"
-          valor={String(comPrejuizo)}
-          icone="lucide:triangle-alert"
-          variante={comPrejuizo > 0 ? "alerta" : "neutro"}
-          isLoading={isLoading}
+        <KpiHeroi
+          rotulo="Resultado no mês"
+          valor={formatBRL(resumo.resultado)}
+          icone="lucide:wallet"
+          alerta={resumo.resultado < 0}
+          rodape="receita − custo"
+          spark={series.resultado}
         />
-      </div>
+        <KpiHeroi
+          rotulo="Receita"
+          valor={formatBRL(resumo.receita)}
+          icone="lucide:credit-card"
+          variacao={variacaoPercentual(resumo.receita, resumoAnterior.receita)}
+          rodape="vs. mês anterior"
+          spark={series.receita}
+          para="/admin/faturamento"
+        />
+        <KpiHeroi
+          rotulo="Custo total"
+          valor={formatBRL(resumo.custo)}
+          icone="lucide:calculator"
+          rodape="diesel + manutenção + componentes"
+          para="/admin/custo-hora"
+        />
+      </section>
+
+      <section className="overflow-hidden rounded-xl border bg-card shadow-sm">
+        <div className="flex items-center gap-2.5 px-3.5 py-3">
+          <Icon
+            icon="lucide:triangle-alert"
+            aria-hidden
+            className={cn(
+              "h-4 w-4 shrink-0",
+              resumo.comPrejuizo > 0 ? "text-destructive" : "text-primary",
+            )}
+          />
+          <div className="min-w-0">
+            <div className="font-display text-[9.5px] font-semibold uppercase tracking-widest text-foreground-faint">
+              Equipamentos com prejuízo
+            </div>
+            <div
+              className={cn(
+                "truncate font-mono text-sm font-bold",
+                resumo.comPrejuizo > 0 ? "text-destructive" : "text-foreground",
+              )}
+            >
+              {resumo.comPrejuizo}{" "}
+              <span className="text-[11px] font-normal text-muted-foreground">
+                {resumo.comPrejuizo === 1 ? "máquina no vermelho" : "máquinas no vermelho"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {!isLoading ? (
         <div className="rounded-xl border bg-card p-5 shadow-sm">
