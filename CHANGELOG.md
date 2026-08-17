@@ -5,6 +5,21 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.29.0] - 2026-08-17 - Compass
+
+### Added
+- **Rentabilidade conforme o design system.** As duas abas ganharam os 4 KPIs-herói do kit — margem média, resultado no mês, receita e custo total — com sparkline dos últimos 6 meses e variação vs. mês anterior, mais faixa preservando o indicador de itens no prejuízo que a tela já tinha.
+- Card **"Margem por cliente"** na aba de obras, ao lado da tabela: consolida as obras de cada cliente e ordena da maior margem para a menor, com barra proporcional. O recorte é o **ano até o mês selecionado**, não o mês — como indica o mock, e porque a margem de um cliente num mês isolado diz pouco quando ele tem uma ou duas obras faturadas.
+- **Exportar em CSV**, seguindo o padrão da 0.28.0. Exporta a aba aberta: as colunas de obras e de equipamentos são diferentes, então não há um CSV único.
+
+### Changed
+- A margem do período passou a ser a **margem do agregado** (resultado ÷ receita), não a média das margens individuais. Uma obra de R$ 100 com 90% não pode pesar igual a uma de R$ 100.000 com 10%.
+- A mecânica do CSV (separador, decimal, BOM, escape) foi para `shared/lib/exportar-csv`, em vez de ficar só no Custo da Hora — agora são duas telas exportando.
+
+### Notas
+- A nota de rodapé sobre particionamento financeiro diz o que é verdade hoje: os valores não aparecem no app de campo porque estas telas não existem lá, mas o parâmetro ainda **não separa perfis dentro da retaguarda** — recepção e proprietário veem o mesmo. O mock sugeria uma separação por perfil que o sistema não tem.
+- As duas abas foram mantidas: o kit desenha só a visão por OS, mas rentabilidade por equipamento é metade do PRD-014 ("por máquina e por obra").
+
 ## [0.28.0] - 2026-08-17 - Ledger
 
 ### Added
