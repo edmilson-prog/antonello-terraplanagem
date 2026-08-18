@@ -8,32 +8,34 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { registrosManutencaoStore } from "@/features/manutencao/registros-manutencao-store";
 import { ResumoRegistrarManutencao } from "@/features/manutencao/components/resumo-registrar-manutencao";
-import type { AlertaManutencao } from "@/features/manutencao/derivacoes";
+import type { Equipamento, PlanoManutencao, RegistroManutencao } from "@/shared/types";
 
 interface Props {
-  alerta: AlertaManutencao;
+  registro: RegistroManutencao;
+  equipamento: Equipamento;
+  // Null quando a ordem foi aberta à mão (corretiva ou preventiva avulsa).
+  plano: PlanoManutencao | null;
   onCancel: () => void;
 }
 
-export function RegistrarManutencaoForm({ alerta, onCancel }: Props) {
+export function RegistrarManutencaoForm({ registro, equipamento, plano, onCancel }: Props) {
   const navigate = useNavigate();
-  const [horimetroRealizado, setHorimetroRealizado] = useState(
-    String(alerta.equipamento.horimetro_atual),
-  );
-  const [custo, setCusto] = useState("");
+  const [horimetroRealizado, setHorimetroRealizado] = useState(String(equipamento.horimetro_atual));
+  // Corretiva costuma nascer com custo estimado; a conclusão só o confirma.
+  const [custo, setCusto] = useState(registro.custo != null ? String(registro.custo) : "");
   const [observacao, setObservacao] = useState("");
   const [salvando, setSalvando] = useState(false);
 
-  function handleConfirmar() {
+  async function handleConfirmar() {
     const valor = Number(horimetroRealizado);
     if (Number.isNaN(valor) || valor < 0) {
       toast.error("Informe um horímetro válido.");
       return;
     }
     setSalvando(true);
-    const r = registrosManutencaoStore.registrarRealizada(alerta.registro.id, {
+    const r = await registrosManutencaoStore.registrarRealizada(registro.id, {
       horimetroRealizado: valor,
-      intervaloHoras: alerta.plano.intervalo_horas,
+      intervaloHoras: plano?.intervalo_horas ?? null,
       custo: custo.trim() ? Number(custo) : null,
       observacao: observacao.trim() || null,
     });
@@ -42,7 +44,9 @@ export function RegistrarManutencaoForm({ alerta, onCancel }: Props) {
       toast.error(r.motivo);
       return;
     }
-    toast.success("Manutenção registrada. O ciclo foi reiniciado.");
+    toast.success(
+      plano ? "Manutenção registrada. O ciclo foi reiniciado." : "Manutenção concluída.",
+    );
     navigate({ to: "/admin/manutencao" });
   }
 
@@ -98,14 +102,16 @@ export function RegistrarManutencaoForm({ alerta, onCancel }: Props) {
               disabled={salvando || !horimetroRealizado.trim()}
               className="bg-primary text-primary-foreground hover:bg-primary-hover"
             >
-              {salvando ? "Salvando…" : "Registrar manutenção"}
+              {salvando ? "Salvando…" : plano ? "Registrar manutenção" : "Concluir manutenção"}
             </Button>
           </div>
         </CardContent>
       </Card>
 
       <ResumoRegistrarManutencao
-        alerta={alerta}
+        registro={registro}
+        equipamento={equipamento}
+        plano={plano}
         horimetroRealizado={horimetroRealizado}
         custo={custo}
       />

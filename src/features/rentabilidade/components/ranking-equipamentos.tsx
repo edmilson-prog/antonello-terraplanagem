@@ -44,7 +44,7 @@ export function RankingEquipamentos({ periodo }: Props) {
   const equipamentos = equipamentosStore.useAll();
   const apontamentos = apontamentosStore.useTodos();
   const abastecimentos = abastecimentosStore.useTodos();
-  const registrosManutencao = registrosManutencaoStore.useTodos();
+  const registrosManutencao = registrosManutencaoStore.useCompletos();
   const precosHoraMaquina = precoHoraMaquinaStore.useAll();
   const componentesCusto = componentesCustoStore.useAll();
   const faturamentos = faturamentosStore.useTodos();

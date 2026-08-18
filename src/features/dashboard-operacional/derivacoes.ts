@@ -5,6 +5,7 @@ import {
   planosParaEquipamento,
   statusPlano,
   type AlertaManutencao,
+  type RegistroPrevisto,
 } from "@/features/manutencao/derivacoes";
 import { estaNoIntervalo, type IntervaloPeriodo } from "@/features/dashboard/periodo";
 import type {
@@ -201,7 +202,7 @@ export function horasRestantesAlerta(alerta: AlertaManutencao): number {
 export interface LinhaManutencaoPreditiva {
   equipamento: Equipamento;
   plano: PlanoManutencao;
-  registro: RegistroManutencao;
+  registro: RegistroPrevisto;
   status: StatusManutencao;
   restantes: number; // horas até a marca prevista (negativo = vencida)
   percentualCiclo: number; // 0..100 do intervalo do plano já consumido

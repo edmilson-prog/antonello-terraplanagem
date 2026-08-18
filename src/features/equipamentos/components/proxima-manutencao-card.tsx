@@ -23,7 +23,7 @@ const HEALTH_CLASSE: Record<StatusManutencao, string> = {
 // urgente (menor "horas restantes" entre os planos aplicáveis ao equipamento).
 export function ProximaManutencaoCard({ equipamento }: { equipamento: Equipamento }) {
   const planos = planosManutencaoStore.useAll();
-  const registros = registrosManutencaoStore.useTodos();
+  const registros = registrosManutencaoStore.useCompletos();
   const resumo = resumoProximaManutencao(equipamento, planos, registros);
 
   if (!resumo) {

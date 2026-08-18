@@ -52,7 +52,7 @@ export function PlanoManutencaoForm({ inicial, onSuccess, onCancel }: Props) {
 
   const vinculo = watch("vinculo");
 
-  const onSubmit = (values: PlanoManutencaoFormValues) => {
+  const onSubmit = async (values: PlanoManutencaoFormValues) => {
     const payload = {
       equipamento_id: values.vinculo === "equipamento" ? (values.equipamento_id ?? null) : null,
       tipo_equipamento: values.vinculo === "tipo" ? (values.tipo_equipamento ?? null) : null,
@@ -60,36 +60,40 @@ export function PlanoManutencaoForm({ inicial, onSuccess, onCancel }: Props) {
       intervalo_horas: values.intervalo_horas,
       ativo: values.ativo,
     };
-    if (inicial) {
-      planosManutencaoStore.update(inicial.id, payload);
-      toast.success("Plano atualizado.");
-    } else {
-      const plano = planosManutencaoStore.create(payload);
-      // Materializa o 1º ciclo "prevista" para cada equipamento já afetado,
-      // usando o horímetro atual dele — sem isso o plano não teria status.
-      const alvos = equipamentos.filter(
-        (e) => e.id === plano.equipamento_id || e.tipo === plano.tipo_equipamento,
-      );
-      for (const equipamento of alvos) {
-        const registro = registrosManutencaoStore.criarPrevista({
-          equipamento_id: equipamento.id,
-          plano_id: plano.id,
-          horimetro_previsto: equipamento.horimetro_atual + plano.intervalo_horas,
-        });
+    try {
+      if (inicial) {
+        await planosManutencaoStore.update(inicial.id, payload);
+        toast.success("Plano atualizado.");
+      } else {
+        const plano = await planosManutencaoStore.create(payload);
+        // Materializa o 1º ciclo "prevista" para cada equipamento já afetado,
+        // usando o horímetro atual dele — sem isso o plano não teria status.
+        const alvos = equipamentos.filter(
+          (e) => e.id === plano.equipamento_id || e.tipo === plano.tipo_equipamento,
+        );
+        for (const equipamento of alvos) {
+          const registro = await registrosManutencaoStore.criarPrevista({
+            equipamento_id: equipamento.id,
+            plano_id: plano.id,
+            horimetro_previsto: equipamento.horimetro_atual + plano.intervalo_horas,
+          });
 
-        // Avisa quem opera a máquina (PRD-020). Não aguardado de propósito: o
-        // plano já está cadastrado e a retaguarda não deve esperar o envio.
-        void notificarManutencaoAgendada({
-          registroId: registro.id,
-          equipamentoId: equipamento.id,
-          equipamentoNome: equipamento.nome,
-          descricaoPlano: plano.descricao,
-          horimetroPrevisto: registro.horimetro_previsto,
-        });
+          // Avisa quem opera a máquina (PRD-020). Não aguardado de propósito: o
+          // plano já está cadastrado e a retaguarda não deve esperar o envio.
+          void notificarManutencaoAgendada({
+            registroId: registro.id,
+            equipamentoId: equipamento.id,
+            equipamentoNome: equipamento.nome,
+            descricaoPlano: plano.descricao,
+            horimetroPrevisto: registro.horimetro_previsto ?? 0,
+          });
+        }
+        toast.success("Plano cadastrado.");
       }
-      toast.success("Plano cadastrado.");
+      onSuccess();
+    } catch (erro) {
+      toast.error(erro instanceof Error ? erro.message : "Não foi possível salvar o plano.");
     }
-    onSuccess();
   };
 
   return (

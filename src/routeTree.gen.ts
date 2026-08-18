@@ -54,6 +54,7 @@ import { Route as AdminOrcamentosNovoRouteImport } from './routes/admin.orcament
 import { Route as AdminOrcamentosOrcamentoIdRouteImport } from './routes/admin.orcamentos.$orcamentoId'
 import { Route as AdminOperadoresNovoRouteImport } from './routes/admin.operadores.novo'
 import { Route as AdminOperadoresOperadorIdRouteImport } from './routes/admin.operadores.$operadorId'
+import { Route as AdminManutencaoNovaRouteImport } from './routes/admin.manutencao.nova'
 import { Route as AdminIaChatbotRouteImport } from './routes/admin.ia.chatbot'
 import { Route as AdminFaturamentoFaturamentoIdRouteImport } from './routes/admin.faturamento.$faturamentoId'
 import { Route as AdminEquipamentosNovoRouteImport } from './routes/admin.equipamentos.novo'
@@ -306,6 +307,11 @@ const AdminOperadoresOperadorIdRoute =
     path: '/operadores/$operadorId',
     getParentRoute: () => AdminRoute,
   } as any)
+const AdminManutencaoNovaRoute = AdminManutencaoNovaRouteImport.update({
+  id: '/nova',
+  path: '/nova',
+  getParentRoute: () => AdminManutencaoRoute,
+} as any)
 const AdminIaChatbotRoute = AdminIaChatbotRouteImport.update({
   id: '/ia/chatbot',
   path: '/ia/chatbot',
@@ -461,6 +467,7 @@ export interface FileRoutesByFullPath {
   '/admin/equipamentos/novo': typeof AdminEquipamentosNovoRoute
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
+  '/admin/manutencao/nova': typeof AdminManutencaoNovaRoute
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
   '/admin/operadores/novo': typeof AdminOperadoresNovoRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
@@ -528,6 +535,7 @@ export interface FileRoutesByTo {
   '/admin/equipamentos/novo': typeof AdminEquipamentosNovoRoute
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
+  '/admin/manutencao/nova': typeof AdminManutencaoNovaRoute
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
   '/admin/operadores/novo': typeof AdminOperadoresNovoRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
@@ -597,6 +605,7 @@ export interface FileRoutesById {
   '/admin/equipamentos/novo': typeof AdminEquipamentosNovoRoute
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
+  '/admin/manutencao/nova': typeof AdminManutencaoNovaRoute
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
   '/admin/operadores/novo': typeof AdminOperadoresNovoRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
@@ -668,6 +677,7 @@ export interface FileRouteTypes {
     | '/admin/equipamentos/novo'
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
+    | '/admin/manutencao/nova'
     | '/admin/operadores/$operadorId'
     | '/admin/operadores/novo'
     | '/admin/orcamentos/$orcamentoId'
@@ -735,6 +745,7 @@ export interface FileRouteTypes {
     | '/admin/equipamentos/novo'
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
+    | '/admin/manutencao/nova'
     | '/admin/operadores/$operadorId'
     | '/admin/operadores/novo'
     | '/admin/orcamentos/$orcamentoId'
@@ -803,6 +814,7 @@ export interface FileRouteTypes {
     | '/admin/equipamentos/novo'
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
+    | '/admin/manutencao/nova'
     | '/admin/operadores/$operadorId'
     | '/admin/operadores/novo'
     | '/admin/orcamentos/$orcamentoId'
@@ -1165,6 +1177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOperadoresOperadorIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/manutencao/nova': {
+      id: '/admin/manutencao/nova'
+      path: '/nova'
+      fullPath: '/admin/manutencao/nova'
+      preLoaderRoute: typeof AdminManutencaoNovaRouteImport
+      parentRoute: typeof AdminManutencaoRoute
+    }
     '/admin/ia/chatbot': {
       id: '/admin/ia/chatbot'
       path: '/ia/chatbot'
@@ -1349,10 +1368,12 @@ const AdminDieselRouteWithChildren = AdminDieselRoute._addFileChildren(
 )
 
 interface AdminManutencaoRouteChildren {
+  AdminManutencaoNovaRoute: typeof AdminManutencaoNovaRoute
   AdminManutencaoRegistrarRegistroIdRoute: typeof AdminManutencaoRegistrarRegistroIdRoute
 }
 
 const AdminManutencaoRouteChildren: AdminManutencaoRouteChildren = {
+  AdminManutencaoNovaRoute: AdminManutencaoNovaRoute,
   AdminManutencaoRegistrarRegistroIdRoute:
     AdminManutencaoRegistrarRegistroIdRoute,
 }

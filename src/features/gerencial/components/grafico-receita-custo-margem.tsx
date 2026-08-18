@@ -31,7 +31,7 @@ export function GraficoReceitaCustoMargem({ meses }: Props) {
   const equipamentos = equipamentosStore.useAll();
   const componentesCusto = componentesCustoStore.useAll();
   const abastecimentos = abastecimentosStore.useTodos();
-  const registrosManutencao = registrosManutencaoStore.useTodos();
+  const registrosManutencao = registrosManutencaoStore.useCompletos();
   const apontamentos = apontamentosStore.useTodos();
   const precosHoraMaquina = precoHoraMaquinaStore.useAll();
   const faturamentos = faturamentosStore.useTodos();

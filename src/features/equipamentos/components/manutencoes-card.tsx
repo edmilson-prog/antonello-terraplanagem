@@ -34,7 +34,7 @@ interface CandidatoUrgente {
 
 export function ManutencoesCard({ equipamento }: { equipamento: Equipamento }) {
   const planos = planosManutencaoStore.useAll();
-  const registros = registrosManutencaoStore.useTodos();
+  const registros = registrosManutencaoStore.useCompletos();
   const doEquip = planosParaEquipamento(equipamento, planos);
 
   if (doEquip.length === 0) {

@@ -299,12 +299,19 @@ export interface ContaPagar {
   updated_at: string;
 }
 
-// Manutenção Preventiva (PRD-010) — status é DERIVADO do horímetro atual do
+// Manutenção (PRD-010) — status do PLANO é DERIVADO do horímetro atual do
 // equipamento vs. o próximo registro "prevista"; nunca armazenado. Vínculo do
 // plano espelha PrecoHoraMaquina: exatamente um de equipamento_id/tipo_equipamento
 // é não-nulo (sem campo `vinculo` no contrato).
 export type StatusManutencao = "em_dia" | "proxima" | "vencida";
-export type StatusRegistroManutencao = "prevista" | "realizada";
+export type StatusRegistroManutencao = "prevista" | "em_andamento" | "realizada";
+
+// Preventiva nasce de um PlanoManutencao e tem marca de horímetro; corretiva é
+// aberta sob demanda (quebra, vazamento) e traz descrição própria. O check
+// registros_manutencao_forma_check garante no banco que os dois formatos não se
+// misturem — ver a migration 20260817190000_manutencao_corretiva.sql.
+export type TipoManutencao = "preventiva" | "corretiva";
+export type PrioridadeManutencao = "alta" | "media" | "baixa";
 
 export interface PlanoManutencao {
   id: string;
@@ -317,18 +324,33 @@ export interface PlanoManutencao {
   updated_at: string;
 }
 
-export interface RegistroManutencao {
+// Recorte que o App de Campo enxerga: sem `custo` (regra dura — /app/* nunca
+// exibe valor), sem `fornecedor` e sem `observacao` (minimização; nenhuma tela
+// de campo usa). É este o tipo que as derivações de manutenção recebem, para o
+// compilador garantir que a cadeia statusEquipamento → statusPlano não alcança
+// dado financeiro. A RPC listar_registros_manutencao_operador devolve exatamente
+// estas colunas.
+export interface RegistroManutencaoOperador {
   id: string;
   equipamento_id: string;
-  plano_id: string;
-  horimetro_previsto: number;
-  horimetro_realizado: number | null;
+  plano_id: string | null; // null em corretiva
+  tipo: TipoManutencao;
+  descricao: string | null; // livre na corretiva; na preventiva vem do plano
+  prioridade: PrioridadeManutencao;
+  horimetro_previsto: number | null; // a marca-alvo do plano; null em corretiva
+  horimetro_realizado: number | null; // leitura no fechamento
+  horimetro_abertura: number | null; // leitura na abertura
   status: StatusRegistroManutencao;
-  custo: number | null; // R$ — RETAGUARDA-ONLY (opcional), nunca em /app/*
-  observacao: string | null;
+  aberta_em: string;
   realizada_em: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface RegistroManutencao extends RegistroManutencaoOperador {
+  custo: number | null; // R$ — RETAGUARDA-ONLY (opcional), nunca em /app/*
+  fornecedor: string | null; // oficina que executou
+  observacao: string | null;
 }
 
 // Gestão de Diesel e Utilização (PRD-012) — litros e horímetro são

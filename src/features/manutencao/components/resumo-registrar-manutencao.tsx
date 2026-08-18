@@ -1,18 +1,29 @@
 import { Icon } from "@iconify/react";
 import { Linha } from "@/shared/components/linha-resumo";
-import { StatusManutencaoBadge } from "@/features/manutencao/labels";
+import { StatusManutencaoBadge, SituacaoRegistroBadge } from "@/features/manutencao/labels";
+import { calcularStatusManutencao } from "@/features/manutencao/derivacoes";
 import { formatBRL } from "@/features/retaguarda/format";
 import { formatHorimetro } from "@/shared/lib/format";
-import type { AlertaManutencao } from "@/features/manutencao/derivacoes";
+import type { Equipamento, PlanoManutencao, RegistroManutencao } from "@/shared/types";
 
 interface Props {
-  alerta: AlertaManutencao;
+  registro: RegistroManutencao;
+  equipamento: Equipamento;
+  plano: PlanoManutencao | null;
   horimetroRealizado: string;
   custo: string;
 }
 
-export function ResumoRegistrarManutencao({ alerta, horimetroRealizado, custo }: Props) {
+export function ResumoRegistrarManutencao({
+  registro,
+  equipamento,
+  plano,
+  horimetroRealizado,
+  custo,
+}: Props) {
   const custoNum = Number(custo) || 0;
+  const previsto = registro.horimetro_previsto;
+  const deCiclo = plano != null && previsto != null;
 
   return (
     <div className="space-y-4">
@@ -22,17 +33,21 @@ export function ResumoRegistrarManutencao({ alerta, horimetroRealizado, custo }:
             <Icon icon="lucide:wrench" className="h-6 w-6" />
           </div>
           <div className="min-w-0">
-            <div className="truncate text-sm font-semibold text-foreground">
-              {alerta.equipamento.nome}
+            <div className="truncate text-sm font-semibold text-foreground">{equipamento.nome}</div>
+            <div className="text-xs text-muted-foreground">
+              {plano?.descricao ?? registro.descricao ?? "Manutenção"}
             </div>
-            <div className="text-xs text-muted-foreground">{alerta.plano.descricao}</div>
           </div>
         </div>
         <div className="divide-y divide-border">
-          <Linha
-            rotulo="Horímetro previsto"
-            valor={formatHorimetro(alerta.registro.horimetro_previsto)}
-          />
+          {previsto != null ? (
+            <Linha rotulo="Horímetro previsto" valor={formatHorimetro(previsto)} />
+          ) : registro.horimetro_abertura != null ? (
+            <Linha
+              rotulo="Horímetro na abertura"
+              valor={formatHorimetro(registro.horimetro_abertura)}
+            />
+          ) : null}
           <Linha
             rotulo="Horímetro realizado"
             valor={
@@ -48,16 +63,31 @@ export function ResumoRegistrarManutencao({ alerta, horimetroRealizado, custo }:
         </div>
         <div className="flex items-center justify-between border-t border-border pt-3">
           <span className="text-sm text-muted-foreground">Situação</span>
-          <StatusManutencaoBadge status={alerta.status} />
+          {deCiclo ? (
+            <StatusManutencaoBadge
+              status={calcularStatusManutencao(equipamento.horimetro_atual, previsto)}
+            />
+          ) : (
+            <SituacaoRegistroBadge situacao={registro.status} />
+          )}
         </div>
       </div>
       <div className="flex items-start gap-2 rounded-lg border border-border bg-surface p-3 text-xs text-muted-foreground">
         <Icon icon="lucide:info" className="mt-0.5 h-4 w-4 shrink-0" />
-        <p>
-          Ao confirmar, o ciclo do plano é <strong className="text-foreground">reiniciado</strong> a
-          partir do horímetro realizado — a próxima manutenção deste plano volta a aparecer em{" "}
-          <strong className="text-foreground">Alertas</strong> quando vencer de novo.
-        </p>
+        {deCiclo ? (
+          <p>
+            Ao confirmar, o ciclo do plano é <strong className="text-foreground">reiniciado</strong>{" "}
+            a partir do horímetro realizado — a próxima manutenção deste plano volta a aparecer em{" "}
+            <strong className="text-foreground">Alertas</strong> quando vencer de novo.
+          </p>
+        ) : (
+          <p>
+            Esta ordem não veio de um plano, então{" "}
+            <strong className="text-foreground">não abre um próximo ciclo</strong>. O custo
+            informado passa a contar no <strong className="text-foreground">Custo da Hora</strong>{" "}
+            do equipamento no mês da conclusão.
+          </p>
+        )}
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import type {
   Equipamento,
   OrdemServico,
   PlanoManutencao,
-  RegistroManutencao,
+  RegistroManutencaoOperador,
 } from "@/shared/types";
 
 /*
@@ -36,7 +36,7 @@ export interface EntradaAlertas {
   apontamentos: Apontamento[];
   equipamentos: Equipamento[];
   planos: PlanoManutencao[];
-  registrosManutencao: RegistroManutencao[];
+  registrosManutencao: RegistroManutencaoOperador[];
   registrosCampo: RegistroCampo[];
 }
 
