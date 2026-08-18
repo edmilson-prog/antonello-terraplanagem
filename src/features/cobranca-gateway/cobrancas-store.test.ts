@@ -1,143 +1,136 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { criarCobrancasStore } from "./cobrancas-store";
-import { criarContasReceberStore } from "@/features/financeiro/contas-receber-store";
-import type { ContaReceber, CobrancaGateway } from "@/shared/types";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import * as supabaseLib from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
+import { cobrancasStore } from "./cobrancas-store";
+import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
 
-const seedContas: ContaReceber[] = [
-  {
-    id: "cr-t01",
-    faturamento_id: "fat-001",
-    cliente_id: "cl-001",
-    valor: 1000,
-    vencimento: "2026-07-01",
-    status: "aberta",
-    recebido_em: null,
-    forma_recebimento: null,
-    created_at: "2026-06-01T00:00:00.000Z",
-    updated_at: "2026-06-01T00:00:00.000Z",
-  },
-  {
-    id: "cr-t02",
-    faturamento_id: "fat-002",
-    cliente_id: "cl-002",
-    valor: 500,
-    vencimento: "2026-07-05",
-    status: "liquidada",
-    recebido_em: "2026-06-30",
-    forma_recebimento: "pix",
-    created_at: "2026-06-01T00:00:00.000Z",
-    updated_at: "2026-06-30T00:00:00.000Z",
-  },
-  {
-    id: "cr-t03",
-    faturamento_id: "fat-003",
-    cliente_id: "cl-003",
-    valor: 2000,
-    vencimento: "2026-07-10",
-    status: "aberta",
-    recebido_em: null,
-    forma_recebimento: null,
-    created_at: "2026-06-01T00:00:00.000Z",
-    updated_at: "2026-06-01T00:00:00.000Z",
-  },
-];
+/*
+ * Cobranças saiu do mock em memória para o Supabase na Onda 21. Deixou de ser
+ * um factory com a store de contas injetada — agora as duas falam com o banco,
+ * e a injeção só servia para o teste antigo.
+ *
+ * O que continua simulado é a INTEGRAÇÃO: linha digitável e PIX são gerados
+ * localmente, e `simularWebhookPago` faz o papel do webhook do provedor. A
+ * cobrança em si é persistida de verdade.
+ */
 
-const seedCobrancas: CobrancaGateway[] = [
-  {
-    id: "cob-t01",
-    conta_receber_id: "cr-t01",
-    provedor: "mercado_pago",
-    status: "pendente",
-    linha_digitavel: "34191.00000 00000.000000 00000.000000 1 00000000100000",
-    pix_copia_cola: "pix-mock-t01",
-    valor: 1000,
-    emitida_em: "2026-06-15T00:00:00.000Z",
-    paga_em: null,
-    created_at: "2026-06-15T00:00:00.000Z",
-    updated_at: "2026-06-15T00:00:00.000Z",
-  },
-  {
-    id: "cob-t02",
-    conta_receber_id: "cr-t02", // conta já liquidada por fora — edge case de falha na baixa
-    provedor: "asaas",
-    status: "pendente",
-    linha_digitavel: null,
-    pix_copia_cola: "pix-mock-t02",
-    valor: 500,
-    emitida_em: "2026-06-20T00:00:00.000Z",
-    paga_em: null,
-    created_at: "2026-06-20T00:00:00.000Z",
-    updated_at: "2026-06-20T00:00:00.000Z",
-  },
-];
+const emitirAuthState = (
+  supabaseLib as unknown as {
+    emitirAuthStateParaTeste: (evento: string, session: { user: { id: string } } | null) => void;
+  }
+).emitirAuthStateParaTeste;
 
-describe("criarCobrancasStore", () => {
-  let contasStore: ReturnType<typeof criarContasReceberStore>;
-  let store: ReturnType<typeof criarCobrancasStore>;
+beforeEach(async () => {
+  emitirAuthState("SIGNED_OUT", null);
+  await vi.waitFor(() => {
+    expect(cobrancasStore.listar()).toHaveLength(0);
+  });
+});
 
-  beforeEach(() => {
-    contasStore = criarContasReceberStore(seedContas);
-    store = criarCobrancasStore(seedCobrancas, contasStore);
+afterEach(() => {
+  emitirAuthState("SIGNED_OUT", null);
+  vi.restoreAllMocks();
+});
+
+describe("cobrancasStore — carga condicionada à credencial", () => {
+  it("não consulta a tabela enquanto não há credencial", async () => {
+    const espiao = vi.spyOn(supabase, "from");
+    await cobrancasStore.retry();
+    expect(espiao).not.toHaveBeenCalled();
   });
 
-  it("listar retorna os 2 itens do seed", () => {
-    expect(store.listar()).toHaveLength(2);
+  it("carrega quando a retaguarda entra", async () => {
+    const espiao = vi.spyOn(supabase, "from");
+    emitirAuthState("SIGNED_IN", { user: { id: "usuario-retaguarda-1" } });
+    await vi.waitFor(() => {
+      expect(espiao).toHaveBeenCalledWith("cobrancas_gateway");
+    });
+  });
+});
+
+describe("cobrancasStore — emissão", () => {
+  beforeEach(async () => {
+    emitirAuthState("SIGNED_IN", { user: { id: "usuario-retaguarda-1" } });
+    await vi.waitFor(() => {
+      expect(contasReceberStore.listar().length).toBeGreaterThan(0);
+    });
   });
 
-  it("emitirCobranca cria pendente com valor espelhado da conta e strings simuladas", () => {
-    const r = store.emitirCobranca("cr-t03", "asaas");
+  it("recusa emitir para conta inexistente", async () => {
+    const r = await cobrancasStore.emitirCobranca("nao-existe", "asaas");
+    expect(r).toEqual({ ok: false, motivo: "Conta a receber não encontrada." });
+  });
+
+  it("recusa emitir para conta já liquidada", async () => {
+    const liquidada = contasReceberStore.listar().find((c) => c.status === "liquidada");
+    expect(liquidada, "esperava uma conta liquidada no dublê").toBeDefined();
+
+    const r = await cobrancasStore.emitirCobranca(liquidada!.id, "asaas");
+    expect(r).toEqual({
+      ok: false,
+      motivo: "Esta conta já foi liquidada; não é possível emitir cobrança.",
+    });
+  });
+
+  it("emite com linha digitável e PIX preenchidos", async () => {
+    const aberta = contasReceberStore
+      .listar()
+      .find(
+        (c) =>
+          c.status === "aberta" &&
+          !cobrancasStore.listar().some((x) => x.conta_receber_id === c.id),
+      );
+    expect(aberta, "esperava uma conta aberta sem cobrança no dublê").toBeDefined();
+
+    const r = await cobrancasStore.emitirCobranca(aberta!.id, "mercado_pago");
+
     expect(r.ok).toBe(true);
-    if (r.ok) {
-      expect(r.cobranca.status).toBe("pendente");
-      expect(r.cobranca.provedor).toBe("asaas");
-      expect(r.cobranca.valor).toBe(2000);
-      expect(r.cobranca.pix_copia_cola.length).toBeGreaterThan(0);
-    }
+    if (!r.ok) return;
+    expect(r.cobranca.status).toBe("pendente");
+    expect(r.cobranca.valor).toBe(aberta!.valor);
+    expect(r.cobranca.pix_copia_cola).toBeTruthy();
   });
 
-  it("emitirCobranca em conta já liquidada retorna ok:false", () => {
-    const r = store.emitirCobranca("cr-t02", "mercado_pago");
-    expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.motivo).toContain("liquidada");
+  it("recusa uma segunda cobrança pendente para a mesma conta", async () => {
+    const pendente = cobrancasStore.listar().find((c) => c.status === "pendente");
+    expect(pendente, "esperava uma cobrança pendente no dublê").toBeDefined();
+
+    const r = await cobrancasStore.emitirCobranca(pendente!.conta_receber_id, "asaas");
+    expect(r).toEqual({ ok: false, motivo: "Já existe uma cobrança pendente para esta conta." });
+  });
+});
+
+describe("cobrancasStore — pagamento simulado", () => {
+  beforeEach(async () => {
+    emitirAuthState("SIGNED_IN", { user: { id: "usuario-retaguarda-1" } });
+    await vi.waitFor(() => {
+      expect(cobrancasStore.listar().length).toBeGreaterThan(0);
+    });
   });
 
-  it("emitirCobranca em conta que já tem cobrança pendente retorna ok:false", () => {
-    const r = store.emitirCobranca("cr-t01", "asaas");
-    expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.motivo).toContain("pendente");
+  it("recusa pagar cobrança inexistente", async () => {
+    const r = await cobrancasStore.simularWebhookPago("nao-existe");
+    expect(r).toEqual({ ok: false, motivo: "Cobrança não encontrada." });
   });
 
-  it("emitirCobranca em conta inexistente retorna ok:false", () => {
-    const r = store.emitirCobranca("inexistente", "mercado_pago");
-    expect(r.ok).toBe(false);
-  });
+  it("dar por paga também liquida a conta a receber", async () => {
+    const pendente = cobrancasStore.listar().find((c) => c.status === "pendente");
+    expect(pendente, "esperava uma cobrança pendente no dublê").toBeDefined();
 
-  it("simularWebhookPago marca a cobrança como paga E dá baixa automática na conta", () => {
-    const r = store.simularWebhookPago("cob-t01");
+    const r = await cobrancasStore.simularWebhookPago(pendente!.id);
+
     expect(r.ok).toBe(true);
-    if (r.ok) {
-      expect(r.cobranca.status).toBe("paga");
-      expect(r.cobranca.paga_em).not.toBeNull();
-    }
-    expect(contasStore.obter("cr-t01")?.status).toBe("liquidada");
-    expect(contasStore.obter("cr-t01")?.forma_recebimento).toBe("boleto"); // linha_digitavel não-nula em cob-t01
+    expect(cobrancasStore.obter(pendente!.id)?.status).toBe("paga");
+    // É o ponto do fluxo: a baixa da conta é o efeito que importa, não o
+    // status da cobrança.
+    expect(contasReceberStore.obter(pendente!.conta_receber_id)?.status).toBe("liquidada");
   });
 
-  it("simularWebhookPago em cobrança já paga retorna ok:false (idempotente)", () => {
-    store.simularWebhookPago("cob-t01");
-    const r = store.simularWebhookPago("cob-t01");
-    expect(r.ok).toBe(false);
-    if (!r.ok) expect(r.motivo).toContain("já foi paga");
-  });
+  it("recusa pagar duas vezes", async () => {
+    const paga = cobrancasStore.listar().find((c) => c.status === "paga");
+    expect(paga, "esperava uma cobrança paga no dublê").toBeDefined();
 
-  it("simularWebhookPago propaga falha da baixa e mantém a cobrança pendente", () => {
-    const r = store.simularWebhookPago("cob-t02"); // cr-t02 já está liquidada
-    expect(r.ok).toBe(false);
-    expect(store.obter("cob-t02")?.status).toBe("pendente");
-  });
-
-  it("simularWebhookPago em cobrança inexistente retorna ok:false", () => {
-    const r = store.simularWebhookPago("inexistente");
-    expect(r.ok).toBe(false);
+    const r = await cobrancasStore.simularWebhookPago(paga!.id);
+    expect(r).toEqual({ ok: false, motivo: "Esta cobrança já foi paga." });
   });
 });

@@ -5,6 +5,26 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.35.0] - 2026-08-18 - Ledgerline
+
+Fecha a dívida de mock do projeto: **as últimas cinco stores saíram de `src/mocks/`**. O pipeline Executado → Faturado → Recebido passa a viver no banco.
+
+### Added
+- **Semente da cadeia de faturamento**, derivada das OS reais: dois faturamentos (um com título já vencido, outro a vencer), suas contas a receber e dois comprovantes — um assinado, um pendente. Duas OS foram fechadas para permitir faturar; uma delas fica de propósito sem faturamento, para exercitar "Aguardando faturamento" com dado real.
+- Isso acendeu a categoria **Financeiro** da central de notificações, que a Onda 19 deixou ligada e muda: a varredura diária passou a produzir "Título vencido" (crítico) e "Título a vencer".
+
+### Changed
+- `faturamentos` + `faturamento_itens` (tabela filha, como orçamentos), `contas_receber`, `comprovantes` e `cobrancas_gateway` passam a ler e escrever no Supabase.
+- `gerarDeOS`, `atualizar`, `confirmar`, `darBaixaReceber`, `gerar`, `assinar`, `recusar`, `emitirCobranca` e `simularWebhookPago` viraram assíncronas; todos os chamadores foram ajustados.
+- `cobrancas-store` deixou de ser factory com a store de contas injetada — as duas falam com o banco agora.
+- No pagamento simulado, a **baixa da conta vem antes** de marcar a cobrança como paga: se ela falhar, nada é gravado. A ordem inversa deixaria cobrança paga com conta em aberto. Mesmo critério da compra de diesel (Onda 17).
+
+### Notas
+- **`apontamentos` continua vazio, de propósito.** A coluna `operador_id` é obrigatória e os 15 operadores do banco são funcionários reais da Antonello; criar jornada de trabalho inventada no nome deles seria pior do que uma tela vazia — decisão do usuário. A tabela enche quando o primeiro operador usar o app de campo.
+- Por consequência, os faturamentos semeados são compostos só de **mobilização**, que é preço fechado por transporte e não depende de horas. Faturar horas sem apontamento por trás seria um número inventado dentro de uma tela financeira. Quando houver apontamento, o "Gerar faturamento" monta os itens de hora com a lógica que já existe e é testada.
+- Rentabilidade e Custo da Hora seguem sem horas pelo mesmo motivo.
+- A integração de cobrança continua **simulada**: linha digitável e PIX são gerados localmente e `simularWebhookPago` faz o papel do webhook. O que mudou é que a cobrança agora persiste.
+
 ## [0.34.0] - 2026-08-18 - Groundwork
 
 Onda de saneamento, não de tela: **seis stores saíram do mock**. Cinco delas liam `src/mocks/` enquanto a tabela correspondente já estava semeada no Supabase com exatamente as mesmas linhas desde o PRD-017 — divergência silenciosa, do tipo que não aparece em nenhum teste e some no primeiro F5.

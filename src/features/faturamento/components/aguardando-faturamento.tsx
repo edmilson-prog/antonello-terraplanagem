@@ -19,8 +19,8 @@ export function AguardandoFaturamento({ ordens, apontamentos }: AguardandoFatura
 
   if (ordens.length === 0) return null;
 
-  const gerar = (os: OrdemServico) => {
-    const fat = faturamentosStore.gerarDeOS(
+  const gerar = async (os: OrdemServico) => {
+    const fat = await faturamentosStore.gerarDeOS(
       os,
       apontamentos,
       equipamentosStore.getAll(),

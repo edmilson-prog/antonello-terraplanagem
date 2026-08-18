@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createRootRoute, createRouter, RouterProvider } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -51,6 +51,10 @@ describe("OrdemDetalheRetaguarda", () => {
     const botaoGerar = screen.getByRole("button", { name: "Gerar faturamento" });
     fireEvent.click(botaoGerar);
 
-    expect(toast.success).toHaveBeenCalledWith(expect.stringMatching(/^Rascunho FAT-/));
+    // Gerar faturamento virou assíncrono na Onda 21 (grava o pai e a tabela de
+    // itens antes de avisar), então o toast só chega depois do await.
+    await waitFor(() =>
+      expect(toast.success).toHaveBeenCalledWith(expect.stringMatching(/^Rascunho FAT-/)),
+    );
   });
 });

@@ -43,10 +43,10 @@ export function DarBaixaReceberDialog({ conta, onOpenChange }: DarBaixaReceberDi
     if (conta) setForma(formaPadrao);
   }, [conta, formaPadrao]);
 
-  function handleConfirmar() {
+  async function handleConfirmar() {
     if (!conta) return;
     setSalvando(true);
-    const r = contasReceberStore.darBaixaReceber(conta.id, {
+    const r = await contasReceberStore.darBaixaReceber(conta.id, {
       recebido_em: recebidoEm,
       forma_recebimento: forma,
     });

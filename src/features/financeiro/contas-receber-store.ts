@@ -1,6 +1,18 @@
 import { useSyncExternalStore } from "react";
-import { contasReceber as seed } from "@/mocks/contas-receber";
+import { supabase } from "@/lib/supabase";
+import { assinarCredencial, credencialAtual } from "@/lib/credencial";
 import type { ContaReceber, FormaRecebimento } from "@/shared/types";
+
+/*
+ * Contas a receber (Onda 21) — saiu do mock em memória para o Supabase,
+ * fechando o par com `contas_pagar`, que migrou na Onda 17.
+ *
+ * A conta nasce do faturamento (nunca é criada à mão, ao contrário da conta a
+ * pagar), então a store não tem `criar`: o que ela protege é a baixa.
+ *
+ * A API pública é a mesma de antes, com uma diferença que os chamadores
+ * precisam respeitar: `darBaixaReceber` virou assíncrona.
+ */
 
 export type ResultadoBaixaReceber =
   | { ok: true; conta: ContaReceber }
@@ -11,46 +23,97 @@ export type DadosBaixaReceber = {
   forma_recebimento: FormaRecebimento;
 };
 
-export function criarContasReceberStore(inicial: ContaReceber[]) {
-  let itens: ContaReceber[] = inicial.map((c) => ({ ...c }));
-  const ouvintes = new Set<() => void>();
-  const notificar = () => ouvintes.forEach((fn) => fn());
-  const inscrever = (fn: () => void) => {
-    ouvintes.add(fn);
-    return () => {
-      ouvintes.delete(fn);
-    };
+interface Estado {
+  isLoading: boolean;
+  error: Error | null;
+}
+
+let itens: ContaReceber[] = [];
+let estado: Estado = { isLoading: true, error: null };
+const ouvintes = new Set<() => void>();
+
+const notificar = () => ouvintes.forEach((fn) => fn());
+const inscrever = (fn: () => void) => {
+  ouvintes.add(fn);
+  return () => {
+    ouvintes.delete(fn);
   };
+};
 
-  const listar = () => itens;
-  const obter = (id: string): ContaReceber | null => itens.find((c) => c.id === id) ?? null;
+async function carregar() {
+  if (credencialAtual() !== "retaguarda") {
+    itens = [];
+    estado = { isLoading: false, error: null };
+    notificar();
+    return;
+  }
 
-  function darBaixaReceber(id: string, dados: DadosBaixaReceber): ResultadoBaixaReceber {
-    const atual = obter(id);
-    if (!atual) return { ok: false, motivo: "Conta a receber não encontrada." };
-    if (atual.status === "liquidada") return { ok: false, motivo: "Esta conta já foi recebida." };
-    const agora = new Date().toISOString();
-    const liquidada: ContaReceber = {
-      ...atual,
+  estado = { isLoading: true, error: null };
+  notificar();
+
+  const { data, error } = await supabase
+    .from("contas_receber")
+    .select("*")
+    .order("vencimento")
+    .returns<ContaReceber[]>();
+
+  if (error) {
+    estado = { isLoading: false, error: new Error(error.message) };
+  } else {
+    itens = data ?? [];
+    estado = { isLoading: false, error: null };
+  }
+  notificar();
+}
+
+assinarCredencial(() => {
+  void carregar();
+});
+
+const listar = () => itens;
+const obter = (id: string): ContaReceber | null => itens.find((c) => c.id === id) ?? null;
+const getEstado = () => estado;
+
+async function darBaixaReceber(
+  id: string,
+  dados: DadosBaixaReceber,
+): Promise<ResultadoBaixaReceber> {
+  const atual = obter(id);
+  if (!atual) return { ok: false, motivo: "Conta a receber não encontrada." };
+  if (atual.status === "liquidada") return { ok: false, motivo: "Esta conta já foi recebida." };
+
+  const { data, error } = await supabase
+    .from("contas_receber")
+    .update({
       status: "liquidada",
       recebido_em: dados.recebido_em,
       forma_recebimento: dados.forma_recebimento,
-      updated_at: agora,
-    };
-    itens = itens.map((c) => (c.id === id ? liquidada : c));
-    notificar();
-    return { ok: true, conta: liquidada };
-  }
+    })
+    .eq("id", id)
+    .select()
+    .single()
+    .returns<ContaReceber>();
 
-  const useTodas = () => useSyncExternalStore(inscrever, listar, listar);
-  const useContaReceber = (id: string) =>
-    useSyncExternalStore(
-      inscrever,
-      () => itens.find((c) => c.id === id) ?? null,
-      () => itens.find((c) => c.id === id) ?? null,
-    );
-
-  return { listar, obter, darBaixaReceber, useTodas, useContaReceber };
+  if (error) return { ok: false, motivo: error.message };
+  await carregar();
+  return { ok: true, conta: data };
 }
 
-export const contasReceberStore = criarContasReceberStore(seed);
+const useTodas = () => useSyncExternalStore(inscrever, listar, listar);
+const useEstado = () => useSyncExternalStore(inscrever, getEstado, getEstado);
+const useContaReceber = (id: string) =>
+  useSyncExternalStore(
+    inscrever,
+    () => itens.find((c) => c.id === id) ?? null,
+    () => itens.find((c) => c.id === id) ?? null,
+  );
+
+export const contasReceberStore = {
+  listar,
+  obter,
+  darBaixaReceber,
+  useTodas,
+  useEstado,
+  useContaReceber,
+  retry: carregar,
+};

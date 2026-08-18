@@ -15,6 +15,10 @@ import { precosFundacao as precosFundacaoFixture } from "./src/mocks/precos-fund
 import { precosMobilizacao as precosMobilizacaoFixture } from "./src/mocks/precos-mobilizacao";
 import { componentesCusto as componentesCustoFixture } from "./src/mocks/componentes-custo";
 import { abastecimentos as abastecimentosFixture } from "./src/mocks/abastecimentos";
+import { faturamentos as faturamentosFixture } from "./src/mocks/faturamentos";
+import { contasReceber as contasReceberFixture } from "./src/mocks/contas-receber";
+import { comprovantes as comprovantesFixture } from "./src/mocks/comprovantes";
+import { cobrancasGateway as cobrancasFixture } from "./src/mocks/cobrancas-gateway";
 
 // jsdom (ambiente de teste deste projeto) não implementa window.matchMedia por
 // padrão. Vários componentes/hooks usam prefers-color-scheme (useTheme) e
@@ -109,6 +113,15 @@ vi.mock("./src/lib/supabase", () => {
     precos_historico: [],
     componentes_custo: componentesCustoFixture.map((c) => ({ ...c })),
     abastecimentos: abastecimentosFixture.map((a) => ({ ...a })),
+    // Cadeia do faturamento — saiu do mock em memória na Onda 21. Os itens vêm
+    // normalizados na tabela filha, como em orcamento_itens.
+    faturamentos: faturamentosFixture.map(({ itens: _itens, ...f }) => ({ ...f })),
+    faturamento_itens: faturamentosFixture.flatMap((f) =>
+      f.itens.map((item) => ({ ...item, faturamento_id: f.id })),
+    ),
+    contas_receber: contasReceberFixture.map((c) => ({ ...c })),
+    comprovantes: comprovantesFixture.map((c) => ({ ...c })),
+    cobrancas_gateway: cobrancasFixture.map((c) => ({ ...c })),
     usuarios_retaguarda: [{ id: "usuario-retaguarda-teste", nome: "Admin Teste", perfil: "admin" }],
   };
 

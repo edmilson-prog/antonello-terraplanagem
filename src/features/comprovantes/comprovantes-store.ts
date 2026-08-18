@@ -1,7 +1,20 @@
 import { useSyncExternalStore } from "react";
-import { comprovantes as seed } from "@/mocks/comprovantes";
+import { supabase } from "@/lib/supabase";
+import { assinarCredencial, credencialAtual } from "@/lib/credencial";
 import { proximoNumeroCMP } from "@/features/comprovantes/numero-comprovante";
 import type { Comprovante } from "@/shared/types";
+
+/*
+ * Comprovantes (Onda 21) — saiu do mock em memória para o Supabase.
+ *
+ * Ciclo de vida próprio (pendente → assinado/recusado, ambos terminais), sem
+ * soft-delete, então não usa o factory de CRUD: as transições são o que a store
+ * protege.
+ *
+ * Hoje só a retaguarda consome. O PRD-011 prevê a assinatura capturada no
+ * aparelho do operador, em campo — quando essa tela existir, vai precisar de
+ * RPC com token, como as de OS, apontamento, manutenção e abastecimento.
+ */
 
 export type ResultadoComprovante =
   | { ok: true; comprovante: Comprovante }
@@ -18,35 +31,67 @@ export type DadosAssinatura = {
   assinatura_url: string;
 };
 
-// Store dedicado (não usa createMockStore): Comprovante tem ciclo de vida
-// próprio (pendente → assinado/recusado, ambos terminais), não soft-delete.
-// Espelha o padrão de features/orcamentos/orcamentos-store.ts. Fica isolado
-// de outras stores — quem monta resumo_servico e valida "OS fechada" é o
-// componente chamador (ver derivacoes.ts e ordem-detalhe-retaguarda.tsx).
-export function criarComprovantesStore(inicial: Comprovante[]) {
-  let itens: Comprovante[] = inicial.map((c) => ({ ...c }));
-  const ouvintes = new Set<() => void>();
-  const notificar = () => ouvintes.forEach((fn) => fn());
-  const inscrever = (fn: () => void) => {
-    ouvintes.add(fn);
-    return () => {
-      ouvintes.delete(fn);
-    };
+interface Estado {
+  isLoading: boolean;
+  error: Error | null;
+}
+
+let itens: Comprovante[] = [];
+let estado: Estado = { isLoading: true, error: null };
+const ouvintes = new Set<() => void>();
+
+const notificar = () => ouvintes.forEach((fn) => fn());
+const inscrever = (fn: () => void) => {
+  ouvintes.add(fn);
+  return () => {
+    ouvintes.delete(fn);
   };
+};
 
-  const listar = () => itens;
-  const obter = (id: string) => itens.find((c) => c.id === id);
-  const obterPorOS = (osId: string) => itens.find((c) => c.os_id === osId);
+async function carregar() {
+  if (credencialAtual() !== "retaguarda") {
+    itens = [];
+    estado = { isLoading: false, error: null };
+    notificar();
+    return;
+  }
 
-  function gerar(data: NovoComprovante): ResultadoComprovante {
-    if (obterPorOS(data.os_id)) {
-      return { ok: false, motivo: "Esta OS já tem um comprovante gerado." };
-    }
-    const agora = new Date().toISOString();
-    const ano = new Date(agora).getFullYear();
-    const novo: Comprovante = {
-      id: crypto.randomUUID(),
-      numero: proximoNumeroCMP(itens, ano),
+  estado = { isLoading: true, error: null };
+  notificar();
+
+  const { data, error } = await supabase
+    .from("comprovantes")
+    .select("*")
+    .order("gerado_em", { ascending: false })
+    .returns<Comprovante[]>();
+
+  if (error) {
+    estado = { isLoading: false, error: new Error(error.message) };
+  } else {
+    itens = data ?? [];
+    estado = { isLoading: false, error: null };
+  }
+  notificar();
+}
+
+assinarCredencial(() => {
+  void carregar();
+});
+
+const listar = () => itens;
+const obter = (id: string) => itens.find((c) => c.id === id);
+const obterPorOS = (osId: string) => itens.find((c) => c.os_id === osId);
+const getEstado = () => estado;
+
+async function gerar(data: NovoComprovante): Promise<ResultadoComprovante> {
+  if (obterPorOS(data.os_id)) {
+    return { ok: false, motivo: "Esta OS já tem um comprovante gerado." };
+  }
+
+  const { data: linha, error } = await supabase
+    .from("comprovantes")
+    .insert({
+      numero: proximoNumeroCMP(itens, new Date().getFullYear()),
       os_id: data.os_id,
       cliente_id: data.cliente_id,
       resumo_servico: data.resumo_servico,
@@ -54,69 +99,88 @@ export function criarComprovantesStore(inicial: Comprovante[]) {
       assinatura_url: null,
       status: "pendente",
       motivo_recusa: null,
-      gerado_em: agora,
       assinado_em: null,
-      created_at: agora,
-      updated_at: agora,
-    };
-    itens = [novo, ...itens];
-    notificar();
-    return { ok: true, comprovante: novo };
+    })
+    .select()
+    .single()
+    .returns<Comprovante>();
+
+  if (error) return { ok: false, motivo: error.message };
+  await carregar();
+  return { ok: true, comprovante: linha };
+}
+
+async function assinar(id: string, dados: DadosAssinatura): Promise<ResultadoComprovante> {
+  const atual = obter(id);
+  if (!atual) return { ok: false, motivo: "Comprovante não encontrado." };
+  if (atual.status !== "pendente") {
+    return { ok: false, motivo: "Só comprovantes pendentes podem ser assinados." };
+  }
+  if (!dados.assinante_nome.trim()) {
+    return { ok: false, motivo: "Informe o nome do assinante." };
+  }
+  if (!dados.assinatura_url) {
+    return { ok: false, motivo: "Capture a assinatura antes de confirmar." };
   }
 
-  function assinar(id: string, dados: DadosAssinatura): ResultadoComprovante {
-    const atual = obter(id);
-    if (!atual) return { ok: false, motivo: "Comprovante não encontrado." };
-    if (atual.status !== "pendente") {
-      return { ok: false, motivo: "Só comprovantes pendentes podem ser assinados." };
-    }
-    if (!dados.assinante_nome.trim()) {
-      return { ok: false, motivo: "Informe o nome do assinante." };
-    }
-    if (!dados.assinatura_url) {
-      return { ok: false, motivo: "Capture a assinatura antes de confirmar." };
-    }
-    const agora = new Date().toISOString();
-    const assinado: Comprovante = {
-      ...atual,
+  const { data, error } = await supabase
+    .from("comprovantes")
+    .update({
       status: "assinado",
       assinante_nome: dados.assinante_nome.trim(),
       assinatura_url: dados.assinatura_url,
-      assinado_em: agora,
-      updated_at: agora,
-    };
-    itens = itens.map((c) => (c.id === id ? assinado : c));
-    notificar();
-    return { ok: true, comprovante: assinado };
-  }
+      assinado_em: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select()
+    .single()
+    .returns<Comprovante>();
 
-  function recusar(id: string, motivo: string | null): ResultadoComprovante {
-    const atual = obter(id);
-    if (!atual) return { ok: false, motivo: "Comprovante não encontrado." };
-    if (atual.status !== "pendente") {
-      return { ok: false, motivo: "Só comprovantes pendentes podem ser recusados." };
-    }
-    const agora = new Date().toISOString();
-    const recusado: Comprovante = {
-      ...atual,
-      status: "recusado",
-      motivo_recusa: motivo,
-      updated_at: agora,
-    };
-    itens = itens.map((c) => (c.id === id ? recusado : c));
-    notificar();
-    return { ok: true, comprovante: recusado };
-  }
-
-  const useTodos = () => useSyncExternalStore(inscrever, listar, listar);
-  const useComprovante = (id: string) =>
-    useSyncExternalStore(
-      inscrever,
-      () => itens.find((c) => c.id === id),
-      () => itens.find((c) => c.id === id),
-    );
-
-  return { listar, obter, obterPorOS, gerar, assinar, recusar, useTodos, useComprovante };
+  if (error) return { ok: false, motivo: error.message };
+  await carregar();
+  return { ok: true, comprovante: data };
 }
 
-export const comprovantesStore = criarComprovantesStore(seed);
+async function recusar(id: string, motivo: string | null): Promise<ResultadoComprovante> {
+  const atual = obter(id);
+  if (!atual) return { ok: false, motivo: "Comprovante não encontrado." };
+  if (atual.status !== "pendente") {
+    return { ok: false, motivo: "Só comprovantes pendentes podem ser recusados." };
+  }
+
+  // Motivo é opcional, como sempre foi: a recusa pode ser registrada na hora e
+  // o porquê explicado depois, por fora do sistema.
+  const { data, error } = await supabase
+    .from("comprovantes")
+    .update({ status: "recusado", motivo_recusa: motivo?.trim() || null })
+    .eq("id", id)
+    .select()
+    .single()
+    .returns<Comprovante>();
+
+  if (error) return { ok: false, motivo: error.message };
+  await carregar();
+  return { ok: true, comprovante: data };
+}
+
+const useTodos = () => useSyncExternalStore(inscrever, listar, listar);
+const useEstado = () => useSyncExternalStore(inscrever, getEstado, getEstado);
+const useComprovante = (id: string) =>
+  useSyncExternalStore(
+    inscrever,
+    () => itens.find((c) => c.id === id),
+    () => itens.find((c) => c.id === id),
+  );
+
+export const comprovantesStore = {
+  listar,
+  obter,
+  obterPorOS,
+  gerar,
+  assinar,
+  recusar,
+  useTodos,
+  useEstado,
+  useComprovante,
+  retry: carregar,
+};
