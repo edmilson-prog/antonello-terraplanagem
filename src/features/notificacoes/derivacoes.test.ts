@@ -19,6 +19,13 @@ function notificacao(over: Partial<Notificacao> = {}): Notificacao {
   return {
     id: "nt-1",
     operador_id: "op-1",
+    usuario_id: null,
+    categoria: "operacao",
+    prioridade: "normal",
+    acao: null,
+    canais: null,
+    agendada_para: null,
+    enviada_em: isoLocal(2026, 8, 9),
     tipo: "os_atribuida",
     titulo: "Nova OS atribuída a você",
     mensagem: "OS-024 · Nivelamento de pátio",

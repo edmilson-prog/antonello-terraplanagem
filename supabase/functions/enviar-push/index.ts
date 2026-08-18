@@ -11,6 +11,11 @@ import webpush from "npm:web-push@3.6.7";
  *
  * A notificação in-app já está gravada quando esta função roda. Aqui é só a
  * camada de entrega: se falhar, o operador ainda vê o aviso ao abrir o app.
+ *
+ * Desde a Onda 19, cada aparelho tem sua linha em `notificacoes_entregas`
+ * (criada como `pendente` por processar_entrega_notificacao). É esta função
+ * quem fecha a linha como `entregue` ou `falhou` — sem isso os KPIs de entrega
+ * da central da retaguarda não teriam de onde sair.
  */
 
 const corsHeaders = {
@@ -123,6 +128,26 @@ Deno.serve(async (req: Request) => {
   const endpointsMortos: string[] = [];
   let enviados = 0;
 
+  // Fecha a linha de entrega daquele aparelho. Nunca lança: um erro de
+  // bookkeeping não pode derrubar o envio que já aconteceu.
+  const registrarEntrega = async (
+    endpoint: string,
+    status: "entregue" | "falhou",
+    motivo?: string,
+  ) => {
+    const { error } = await supabase
+      .from("notificacoes_entregas")
+      .update({
+        status,
+        motivo: motivo ?? null,
+        entregue_em: status === "entregue" ? new Date().toISOString() : null,
+      })
+      .eq("notificacao_id", notificacao.id)
+      .eq("canal", "push")
+      .eq("destino", endpoint);
+    if (error) console.error("Falha ao registrar entrega:", error.message);
+  };
+
   await Promise.all(
     inscricoes.map(async (inscricao) => {
       try {
@@ -135,14 +160,21 @@ Deno.serve(async (req: Request) => {
           { TTL: 60 * 60 * 12 },
         );
         enviados += 1;
+        await registrarEntrega(inscricao.endpoint, "entregue");
       } catch (erro) {
         const status = (erro as { statusCode?: number }).statusCode;
         if (status && CODIGOS_INSCRICAO_MORTA.has(status)) {
           endpointsMortos.push(inscricao.endpoint);
+          await registrarEntrega(inscricao.endpoint, "falhou", "token expirado");
         } else {
           console.error(
             `Falha ao enviar push para ${inscricao.endpoint.slice(0, 60)}…:`,
             (erro as Error).message,
+          );
+          await registrarEntrega(
+            inscricao.endpoint,
+            "falhou",
+            (erro as Error).message.slice(0, 120),
           );
         }
       }
