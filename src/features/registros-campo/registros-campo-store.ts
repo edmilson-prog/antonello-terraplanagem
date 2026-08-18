@@ -250,10 +250,9 @@ async function carregar() {
   const doServidor = (data ?? []).map(daLinha);
   const jaNoServidor = new Set(doServidor.map((r) => r.op_id));
 
-  const mesclado = [
-    ...pendentes.filter((r) => !jaNoServidor.has(r.op_id)),
-    ...doServidor,
-  ].sort((a, b) => b.registrado_em.localeCompare(a.registrado_em));
+  const mesclado = [...pendentes.filter((r) => !jaNoServidor.has(r.op_id)), ...doServidor].sort(
+    (a, b) => b.registrado_em.localeCompare(a.registrado_em),
+  );
 
   gravar(mesclado);
   estado = { ...estado, isLoading: false, error: null };

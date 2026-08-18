@@ -52,6 +52,9 @@ export interface AbrirManutencaoInput {
   custo: number | null; // estimado na abertura
   fornecedor: string | null;
   observacao: string | null;
+  // Chamado do campo que originou a ordem. Omitido quando a ordem nasce no
+  // escritório — o índice único no banco garante que um chamado não vire duas.
+  origem_registro_campo_id?: string | null;
 }
 
 interface Estado {
@@ -157,12 +160,21 @@ async function abrirManutencao(input: AbrirManutencaoInput): Promise<RegistroMan
       custo: input.custo,
       fornecedor: input.fornecedor,
       observacao: input.observacao,
+      origem_registro_campo_id: input.origem_registro_campo_id ?? null,
     })
     .select()
     .single()
     .returns<RegistroManutencao>();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    // 23505 = índice único de origem: alguém já abriu ordem para este chamado
+    // (duas abas, dois cliques). Vale traduzir, senão chega como ruído do
+    // Postgres numa tela de cadastro.
+    if (error.code === "23505") {
+      throw new Error("Este chamado do campo já tem uma ordem de manutenção aberta.");
+    }
+    throw new Error(error.message);
+  }
   await carregar();
   return data;
 }

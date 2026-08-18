@@ -11,6 +11,10 @@ import { PlanosTab } from "@/features/manutencao/components/planos-tab";
 import { ConsumoAnomaloTab } from "@/features/manutencao/components/consumo-anomalo-tab";
 import { OrdensManutencaoCard } from "@/features/manutencao/components/ordens-manutencao-card";
 import { PlanosHorimetroCard } from "@/features/manutencao/components/planos-horimetro-card";
+import { SolicitacoesCampoCard } from "@/features/manutencao/components/solicitacoes-campo-card";
+import { registrosCampoRetaguardaStore } from "@/features/registros-campo/registros-campo-retaguarda-store";
+import { operadoresStore } from "@/features/operadores/operadores-store";
+import { solicitacoesPendentes } from "@/features/registros-campo/retaguarda-derivacoes";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { planosManutencaoStore } from "@/features/manutencao/planos-manutencao-store";
 import { registrosManutencaoStore } from "@/features/manutencao/registros-manutencao-store";
@@ -46,6 +50,8 @@ export function ManutencaoPage() {
   const registros = registrosManutencaoStore.useCompletos();
   const abastecimentos = abastecimentosStore.useCompletos();
   const apontamentos = apontamentosStore.useTodos();
+  const registrosCampo = registrosCampoRetaguardaStore.useTodos();
+  const operadores = operadoresStore.useAll();
   const [periodo, setPeriodo] = useState(MES_ATUAL);
 
   const alertas = alertasManutencao(equipamentos, planos, registros);
@@ -66,6 +72,12 @@ export function ManutencaoPage() {
     [equipamentos, planos, registros],
   );
   const spark = useMemo(() => serieOrdensPorMes(registros, periodo), [registros, periodo]);
+  // Sem recorte de mês: um chamado sem ordem continua sendo um chamado sem
+  // ordem no mês seguinte, e é justamente o antigo que não pode sumir de vista.
+  const chamados = useMemo(
+    () => solicitacoesPendentes(registrosCampo, registros),
+    [registrosCampo, registros],
+  );
 
   const vencidos = alertas.filter((a) => a.status === "vencida").length;
   const proximos = alertas.filter((a) => a.status === "proxima").length;
@@ -187,7 +199,14 @@ export function ManutencaoPage() {
               </div>
             </div>
 
-            <PlanosHorimetroCard linhas={linhasPlano} />
+            <div className="space-y-4">
+              <SolicitacoesCampoCard
+                solicitacoes={chamados}
+                equipamentos={equipamentos}
+                operadores={operadores}
+              />
+              <PlanosHorimetroCard linhas={linhasPlano} />
+            </div>
           </div>
         </TabsContent>
 

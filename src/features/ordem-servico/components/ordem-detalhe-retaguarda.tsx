@@ -47,6 +47,10 @@ import { mesReferencia } from "@/shared/lib/periodo-mensal";
 import { avisosWhatsAppStore } from "@/features/aviso-whatsapp/avisos-whatsapp-store";
 import { avisoDaOS } from "@/features/aviso-whatsapp/derivacoes";
 import { PROVEDOR_WHATSAPP_LABEL, StatusAvisoBadge } from "@/features/aviso-whatsapp/labels";
+import { RegistrosCampoDaOS } from "@/features/ordem-servico/components/registros-campo-da-os";
+import { registrosCampoRetaguardaStore } from "@/features/registros-campo/registros-campo-retaguarda-store";
+import { registrosDaOS } from "@/features/registros-campo/retaguarda-derivacoes";
+import { operadoresStore } from "@/features/operadores/operadores-store";
 
 export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   const ordem = ordensStore.useOrdem(ordemId);
@@ -208,6 +212,8 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
   };
 
   const comprovante = comprovantesStore.useTodos().find((c) => c.os_id === ordemId);
+  const operadores = operadoresStore.useAll();
+  const registrosCampo = registrosDaOS(registrosCampoRetaguardaStore.useTodos(), ordemId);
   const aviso = avisoDaOS(ordem.id, avisosWhatsAppStore.useTodas());
 
   const eventosHistorico: EventoHistoricoOS[] = [
@@ -432,6 +438,8 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
           </div>
         </CardSecao>
       ) : null}
+
+      <RegistrosCampoDaOS registros={registrosCampo} operadores={operadores} />
 
       <CardSecao titulo="Histórico" icone="lucide:history">
         <HistoricoOS eventos={eventosHistorico} />

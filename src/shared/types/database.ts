@@ -1751,6 +1751,7 @@ export type Database = {
           horimetro_realizado: number | null;
           id: string;
           observacao: string | null;
+          origem_registro_campo_id: string | null;
           plano_id: string | null;
           prioridade: string;
           realizada_em: string | null;
@@ -1770,6 +1771,7 @@ export type Database = {
           horimetro_realizado?: number | null;
           id?: string;
           observacao?: string | null;
+          origem_registro_campo_id?: string | null;
           plano_id?: string | null;
           prioridade?: string;
           realizada_em?: string | null;
@@ -1789,6 +1791,7 @@ export type Database = {
           horimetro_realizado?: number | null;
           id?: string;
           observacao?: string | null;
+          origem_registro_campo_id?: string | null;
           plano_id?: string | null;
           prioridade?: string;
           realizada_em?: string | null;
@@ -1802,6 +1805,13 @@ export type Database = {
             columns: ["equipamento_id"];
             isOneToOne: false;
             referencedRelation: "equipamentos";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "registros_manutencao_origem_registro_campo_id_fkey";
+            columns: ["origem_registro_campo_id"];
+            isOneToOne: false;
+            referencedRelation: "registros_campo";
             referencedColumns: ["id"];
           },
           {

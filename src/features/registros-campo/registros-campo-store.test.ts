@@ -171,7 +171,7 @@ describe("registrosCampoStore — flush para a central", () => {
     const registro = registrosCampoStore.registrar(CHECKLIST);
     await registrosCampoStore.flush();
 
-    const [, args] = espiao.mock.calls[0] as [string, Record<string, unknown>];
+    const [, args] = espiao.mock.calls[0] as unknown as [string, Record<string, unknown>];
     expect(args.p_registrado_em).toBe(registro.registrado_em);
   });
 });
@@ -182,7 +182,7 @@ describe("registrosCampoStore — assinatura do cliente (LGPD)", () => {
     registrosCampoStore.registrar(MEDICAO);
     await registrosCampoStore.flush();
 
-    const [, args] = espiao.mock.calls[0] as [string, Record<string, unknown>];
+    const [, args] = espiao.mock.calls[0] as unknown as [string, Record<string, unknown>];
     expect(args.p_assinatura).toBe("data:image/png;base64,AAAA");
     expect(args.p_dados).not.toHaveProperty("assinatura");
   });

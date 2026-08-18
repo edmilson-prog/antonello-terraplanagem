@@ -122,6 +122,25 @@ export type NovoRegistroCampo = DadosRegistroCampo & {
   equipamento_id?: string | null;
 };
 
+/*
+ * O mesmo registro visto da retaguarda.
+ *
+ * Não tem `pendente_sync` porque, do lado de cá, chegar é a única condição de
+ * existir — uma linha na tabela é um registro que já subiu. Em compensação tem
+ * `assinatura`: a coluna que a RPC do operador não devolve, e que faz do
+ * comprovante de medição um documento de verdade.
+ */
+export type RegistroCampoRecebido = DadosRegistroCampo & {
+  id: string;
+  op_id: string;
+  operador_id: string;
+  os_id: string | null;
+  equipamento_id: string | null;
+  assinatura: string | null;
+  registrado_em: string;
+  created_at: string;
+};
+
 export const ROTULO_REGISTRO: Record<TipoRegistroCampo, string> = {
   checklist: "Checklist de pré-uso",
   diario_obra: "Diário de obra",

@@ -351,6 +351,11 @@ export interface RegistroManutencao extends RegistroManutencaoOperador {
   custo: number | null; // R$ — RETAGUARDA-ONLY (opcional), nunca em /app/*
   fornecedor: string | null; // oficina que executou
   observacao: string | null;
+  // Chamado do campo que originou esta ordem (registros_campo). Null quando a
+  // ordem nasceu no escritório — que continua sendo o caso mais comum. Fica
+  // fora do recorte do operador de propósito: em /app/* a ordem interessa
+  // pelo que precisa ser feito, não por quem a pediu.
+  origem_registro_campo_id: string | null;
 }
 
 // Gestão de Diesel e Utilização (PRD-012) — litros e horímetro são
