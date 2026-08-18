@@ -11,13 +11,30 @@ export interface AparenciaNotificacao {
 }
 
 const APARENCIA: Record<TipoNotificacao, AparenciaNotificacao> = {
+  // Operação
   os_atribuida: { icone: "lucide:clipboard-list", tom: "padrao" },
-  manutencao_agendada: { icone: "lucide:wrench", tom: "padrao" },
   apontamento_aprovado: { icone: "lucide:check", tom: "padrao" },
+  apontamento_aguardando: { icone: "lucide:clipboard-list", tom: "padrao" },
   lembrete_apontamento: { icone: "lucide:gauge", tom: "padrao" },
-  abastecimento_registrado: { icone: "lucide:fuel", tom: "padrao" },
+  os_sem_apontamento: { icone: "lucide:clipboard-list", tom: "alerta" },
+  os_concluida: { icone: "lucide:check", tom: "padrao" },
   // Único que pede correção de algo que o operador já fez — por isso destoa.
   correcao_solicitada: { icone: "lucide:circle-alert", tom: "alerta" },
+  // Frota
+  manutencao_agendada: { icone: "lucide:wrench", tom: "padrao" },
+  manutencao_vencida: { icone: "lucide:wrench", tom: "alerta" },
+  consumo_anomalo: { icone: "lucide:fuel", tom: "alerta" },
+  abastecimento_registrado: { icone: "lucide:fuel", tom: "padrao" },
+  // Financeiro
+  titulo_vencido: { icone: "lucide:wallet", tom: "alerta" },
+  titulo_a_vencer: { icone: "lucide:wallet", tom: "padrao" },
+  comprovante_recebido: { icone: "lucide:wallet", tom: "padrao" },
+  // Comercial
+  orcamento_aprovado: { icone: "lucide:file-text", tom: "padrao" },
+  orcamento_perdido: { icone: "lucide:file-text", tom: "alerta" },
+  orcamento_a_vencer: { icone: "lucide:file-text", tom: "padrao" },
+  // Sistema
+  aviso_manual: { icone: "lucide:bell", tom: "padrao" },
 };
 
 const APARENCIA_PADRAO: AparenciaNotificacao = { icone: "lucide:bell", tom: "padrao" };

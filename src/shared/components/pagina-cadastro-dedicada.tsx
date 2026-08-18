@@ -10,6 +10,7 @@ type RotaListagemCadastro =
   | "/admin/operadores"
   | "/admin/orcamentos"
   | "/admin/diesel"
+  | "/admin/notificacoes"
   | "/admin/manutencao";
 
 interface PaginaCadastroDedicadaProps {

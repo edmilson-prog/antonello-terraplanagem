@@ -82,9 +82,9 @@
 | 32 | `Login.jsx` / `LoginV2.jsx` | `src/features/auth/login-page.tsx` | ✅ | Onda 6 |
 | 33 | `Parametros.jsx` | `admin.parametros.index.tsx` | ✅ | Onda 13 — visão de leitura em cards, com "Histórico de alterações" (diálogo agrupado por versão, alimentado por trigger no banco) |
 | 34 | `Configuracoes.jsx` | `admin.parametros.editar.tsx` | ✅ | Onda 13 — edição das 6 seções com nav, contador de sujos por seção, diff antes→depois e card de Registro. Absorveu `/admin/integracoes` (decisão do usuário), que saiu da sidebar |
-| 35 | `Notificacoes.jsx` | — | ⏳ | **Tela nova no kit.** Não existe contraparte na retaguarda — mas a feature `src/features/notificacoes/` já existe por inteiro (schema, RPCs, triggers de push, store), exposta só em `/app/notificacoes` (PRD-020). O gap é de UI da retaguarda, não de backend |
-| 36 | `NotificacoesPrefs.jsx` | — | ⏳ | **Tela nova no kit.** Mesma observação da linha 35 |
-| 37 | `NovaNotificacao.jsx` | — | ⏳ | **Tela nova no kit.** Mesma observação da linha 35 |
+| 35 | `Notificacoes.jsx` | `admin.notificacoes.index.tsx` | ✅ | Onda 19 — 4 KPIs de entrega, filtros por categoria, lista agrupada por dia com chips de canal, cards Canais/Push 7 dias/Mais disparadas. O gap era maior do que "só UI": a notificação era **do operador** (`operador_id` NOT NULL), e a central precisou de destinatário de escritório, categoria, prioridade e uma tabela de entregas para os KPIs existirem |
+| 36 | `NotificacoesPrefs.jsx` | `admin.notificacoes.preferencias.tsx` | ✅ | Onda 19 — matriz 18 eventos × 4 canais, horário silencioso, ritmo, retenção e aparelhos com push. Configuração única da empresa (decisão do usuário): o app de campo não tem tela de preferências, então por pessoa deixaria o operador sem como mudar a dele |
+| 37 | `NovaNotificacao.jsx` | `admin.notificacoes.nova.tsx` | ✅ | Onda 19 — aviso manual com alvo (todos/base/selecionados), canal por mensagem, prioridade, vínculo com OS, ação no app, agendamento e prévia ao vivo do push e do in-app |
 | 38 | `Sobre.jsx` | — | ⏳ | Não existe rota nem feature. Sem PRD, baixa prioridade |
 
 ---
@@ -93,10 +93,10 @@
 
 | Status | Quantidade |
 |--------|------------|
-| ✅ Refatorado (bate com o design system) | 33 / 38 |
+| ✅ Refatorado (bate com o design system) | 36 / 38 |
 | 🔧 Funcional, visual antigo | 0 / 38 |
 | 🔲 Funcional, mas em diálogo genérico (mock pede página dedicada) | 0 / 38 |
-| ⏳ Não existe | 4 / 38 |
+| ⏳ Não existe | 1 / 38 |
 | ⚠️ Divergência de fluxo (não é visual) | 1 / 38 |
 
 > Nota: a contagem anterior (16/8/8/2/1 = 35) tinha um erro de soma — 34 telas no total, não 35. Corrigido junto com as Ondas 8 e 9.
@@ -110,6 +110,7 @@
 | 11 | Sem plano formal — tela lida direto do projeto Claude Design via `DesignSync` (que passou a ser a fonte da verdade de design), sem etapa de Artifact | Dashboard (aba "Visão geral") | ✅ (PR #14, merge `459842e`, v0.22.0 "Lookout") |
 | 12 | Idem — mesma sub-onda do Dashboard, fechando as duas abas de `/admin` | Painel Operacional (aba "Operacional") | branch `worktree-painel-operacional-designsync`, v0.23.0 "Watchtower" |
 | 13 | Idem — lida do `DesignSync`, sem Artifact | Parâmetros + Configurações (par de telas, linhas 33–34). Primeira onda que criou schema em vez de só re-vestir: tabela `parametros` (singleton) + `parametros_historico` com trigger de versão e histórico | ✅ (PR #24, merge `018ea69`, v0.27.0 "Levers") |
+| 19 | Idem | Notificações na retaguarda (linhas 35–37) — central, preferências e aviso manual. Maior onda de backend até aqui: destinatário de escritório, categoria/prioridade/agendamento, tabela de entregas, matriz de preferências, 11 eventos novos, canal de e-mail e 3 cron jobs | branch `worktree-notificacoes-designsync`, v0.33.0 "Switchboard" |
 | 18 | Idem, e virou feature de novo | Manutenção (linhas 22–23) — **fecha o bloco de reskin**: era a última tela 🔧. Criou a manutenção corretiva (revertendo o escopo reduzido da Onda 10), a preventiva avulsa, e migrou planos e registros do mock para o Supabase, com RPCs para o app de campo | branch `worktree-manutencao-designsync`, v0.32.0 "Overhaul" |
 | 17 | Idem, mas virou feature | Diesel (linha 24) + controle de estoque do tanque + migração de contas a pagar para o Supabase | branch `worktree-diesel-designsync`, v0.31.0 "Cistern" |
 | 16 | Idem | Painel Gerencial (linha 31) — **fecha o bloco Analítico** (Custo da Hora, Rentabilidade, Painel Gerencial) | branch `worktree-painel-gerencial-designsync`, v0.30.0 "Bridge" |
@@ -118,9 +119,11 @@
 
 ## O que falta, em ordem sugerida
 
-> **Não há mais telas de reskin.** A Onda 18 fechou a última (Manutenção); tudo que existia em `/admin` bate com o design system. O que resta é tela que **não existe** na retaguarda.
+> **O UI kit está 36/38.** Sobram uma tela institucional e uma divergência de produto — nada de reskin, nada de bloco grande.
+>
+> A prioridade agora **não é mais o kit**: a Onda 19 revelou que `apontamentos`, `faturamentos`, `contas_receber` e `comprovantes` têm tabela e **zero linhas** — o pipeline Executado → Faturado → Recebido inteiro ainda lê `src/mocks/` no front. É a maior dívida de "mock que parece pronto" do projeto, e é o que mantém a categoria Financeiro das notificações silenciosa.
 
-1. **⏳ Notificações na retaguarda** (linhas 35–37: central, preferências, nova notificação) — backend já pronto (PRD-020); falta só a UI de `/admin`. É o maior bloco restante, e o único com três telas.
+1. **🔌 Pipeline Executado → Faturado → Recebido** — migrar apontamentos, faturamentos, contas a receber e comprovantes para o banco. Não é tela do kit, mas é o que falta para o sistema ser usável de verdade.
 2. **⏳ Sobre** — institucional, baixo esforço.
 3. **⚠️ Nova NF** — decisão de produto pendente com o Leonardo (emissão manual avulsa é necessária, ou o automático ao fechar OS já cobre?). Era a mesma categoria de divergência que NovaManutencao (linha 23) — e essa foi resolvida na Onda 18 a favor do kit, o que é um precedente a levar para a conversa.
 

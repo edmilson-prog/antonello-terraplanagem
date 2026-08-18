@@ -724,40 +724,61 @@ export type Database = {
       };
       notificacoes: {
         Row: {
+          acao: string | null;
+          agendada_para: string | null;
+          canais: string[] | null;
+          categoria: string;
           created_at: string;
+          enviada_em: string | null;
           id: string;
           lida_em: string | null;
           mensagem: string;
-          operador_id: string;
+          operador_id: string | null;
           origem_id: string | null;
           os_id: string | null;
+          prioridade: string;
           tipo: string;
           titulo: string;
           updated_at: string;
+          usuario_id: string | null;
         };
         Insert: {
+          acao?: string | null;
+          agendada_para?: string | null;
+          canais?: string[] | null;
+          categoria?: string;
           created_at?: string;
+          enviada_em?: string | null;
           id?: string;
           lida_em?: string | null;
           mensagem: string;
-          operador_id: string;
+          operador_id?: string | null;
           origem_id?: string | null;
           os_id?: string | null;
+          prioridade?: string;
           tipo: string;
           titulo: string;
           updated_at?: string;
+          usuario_id?: string | null;
         };
         Update: {
+          acao?: string | null;
+          agendada_para?: string | null;
+          canais?: string[] | null;
+          categoria?: string;
           created_at?: string;
+          enviada_em?: string | null;
           id?: string;
           lida_em?: string | null;
           mensagem?: string;
-          operador_id?: string;
+          operador_id?: string | null;
           origem_id?: string | null;
           os_id?: string | null;
+          prioridade?: string;
           tipo?: string;
           titulo?: string;
           updated_at?: string;
+          usuario_id?: string | null;
         };
         Relationships: [
           {
@@ -774,7 +795,144 @@ export type Database = {
             referencedRelation: "ordens_servico";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "notificacoes_usuario_id_fkey";
+            columns: ["usuario_id"];
+            isOneToOne: false;
+            referencedRelation: "usuarios_retaguarda";
+            referencedColumns: ["id"];
+          },
         ];
+      };
+      notificacoes_entregas: {
+        Row: {
+          aberta_em: string | null;
+          canal: string;
+          created_at: string;
+          destino: string | null;
+          entregue_em: string | null;
+          id: string;
+          motivo: string | null;
+          notificacao_id: string;
+          status: string;
+          updated_at: string;
+        };
+        Insert: {
+          aberta_em?: string | null;
+          canal: string;
+          created_at?: string;
+          destino?: string | null;
+          entregue_em?: string | null;
+          id?: string;
+          motivo?: string | null;
+          notificacao_id: string;
+          status?: string;
+          updated_at?: string;
+        };
+        Update: {
+          aberta_em?: string | null;
+          canal?: string;
+          created_at?: string;
+          destino?: string | null;
+          entregue_em?: string | null;
+          id?: string;
+          motivo?: string | null;
+          notificacao_id?: string;
+          status?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notificacoes_entregas_notificacao_id_fkey";
+            columns: ["notificacao_id"];
+            isOneToOne: false;
+            referencedRelation: "notificacoes";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      notificacoes_preferencias: {
+        Row: {
+          atualizado_por: string | null;
+          created_at: string;
+          fim_de_semana_so_criticos: boolean;
+          id: string;
+          max_push_por_hora: number;
+          resumo_email_ativo: boolean;
+          resumo_email_hora: string;
+          retencao_dias: number;
+          silencio_fim: string;
+          silencio_inicio: string;
+          updated_at: string;
+        };
+        Insert: {
+          atualizado_por?: string | null;
+          created_at?: string;
+          fim_de_semana_so_criticos?: boolean;
+          id?: string;
+          max_push_por_hora?: number;
+          resumo_email_ativo?: boolean;
+          resumo_email_hora?: string;
+          retencao_dias?: number;
+          silencio_fim?: string;
+          silencio_inicio?: string;
+          updated_at?: string;
+        };
+        Update: {
+          atualizado_por?: string | null;
+          created_at?: string;
+          fim_de_semana_so_criticos?: boolean;
+          id?: string;
+          max_push_por_hora?: number;
+          resumo_email_ativo?: boolean;
+          resumo_email_hora?: string;
+          retencao_dias?: number;
+          silencio_fim?: string;
+          silencio_inicio?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notificacoes_preferencias_atualizado_por_fkey";
+            columns: ["atualizado_por"];
+            isOneToOne: false;
+            referencedRelation: "usuarios_retaguarda";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      notificacoes_preferencias_eventos: {
+        Row: {
+          canal_app: boolean;
+          canal_email: boolean;
+          canal_push: boolean;
+          canal_whatsapp: boolean;
+          created_at: string;
+          critico: boolean;
+          tipo: string;
+          updated_at: string;
+        };
+        Insert: {
+          canal_app?: boolean;
+          canal_email?: boolean;
+          canal_push?: boolean;
+          canal_whatsapp?: boolean;
+          created_at?: string;
+          critico?: boolean;
+          tipo: string;
+          updated_at?: string;
+        };
+        Update: {
+          canal_app?: boolean;
+          canal_email?: boolean;
+          canal_push?: boolean;
+          canal_whatsapp?: boolean;
+          created_at?: string;
+          critico?: boolean;
+          tipo?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
       };
       operador_sessoes: {
         Row: {
@@ -1610,6 +1768,18 @@ export type Database = {
         };
         Returns: string;
       };
+      criar_notificacao_retaguarda: {
+        Args: {
+          p_categoria: string;
+          p_mensagem: string;
+          p_origem_id?: string;
+          p_os_id?: string;
+          p_prioridade?: string;
+          p_tipo: string;
+          p_titulo: string;
+        };
+        Returns: number;
+      };
       criar_operador: {
         Args: {
           p_ativo?: boolean;
@@ -1662,6 +1832,7 @@ export type Database = {
         };
       };
       gerar_lembretes_apontamento: { Args: never; Returns: number };
+      gerar_notificacoes_retaguarda: { Args: never; Returns: number };
       iniciar_apontamento: {
         Args: {
           p_equipamento_id: string;
@@ -1701,6 +1872,8 @@ export type Database = {
         };
       };
       is_retaguarda: { Args: never; Returns: boolean };
+      liberar_notificacoes_agendadas: { Args: never; Returns: number };
+      limpar_notificacoes_antigas: { Args: never; Returns: number };
       limpar_push_subscriptions_expiradas: { Args: never; Returns: number };
       listar_apontamentos_operador: {
         Args: { p_token: string };
@@ -1734,16 +1907,23 @@ export type Database = {
       listar_notificacoes: {
         Args: { p_limite?: number; p_token: string };
         Returns: {
+          acao: string | null;
+          agendada_para: string | null;
+          canais: string[] | null;
+          categoria: string;
           created_at: string;
+          enviada_em: string | null;
           id: string;
           lida_em: string | null;
           mensagem: string;
-          operador_id: string;
+          operador_id: string | null;
           origem_id: string | null;
           os_id: string | null;
+          prioridade: string;
           tipo: string;
           titulo: string;
           updated_at: string;
+          usuario_id: string | null;
         }[];
         SetofOptions: {
           from: "*";
@@ -1828,6 +2008,23 @@ export type Database = {
         Args: { p_ids?: string[]; p_token: string };
         Returns: number;
       };
+      marcar_push_aberto: {
+        Args: { p_notificacao_id: string; p_token: string };
+        Returns: undefined;
+      };
+      notificacao_e_critica: {
+        Args: { p_prioridade: string; p_tipo: string };
+        Returns: boolean;
+      };
+      notificacoes_acordar_funcao: {
+        Args: { p_body: Json; p_secret_auth: string; p_secret_url: string };
+        Returns: undefined;
+      };
+      notificacoes_em_silencio: { Args: never; Returns: boolean };
+      notificacoes_push_na_hora: {
+        Args: { p_operador_id: string };
+        Returns: number;
+      };
       operador_do_token: { Args: { p_token: string }; Returns: string };
       ordens_do_operador_ids: {
         Args: { p_operador_id: string };
@@ -1836,6 +2033,10 @@ export type Database = {
       parametros_campos_de_negocio: {
         Args: { registro: Database["public"]["Tables"]["parametros"]["Row"] };
         Returns: Json;
+      };
+      processar_entrega_notificacao: {
+        Args: { p_notificacao_id: string };
+        Returns: undefined;
       };
       registrar_notificacao_propria: {
         Args: {

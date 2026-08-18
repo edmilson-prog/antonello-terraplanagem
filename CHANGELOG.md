@@ -5,6 +5,38 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.33.0] - 2026-08-18 - Switchboard
+
+Fecha as três telas de Notificações na retaguarda (linhas 35–37 do [roadmap do UI kit](docs/prds/ROADMAP-ui-kit-retaguarda.md)) — e, com elas, o backend que faltava para o kit não ser enfeite.
+
+O PRD-020 tinha construído a notificação como coisa **do operador**: `operador_id` NOT NULL, seis tipos, todos de campo. As categorias Financeiro e Comercial que o kit desenha são assunto do escritório, e não havia ninguém para recebê-las.
+
+### Added
+- **Caixa da retaguarda.** `notificacoes` passou a aceitar destinatário de escritório (`usuario_id`) além de operador — exatamente um dos dois, garantido por check. Uma linha por pessoa: `lida_em` é da linha, então ninguém apaga o aviso do colega ao ler o seu.
+- **Categoria, prioridade, ação no app e agendamento** nas notificações. Os tipos foram de 6 para 18, um por evento da matriz do kit.
+- **`notificacoes_entregas`** — uma linha por canal, e por aparelho no caso do push. É a origem de todos os KPIs de entrega, que antes não tinham de onde sair.
+- **Preferências** (`notificacoes_preferencias` + matriz evento × canal): horário silencioso, fim de semana só-críticos, resumo diário, teto de push por hora e retenção do histórico.
+- **Onze eventos novos**: orçamento aprovado/perdido e recebimento confirmado por trigger; título vencido/a vencer, orçamento a vencer, plano de manutenção vencido/a vencer e OS sem apontamento por varredura diária às 07:00.
+- **Central em `/admin/notificacoes`**: 4 KPIs de entrega, filtros por categoria, lista agrupada por dia com chips de canal, e os cards Canais, Push (7 dias) e Mais disparadas no mês.
+- **Preferências em `/admin/notificacoes/preferencias`**: matriz 18 × 4, ritmo, silêncio e a lista de aparelhos com push.
+- **Aviso manual em `/admin/notificacoes/nova`**: alvo (todos / por base / selecionados), canal, prioridade, vínculo com OS, ação no app, agendamento e prévia ao vivo do push e do in-app.
+- **Canal de e-mail de verdade**, via Edge Function `enviar-email` (Resend). Falta só a `RESEND_API_KEY` nos Secrets do projeto; sem ela a entrega vira `suprimido · provedor não configurado`, e nada quebra.
+- **`marcar_push_aberto`** — RPC que o service worker chama ao tocar na notificação. É o que alimenta "Abertos" e "Tempo médio até abrir".
+
+### Changed
+- O trigger de push virou `processar_entrega_notificacao`, que decide canal a canal: respeita a matriz de preferências, o horário silencioso e o teto por hora, e registra CADA decisão. Crítico fura silêncio e teto.
+- `enviar-push` passou a fechar a linha de entrega de cada aparelho como entregue ou falhou, em vez de disparar e esquecer.
+- Três cron jobs novos: liberar agendadas (5 em 5 min), varredura da retaguarda (07:00) e limpeza pela retenção configurada.
+
+### Security
+- Todas as funções novas nascem com `search_path` fixo e `EXECUTE` revogado de `public, anon, authenticated`. A única exposta a `anon` é `marcar_push_aberto`, que valida o token do operador e só marca entrega dele.
+- O e-mail do destinatário é resolvido dentro da função, a partir de `auth.users` — nunca trafega pelo cliente.
+
+### Notas
+- **A categoria Financeiro fica ligada mas silenciosa por ora**: `contas_receber` tem tabela e zero linhas — o pipeline Executado → Faturado → Recebido inteiro ainda lê `src/mocks/` no front. É a próxima onda.
+- `suprimido` é status separado de `falhou` de propósito. Horário silencioso não é erro de entrega, e misturar os dois faria o KPI de falhas mentir.
+- WhatsApp aparece na matriz desabilitado, como no próprio kit: o WAHA que já existe no projeto atende o cliente, não o operador.
+
 ## [0.32.0] - 2026-08-17 - Overhaul
 
 Segunda versão seguida a **reverter uma decisão da 0.24.0 (Onda 10)** por escolha explícita do usuário. Lá, a manutenção corretiva foi tirada do escopo por "não existir no produto real"; o UI kit da tela de Manutenção insiste nela — Tipo e Situação são 2 das 6 colunas da tabela de ordens e 2 dos 4 KPIs — e o argumento de negócio confirmou: sem corretiva, vazamento hidráulico e troca de embreagem ficavam fora do Custo da Hora, que saía subestimado.

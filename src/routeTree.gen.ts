@@ -39,6 +39,7 @@ import { Route as AdminParametrosIndexRouteImport } from './routes/admin.paramet
 import { Route as AdminOrdensIndexRouteImport } from './routes/admin.ordens.index'
 import { Route as AdminOrcamentosIndexRouteImport } from './routes/admin.orcamentos.index'
 import { Route as AdminOperadoresIndexRouteImport } from './routes/admin.operadores.index'
+import { Route as AdminNotificacoesIndexRouteImport } from './routes/admin.notificacoes.index'
 import { Route as AdminFinanceiroIndexRouteImport } from './routes/admin.financeiro.index'
 import { Route as AdminFaturamentoIndexRouteImport } from './routes/admin.faturamento.index'
 import { Route as AdminEquipamentosIndexRouteImport } from './routes/admin.equipamentos.index'
@@ -54,6 +55,8 @@ import { Route as AdminOrcamentosNovoRouteImport } from './routes/admin.orcament
 import { Route as AdminOrcamentosOrcamentoIdRouteImport } from './routes/admin.orcamentos.$orcamentoId'
 import { Route as AdminOperadoresNovoRouteImport } from './routes/admin.operadores.novo'
 import { Route as AdminOperadoresOperadorIdRouteImport } from './routes/admin.operadores.$operadorId'
+import { Route as AdminNotificacoesPreferenciasRouteImport } from './routes/admin.notificacoes.preferencias'
+import { Route as AdminNotificacoesNovaRouteImport } from './routes/admin.notificacoes.nova'
 import { Route as AdminManutencaoNovaRouteImport } from './routes/admin.manutencao.nova'
 import { Route as AdminIaChatbotRouteImport } from './routes/admin.ia.chatbot'
 import { Route as AdminFaturamentoFaturamentoIdRouteImport } from './routes/admin.faturamento.$faturamentoId'
@@ -229,6 +232,11 @@ const AdminOperadoresIndexRoute = AdminOperadoresIndexRouteImport.update({
   path: '/operadores/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminNotificacoesIndexRoute = AdminNotificacoesIndexRouteImport.update({
+  id: '/notificacoes/',
+  path: '/notificacoes/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminFinanceiroIndexRoute = AdminFinanceiroIndexRouteImport.update({
   id: '/financeiro/',
   path: '/financeiro/',
@@ -307,6 +315,17 @@ const AdminOperadoresOperadorIdRoute =
     path: '/operadores/$operadorId',
     getParentRoute: () => AdminRoute,
   } as any)
+const AdminNotificacoesPreferenciasRoute =
+  AdminNotificacoesPreferenciasRouteImport.update({
+    id: '/notificacoes/preferencias',
+    path: '/notificacoes/preferencias',
+    getParentRoute: () => AdminRoute,
+  } as any)
+const AdminNotificacoesNovaRoute = AdminNotificacoesNovaRouteImport.update({
+  id: '/notificacoes/nova',
+  path: '/notificacoes/nova',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminManutencaoNovaRoute = AdminManutencaoNovaRouteImport.update({
   id: '/nova',
   path: '/nova',
@@ -468,6 +487,8 @@ export interface FileRoutesByFullPath {
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
   '/admin/manutencao/nova': typeof AdminManutencaoNovaRoute
+  '/admin/notificacoes/nova': typeof AdminNotificacoesNovaRoute
+  '/admin/notificacoes/preferencias': typeof AdminNotificacoesPreferenciasRoute
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
   '/admin/operadores/novo': typeof AdminOperadoresNovoRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
@@ -483,6 +504,7 @@ export interface FileRoutesByFullPath {
   '/admin/equipamentos/': typeof AdminEquipamentosIndexRoute
   '/admin/faturamento/': typeof AdminFaturamentoIndexRoute
   '/admin/financeiro/': typeof AdminFinanceiroIndexRoute
+  '/admin/notificacoes/': typeof AdminNotificacoesIndexRoute
   '/admin/operadores/': typeof AdminOperadoresIndexRoute
   '/admin/orcamentos/': typeof AdminOrcamentosIndexRoute
   '/admin/ordens/': typeof AdminOrdensIndexRoute
@@ -536,6 +558,8 @@ export interface FileRoutesByTo {
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
   '/admin/manutencao/nova': typeof AdminManutencaoNovaRoute
+  '/admin/notificacoes/nova': typeof AdminNotificacoesNovaRoute
+  '/admin/notificacoes/preferencias': typeof AdminNotificacoesPreferenciasRoute
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
   '/admin/operadores/novo': typeof AdminOperadoresNovoRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
@@ -550,6 +574,7 @@ export interface FileRoutesByTo {
   '/admin/equipamentos': typeof AdminEquipamentosIndexRoute
   '/admin/faturamento': typeof AdminFaturamentoIndexRoute
   '/admin/financeiro': typeof AdminFinanceiroIndexRoute
+  '/admin/notificacoes': typeof AdminNotificacoesIndexRoute
   '/admin/operadores': typeof AdminOperadoresIndexRoute
   '/admin/orcamentos': typeof AdminOrcamentosIndexRoute
   '/admin/ordens': typeof AdminOrdensIndexRoute
@@ -606,6 +631,8 @@ export interface FileRoutesById {
   '/admin/faturamento/$faturamentoId': typeof AdminFaturamentoFaturamentoIdRoute
   '/admin/ia/chatbot': typeof AdminIaChatbotRoute
   '/admin/manutencao/nova': typeof AdminManutencaoNovaRoute
+  '/admin/notificacoes/nova': typeof AdminNotificacoesNovaRoute
+  '/admin/notificacoes/preferencias': typeof AdminNotificacoesPreferenciasRoute
   '/admin/operadores/$operadorId': typeof AdminOperadoresOperadorIdRoute
   '/admin/operadores/novo': typeof AdminOperadoresNovoRoute
   '/admin/orcamentos/$orcamentoId': typeof AdminOrcamentosOrcamentoIdRoute
@@ -621,6 +648,7 @@ export interface FileRoutesById {
   '/admin/equipamentos/': typeof AdminEquipamentosIndexRoute
   '/admin/faturamento/': typeof AdminFaturamentoIndexRoute
   '/admin/financeiro/': typeof AdminFinanceiroIndexRoute
+  '/admin/notificacoes/': typeof AdminNotificacoesIndexRoute
   '/admin/operadores/': typeof AdminOperadoresIndexRoute
   '/admin/orcamentos/': typeof AdminOrcamentosIndexRoute
   '/admin/ordens/': typeof AdminOrdensIndexRoute
@@ -678,6 +706,8 @@ export interface FileRouteTypes {
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
     | '/admin/manutencao/nova'
+    | '/admin/notificacoes/nova'
+    | '/admin/notificacoes/preferencias'
     | '/admin/operadores/$operadorId'
     | '/admin/operadores/novo'
     | '/admin/orcamentos/$orcamentoId'
@@ -693,6 +723,7 @@ export interface FileRouteTypes {
     | '/admin/equipamentos/'
     | '/admin/faturamento/'
     | '/admin/financeiro/'
+    | '/admin/notificacoes/'
     | '/admin/operadores/'
     | '/admin/orcamentos/'
     | '/admin/ordens/'
@@ -746,6 +777,8 @@ export interface FileRouteTypes {
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
     | '/admin/manutencao/nova'
+    | '/admin/notificacoes/nova'
+    | '/admin/notificacoes/preferencias'
     | '/admin/operadores/$operadorId'
     | '/admin/operadores/novo'
     | '/admin/orcamentos/$orcamentoId'
@@ -760,6 +793,7 @@ export interface FileRouteTypes {
     | '/admin/equipamentos'
     | '/admin/faturamento'
     | '/admin/financeiro'
+    | '/admin/notificacoes'
     | '/admin/operadores'
     | '/admin/orcamentos'
     | '/admin/ordens'
@@ -815,6 +849,8 @@ export interface FileRouteTypes {
     | '/admin/faturamento/$faturamentoId'
     | '/admin/ia/chatbot'
     | '/admin/manutencao/nova'
+    | '/admin/notificacoes/nova'
+    | '/admin/notificacoes/preferencias'
     | '/admin/operadores/$operadorId'
     | '/admin/operadores/novo'
     | '/admin/orcamentos/$orcamentoId'
@@ -830,6 +866,7 @@ export interface FileRouteTypes {
     | '/admin/equipamentos/'
     | '/admin/faturamento/'
     | '/admin/financeiro/'
+    | '/admin/notificacoes/'
     | '/admin/operadores/'
     | '/admin/orcamentos/'
     | '/admin/ordens/'
@@ -1072,6 +1109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOperadoresIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/notificacoes/': {
+      id: '/admin/notificacoes/'
+      path: '/notificacoes'
+      fullPath: '/admin/notificacoes/'
+      preLoaderRoute: typeof AdminNotificacoesIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/financeiro/': {
       id: '/admin/financeiro/'
       path: '/financeiro'
@@ -1175,6 +1219,20 @@ declare module '@tanstack/react-router' {
       path: '/operadores/$operadorId'
       fullPath: '/admin/operadores/$operadorId'
       preLoaderRoute: typeof AdminOperadoresOperadorIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/notificacoes/preferencias': {
+      id: '/admin/notificacoes/preferencias'
+      path: '/notificacoes/preferencias'
+      fullPath: '/admin/notificacoes/preferencias'
+      preLoaderRoute: typeof AdminNotificacoesPreferenciasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/notificacoes/nova': {
+      id: '/admin/notificacoes/nova'
+      path: '/notificacoes/nova'
+      fullPath: '/admin/notificacoes/nova'
+      preLoaderRoute: typeof AdminNotificacoesNovaRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/manutencao/nova': {
@@ -1397,6 +1455,8 @@ interface AdminRouteChildren {
   AdminEquipamentosNovoRoute: typeof AdminEquipamentosNovoRoute
   AdminFaturamentoFaturamentoIdRoute: typeof AdminFaturamentoFaturamentoIdRoute
   AdminIaChatbotRoute: typeof AdminIaChatbotRoute
+  AdminNotificacoesNovaRoute: typeof AdminNotificacoesNovaRoute
+  AdminNotificacoesPreferenciasRoute: typeof AdminNotificacoesPreferenciasRoute
   AdminOperadoresOperadorIdRoute: typeof AdminOperadoresOperadorIdRoute
   AdminOperadoresNovoRoute: typeof AdminOperadoresNovoRoute
   AdminOrcamentosOrcamentoIdRoute: typeof AdminOrcamentosOrcamentoIdRoute
@@ -1409,6 +1469,7 @@ interface AdminRouteChildren {
   AdminEquipamentosIndexRoute: typeof AdminEquipamentosIndexRoute
   AdminFaturamentoIndexRoute: typeof AdminFaturamentoIndexRoute
   AdminFinanceiroIndexRoute: typeof AdminFinanceiroIndexRoute
+  AdminNotificacoesIndexRoute: typeof AdminNotificacoesIndexRoute
   AdminOperadoresIndexRoute: typeof AdminOperadoresIndexRoute
   AdminOrcamentosIndexRoute: typeof AdminOrcamentosIndexRoute
   AdminOrdensIndexRoute: typeof AdminOrdensIndexRoute
@@ -1431,6 +1492,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEquipamentosNovoRoute: AdminEquipamentosNovoRoute,
   AdminFaturamentoFaturamentoIdRoute: AdminFaturamentoFaturamentoIdRoute,
   AdminIaChatbotRoute: AdminIaChatbotRoute,
+  AdminNotificacoesNovaRoute: AdminNotificacoesNovaRoute,
+  AdminNotificacoesPreferenciasRoute: AdminNotificacoesPreferenciasRoute,
   AdminOperadoresOperadorIdRoute: AdminOperadoresOperadorIdRoute,
   AdminOperadoresNovoRoute: AdminOperadoresNovoRoute,
   AdminOrcamentosOrcamentoIdRoute: AdminOrcamentosOrcamentoIdRoute,
@@ -1443,6 +1506,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEquipamentosIndexRoute: AdminEquipamentosIndexRoute,
   AdminFaturamentoIndexRoute: AdminFaturamentoIndexRoute,
   AdminFinanceiroIndexRoute: AdminFinanceiroIndexRoute,
+  AdminNotificacoesIndexRoute: AdminNotificacoesIndexRoute,
   AdminOperadoresIndexRoute: AdminOperadoresIndexRoute,
   AdminOrcamentosIndexRoute: AdminOrcamentosIndexRoute,
   AdminOrdensIndexRoute: AdminOrdensIndexRoute,

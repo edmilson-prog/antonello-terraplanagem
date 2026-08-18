@@ -506,22 +506,101 @@ export interface AvisoWhatsApp {
 // SECURITY DEFINER (listar_notificacoes, marcar_notificacoes_lidas) em vez de
 // query direta na tabela — ver features/notificacoes/notificacoes-store.ts.
 export type TipoNotificacao =
+  // Operação
   | "os_atribuida"
-  | "manutencao_agendada"
   | "apontamento_aprovado"
+  | "apontamento_aguardando"
   | "lembrete_apontamento"
+  | "os_sem_apontamento"
+  | "os_concluida"
+  | "correcao_solicitada"
+  // Frota
+  | "manutencao_agendada"
+  | "manutencao_vencida"
+  | "consumo_anomalo"
   | "abastecimento_registrado"
-  | "correcao_solicitada";
+  // Financeiro
+  | "titulo_vencido"
+  | "titulo_a_vencer"
+  | "comprovante_recebido"
+  // Comercial
+  | "orcamento_aprovado"
+  | "orcamento_perdido"
+  | "orcamento_a_vencer"
+  // Sistema — escrito à mão por alguém do escritório
+  | "aviso_manual";
+
+export type CategoriaNotificacao = "operacao" | "frota" | "financeiro" | "comercial" | "sistema";
+
+export type PrioridadeNotificacao = "normal" | "alta" | "critico";
 
 export interface Notificacao {
   id: string;
-  operador_id: string; // FK → Operador
+  // Exatamente um dos dois é não-nulo (check notificacoes_destinatario_check):
+  // operador cai na caixa do app de campo, usuário na central da retaguarda.
+  operador_id: string | null; // FK → Operador
+  usuario_id: string | null; // FK → UsuarioRetaguarda
   tipo: TipoNotificacao;
+  categoria: CategoriaNotificacao;
+  prioridade: PrioridadeNotificacao;
   titulo: string;
   mensagem: string;
+  acao: string | null; // rótulo do botão no app ("Abrir OS", "Confirmar leitura")
+  // Canais desta mensagem específica. Null = usar a preferência do evento —
+  // é o caso de tudo que nasce de trigger. Preenchido só pelo aviso manual,
+  // onde a tela deixa escolher in-app, push ou ambos.
+  canais: CanalNotificacao[] | null;
   os_id: string | null; // FK → OrdemServico; quando presente, a linha é tocável
   origem_id: string | null; // registro que originou (apontamento, abastecimento…), polimórfico
   lida_em: string | null; // ISO 8601; null = não lida
+  agendada_para: string | null; // no futuro = ainda não entregue
+  enviada_em: string | null; // quando o pipeline de entrega processou
+  created_at: string;
+  updated_at: string;
+}
+
+export type CanalNotificacao = "app" | "push" | "email" | "whatsapp";
+// `suprimido` é entrega que o sistema decidiu não fazer (silêncio, limite,
+// canal desligado). Separado de `falhou` de propósito: sem isso o KPI de
+// falhas contaria decisão de projeto como erro.
+export type StatusEntrega = "pendente" | "entregue" | "falhou" | "suprimido";
+
+export interface NotificacaoEntrega {
+  id: string;
+  notificacao_id: string;
+  canal: CanalNotificacao;
+  status: StatusEntrega;
+  motivo: string | null;
+  destino: string | null; // endpoint do push ou e-mail
+  entregue_em: string | null;
+  aberta_em: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Configuração única da empresa, como `parametros` (decisão do usuário na
+// Onda 19: o app de campo não tem tela de preferências).
+export interface NotificacoesPreferencias {
+  id: string;
+  silencio_inicio: string; // "HH:MM:SS"
+  silencio_fim: string;
+  fim_de_semana_so_criticos: boolean;
+  resumo_email_ativo: boolean;
+  resumo_email_hora: string;
+  max_push_por_hora: number;
+  retencao_dias: number;
+  atualizado_por: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PreferenciaEventoNotificacao {
+  tipo: TipoNotificacao;
+  canal_app: boolean;
+  canal_push: boolean;
+  canal_email: boolean;
+  canal_whatsapp: boolean;
+  critico: boolean;
   created_at: string;
   updated_at: string;
 }
