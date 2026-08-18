@@ -14,6 +14,7 @@ import { precosHoraMaquina as precosHoraMaquinaFixture } from "./src/mocks/preco
 import { precosFundacao as precosFundacaoFixture } from "./src/mocks/precos-fundacao";
 import { precosMobilizacao as precosMobilizacaoFixture } from "./src/mocks/precos-mobilizacao";
 import { componentesCusto as componentesCustoFixture } from "./src/mocks/componentes-custo";
+import { abastecimentos as abastecimentosFixture } from "./src/mocks/abastecimentos";
 
 // jsdom (ambiente de teste deste projeto) não implementa window.matchMedia por
 // padrão. Vários componentes/hooks usam prefers-color-scheme (useTheme) e
@@ -104,7 +105,10 @@ vi.mock("./src/lib/supabase", () => {
     precos_hora_maquina: precosHoraMaquinaFixture.map((p) => ({ ...p })),
     precos_fundacao: precosFundacaoFixture.map((p) => ({ ...p })),
     precos_mobilizacao: precosMobilizacaoFixture.map((p) => ({ ...p })),
+    // Alimentada por trigger no banco; nos testes começa vazia.
+    precos_historico: [],
     componentes_custo: componentesCustoFixture.map((c) => ({ ...c })),
+    abastecimentos: abastecimentosFixture.map((a) => ({ ...a })),
     usuarios_retaguarda: [{ id: "usuario-retaguarda-teste", nome: "Admin Teste", perfil: "admin" }],
   };
 
@@ -115,6 +119,7 @@ vi.mock("./src/lib/supabase", () => {
     private isMaybeSingle = false;
     private filtros: Array<[string, unknown]> = [];
     private ordem: { coluna: string; ascending: boolean } | null = null;
+    private teto: number | null = null;
 
     constructor(private table: string) {}
 
@@ -123,6 +128,10 @@ vi.mock("./src/lib/supabase", () => {
     }
     order(coluna: string, opts?: { ascending?: boolean }) {
       this.ordem = { coluna, ascending: opts?.ascending ?? true };
+      return this;
+    }
+    limit(n: number) {
+      this.teto = n;
       return this;
     }
     eq(coluna: string, valor: unknown) {
@@ -195,7 +204,8 @@ vi.mock("./src/lib/supabase", () => {
             return ascending ? cmp : -cmp;
           });
         }
-        data = this.isMaybeSingle ? (selecionadas[0] ?? null) : selecionadas;
+        const limitadas = this.teto != null ? selecionadas.slice(0, this.teto) : selecionadas;
+        data = this.isMaybeSingle ? (limitadas[0] ?? null) : limitadas;
       }
       return Promise.resolve(
         onfulfilled ? onfulfilled({ data, error: null }) : ({ data, error: null } as never),

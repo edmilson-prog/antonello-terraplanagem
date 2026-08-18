@@ -97,7 +97,9 @@ export function createSupabaseStore<T extends Entidade>({
   };
 
   const podeConsultar = () =>
-    credencial === "qualquer" ? credencialAtual() !== "nenhuma" : credencialAtual() === "retaguarda";
+    credencial === "qualquer"
+      ? credencialAtual() !== "nenhuma"
+      : credencialAtual() === "retaguarda";
 
   async function carregar(): Promise<void> {
     if (!podeConsultar()) {

@@ -157,7 +157,7 @@ function respostaMaisRentavel(pergunta: string): RespostaAssistente | null {
     equipamentosStore.getAll(),
     periodo,
     componentesCustoStore.getAll(),
-    abastecimentosStore.listar(),
+    abastecimentosStore.listarCompletos(),
     registrosManutencaoStore.listarCompletos(),
     apontamentosStore.listar(),
     precoHoraMaquinaStore.getAll(),
@@ -229,7 +229,7 @@ function respostaMaisConsomeDiesel(pergunta: string): RespostaAssistente | null 
   if (!pergunta.includes("diesel") && !pergunta.includes("combust")) return null;
   const comDado = indicadoresPorEquipamento(
     equipamentosStore.getAll(),
-    abastecimentosStore.listar(),
+    abastecimentosStore.listarCompletos(),
     apontamentosStore.listar(),
   ).filter((i) => i.consumo_medio_l_h != null);
   if (comDado.length === 0) {

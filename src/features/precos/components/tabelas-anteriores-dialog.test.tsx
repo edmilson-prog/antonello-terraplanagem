@@ -2,7 +2,12 @@ import { render, screen } from "@testing-library/react";
 import { describe, it, expect, beforeEach } from "vitest";
 import { historicoPrecosStore } from "@/features/precos/historico-precos-store";
 import { TabelasAnterioresDialog } from "@/features/precos/components/tabelas-anteriores-dialog";
-import type { PrecoHoraMaquina, PrecoFundacao, PrecoMobilizacao } from "@/shared/types";
+import type {
+  HistoricoPreco,
+  PrecoHoraMaquina,
+  PrecoFundacao,
+  PrecoMobilizacao,
+} from "@/shared/types";
 
 const HORA_MAQUINA: PrecoHoraMaquina = {
   id: "phm-001",
@@ -34,9 +39,33 @@ const MOBILIZACAO: PrecoMobilizacao = {
   updated_at: "2026-02-15T12:00:00.000Z",
 };
 
+/*
+ * O histórico virou só-leitura na Onda 20: quem grava é o trigger no banco, não
+ * a tela. Então o teste semeia a lista que o store expõe, em vez de chamar um
+ * `registrar()` que não existe mais.
+ */
+function semear(...entradas: HistoricoPreco[]) {
+  const lista = historicoPrecosStore.listar();
+  lista.length = 0;
+  lista.push(...entradas);
+}
+
+function entrada(
+  tipo: HistoricoPreco["tipo"],
+  snapshot: HistoricoPreco["snapshot"],
+): HistoricoPreco {
+  return {
+    id: `hp-${tipo}`,
+    tipo,
+    preco_id: snapshot.id,
+    snapshot,
+    alterado_em: "2026-03-01T12:00:00.000Z",
+  };
+}
+
 describe("TabelasAnterioresDialog", () => {
   beforeEach(() => {
-    historicoPrecosStore.listar().length = 0;
+    semear();
   });
 
   it("mostra estado vazio quando não há histórico", () => {
@@ -45,9 +74,11 @@ describe("TabelasAnterioresDialog", () => {
   });
 
   it("lista entradas de histórico dos 3 tipos", () => {
-    historicoPrecosStore.registrar("hora_maquina", HORA_MAQUINA);
-    historicoPrecosStore.registrar("fundacao", FUNDACAO);
-    historicoPrecosStore.registrar("mobilizacao", MOBILIZACAO);
+    semear(
+      entrada("hora_maquina", HORA_MAQUINA),
+      entrada("fundacao", FUNDACAO),
+      entrada("mobilizacao", MOBILIZACAO),
+    );
     render(<TabelasAnterioresDialog open onOpenChange={() => {}} />);
 
     expect(screen.getByText("ESCAVADEIRA HIDRÁULICA CATERPILLAR 320D")).toBeInTheDocument();

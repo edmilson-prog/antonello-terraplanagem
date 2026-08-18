@@ -57,7 +57,7 @@ export function GerencialPage() {
   const faturamentos = faturamentosStore.useTodos();
   const equipamentos = equipamentosStore.useAll();
   const componentesCusto = componentesCustoStore.useAll();
-  const abastecimentos = abastecimentosStore.useTodos();
+  const abastecimentos = abastecimentosStore.useCompletos();
   const registrosManutencao = registrosManutencaoStore.useCompletos();
   const apontamentos = apontamentosStore.useTodos();
   const precosHoraMaquina = precoHoraMaquinaStore.useAll();

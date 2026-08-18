@@ -1,8 +1,18 @@
-import type { Abastecimento, Apontamento, Equipamento } from "@/shared/types";
+import type {
+  Abastecimento,
+  AbastecimentoOperador,
+  Apontamento,
+  Equipamento,
+} from "@/shared/types";
 
-// Consumo médio (l/h) e utilização são DERIVADOS cruzando Abastecimento[] com
+// Consumo médio (l/h) e utilização são DERIVADOS cruzando abastecimentos com
 // Apontamento[] — nunca armazenados (RF-005/RF-006). Funções puras, sem
 // depender de nenhum store, para manter a feature isolada e testável.
+//
+// As que não precisam de dinheiro recebem AbastecimentoOperador (o recorte sem
+// preço e sem custo). Não é frescura de tipo: a ficha do equipamento no app de
+// campo chama esta cadeia, e lá a RPC nem devolve os campos financeiros. Só
+// `custoAbastecimento` exige o registro completo — e ela só roda na retaguarda.
 
 export interface PeriodoFiltro {
   de: string; // "YYYY-MM-DD", inclusive
@@ -15,11 +25,11 @@ function dataDentroDoPeriodo(iso: string, periodo?: PeriodoFiltro): boolean {
   return data >= periodo.de && data <= periodo.ate;
 }
 
-export function abastecimentosDoEquipamento(
-  abastecimentos: Abastecimento[],
+export function abastecimentosDoEquipamento<T extends AbastecimentoOperador>(
+  abastecimentos: T[],
   equipamentoId: string,
   periodo?: PeriodoFiltro,
-): Abastecimento[] {
+): T[] {
   return abastecimentos.filter(
     (a) => a.equipamento_id === equipamentoId && dataDentroDoPeriodo(a.abastecido_em, periodo),
   );
@@ -39,7 +49,7 @@ export function apontamentosFinalizadosDoEquipamento(
   );
 }
 
-export function totalLitros(abastecimentos: Abastecimento[]): number {
+export function totalLitros(abastecimentos: Pick<AbastecimentoOperador, "litros">[]): number {
   return Math.round(abastecimentos.reduce((soma, a) => soma + a.litros, 0) * 10) / 10;
 }
 
@@ -83,7 +93,7 @@ export interface IndicadorDieselEquipamento {
 // não fazem mais parte da frota operante).
 export function indicadoresPorEquipamento(
   equipamentos: Equipamento[],
-  abastecimentos: Abastecimento[],
+  abastecimentos: AbastecimentoOperador[],
   apontamentos: Apontamento[],
   periodo?: PeriodoFiltro,
 ): IndicadorDieselEquipamento[] {

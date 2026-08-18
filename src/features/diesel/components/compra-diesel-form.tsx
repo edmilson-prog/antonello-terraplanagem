@@ -24,7 +24,7 @@ interface Props {
 export function CompraDieselForm({ onCancel, onSuccess }: Props) {
   const parametros = parametrosStore.useParametros();
   const compras = comprasDieselStore.useTodas();
-  const abastecimentos = abastecimentosStore.useTodos();
+  const abastecimentos = abastecimentosStore.useCompletos();
 
   const [litros, setLitros] = useState("");
   const [precoLitro, setPrecoLitro] = useState("");

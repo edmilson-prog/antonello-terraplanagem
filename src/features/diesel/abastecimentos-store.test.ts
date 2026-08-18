@@ -1,123 +1,115 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import {
-  criarAbastecimentosStore,
-  type AbastecimentosStore,
-} from "@/features/diesel/abastecimentos-store";
-import type { Abastecimento } from "@/shared/types";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import * as supabaseLib from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
+import { abastecimentosStore } from "./abastecimentos-store";
 
-const SEED: Abastecimento[] = [
-  {
-    id: "seed-1",
-    equipamento_id: "eq-001",
-    operador_id: "op-001",
-    litros: 100,
-    horimetro: 500,
-    preco_litro: null,
-    custo_total: null,
-    local: null,
-    origem: "externo",
-    abastecido_em: "2026-06-01T08:00:00.000Z",
-    created_at: "2026-06-01T08:00:00.000Z",
-    updated_at: "2026-06-01T08:00:00.000Z",
-  },
-];
+/*
+ * Abastecimentos saiu do mock em memória para o Supabase na Onda 20, e com
+ * isso a fábrica `criarAbastecimentosStore` deixou de existir — o que os testes
+ * exercitavam nela (validação de litros e de horímetro) mudou de lugar duas
+ * vezes: continua no cliente para a tela responder na hora, e passou a existir
+ * também dentro de `registrar_abastecimento_operador`, que é quem manda.
+ *
+ * O que sobra para testar aqui é o mesmo contrato de `contas-pagar-store` e
+ * `registros-manutencao-store`: o guard de credencial, que é o risco herdado
+ * por todo store que sai do mock — sem sessão a consulta volta 401 e ficava
+ * presa na tela até um F5.
+ */
 
-describe("criarAbastecimentosStore", () => {
-  let store: AbastecimentosStore;
+const emitirAuthState = (
+  supabaseLib as unknown as {
+    emitirAuthStateParaTeste: (evento: string, session: { user: { id: string } } | null) => void;
+  }
+).emitirAuthStateParaTeste;
 
-  beforeEach(() => {
-    store = criarAbastecimentosStore(SEED);
+beforeEach(async () => {
+  emitirAuthState("SIGNED_OUT", null);
+  await vi.waitFor(() => {
+    expect(abastecimentosStore.listar()).toHaveLength(0);
+  });
+});
+
+afterEach(() => {
+  emitirAuthState("SIGNED_OUT", null);
+  vi.restoreAllMocks();
+});
+
+describe("abastecimentosStore — carga condicionada à credencial", () => {
+  it("não consulta a tabela enquanto não há credencial", async () => {
+    const espiao = vi.spyOn(supabase, "from");
+
+    await abastecimentosStore.retry();
+
+    expect(espiao).not.toHaveBeenCalled();
   });
 
-  it("lista o seed inicial", () => {
-    expect(store.listar()).toHaveLength(1);
-  });
+  it("carrega quando a retaguarda entra, sem esperar um reload", async () => {
+    const espiao = vi.spyOn(supabase, "from");
 
-  it("registra um novo abastecimento com sucesso", () => {
-    const r = store.registrar({ equipamento_id: "eq-001", litros: 50, horimetro: 520 });
-    expect(r.ok).toBe(true);
-    if (r.ok) {
-      expect(r.abastecimento.litros).toBe(50);
-      expect(r.abastecimento.horimetro).toBe(520);
-      expect(r.abastecimento.operador_id).toBeNull();
-      expect(r.abastecimento.preco_litro).toBeNull();
-      expect(r.abastecimento.custo_total).toBeNull();
-    }
-    expect(store.listar()).toHaveLength(2);
-  });
+    emitirAuthState("SIGNED_IN", { user: { id: "usuario-retaguarda-1" } });
 
-  it("rejeita litros zero ou negativos", () => {
-    const r = store.registrar({ equipamento_id: "eq-001", litros: 0, horimetro: 520 });
-    expect(r).toEqual({ ok: false, erro: "litros_invalido" });
-    expect(store.listar()).toHaveLength(1);
-  });
-
-  it("rejeita horímetro menor que o abastecimento anterior do mesmo equipamento", () => {
-    const r = store.registrar({ equipamento_id: "eq-001", litros: 50, horimetro: 400 });
-    expect(r).toEqual({ ok: false, erro: "horimetro_menor_que_anterior" });
-  });
-
-  it("aceita qualquer horímetro para um equipamento sem abastecimento anterior", () => {
-    const r = store.registrar({ equipamento_id: "eq-002", litros: 50, horimetro: 10 });
-    expect(r.ok).toBe(true);
-  });
-
-  it("compara contra o abastecimento mais recente por data, não o último do array", () => {
-    const s = criarAbastecimentosStore([
-      {
-        id: "seed-recente",
-        equipamento_id: "eq-009",
-        operador_id: null,
-        litros: 100,
-        horimetro: 500,
-        preco_litro: null,
-        custo_total: null,
-        local: null,
-        origem: "externo",
-        abastecido_em: "2026-06-20T08:00:00.000Z",
-        created_at: "2026-06-20T08:00:00.000Z",
-        updated_at: "2026-06-20T08:00:00.000Z",
-      },
-      {
-        id: "seed-antigo",
-        equipamento_id: "eq-009",
-        operador_id: null,
-        litros: 50,
-        horimetro: 100,
-        preco_litro: null,
-        custo_total: null,
-        local: null,
-        origem: "externo",
-        abastecido_em: "2026-06-01T08:00:00.000Z",
-        created_at: "2026-06-01T08:00:00.000Z",
-        updated_at: "2026-06-01T08:00:00.000Z",
-      },
-    ]);
-    // horímetro 300 é maior que o mais antigo (100) mas menor que o mais
-    // recente (500) — só deve ser aceito se a comparação usar a data certa.
-    const r = s.registrar({ equipamento_id: "eq-009", litros: 30, horimetro: 300 });
-    expect(r).toEqual({ ok: false, erro: "horimetro_menor_que_anterior" });
-  });
-
-  it("registra com custo quando informado pela retaguarda", () => {
-    const r = store.registrar({
-      equipamento_id: "eq-001",
-      litros: 80,
-      horimetro: 700,
-      preco_litro: 6.5,
-      custo_total: 520,
-      local: "Posto X",
-      origem: "externo",
+    await vi.waitFor(() => {
+      expect(espiao).toHaveBeenCalledWith("abastecimentos");
     });
-    expect(r.ok).toBe(true);
-    if (r.ok) {
-      expect(r.abastecimento.preco_litro).toBe(6.5);
-      expect(r.abastecimento.custo_total).toBe(520);
-      expect(r.abastecimento.local).toBe("Posto X");
-    }
   });
 
-  it("useTodos está definido (hook reativo)", () => {
-    expect(typeof store.useTodos).toBe("function");
+  it("esvazia a lista quando a retaguarda sai", async () => {
+    emitirAuthState("SIGNED_IN", { user: { id: "usuario-retaguarda-1" } });
+    await vi.waitFor(() => {
+      expect(abastecimentosStore.listar().length).toBeGreaterThan(0);
+    });
+
+    emitirAuthState("SIGNED_OUT", null);
+
+    await vi.waitFor(() => {
+      expect(abastecimentosStore.listar()).toHaveLength(0);
+    });
+  });
+});
+
+describe("abastecimentosStore — validações antes de ir ao banco", () => {
+  beforeEach(async () => {
+    emitirAuthState("SIGNED_IN", { user: { id: "usuario-retaguarda-1" } });
+    await vi.waitFor(() => {
+      expect(abastecimentosStore.listar().length).toBeGreaterThan(0);
+    });
+  });
+
+  it("recusa litros zerados sem nem chamar o banco", async () => {
+    const espiao = vi.spyOn(supabase, "from");
+    const primeiro = abastecimentosStore.listar()[0];
+
+    const r = await abastecimentosStore.registrar({
+      equipamento_id: primeiro.equipamento_id,
+      litros: 0,
+      horimetro: primeiro.horimetro + 10,
+    });
+
+    expect(r).toEqual({ ok: false, erro: "litros_invalido" });
+    expect(espiao).not.toHaveBeenCalled();
+  });
+
+  it("recusa horímetro menor que o do último abastecimento do equipamento", async () => {
+    const primeiro = abastecimentosStore.listar()[0];
+
+    const r = await abastecimentosStore.registrar({
+      equipamento_id: primeiro.equipamento_id,
+      litros: 50,
+      horimetro: primeiro.horimetro - 1,
+    });
+
+    expect(r).toEqual({ ok: false, erro: "horimetro_menor_que_anterior" });
+  });
+
+  it("aceita horímetro igual ao anterior — reabastecer sem rodar é possível", async () => {
+    const primeiro = abastecimentosStore.listar()[0];
+
+    const r = await abastecimentosStore.registrar({
+      equipamento_id: primeiro.equipamento_id,
+      litros: 50,
+      horimetro: primeiro.horimetro,
+    });
+
+    expect(r.ok).toBe(true);
   });
 });

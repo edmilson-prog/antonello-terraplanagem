@@ -44,7 +44,7 @@ export function RegistrarAbastecimentoOperadorDialog({
     }
   }, [open]);
 
-  function handleConfirmar() {
+  async function handleConfirmar() {
     if (litros.trim() === "" || horimetro.trim() === "") {
       setErro("Informe litros e horímetro.");
       return;
@@ -58,7 +58,7 @@ export function RegistrarAbastecimentoOperadorDialog({
       return;
     }
     setSalvando(true);
-    const r = abastecimentosStore.registrar({
+    const r = await abastecimentosStore.registrar({
       equipamento_id: equipamentoId,
       litros: parsed.data.litros,
       horimetro: parsed.data.horimetro,
@@ -70,7 +70,9 @@ export function RegistrarAbastecimentoOperadorDialog({
       setErro(
         r.erro === "litros_invalido"
           ? "Os litros devem ser maiores que zero."
-          : "O horímetro não pode ser menor que o último abastecimento deste equipamento.",
+          : r.erro === "horimetro_menor_que_anterior"
+            ? "O horímetro não pode ser menor que o último abastecimento deste equipamento."
+            : (r.motivo ?? "Não foi possível registrar o abastecimento."),
       );
       return;
     }
@@ -139,7 +141,10 @@ export function RegistrarAbastecimentoOperadorDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button onClick={handleConfirmar} disabled={salvando || !litros || !horimetro}>
+          <Button
+            onClick={() => void handleConfirmar()}
+            disabled={salvando || !litros || !horimetro}
+          >
             {salvando ? "Salvando…" : "Registrar"}
           </Button>
         </div>

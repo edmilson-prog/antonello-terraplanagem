@@ -46,7 +46,10 @@ export function TabelasAnterioresDialog({ open, onOpenChange }: Props) {
             {historico.map((entrada) => {
               const { titulo, detalhe } = descreverHistorico(entrada, equipamentos);
               return (
-                <li key={entrada.id} className="rounded-lg border bg-surface/40 px-3 py-2.5 text-sm">
+                <li
+                  key={entrada.id}
+                  className="rounded-lg border bg-surface/40 px-3 py-2.5 text-sm"
+                >
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-medium text-foreground">{titulo}</span>
                     <span className="rounded-full border bg-card px-2 py-0.5 font-mono text-[11px] text-muted-foreground">

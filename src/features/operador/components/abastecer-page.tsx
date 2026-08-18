@@ -76,7 +76,7 @@ export function AbastecerPage() {
     setErro(null);
   }
 
-  function registrar() {
+  async function registrar() {
     if (!selecionado) {
       setErro("Escolha o equipamento abastecido.");
       return;
@@ -87,7 +87,7 @@ export function AbastecerPage() {
       setErro("Informe um horímetro válido.");
       return;
     }
-    const r = abastecimentosStore.registrar({
+    const r = await abastecimentosStore.registrar({
       equipamento_id: selecionado.id,
       litros,
       horimetro: horimetroInformado,
@@ -222,7 +222,7 @@ export function AbastecerPage() {
           </AvisoCampo>
         ) : null}
 
-        <BotaoCampo onClick={registrar} disabled={!selecionado}>
+        <BotaoCampo onClick={() => void registrar()} disabled={!selecionado}>
           <Icon icon="lucide:fuel" className="h-[18px] w-[18px]" />
           Registrar abastecimento
         </BotaoCampo>

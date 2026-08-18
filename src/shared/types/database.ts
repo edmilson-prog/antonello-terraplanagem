@@ -1533,6 +1533,41 @@ export type Database = {
         };
         Relationships: [];
       };
+      precos_historico: {
+        Row: {
+          alterado_em: string;
+          alterado_por: string | null;
+          id: string;
+          preco_id: string;
+          snapshot: Json;
+          tipo: string;
+        };
+        Insert: {
+          alterado_em?: string;
+          alterado_por?: string | null;
+          id?: string;
+          preco_id: string;
+          snapshot: Json;
+          tipo: string;
+        };
+        Update: {
+          alterado_em?: string;
+          alterado_por?: string | null;
+          id?: string;
+          preco_id?: string;
+          snapshot?: Json;
+          tipo?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "precos_historico_alterado_por_fkey";
+            columns: ["alterado_por"];
+            isOneToOne: false;
+            referencedRelation: "usuarios_retaguarda";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       precos_hora_maquina: {
         Row: {
           ativo: boolean;
@@ -1875,6 +1910,21 @@ export type Database = {
       liberar_notificacoes_agendadas: { Args: never; Returns: number };
       limpar_notificacoes_antigas: { Args: never; Returns: number };
       limpar_push_subscriptions_expiradas: { Args: never; Returns: number };
+      listar_abastecimentos_operador: {
+        Args: { p_token: string };
+        Returns: {
+          abastecido_em: string;
+          created_at: string;
+          equipamento_id: string;
+          horimetro: number;
+          id: string;
+          litros: number;
+          local: string;
+          operador_id: string;
+          origem: string;
+          updated_at: string;
+        }[];
+      };
       listar_apontamentos_operador: {
         Args: { p_token: string };
         Returns: {
@@ -2037,6 +2087,36 @@ export type Database = {
       processar_entrega_notificacao: {
         Args: { p_notificacao_id: string };
         Returns: undefined;
+      };
+      registrar_abastecimento_operador: {
+        Args: {
+          p_equipamento_id: string;
+          p_horimetro: number;
+          p_id: string;
+          p_litros: number;
+          p_local?: string;
+          p_token: string;
+        };
+        Returns: {
+          abastecido_em: string;
+          created_at: string;
+          custo_total: number | null;
+          equipamento_id: string;
+          horimetro: number;
+          id: string;
+          litros: number;
+          local: string | null;
+          operador_id: string | null;
+          origem: string;
+          preco_litro: number | null;
+          updated_at: string;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "abastecimentos";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
       };
       registrar_notificacao_propria: {
         Args: {

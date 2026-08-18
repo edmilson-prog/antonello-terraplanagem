@@ -38,7 +38,7 @@ export function CustoHoraPage() {
 
   const equipamentos = equipamentosStore.useAll();
   const apontamentos = apontamentosStore.useTodos();
-  const abastecimentos = abastecimentosStore.useTodos();
+  const abastecimentos = abastecimentosStore.useCompletos();
   const registrosManutencao = registrosManutencaoStore.useCompletos();
   const precosHoraMaquina = precoHoraMaquinaStore.useAll();
   const componentesCusto = componentesCustoStore.useAll();

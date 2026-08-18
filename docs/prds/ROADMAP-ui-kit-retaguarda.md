@@ -123,7 +123,7 @@
 >
 > A prioridade agora **não é mais o kit**: a Onda 19 revelou que `apontamentos`, `faturamentos`, `contas_receber` e `comprovantes` têm tabela e **zero linhas** — o pipeline Executado → Faturado → Recebido inteiro ainda lê `src/mocks/` no front. É a maior dívida de "mock que parece pronto" do projeto, e é o que mantém a categoria Financeiro das notificações silenciosa.
 
-1. **🔌 Pipeline Executado → Faturado → Recebido** — migrar apontamentos, faturamentos, contas a receber e comprovantes para o banco. Não é tela do kit, mas é o que falta para o sistema ser usável de verdade.
+1. **🔌 Pipeline Executado → Faturado → Recebido** — migrar faturamentos, itens, contas a receber, comprovantes e cobranças para o banco. Não é tela do kit, mas é o que falta para o sistema ser usável de verdade. **A Onda 20 já fechou a primeira metade da dívida de mock:** preços (3 tabelas), componentes de custo, abastecimentos e histórico de preços. Sobram as 5 stores da cadeia de faturamento, que são as de tabela vazia.
 2. **⏳ Sobre** — institucional, baixo esforço.
 3. **⚠️ Nova NF** — decisão de produto pendente com o Leonardo (emissão manual avulsa é necessária, ou o automático ao fechar OS já cobre?). Era a mesma categoria de divergência que NovaManutencao (linha 23) — e essa foi resolvida na Onda 18 a favor do kit, o que é um precedente a levar para a conversa.
 
