@@ -6,13 +6,10 @@
  * solicitação de manutenção, medição assinada pelo cliente e ciência de
  * segurança.
  *
- * NENHUM deles tem tabela no Supabase ainda, e o app do operador roda como
- * `anon` — que hoje não enxerga nem `ordens_servico`. Enquanto o acesso por
- * token (padrão já usado por `login_operador` / `operador_do_token`) não cobrir
- * a escrita, estes registros ficam NO APARELHO, que é exatamente o que o
- * ADR-001 define como primeiro estágio: fila offline local, flush idempotente
- * ao reconectar. O contrato abaixo é o mesmo que as tabelas vão implementar —
- * `opId` inclusive, para a deduplicação do flush.
+ * Desde a Onda 22 eles têm tabela (`registros_campo`) e chegam ao escritório.
+ * O aparelho continua sendo o primeiro destino — é o que o ADR-001 define:
+ * fila offline local, flush idempotente ao reconectar, dedup por `op_id`. O
+ * que mudou é que a fila agora tem para onde esvaziar.
  */
 
 export type TipoRegistroCampo =
@@ -84,7 +81,14 @@ export interface DadosSolicitacaoManutencao {
 export interface DadosMedicaoAssinada {
   responsavel: string;
   horas_periodo: number;
-  assinatura: string; // data URL do canvas
+  /*
+   * Data URL do canvas. Obrigatória ao coletar (o botão só libera com o traço
+   * feito, e o CHECK do banco recusa medição sem assinatura), mas NULA depois
+   * de sincronizada: é dado pessoal, então some do aparelho assim que a
+   * central confirma o recebimento, e a RPC de listagem não a traz de volta.
+   * Quem precisa dela é a retaguarda, que lê pela tabela.
+   */
+  assinatura: string | null;
 }
 
 export interface DadosCienciaSeguranca {

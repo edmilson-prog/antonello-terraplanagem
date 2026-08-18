@@ -1677,6 +1677,67 @@ export type Database = {
           },
         ];
       };
+      registros_campo: {
+        Row: {
+          assinatura: string | null;
+          created_at: string;
+          dados: Json;
+          equipamento_id: string | null;
+          id: string;
+          op_id: string;
+          operador_id: string;
+          os_id: string | null;
+          registrado_em: string;
+          tipo: string;
+        };
+        Insert: {
+          assinatura?: string | null;
+          created_at?: string;
+          dados: Json;
+          equipamento_id?: string | null;
+          id: string;
+          op_id: string;
+          operador_id: string;
+          os_id?: string | null;
+          registrado_em?: string;
+          tipo: string;
+        };
+        Update: {
+          assinatura?: string | null;
+          created_at?: string;
+          dados?: Json;
+          equipamento_id?: string | null;
+          id?: string;
+          op_id?: string;
+          operador_id?: string;
+          os_id?: string | null;
+          registrado_em?: string;
+          tipo?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "registros_campo_equipamento_id_fkey";
+            columns: ["equipamento_id"];
+            isOneToOne: false;
+            referencedRelation: "equipamentos";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "registros_campo_operador_id_fkey";
+            columns: ["operador_id"];
+            isOneToOne: false;
+            referencedRelation: "operadores";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "registros_campo_os_id_fkey";
+            columns: ["os_id"];
+            isOneToOne: false;
+            referencedRelation: "ordens_servico";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       registros_manutencao: {
         Row: {
           aberta_em: string;
@@ -2030,6 +2091,20 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      listar_registros_campo_operador: {
+        Args: { p_token: string };
+        Returns: {
+          created_at: string;
+          dados: Json;
+          equipamento_id: string;
+          id: string;
+          op_id: string;
+          operador_id: string;
+          os_id: string;
+          registrado_em: string;
+          tipo: string;
+        }[];
+      };
       listar_registros_manutencao_operador: {
         Args: { p_token: string };
         Returns: {
@@ -2138,6 +2213,37 @@ export type Database = {
           p_user_agent?: string;
         };
         Returns: undefined;
+      };
+      registrar_registro_campo: {
+        Args: {
+          p_assinatura?: string;
+          p_dados: Json;
+          p_equipamento_id?: string;
+          p_id: string;
+          p_op_id: string;
+          p_os_id?: string;
+          p_registrado_em: string;
+          p_tipo: string;
+          p_token: string;
+        };
+        Returns: {
+          assinatura: string | null;
+          created_at: string;
+          dados: Json;
+          equipamento_id: string | null;
+          id: string;
+          op_id: string;
+          operador_id: string;
+          os_id: string | null;
+          registrado_em: string;
+          tipo: string;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "registros_campo";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
       };
       remover_push_subscription: {
         Args: { p_endpoint: string; p_token: string };
