@@ -33,6 +33,15 @@ Fecha a última tela 🔧 do [roadmap do UI kit](docs/prds/ROADMAP-ui-kit-retagu
 - Duas ordens corretivas de demonstração foram semeadas (uma em andamento, uma concluída), porque sem elas a tela abriria com todos os KPIs zerados. Podem ser apagadas quando a operação real começar a lançar as suas.
 - Ordem concluída não é clicável na tabela: não há o que fazer nela.
 
+## [0.31.1] - 2026-08-17 - Cistern
+
+### Changed
+- **Faturamento e Financeiro passam a usar o `KpiHeroi` compartilhado**, fechando a extração começada na 0.28.0 — os dois eram os últimos a manter cada um a sua cópia do tile de KPI e da função de escala do sparkline. Com isso, todas as telas de indicador-herói (Dashboard, Custo da Hora, Rentabilidade, Painel Gerencial, Diesel, Faturamento e Financeiro) renderizam o mesmo componente, e `escalar0a100` passa a existir num lugar só. Nada muda na tela: os tiles locais batiam classe a classe com o compartilhado.
+- As séries passam a entrar nos KPIs em valores absolutos — o `KpiHeroi` escala internamente, então nem o import de `escalar0a100` sobra nas features.
+
+### Notas
+- Única diferença de comportamento, e em série que não ocorre em produção: o tile compartilhado só desenha o sparkline com dois pontos ou mais, enquanto as cópias locais desenhavam uma linha reta com um ponto só. As séries de Faturamento e Financeiro vêm sempre com os 6 meses do agregado mensal.
+
 ## [0.31.0] - 2026-08-17 - Cistern
 
 Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita do usuário: o controle de estoque do tanque interno, que na época foi removido do formulário por não existir no produto, agora existe de verdade.
