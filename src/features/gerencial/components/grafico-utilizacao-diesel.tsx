@@ -16,7 +16,7 @@ interface Props {
 
 export function GraficoUtilizacaoDiesel({ periodo }: Props) {
   const equipamentos = equipamentosStore.useAll();
-  const abastecimentos = abastecimentosStore.useTodos();
+  const abastecimentos = abastecimentosStore.useCompletos();
   const apontamentos = apontamentosStore.useTodos();
 
   const dados = useMemo(

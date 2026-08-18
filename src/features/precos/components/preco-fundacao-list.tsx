@@ -9,7 +9,6 @@ import { StatusAtivo } from "@/shared/components/status-ativo";
 import { useMockResource } from "@/shared/hooks/use-mock-resource";
 import { formatBRL } from "@/features/retaguarda/format";
 import { precoFundacaoStore } from "@/features/precos/precos-fundacao-store";
-import { historicoPrecosStore } from "@/features/precos/historico-precos-store";
 import { PrecoFundacaoForm } from "@/features/precos/components/preco-fundacao-form";
 import type { PrecoFundacao } from "@/shared/types";
 import { cn } from "@/lib/utils";
@@ -38,13 +37,11 @@ export function PrecoFundacaoList() {
   };
   const confirmarInativar = () => {
     if (!inativando) return;
-    historicoPrecosStore.registrar("fundacao", inativando);
     precoFundacaoStore.setAtivo(inativando.id, false);
     toast.success("Preço inativado.");
     setInativando(null);
   };
   const reativar = (p: PrecoFundacao) => {
-    historicoPrecosStore.registrar("fundacao", p);
     precoFundacaoStore.setAtivo(p.id, true);
     toast.success("Preço reativado.");
   };

@@ -54,7 +54,7 @@ const CABECALHO_CSV = [
 export function DieselPage() {
   const equipamentos = equipamentosStore.useAll();
   const apontamentos = apontamentosStore.useTodos();
-  const abastecimentos = abastecimentosStore.useTodos();
+  const abastecimentos = abastecimentosStore.useCompletos();
   const compras = comprasDieselStore.useTodas();
   const parametros = parametrosStore.useParametros();
   const [preset, setPreset] = useState<PeriodoPreset>("30d");

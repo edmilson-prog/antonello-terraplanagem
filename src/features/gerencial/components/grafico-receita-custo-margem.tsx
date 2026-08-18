@@ -30,7 +30,7 @@ interface Props {
 export function GraficoReceitaCustoMargem({ meses }: Props) {
   const equipamentos = equipamentosStore.useAll();
   const componentesCusto = componentesCustoStore.useAll();
-  const abastecimentos = abastecimentosStore.useTodos();
+  const abastecimentos = abastecimentosStore.useCompletos();
   const registrosManutencao = registrosManutencaoStore.useCompletos();
   const apontamentos = apontamentosStore.useTodos();
   const precosHoraMaquina = precoHoraMaquinaStore.useAll();

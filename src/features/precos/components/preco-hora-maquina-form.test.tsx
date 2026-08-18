@@ -2,8 +2,21 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { toast } from "sonner";
 import { PrecoHoraMaquinaForm } from "@/features/precos/components/preco-hora-maquina-form";
-import { historicoPrecosStore } from "@/features/precos/historico-precos-store";
+import { precoHoraMaquinaStore } from "@/features/precos/precos-hora-maquina-store";
 import type { PrecoHoraMaquina } from "@/shared/types";
+
+/*
+ * Na Onda 20 o histórico de preços deixou de ser gravado por esta tela: quem
+ * registra o snapshot anterior é o trigger `tg_registrar_historico_preco`, nas
+ * três tabelas de preço.
+ *
+ * Isso muda o que faz sentido testar aqui. Antes o teste afirmava que o
+ * formulário chamava `historicoPrecosStore.registrar()` — uma asserção sobre
+ * fiação interna que, hoje, seria verdadeira e inútil (ou falsa e enganosa: a
+ * tela poderia parar de registrar e o histórico continuaria certo). O que o
+ * formulário ainda deve garantir é o que ele controla — salvar a edição e criar
+ * o preço novo. A garantia do histórico é do banco, e é lá que ela é exercida.
+ */
 
 vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn() },
@@ -20,26 +33,28 @@ const PRECO: PrecoHoraMaquina = {
   updated_at: "2026-03-10T09:00:00.000Z",
 };
 
-describe("PrecoHoraMaquinaForm — histórico", () => {
+describe("PrecoHoraMaquinaForm", () => {
   beforeEach(() => {
     vi.mocked(toast.success).mockClear();
-    historicoPrecosStore.listar().length = 0;
+    vi.restoreAllMocks();
   });
 
-  it("registra o snapshot anterior no histórico ao salvar uma edição", async () => {
+  it("salva a edição no store, que é quem fala com o banco", async () => {
+    const update = vi.spyOn(precoHoraMaquinaStore, "update").mockResolvedValue(undefined);
+
     render(<PrecoHoraMaquinaForm inicial={PRECO} onSuccess={() => {}} onCancel={() => {}} />);
     fireEvent.click(screen.getByRole("button", { name: "Salvar alterações" }));
-    // handleSubmit (zodResolver) valida assincronamente — aguarda o efeito
-    // colateral síncrono do onSubmit (toast) antes de checar o histórico.
+
     await waitFor(() => expect(toast.success).toHaveBeenCalled());
-    const itens = historicoPrecosStore.listar();
-    expect(itens).toHaveLength(1);
-    expect(itens[0].tipo).toBe("hora_maquina");
-    expect(itens[0].snapshot).toEqual(PRECO);
+    expect(update).toHaveBeenCalledWith(PRECO.id, expect.objectContaining({ ativo: true }));
   });
 
-  it("não registra histórico ao criar um preço novo", async () => {
+  it("cadastra um preço novo", async () => {
     const onSuccess = vi.fn();
+    const create = vi
+      .spyOn(precoHoraMaquinaStore, "create")
+      .mockResolvedValue({ ...PRECO, id: "novo" });
+
     render(<PrecoHoraMaquinaForm inicial={null} onSuccess={onSuccess} onCancel={() => {}} />);
 
     fireEvent.click(screen.getByLabelText("Equipamento *"));
@@ -52,10 +67,9 @@ describe("PrecoHoraMaquinaForm — histórico", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Cadastrar" }));
 
-    // Confirma que o submit de fato aconteceu (senão a asserção abaixo não
-    // prova nada — a validação teria bloqueado o onSubmit antes de qualquer
-    // registro no histórico).
     await waitFor(() => expect(onSuccess).toHaveBeenCalledTimes(1));
-    expect(historicoPrecosStore.listar()).toHaveLength(0);
+    expect(create).toHaveBeenCalledWith(
+      expect.objectContaining({ valor_hora_seca: 280, valor_hora_operada: 360 }),
+    );
   });
 });

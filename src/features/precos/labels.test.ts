@@ -7,7 +7,12 @@ import {
 } from "@/features/precos/labels";
 import { equipamentos } from "@/mocks/equipamentos";
 import { formatBRL } from "@/features/retaguarda/format";
-import type { HistoricoPreco, PrecoHoraMaquina, PrecoFundacao, PrecoMobilizacao } from "@/shared/types";
+import type {
+  HistoricoPreco,
+  PrecoHoraMaquina,
+  PrecoFundacao,
+  PrecoMobilizacao,
+} from "@/shared/types";
 
 describe("margemPercentual", () => {
   it("calcula a margem percentual entre preço e custo de referência", () => {

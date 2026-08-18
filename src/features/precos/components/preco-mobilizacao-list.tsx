@@ -9,7 +9,6 @@ import { StatusAtivo } from "@/shared/components/status-ativo";
 import { useMockResource } from "@/shared/hooks/use-mock-resource";
 import { formatBRL } from "@/features/retaguarda/format";
 import { precoMobilizacaoStore } from "@/features/precos/precos-mobilizacao-store";
-import { historicoPrecosStore } from "@/features/precos/historico-precos-store";
 import { PrecoMobilizacaoForm } from "@/features/precos/components/preco-mobilizacao-form";
 import type { PrecoMobilizacao } from "@/shared/types";
 import { cn } from "@/lib/utils";
@@ -38,13 +37,11 @@ export function PrecoMobilizacaoList() {
   };
   const confirmarInativar = () => {
     if (!inativando) return;
-    historicoPrecosStore.registrar("mobilizacao", inativando);
     precoMobilizacaoStore.setAtivo(inativando.id, false);
     toast.success("Item inativado.");
     setInativando(null);
   };
   const reativar = (p: PrecoMobilizacao) => {
-    historicoPrecosStore.registrar("mobilizacao", p);
     precoMobilizacaoStore.setAtivo(p.id, true);
     toast.success("Item reativado.");
   };

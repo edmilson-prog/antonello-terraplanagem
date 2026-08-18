@@ -44,7 +44,7 @@ export function AbastecimentoForm({ onCancel }: Props) {
   const pronto =
     !!equipamentoId && litros.trim() !== "" && litrosNum > 0 && horimetro.trim() !== "";
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!equipamentoId) {
       toast.error("Selecione o equipamento.");
       return;
@@ -58,7 +58,7 @@ export function AbastecimentoForm({ onCancel }: Props) {
       return;
     }
     setSalvando(true);
-    const r = abastecimentosStore.registrar({
+    const r = await abastecimentosStore.registrar({
       equipamento_id: equipamentoId,
       litros: litrosNum,
       horimetro: horimetroNum,
@@ -72,7 +72,9 @@ export function AbastecimentoForm({ onCancel }: Props) {
       toast.error(
         r.erro === "litros_invalido"
           ? "Os litros devem ser maiores que zero."
-          : "O horímetro não pode ser menor que o último abastecimento deste equipamento.",
+          : r.erro === "horimetro_menor_que_anterior"
+            ? "O horímetro não pode ser menor que o último abastecimento deste equipamento."
+            : (r.motivo ?? "Não foi possível registrar o abastecimento."),
       );
       return;
     }
@@ -205,7 +207,7 @@ export function AbastecimentoForm({ onCancel }: Props) {
             </Button>
             <Button
               type="button"
-              onClick={handleSubmit}
+              onClick={() => void handleSubmit()}
               disabled={!pronto || salvando}
               className="bg-primary text-primary-foreground hover:bg-primary-hover"
             >

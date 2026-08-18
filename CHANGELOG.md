@@ -5,6 +5,33 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.34.0] - 2026-08-18 - Groundwork
+
+Onda de saneamento, não de tela: **seis stores saíram do mock**. Cinco delas liam `src/mocks/` enquanto a tabela correspondente já estava semeada no Supabase com exatamente as mesmas linhas desde o PRD-017 — divergência silenciosa, do tipo que não aparece em nenhum teste e some no primeiro F5.
+
+### Fixed
+- **O saldo do tanque de diesel misturava dois mundos.** A Onda 17 criou `compras_diesel` lendo o banco, mas os abastecimentos ficaram no mock — então o cálculo cruzava compra real com abastecimento fictício. O cálculo estava certo; as entradas é que vinham de lugares diferentes.
+- **O abastecimento lançado pelo operador em campo evaporava.** Ia para uma lista em memória e sumia no reload; ninguém no escritório jamais viu um.
+- **Editar preço não mudava nada no banco.** As três tabelas de preço eram lidas do mock, então o valor que o Faturamento aplicava vinha de um lugar que a tela não conseguia alterar.
+- **Cadastrar componente de custo mudava o custo/hora só da sessão.**
+
+### Added
+- `createSupabaseStore`: mesmo contrato do `createMockStore`, com escrita assíncrona. Evita repetir o mesmo arquivo de 100 linhas em cada migração de CRUD puro.
+- **RPCs de abastecimento para o app de campo** (`listar_abastecimentos_operador`, `registrar_abastecimento_operador`), no padrão de OS, apontamento e manutenção: `SECURITY DEFINER` com token opaco, idempotente pelo id gerado no cliente.
+- **`precos_historico`** com trigger nas três tabelas de preço. O card "Tabelas anteriores" (Onda 9) existia, mas o histórico vivia em memória e o F5 apagava.
+
+### Changed
+- `precos_hora_maquina` (6 linhas), `precos_fundacao` (3), `precos_mobilizacao` (2), `componentes_custo` (9) e `abastecimentos` (8) passam a ler e escrever no banco.
+- `abastecimentosStore.registrar` virou assíncrona; os três chamadores foram ajustados.
+- O histórico de preços virou **só-leitura**: os formulários não registram mais, quem grava é o trigger. Alteração feita por SQL ou importação entra no histórico do mesmo jeito.
+
+### Security
+- A RPC do operador não devolve `preco_litro` nem `custo_total`, com as colunas listadas uma a uma. O espelho no TypeScript é `AbastecimentoOperador`, recebido pelas derivações de consumo — o compilador prova que a conta de L/h não alcança dado financeiro.
+
+### Notas
+- A semente de `abastecimentos` estava incompleta: 4 das 8 linhas, só as que têm `local`. As 4 que faltavam ficaram com `operador_id` nulo — no mock elas apontam para operadores fictícios, e a tabela real tem os 15 funcionários importados do ERP.
+- Restam 5 stores em mock, todas da cadeia de faturamento (faturamentos, itens, contas a receber, comprovantes e cobranças). Essas têm tabela **vazia** e vêm na onda seguinte.
+
 ## [0.33.0] - 2026-08-18 - Switchboard
 
 Fecha as três telas de Notificações na retaguarda (linhas 35–37 do [roadmap do UI kit](docs/prds/ROADMAP-ui-kit-retaguarda.md)) — e, com elas, o backend que faltava para o kit não ser enfeite.

@@ -363,19 +363,26 @@ export interface RegistroManutencao extends RegistroManutencaoOperador {
 // o preço pago na hora.
 export type OrigemDiesel = "tanque" | "externo";
 
-export interface Abastecimento {
+// Recorte que o App de Campo enxerga: sem `preco_litro` e sem `custo_total`.
+// É este o tipo que a RPC listar_abastecimentos_operador devolve e que as
+// derivações de consumo recebem, para o compilador provar que a conta de L/h
+// não alcança dado financeiro.
+export interface AbastecimentoOperador {
   id: string;
   equipamento_id: string;
   operador_id: string | null; // quem registrou, se em campo
   litros: number;
   horimetro: number;
-  preco_litro: number | null; // R$/l — RETAGUARDA-ONLY (opcional), nunca em /app/*
-  custo_total: number | null; // R$ — RETAGUARDA-ONLY (opcional), nunca em /app/*
   local: string | null; // posto/obra/comboio próprio
   origem: OrigemDiesel; // de onde saiu o combustível
   abastecido_em: string; // ISO
   created_at: string;
   updated_at: string;
+}
+
+export interface Abastecimento extends AbastecimentoOperador {
+  preco_litro: number | null; // R$/l — RETAGUARDA-ONLY (opcional), nunca em /app/*
+  custo_total: number | null; // R$ — RETAGUARDA-ONLY (opcional), nunca em /app/*
 }
 
 // Compra de diesel para o tanque interno (Onda 17). Entrada de estoque: o

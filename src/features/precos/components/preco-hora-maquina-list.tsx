@@ -11,7 +11,6 @@ import { formatBRL } from "@/features/retaguarda/format";
 import { precoHoraMaquinaStore } from "@/features/precos/precos-hora-maquina-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { descreverVinculo, margemPercentual, MARGEM_MINIMA_PADRAO } from "@/features/precos/labels";
-import { historicoPrecosStore } from "@/features/precos/historico-precos-store";
 import { componentesCustoStore } from "@/features/custo-hora/componentes-custo-store";
 import { custoEstimadoHoraEquipamento } from "@/features/custo-hora/derivacoes";
 import { useParametroBooleano, useParametroNumero } from "@/features/parametros/uso";
@@ -68,13 +67,11 @@ export function PrecoHoraMaquinaList() {
   };
   const confirmarInativar = () => {
     if (!inativando) return;
-    historicoPrecosStore.registrar("hora_maquina", inativando);
     precoHoraMaquinaStore.setAtivo(inativando.id, false);
     toast.success("Preço inativado.");
     setInativando(null);
   };
   const reativar = (p: PrecoHoraMaquina) => {
-    historicoPrecosStore.registrar("hora_maquina", p);
     precoHoraMaquinaStore.setAtivo(p.id, true);
     toast.success("Preço reativado.");
   };

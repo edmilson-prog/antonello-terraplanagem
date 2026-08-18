@@ -88,7 +88,7 @@ export async function sugerirAlocacao(
   );
   const indicadores = indicadoresPorEquipamento(
     equipamentosAtivos,
-    abastecimentosStore.listar(),
+    abastecimentosStore.listarCompletos(),
     apontamentos,
   );
 

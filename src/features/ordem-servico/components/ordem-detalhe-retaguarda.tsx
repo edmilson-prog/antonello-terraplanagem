@@ -130,7 +130,7 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
     periodoRentabilidade,
     equipamentosStore.getAll(),
     componentesCustoStore.useAll(),
-    abastecimentosStore.useTodos(),
+    abastecimentosStore.useCompletos(),
     registrosManutencaoStore.useCompletos(),
     apontamentos,
     precoHoraMaquinaStore.useAll(),

@@ -44,7 +44,7 @@ export function ManutencaoPage() {
   const equipamentos = equipamentosStore.useAll();
   const planos = planosManutencaoStore.useAll();
   const registros = registrosManutencaoStore.useCompletos();
-  const abastecimentos = abastecimentosStore.useTodos();
+  const abastecimentos = abastecimentosStore.useCompletos();
   const apontamentos = apontamentosStore.useTodos();
   const [periodo, setPeriodo] = useState(MES_ATUAL);
 

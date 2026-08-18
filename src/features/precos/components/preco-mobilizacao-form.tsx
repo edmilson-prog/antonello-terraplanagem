@@ -11,7 +11,6 @@ import {
   precoMobilizacaoSchema,
   type PrecoMobilizacaoFormValues,
 } from "@/features/precos/precos-schema";
-import { historicoPrecosStore } from "@/features/precos/historico-precos-store";
 import type { PrecoMobilizacao } from "@/shared/types";
 
 interface Props {
@@ -42,7 +41,6 @@ export function PrecoMobilizacaoForm({ inicial, onSuccess, onCancel }: Props) {
       ativo: values.ativo,
     };
     if (inicial) {
-      historicoPrecosStore.registrar("mobilizacao", inicial);
       precoMobilizacaoStore.update(inicial.id, payload);
       toast.success("Mobilização atualizada.");
     } else {
