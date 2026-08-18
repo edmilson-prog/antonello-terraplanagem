@@ -313,6 +313,44 @@ vi.mock("./src/lib/supabase", () => {
           );
         }
 
+        if (fn === "registrar_registro_campo") {
+          const operadorId = operadorDoToken(String(args.p_token ?? ""));
+          if (!operadorId) return respostaRpc(null, SESSAO_INVALIDA);
+
+          // Dedup por op_id: é o que torna o flush seguro para reenviar.
+          const existente = (tabelas.registros_campo ?? []).find((r) => r.op_id === args.p_op_id);
+          if (existente) return respostaRpc([existente]);
+
+          const novo = {
+            id: args.p_id,
+            op_id: args.p_op_id,
+            tipo: args.p_tipo,
+            // Vem do TOKEN, nunca do cliente — igual à RPC real.
+            operador_id: operadorId,
+            os_id: args.p_os_id ?? null,
+            equipamento_id: args.p_equipamento_id ?? null,
+            dados: args.p_dados,
+            assinatura: args.p_assinatura ?? null,
+            registrado_em: args.p_registrado_em ?? new Date().toISOString(),
+            created_at: new Date().toISOString(),
+          };
+          tabelas.registros_campo = [novo, ...(tabelas.registros_campo ?? [])];
+          return respostaRpc([novo]);
+        }
+
+        if (fn === "listar_registros_campo_operador") {
+          const operadorId = operadorDoToken(String(args.p_token ?? ""));
+          if (!operadorId) return respostaRpc(null, SESSAO_INVALIDA);
+          // Espelha a RPC real: só os registros DESTE operador, e sem a
+          // assinatura do cliente (dado pessoal — fica só na retaguarda).
+          return respostaRpc(
+            (tabelas.registros_campo ?? [])
+              .filter((r) => r.operador_id === operadorId)
+              .map(({ assinatura: _a, ...resto }) => resto)
+              .sort(porCampoDesc("registrado_em")),
+          );
+        }
+
         if (fn === "listar_ordens_operador") {
           const operadorId = operadorDoToken(String(args.p_token ?? ""));
           if (!operadorId) return respostaRpc(null, SESSAO_INVALIDA);

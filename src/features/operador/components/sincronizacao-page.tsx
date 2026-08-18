@@ -28,16 +28,18 @@ import {
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { clientesStore } from "@/features/clientes/clientes-store";
+import { registrosCampoStore } from "@/features/registros-campo/registros-campo-store";
 import { formatDataHora, formatHoraCurta } from "@/shared/lib/format";
 import { cn } from "@/lib/utils";
 
 /*
  * Sincronização / modo offline (`screen === 'sync'` no CampoApp.jsx).
  *
- * O motor de fila offline do ADR-001 (IndexedDB + flush idempotente) ainda não
- * existe. "Sincronizar agora" faz o que é possível hoje e nada além: recarrega
- * do servidor as bases que o app lê. Os registros marcados `pendente_sync`
- * continuam listados até o motor real subir — a tela não finge que enviou.
+ * Até a Onda 22 esta tela listava pendências que nunca saíam dali: não havia
+ * para onde enviar os registros de campo, e "Sincronizar agora" só recarregava
+ * as bases de leitura. Agora o botão também esvazia a fila — `flush()` manda
+ * os pendentes pela RPC idempotente e só marca como enviado o que a central
+ * confirmou. O que falhar continua na lista, que é o comportamento honesto.
  */
 
 export function SincronizacaoPage() {
@@ -52,6 +54,10 @@ export function SincronizacaoPage() {
     setSincronizando(true);
     setErro(null);
     try {
+      // A fila primeiro: o que foi feito em campo sobe antes de rebaixar as
+      // bases de leitura, para o operador não ver a lista recarregar sem que
+      // o registro dele tenha ido junto.
+      await registrosCampoStore.flush();
       await Promise.all([ordensStore.retry(), equipamentosStore.retry(), clientesStore.retry()]);
       registrarSincronizacao();
     } catch {
