@@ -10,6 +10,10 @@ import { apontamentos as apontamentosFixture } from "./src/mocks/apontamentos";
 import { contasPagar as contasPagarFixture } from "./src/mocks/contas-pagar";
 import { planosManutencao as planosManutencaoFixture } from "./src/mocks/planos-manutencao";
 import { registrosManutencao as registrosManutencaoFixture } from "./src/mocks/registros-manutencao";
+import { precosHoraMaquina as precosHoraMaquinaFixture } from "./src/mocks/precos-hora-maquina";
+import { precosFundacao as precosFundacaoFixture } from "./src/mocks/precos-fundacao";
+import { precosMobilizacao as precosMobilizacaoFixture } from "./src/mocks/precos-mobilizacao";
+import { componentesCusto as componentesCustoFixture } from "./src/mocks/componentes-custo";
 
 // jsdom (ambiente de teste deste projeto) não implementa window.matchMedia por
 // padrão. Vários componentes/hooks usam prefers-color-scheme (useTheme) e
@@ -96,6 +100,11 @@ vi.mock("./src/lib/supabase", () => {
     // Manutenção saiu do mock em memória na Onda 18 (planos e registros).
     planos_manutencao: planosManutencaoFixture.map((p) => ({ ...p })),
     registros_manutencao: registrosManutencaoFixture.map((r) => ({ ...r })),
+    // Preços e componentes de custo saíram do mock em memória na Onda 20.
+    precos_hora_maquina: precosHoraMaquinaFixture.map((p) => ({ ...p })),
+    precos_fundacao: precosFundacaoFixture.map((p) => ({ ...p })),
+    precos_mobilizacao: precosMobilizacaoFixture.map((p) => ({ ...p })),
+    componentes_custo: componentesCustoFixture.map((c) => ({ ...c })),
     usuarios_retaguarda: [{ id: "usuario-retaguarda-teste", nome: "Admin Teste", perfil: "admin" }],
   };
 
