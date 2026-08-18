@@ -5,6 +5,34 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.36.0] - 2026-08-18 - Uplink
+
+Oito telas do app de campo gravavam **só no localStorage do aparelho**. Checklist de pré-uso, diário de obra, paralisação, viagens de basculante, transporte de prancha, solicitação de manutenção, medição assinada pelo cliente e ciência de segurança nunca chegavam ao escritório — e limpar os dados do navegador ou trocar de celular apagava tudo, assinatura do cliente inclusive.
+
+O comentário no código era honesto sobre isso ("NENHUM deles tem tabela no Supabase ainda"). Esta onda dá à fila offline para onde esvaziar.
+
+### Added
+- Tabela **`registros_campo`**, espelhando a união discriminada de `DadosRegistroCampo` como `tipo` + `dados jsonb`, com CHECK por tipo exigindo as mesmas chaves que o TypeScript exige. `op_id` único é a chave de idempotência do ADR-001.
+- RPCs **`registrar_registro_campo`** e **`listar_registros_campo_operador`**, com o token opaco da sessão por PIN. `operador_id` vem sempre do token, nunca do cliente.
+- **Motor de flush** da fila offline: envia os pendentes um a um, marca só o que a central confirmou, e dispara ao registrar, ao reconectar (evento `online`) e no "Sincronizar agora".
+- Card **"Chamados do campo"** em `/admin/manutencao`: solicitações de manutenção que ainda não viraram ordem, máquina parada primeiro. Abrir a ordem já vem preenchida com o relato do operador.
+- Coluna **`registros_manutencao.origem_registro_campo_id`**, com índice único — um chamado não vira duas ordens.
+- Seção **"Registros de campo"** no detalhe da OS, com a assinatura do cliente quando houver.
+
+### Changed
+- `registrar()` continua **síncrono**, de propósito: em campo a tela confirma sem esperar rede. O envio é consequência, não pré-requisito.
+- `registrado_em` guarda a hora do **fato**, não a da sincronização — o diário preenchido às 8h no canteiro sem sinal não é carimbado com as 17h do caminhão de volta.
+- A tela de Sincronização parou de listar pendências que nunca saíam dali: "Sincronizar agora" esvazia a fila antes de recarregar as bases de leitura.
+- `resumoRegistro` passou a aceitar só o par `(tipo, dados)`, servindo à fila do operador e ao que a retaguarda recebeu.
+
+### Security
+- A **assinatura do cliente** (dado pessoal, LGPD) fica em coluna própria, fora do `jsonb`: permite retenção e anonimização isoladas, e não é arrastada por toda listagem. A RPC do operador **não a devolve** — no app ela é write-only — e ela é apagada do aparelho assim que a central confirma o recebimento.
+
+### Notas
+- O que falha no envio **continua pendente e não some**: perder a rede não pode perder o registro. É a regra que os testes protegem.
+- "Chamado pendente" é **derivado** da ausência de ordem apontando para ele. Não há status a atualizar à mão, e portanto não há como a lista mentir por esquecimento.
+- A `medicao_assinada` já era o PRD-011 construído na tela do operador; faltava onde pousar. Agora a assinatura coletada em campo chega ao escritório.
+
 ## [0.35.0] - 2026-08-18 - Ledgerline
 
 Fecha a dívida de mock do projeto: **as últimas cinco stores saíram de `src/mocks/`**. O pipeline Executado → Faturado → Recebido passa a viver no banco.
