@@ -31,10 +31,10 @@ export function EmitirCobrancaDialog({ conta, onOpenChange }: EmitirCobrancaDial
     if (conta) setProvedor(provedorPadrao);
   }, [conta, provedorPadrao]);
 
-  function handleEmitir() {
+  async function handleEmitir() {
     if (!conta) return;
     setEmitindo(true);
-    const r = cobrancasStore.emitirCobranca(conta.id, provedor);
+    const r = await cobrancasStore.emitirCobranca(conta.id, provedor);
     setEmitindo(false);
     if (r.ok) {
       toast.success(`Cobrança emitida via ${PROVEDOR_GATEWAY_LABEL[provedor]}.`);

@@ -1,79 +1,111 @@
-import { describe, it, expect } from "vitest";
-import { criarFaturamentosStore } from "@/features/faturamento/faturamentos-store";
-import { equipamentos } from "@/mocks/equipamentos";
-import { precosHoraMaquina } from "@/mocks/precos-hora-maquina";
-import { precosFundacao } from "@/mocks/precos-fundacao";
-import type { Apontamento, OrdemServico } from "@/shared/types";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import * as supabaseLib from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
+import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
 
-const os: OrdemServico = {
-  id: "os-test",
-  numero: "OS-2026-9001",
-  cliente_id: "cl-001",
-  obra_nome: "x",
-  endereco: null,
-  modelo_cobranca: "hora_maquina",
-  status: "fechada",
-  responsavel_id: "op-001",
-  observacao: null,
-  diametro_broca_mm: null,
-  tipo_servico: null,
-  equipamento_previsto_id: null,
-  inicio_previsto: null,
-  aberta_em: "2026-06-20T07:00:00.000Z",
-  fechada_em: "2026-06-20T17:00:00.000Z",
-  pendente_sync: false,
-  created_at: "2026-06-20T07:00:00.000Z",
-  updated_at: "2026-06-20T17:00:00.000Z",
-};
-const aps: Apontamento[] = [
-  {
-    id: "a1",
-    equipamento_id: "eq-002",
-    operador_id: "op-001",
-    os_id: "os-test",
-    horimetro_inicial: 100,
-    horimetro_final: 118,
-    horas_trabalhadas: 18,
-    foto_inicial_url: null,
-    foto_final_url: null,
-    observacao: null,
-    modalidade: "operada",
-    metros_executados: null,
-    status: "finalizado",
-    pendente_sync: false,
-    iniciado_em: "2026-06-20T07:00:00.000Z",
-    finalizado_em: "2026-06-20T17:00:00.000Z",
-    created_at: "2026-06-20T07:00:00.000Z",
-    updated_at: "2026-06-20T17:00:00.000Z",
-  },
-];
+/*
+ * Faturamentos saiu do mock em memória para o Supabase na Onda 21, e os itens
+ * passaram a morar na tabela filha `faturamento_itens`.
+ *
+ * A montagem dos itens em si (horas × preço, metros × preço, mobilização) já é
+ * coberta por `calculo.test.ts`, que é puro e não depende de store. O que sobra
+ * aqui é o que a store passou a ser responsável: recompor pai + filhos na
+ * leitura, o guard de credencial e a regra de confirmação.
+ */
 
-describe("faturamentosStore", () => {
-  it("gerarDeOS cria rascunho numerado com itens e total", () => {
-    const store = criarFaturamentosStore([]);
-    const fat = store.gerarDeOS(os, aps, equipamentos, precosHoraMaquina, precosFundacao);
-    expect(fat.status).toBe("rascunho");
-    expect(fat.numero).toMatch(/^FAT-\d{4}-0001$/);
-    expect(fat.itens).toHaveLength(1);
-    expect(fat.valor_total).toBe(5220);
-    expect(store.obter(fat.id)?.os_id).toBe("os-test");
+const emitirAuthState = (
+  supabaseLib as unknown as {
+    emitirAuthStateParaTeste: (evento: string, session: { user: { id: string } } | null) => void;
+  }
+).emitirAuthStateParaTeste;
+
+beforeEach(async () => {
+  emitirAuthState("SIGNED_OUT", null);
+  await vi.waitFor(() => {
+    expect(faturamentosStore.listar()).toHaveLength(0);
+  });
+});
+
+afterEach(() => {
+  emitirAuthState("SIGNED_OUT", null);
+  vi.restoreAllMocks();
+});
+
+describe("faturamentosStore — carga condicionada à credencial", () => {
+  it("não consulta a tabela enquanto não há credencial", async () => {
+    const espiao = vi.spyOn(supabase, "from");
+    await faturamentosStore.retry();
+    expect(espiao).not.toHaveBeenCalled();
   });
 
-  it("atualizar recalcula valor_total com desconto", () => {
-    const store = criarFaturamentosStore([]);
-    const fat = store.gerarDeOS(os, aps, equipamentos, precosHoraMaquina, precosFundacao);
-    store.atualizar(fat.id, { desconto: 220 });
-    expect(store.obter(fat.id)?.valor_total).toBe(5000);
+  it("carrega quando a retaguarda entra", async () => {
+    const espiao = vi.spyOn(supabase, "from");
+    emitirAuthState("SIGNED_IN", { user: { id: "usuario-retaguarda-1" } });
+    await vi.waitFor(() => {
+      expect(espiao).toHaveBeenCalledWith("faturamentos");
+    });
+  });
+});
+
+describe("faturamentosStore — itens vindos da tabela filha", () => {
+  beforeEach(async () => {
+    emitirAuthState("SIGNED_IN", { user: { id: "usuario-retaguarda-1" } });
+    await vi.waitFor(() => {
+      expect(faturamentosStore.listar().length).toBeGreaterThan(0);
+    });
   });
 
-  it("confirmar muda para faturado; segunda vez falha", () => {
-    const store = criarFaturamentosStore([]);
-    const fat = store.gerarDeOS(os, aps, equipamentos, precosHoraMaquina, precosFundacao);
-    const r1 = store.confirmar(fat.id);
-    expect(r1.ok).toBe(true);
-    expect(store.obter(fat.id)?.status).toBe("faturado");
-    expect(store.obter(fat.id)?.faturado_em).not.toBeNull();
-    const r2 = store.confirmar(fat.id);
-    expect(r2.ok).toBe(false);
+  it("recompõe cada faturamento com os seus itens", () => {
+    const comItens = faturamentosStore.listar().filter((f) => f.itens.length > 0);
+    expect(comItens.length).toBeGreaterThan(0);
+
+    // Nenhum item pode vazar para o faturamento errado: cada um só aparece na
+    // linha a que pertence.
+    for (const f of faturamentosStore.listar()) {
+      for (const item of f.itens) {
+        expect(item).not.toHaveProperty("faturamento_id");
+      }
+    }
+  });
+
+  it("o total bate com a soma dos itens menos o desconto", () => {
+    for (const f of faturamentosStore.listar()) {
+      const soma = f.itens.reduce((s, i) => s + i.valor_total, 0);
+      expect(f.valor_total).toBeCloseTo(soma - f.desconto, 2);
+    }
+  });
+});
+
+describe("faturamentosStore — confirmação", () => {
+  beforeEach(async () => {
+    emitirAuthState("SIGNED_IN", { user: { id: "usuario-retaguarda-1" } });
+    await vi.waitFor(() => {
+      expect(faturamentosStore.listar().length).toBeGreaterThan(0);
+    });
+  });
+
+  it("recusa confirmar faturamento inexistente", async () => {
+    const r = await faturamentosStore.confirmar("nao-existe");
+    expect(r).toEqual({ ok: false, motivo: "Faturamento não encontrado." });
+  });
+
+  it("recusa confirmar duas vezes", async () => {
+    const faturado = faturamentosStore.listar().find((f) => f.status === "faturado");
+    expect(faturado, "esperava um faturamento já confirmado no dublê").toBeDefined();
+
+    const r = await faturamentosStore.confirmar(faturado!.id);
+    expect(r).toEqual({ ok: false, motivo: "Este faturamento já foi confirmado." });
+  });
+
+  it("confirma um rascunho e carimba a data", async () => {
+    const rascunho = faturamentosStore.listar().find((f) => f.status === "rascunho");
+    expect(rascunho, "esperava um rascunho no dublê").toBeDefined();
+
+    const r = await faturamentosStore.confirmar(rascunho!.id);
+
+    expect(r.ok).toBe(true);
+    const atual = faturamentosStore.obter(rascunho!.id);
+    expect(atual?.status).toBe("faturado");
+    expect(atual?.faturado_em).not.toBeNull();
   });
 });

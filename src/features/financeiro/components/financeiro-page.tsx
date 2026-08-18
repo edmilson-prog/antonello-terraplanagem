@@ -82,8 +82,8 @@ export function FinanceiroPage() {
   const porForma = useMemo(() => recebimentosPorForma(contasReceber), [contasReceber]);
   const recentes = useMemo(() => comprovantesRecentes(contasReceber, 5), [contasReceber]);
 
-  function handleSimularPagamento(cobranca: CobrancaGateway) {
-    const r = cobrancasStore.simularWebhookPago(cobranca.id);
+  async function handleSimularPagamento(cobranca: CobrancaGateway) {
+    const r = await cobrancasStore.simularWebhookPago(cobranca.id);
     if (r.ok) {
       toast.success("Pagamento confirmado (simulado) — conta liquidada automaticamente.");
     } else {

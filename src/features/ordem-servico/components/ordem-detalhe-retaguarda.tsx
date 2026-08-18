@@ -195,8 +195,8 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
     }
   };
 
-  const gerarFaturamento = () => {
-    const fat = faturamentosStore.gerarDeOS(
+  const gerarFaturamento = async () => {
+    const fat = await faturamentosStore.gerarDeOS(
       ordem,
       apontamentos,
       equipamentosStore.getAll(),
@@ -284,9 +284,9 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
     setResumoParaComprovante(montarResumoServico(ordem, apontamentos, equipamentosStore.getAll()));
   };
 
-  const confirmarGeracaoComprovante = () => {
+  const confirmarGeracaoComprovante = async () => {
     if (!ordem || resumoParaComprovante == null) return;
-    const r = comprovantesStore.gerar({
+    const r = await comprovantesStore.gerar({
       os_id: ordem.id,
       cliente_id: ordem.cliente_id,
       resumo_servico: resumoParaComprovante,

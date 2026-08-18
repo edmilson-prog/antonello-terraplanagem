@@ -30,8 +30,8 @@ export function ComprovanteDetalhe({ comprovanteId }: { comprovanteId: string })
   const pendente = comprovante.status === "pendente";
   const podeConfirmar = assinanteNome.trim().length >= 3 && !!assinaturaUrl;
 
-  const onAssinar = () => {
-    const r = comprovantesStore.assinar(comprovante.id, {
+  const onAssinar = async () => {
+    const r = await comprovantesStore.assinar(comprovante.id, {
       assinante_nome: assinanteNome,
       assinatura_url: assinaturaUrl ?? "",
     });
@@ -42,8 +42,8 @@ export function ComprovanteDetalhe({ comprovanteId }: { comprovanteId: string })
     toast.success(`Comprovante ${r.comprovante.numero} assinado.`);
   };
 
-  const onRecusar = () => {
-    const r = comprovantesStore.recusar(
+  const onRecusar = async () => {
+    const r = await comprovantesStore.recusar(
       comprovante.id,
       motivoRecusa.trim() ? motivoRecusa.trim() : null,
     );

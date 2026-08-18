@@ -130,8 +130,8 @@ export function FaturamentoDetalhe({ faturamentoId }: { faturamentoId: string })
     setMobSelecionada("");
   };
 
-  const onConfirmar = () => {
-    const r = faturamentosStore.confirmar(fat.id);
+  const onConfirmar = async () => {
+    const r = await faturamentosStore.confirmar(fat.id);
     setConfirmar(false);
     if (!r.ok) {
       toast.error(r.motivo);

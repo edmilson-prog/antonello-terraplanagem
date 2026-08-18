@@ -1,4 +1,4 @@
-export { cobrancasStore, criarCobrancasStore } from "@/features/cobranca-gateway/cobrancas-store";
+export { cobrancasStore } from "@/features/cobranca-gateway/cobrancas-store";
 export { cobrancaDaConta } from "@/features/cobranca-gateway/derivacoes";
 export {
   PROVEDOR_GATEWAY_LABEL,
