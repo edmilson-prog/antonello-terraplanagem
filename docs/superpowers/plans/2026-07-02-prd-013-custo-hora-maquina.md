@@ -1773,5 +1773,4 @@ git commit -m "feat: assemble custo-hora page, route and sidebar navigation"
 - [ ] **CHANGELOG.md:** nova seção `## [0.13.0] - 2026-07-02 - Meter` com Added (painel de custo/hora, componentes de custo configuráveis, comparação com preço/margem) — sem seção Changed (não há placeholder substituído desta vez, é rota nova).
 - [ ] **Renomear PRD:** `docs/prds/PRD-013-ret-custo-hora-maquina.md` → `docs/prds/PRD-013-ret-custo-hora-maquina_DONE.md`, preenchendo "Status de Implementação" e "Histórico".
 - [ ] **Atualizar `INDEX-PRDs-antonello.md`:** versão 0.13.0 (Meter); PRDs Implementados 12→13 (81%); Pendente 4→3 (19%); mover PRD-013 do catálogo "aguardando implementação" para "Implementados"; roadmap Onda 3 (⏳→✅); nova linha em "Histórico de Versões"; nova linha em "Decisões Importantes".
-- [ ] **`graphify . --update`**.
 - [ ] **`superpowers:finishing-a-development-branch`** para mergear `feat/prd-013-custo-hora-maquina` de volta a `main`.

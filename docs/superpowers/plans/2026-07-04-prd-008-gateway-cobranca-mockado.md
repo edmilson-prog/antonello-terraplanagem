@@ -1086,5 +1086,4 @@ Após os 4 tasks (com revisão por task via `superpowers:subagent-driven-develop
    - Atualizar `CHANGELOG.md`.
    - Renomear `docs/prds/PRD-008-ret-integracao-gateway-cobranca.md` → `..._DONE.md`, preencher "Status de Implementação".
    - Atualizar `docs/prds/INDEX-PRDs-antonello.md`.
-   - Tentar `graphify . --update`.
 3. `superpowers:finishing-a-development-branch` (merge/PR conforme escolha).
