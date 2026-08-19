@@ -128,8 +128,9 @@
 
 1. **⏳ Sobre** — institucional, baixo esforço.
 2. **⚠️ Nova NF** — decisão de produto pendente com o Leonardo (emissão manual avulsa é necessária, ou o automático ao fechar OS já cobre?). Era a mesma categoria de divergência que NovaManutencao (linha 23) — e essa foi resolvida na Onda 18 a favor do kit, o que é um precedente a levar para a conversa.
-3. **🧹 5 erros de `tsc` herdados** — `notificacoes/eventos.ts` (4×) e `notificacoes/push.ts` (1×) não compilam com as versões que o `package-lock.json` fixa. Não bloqueiam o build (o Vite não faz type-check), mas sujam o sinal. Descobertos na Onda 22 ao instalar o worktree do zero.
-4. **📋 Lockfiles dessincronizados** — `package-lock.json` e `bun.lock` não batem com o `package.json` (`npm ci` e `bun install --frozen-lockfile` falham). O projeto tem os dois locks; vale decidir qual é o oficial e regenerar.
+3. **📋 Lockfiles dessincronizados** — `package-lock.json` e `bun.lock` não batem com o `package.json` (`npm ci` e `bun install --frozen-lockfile` falham). O projeto tem os dois locks; vale decidir qual é o oficial e regenerar. Em worktree novo, instalar com `npm install --no-save`.
+
+> ~~5 erros de `tsc` herdados~~ — **resolvido em 2026-08-18.** `tentar()` em `notificacoes/eventos.ts` anotava o callback como `Promise` quando o supabase-js devolve um thenable (`PromiseLike`), e `base64UrlParaUint8Array` em `push.ts` precisava de `Uint8Array<ArrayBuffer>` para satisfazer `BufferSource`. Correções de anotação apenas — o JS emitido não mudou. `tsc --noEmit` agora sai limpo.
 
 ### Ainda sem uso real
 
