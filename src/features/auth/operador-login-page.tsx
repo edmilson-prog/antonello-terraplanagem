@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { LogoTile } from "@/shared/components/logo-tile";
 import { supabase } from "@/lib/supabase";
+import { rotuloDispositivo, versaoDoApp } from "@/features/auth/dispositivo";
 import {
   gravarSessaoOperador,
   lembrarUltimoOperador,
@@ -87,6 +88,8 @@ export function OperadorLoginPage() {
     const { data, error } = await supabase.rpc("login_operador", {
       p_operador_id: selecionado.id,
       p_pin: pinDigitado,
+      p_dispositivo: rotuloDispositivo() ?? undefined,
+      p_app_versao: versaoDoApp(),
     });
 
     setEntrando(false);

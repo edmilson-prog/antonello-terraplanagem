@@ -11,11 +11,14 @@ import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { StatusAtivo } from "@/shared/components/status-ativo";
 import { LinhaEntidadeCell } from "@/shared/components/linha-entidade-cell";
-import { formatDocumento, formatTelefone } from "@/shared/lib/format";
+import { formatDocumento, formatHorimetro, formatTelefone } from "@/shared/lib/format";
 import { operadoresStore } from "@/features/operadores/operadores-store";
 import { OperadorForm } from "@/features/operadores/components/operador-form";
 import { iniciais } from "@/features/operadores/components/operador-hero";
-import { showcaseDoOperador } from "@/features/operadores/operador-showcase-data";
+import { ordensDoOperador } from "@/features/operadores/derivacoes";
+import { acessoAppStore } from "@/features/operadores/acesso-app-store";
+import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
+import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import type { Operador } from "@/shared/types";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +31,9 @@ interface OperadorListView {
   horasMes: string;
   acessoLiberado: boolean;
 }
+
+const TRACO = "—";
+const DIAS_DO_MES = 30;
 
 export function OperadoresPage() {
   const todos = operadoresStore.useAll();
@@ -49,22 +55,37 @@ export function OperadoresPage() {
     });
   }, [todos, q, mostrarInativos]);
 
-  const views: OperadorListView[] = useMemo(
-    () =>
-      lista.map((operador) => {
-        const showcase = showcaseDoOperador(operador.id);
-        return {
-          operador,
-          iniciais: iniciais(operador.nome),
-          osAtivasLabel: `${showcase.kpis.osAtivas.valor} OS ativas`,
-          vinculo: showcase.cadastrais.vinculo,
-          base: showcase.cadastrais.base,
-          horasMes: showcase.kpis.horasApontadas.valor,
-          acessoLiberado: showcase.acessoApp.liberado,
-        };
-      }),
-    [lista],
-  );
+  const apontamentos = apontamentosStore.useTodos();
+  const ordens = ordensStore.useTodas();
+  acessoAppStore.useEstado(); // re-renderiza quando as sessões chegam
+
+  const views: OperadorListView[] = useMemo(() => {
+    const corte = Date.now() - DIAS_DO_MES * 24 * 60 * 60 * 1000;
+
+    return lista.map((operador) => {
+      const ativas = ordensDoOperador(ordens, apontamentos, operador.id).filter(
+        (os) => os.status !== "fechada",
+      ).length;
+
+      const horas = apontamentos
+        .filter(
+          (a) =>
+            a.operador_id === operador.id &&
+            new Date(a.iniciado_em ?? a.created_at).getTime() >= corte,
+        )
+        .reduce((soma, a) => soma + (a.horas_trabalhadas ?? 0), 0);
+
+      return {
+        operador,
+        iniciais: iniciais(operador.nome),
+        osAtivasLabel: ativas === 1 ? "1 OS ativa" : `${ativas} OS ativas`,
+        vinculo: operador.vinculo ?? TRACO,
+        base: operador.base ?? TRACO,
+        horasMes: formatHorimetro(horas),
+        acessoLiberado: acessoAppStore.doOperador(operador.id)?.liberado ?? false,
+      };
+    });
+  }, [lista, ordens, apontamentos]);
 
   const abrirEdicao = (o: Operador) => {
     setEditando(o);
@@ -119,7 +140,17 @@ export function OperadoresPage() {
       className: "font-mono",
       cell: ({ operador }) => formatTelefone(operador.telefone),
     },
-    { header: "Vínculo", cell: ({ vinculo }) => <Badge variant="secondary">{vinculo}</Badge> },
+    {
+      header: "Vínculo",
+      // Vínculo é opcional no cadastro: sem valor, um badge vazio pareceria
+      // um estado ("—" dentro de uma pílula lê como categoria).
+      cell: ({ vinculo }) =>
+        vinculo === TRACO ? (
+          <span className="text-muted-foreground">{TRACO}</span>
+        ) : (
+          <Badge variant="secondary">{vinculo}</Badge>
+        ),
+    },
     { header: "Base", cell: ({ base }) => base },
     {
       header: "Horas (mês)",

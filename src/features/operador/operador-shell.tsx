@@ -1,6 +1,7 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { Icon } from "@iconify/react";
 import { useCicloNotificacoes } from "@/features/notificacoes";
+import { useToqueSessao } from "@/features/auth/use-toque-sessao";
 import { cn } from "@/lib/utils";
 
 /*
@@ -39,6 +40,10 @@ export function OperadorShell() {
   // no cabeçalho da aba "Hoje", que desmonta ao trocar de aba, e o service
   // worker / reconsulta não podem morrer junto.
   useCicloNotificacoes({ ativo: pathname !== "/app/entrar" });
+
+  // "Último acesso" na retaguarda só é honesto se alguém carimbar o uso. O
+  // login carimba uma vez; daí em diante é aqui, uma vez por abertura de app.
+  useToqueSessao(pathname !== "/app/entrar");
 
   if (pathname === "/app/entrar") {
     return <Outlet />;

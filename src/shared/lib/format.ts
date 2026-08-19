@@ -10,6 +10,12 @@ export function formatHorimetro(horas: number): string {
   return `${horimetroFormatter.format(horas)} h`;
 }
 
+// Mesmo número, SEM a unidade — para onde a tela já escreve o "h" por conta
+// própria (o card de KPI o renderiza em corpo menor, ao lado do número).
+export function formatHorasNumero(horas: number): string {
+  return horimetroFormatter.format(horas);
+}
+
 export function formatDocumento(doc: string | null): string {
   if (!doc) return "—";
   const d = doc.replace(/\D/g, "");
@@ -96,4 +102,24 @@ export function formatData(data: string | null): string {
   const [ano, mes, dia] = data.split("-");
   if (!ano || !mes || !dia) return "—";
   return `${dia}/${mes}/${ano}`;
+}
+
+// "Hoje, 07:32" · "Ontem, 18:04" · "12/08/2026, 07:32" — carimbo de acesso.
+// Reaproveita `rotuloDiaRelativo`, mas parte de um timestamptz do banco (que
+// vem em UTC) e o lê no fuso de quem está olhando: o dia relativo tem que ser
+// o dia do escritório, não o do servidor.
+export function formatAcessoRelativo(iso: string | null): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "—";
+
+  const local = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+    d.getDate(),
+  ).padStart(2, "0")}`;
+  const rotulo = rotuloDiaRelativo(local);
+  const hora = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+  // Além de ontem, o dia relativo já não ajuda: mostra a data cheia.
+  if (rotulo === "Hoje" || rotulo === "Ontem") return `${rotulo}, ${hora}`;
+  return `${formatDataHora(iso)}`;
 }

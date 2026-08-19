@@ -45,6 +45,7 @@ export interface Operador {
   cnh_categoria: string | null;
   cnh_validade: string | null; // "YYYY-MM-DD"
   base: string | null;
+  admissao: string | null; // "YYYY-MM-DD" — data de admissão, ≠ created_at (cadastro)
   created_at: string;
   updated_at: string;
 }

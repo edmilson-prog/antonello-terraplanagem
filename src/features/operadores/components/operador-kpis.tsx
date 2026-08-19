@@ -1,9 +1,9 @@
 import { Icon } from "@iconify/react";
 import { Sparkline } from "@/shared/components/sparkline";
-import type { ShowcaseKpiItem, ShowcaseKpis } from "@/features/operadores/operador-showcase-data";
+import type { KpiOperador, KpisOperador } from "@/features/operadores/derivacoes";
 
-export function OperadorKpis({ kpis }: { kpis: ShowcaseKpis }) {
-  const itens: ShowcaseKpiItem[] = [
+export function OperadorKpis({ kpis }: { kpis: KpisOperador }) {
+  const itens: KpiOperador[] = [
     kpis.horasApontadas,
     kpis.osAtivas,
     kpis.osConcluidas,
@@ -18,7 +18,7 @@ export function OperadorKpis({ kpis }: { kpis: ShowcaseKpis }) {
   );
 }
 
-function KpiCard({ kpi }: { kpi: ShowcaseKpiItem }) {
+function KpiCard({ kpi }: { kpi: KpiOperador }) {
   const ehHoras = kpi.rotulo === "Horas apontadas";
   return (
     <div className="relative overflow-hidden rounded-xl border bg-card p-4 shadow-sm">
@@ -57,7 +57,9 @@ function KpiCard({ kpi }: { kpi: ShowcaseKpiItem }) {
         <span>{kpi.rodape}</span>
       </div>
 
-      <Sparkline pontos={kpi.spark} className="absolute bottom-3.5 right-3.5 h-6 w-16" />
+      {kpi.spark ? (
+        <Sparkline pontos={kpi.spark} className="absolute bottom-3.5 right-3.5 h-6 w-16" />
+      ) : null}
     </div>
   );
 }

@@ -14,6 +14,7 @@ export const operadorSchema = z.object({
   cnh_categoria: z.string().trim().optional(),
   cnh_validade: z.string().trim().optional(),
   base: z.string().trim().optional(),
+  admissao: z.string().trim().optional(),
   equipamentos_ids: z.array(z.string()).optional(),
 });
 
