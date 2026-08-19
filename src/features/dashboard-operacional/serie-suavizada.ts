@@ -1,22 +1,23 @@
 import { round2 } from "@/features/faturamento/calculo";
 import type { PontoSerieDiaria } from "@/features/dashboard-operacional/derivacoes";
 
-// Série SOMENTE decorativa — interpola os pontos reais e soma uma ondulação
-// determinística, para dar mais "movimento" às mini-tendências dos cards
-// (pedido explícito do usuário: a forma da curva pode não refletir os valores
-// reais do período). Os números grandes dos cards (KPI, R$, badge de
-// variação) continuam 100% reais — só a linha/barra decorativa é embelezada.
-// Determinístico (sem Math.random) para não "tremer" a cada re-render.
-// NUNCA usar este resultado para decisão de negócio, cálculo ou tooltip com
-// valor exato — apenas para o traçado visual do gráfico.
-export function serieDecorativa(
+/*
+ * Suaviza a mini-tendência dos cards, interpolando pontos entre os valores
+ * reais — a curva fica fluida em vez de serrilhada, e continua passando
+ * exatamente pelos valores medidos.
+ *
+ * Até a Onda 22 esta função também somava uma ondulação senoidal ("dar mais
+ * movimento" ao traçado), o que fazia a linha subir e descer onde o dado não
+ * subia nem descia. Um pico visual sem pico real é leitura errada — a curva
+ * volta a ser só o dado, mais macia.
+ */
+export function serieSuavizada(
   pontos: PontoSerieDiaria[],
   pontosPorSegmento = 5,
 ): PontoSerieDiaria[] {
   if (pontos.length <= 1) return pontos;
 
   const valores = pontos.map((p) => p.valor);
-  const maximo = Math.max(...valores, 1);
   const totalSegmentos = pontos.length - 1;
   const totalPontos = totalSegmentos * pontosPorSegmento + 1;
   const resultado: PontoSerieDiaria[] = [];
@@ -27,10 +28,9 @@ export function serieDecorativa(
     const fracao = posicao - indiceInferior;
     const base =
       valores[indiceInferior] + (valores[indiceInferior + 1] - valores[indiceInferior]) * fracao;
-    const ondulacao = (Math.sin(i * 1.35) * 0.14 + Math.sin(i * 0.55 + 1) * 0.09) * maximo;
     resultado.push({
       data: pontos[indiceInferior].data,
-      valor: round2(Math.max(0, base + ondulacao)),
+      valor: round2(Math.max(0, base)),
     });
   }
 

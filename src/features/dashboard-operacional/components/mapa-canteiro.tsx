@@ -1,10 +1,12 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Icon } from "@iconify/react";
 import { CardSecao, CardPill } from "@/shared/components/card-secao";
 import { EmptyState } from "@/shared/components/empty-state";
 import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
+import { ordensStore } from "@/features/ordem-servico/ordens-store";
+import { posicoesDaFrota } from "@/features/dashboard-operacional/posicoes";
 import { buscarClima, LOCAL_PADRAO, type Clima } from "@/features/dashboard-operacional/clima";
 
 const MapaCanteiroLeaflet = lazy(() =>
@@ -21,9 +23,11 @@ const PLACEHOLDER = <div className="h-[360px] animate-pulse bg-muted" />;
 export function MapaCanteiro() {
   const equipamentos = equipamentosStore.useAll();
   const apontamentos = apontamentosStore.useTodos();
+  const ordens = ordensStore.useTodas();
   const { isLoading, error, retry } = combinarEstados(
     { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
     { estado: apontamentosStore.useEstado(), retry: apontamentosStore.retry },
+    { estado: ordensStore.useEstado(), retry: ordensStore.retry },
   );
   const [montado, setMontado] = useState(false);
 
@@ -35,6 +39,10 @@ export function MapaCanteiro() {
   const operadoresEmCampo = new Set(
     apontamentos.filter((a) => a.status === "em_andamento").map((a) => a.operador_id),
   ).size;
+  const { pins, semLocalizacao, centro } = useMemo(
+    () => posicoesDaFrota(ativos, apontamentos, ordens),
+    [ativos, apontamentos, ordens],
+  );
 
   return (
     <CardSecao
@@ -42,7 +50,7 @@ export function MapaCanteiro() {
       icone="lucide:map-pin"
       acessorio={
         <CardPill>
-          {ativos.length} equipamento{ativos.length === 1 ? "" : "s"} em campo
+          {pins.length} equipamento{pins.length === 1 ? "" : "s"} no mapa
         </CardPill>
       }
       bodyClassName="p-0"
@@ -63,29 +71,42 @@ export function MapaCanteiro() {
             Tentar novamente
           </button>
         </div>
-      ) : ativos.length === 0 ? (
+      ) : pins.length === 0 ? (
         <EmptyState
           icon="lucide:map"
-          titulo="Sem equipamentos ativos"
-          descricao="Nenhum equipamento ativo para mostrar no mapa do canteiro."
+          titulo={
+            semLocalizacao > 0 ? "Obras sem localização" : "Nenhuma máquina em operação agora"
+          }
+          descricao={
+            semLocalizacao > 0
+              ? `${semLocalizacao} equipamento(s) apontando em obras sem coordenada informada. Preencha "Localização no mapa" na OS para vê-los aqui.`
+              : "O mapa mostra os equipamentos com apontamento em andamento. Nenhum está apontando no momento."
+          }
           className="border-0"
         />
       ) : (
         <div className="relative h-[360px]">
           {montado ? (
             <Suspense fallback={PLACEHOLDER}>
-              <MapaCanteiroLeaflet equipamentosAtivos={ativos} />
+              <MapaCanteiroLeaflet pins={pins} centro={centro} />
             </Suspense>
           ) : (
             PLACEHOLDER
           )}
 
-          {/* As coordenadas são ilustrativas (PRD-019 RF-003) — o selo diz isso
-              em vez do "Ao vivo" do mock, que prometeria GPS que não existe. */}
+          {/* Agora é posição real de canteiro (a obra em que a máquina aponta),
+              não mais coordenada ilustrativa — mas continua sem GPS de pessoa
+              (RF-003), e o selo diz de onde o ponto vem. */}
           <span className="pointer-events-none absolute left-14 top-3 z-[500] inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-card/90 px-2.5 py-1 font-display text-[10px] font-semibold uppercase tracking-wider text-primary backdrop-blur">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            Posições ilustrativas
+            Posição do canteiro
           </span>
+
+          {semLocalizacao > 0 ? (
+            <span className="pointer-events-none absolute right-3 top-3 z-[500] rounded-full border bg-card/90 px-2.5 py-1 text-[10px] font-medium text-muted-foreground backdrop-blur">
+              +{semLocalizacao} sem localização
+            </span>
+          ) : null}
 
           <FaixaCondicoes operadoresEmCampo={operadoresEmCampo} />
         </div>

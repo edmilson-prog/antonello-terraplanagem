@@ -1222,6 +1222,8 @@ export type Database = {
           fechada_em: string | null;
           id: string;
           inicio_previsto: string | null;
+          local_lat: number | null;
+          local_lng: number | null;
           modelo_cobranca: string;
           numero: string;
           obra_nome: string;
@@ -1242,6 +1244,8 @@ export type Database = {
           fechada_em?: string | null;
           id?: string;
           inicio_previsto?: string | null;
+          local_lat?: number | null;
+          local_lng?: number | null;
           modelo_cobranca: string;
           numero: string;
           obra_nome: string;
@@ -1262,6 +1266,8 @@ export type Database = {
           fechada_em?: string | null;
           id?: string;
           inicio_previsto?: string | null;
+          local_lat?: number | null;
+          local_lng?: number | null;
           modelo_cobranca?: string;
           numero?: string;
           obra_nome?: string;

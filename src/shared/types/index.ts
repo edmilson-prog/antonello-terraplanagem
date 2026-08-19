@@ -203,6 +203,11 @@ export interface OrdemServico {
   tipo_servico: TipoServico | null;
   equipamento_previsto_id: string | null; // FK → Equipamento; informativo, ver ADR-001
   inicio_previsto: string | null; // "YYYY-MM-DD"
+  // Coordenada do CANTEIRO (informada no cadastro da OS), não do aparelho do
+  // operador — o sistema não rastreia GPS de pessoa (RF-003, LGPD). Ambas
+  // nulas ou ambas preenchidas.
+  local_lat: number | null;
+  local_lng: number | null;
   aberta_em: string; // ISO 8601
   fechada_em: string | null;
   pendente_sync: boolean;

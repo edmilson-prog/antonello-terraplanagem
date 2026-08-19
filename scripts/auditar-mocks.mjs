@@ -62,6 +62,31 @@ const REGRAS = [
     regex: /idMockDoCliente|cliente-mock-id/,
   },
   {
+    id: "nome-suspeito",
+    gravidade: "erro",
+    descricao: "Arquivo de produção nomeado como dado de exemplo",
+    // Pegou `mock-posicoes-equipamentos.ts` (coordenadas fictícias plotadas num
+    // mapa real) e `serie-decorativa.ts` (senoide somada ao traçado) DEPOIS de
+    // as duas já terem passado por várias ondas. As regras anteriores olhavam
+    // só para o conteúdo; o nome do arquivo já denunciava.
+    escopo: "caminho",
+    regex: /(^|[\\/])(mock|fake|dummy|exemplo|decorativ|ilustrativ|placeholder)[-.a-z]*\.[tj]sx?$/i,
+  },
+  {
+    id: "pool-de-exemplos",
+    gravidade: "erro",
+    descricao: "Lista de valores de exemplo sorteada para preencher tela",
+    regex: /_POOL\b|\bpick\(\s*[A-Z_]+\s*\)|mulberry32/,
+  },
+  {
+    id: "coordenada-ficticia",
+    gravidade: "erro",
+    descricao: "Coordenada geográfica escrita à mão fora de configuração",
+    // Só acusa arquivos que não sejam a configuração da base da operação —
+    // LOCAL_PADRAO é um dado real e declarado.
+    regex: /\blat:\s*-?\d+\.\d+.*\blng:\s*-?\d+\.\d+/,
+  },
+  {
     id: "marcador-pendente",
     gravidade: "aviso",
     descricao: "Marcador de pendência no código",
@@ -77,6 +102,13 @@ const EXCECOES = [
     motivo:
       "Suíte de IA (PRD-019) — respostas locais enquanto não há credencial de provedor. " +
       "Ver docs/PENDENCIAS-MOCK.md.",
+  },
+  {
+    arquivo: "src/features/dashboard-operacional/clima.ts",
+    regras: ["coordenada-ficticia"],
+    motivo:
+      "LOCAL_PADRAO é a base real da operação (Santo Ângelo/RS), configuração declarada — " +
+      "não coordenada de exemplo.",
   },
   {
     arquivo: "src/components/ui/",
@@ -128,6 +160,12 @@ for (const caminho of listarArquivos(SRC)) {
   const rel = relative(RAIZ, caminho).split(sep).join("/");
   if (IGNORAR.some((re) => re.test(rel))) continue;
 
+  for (const regra of REGRAS.filter((r) => r.escopo === "caminho")) {
+    if (regra.regex.test(rel) && !temExcecao(rel, regra.id)) {
+      achados.push({ rel, linha: 1, texto: rel, regra });
+    }
+  }
+
   const linhas = readFileSync(caminho, "utf8").split("\n");
   linhas.forEach((linha, i) => {
     // Comentário que cita um padrão pelo nome está explicando o que foi
@@ -137,6 +175,7 @@ for (const caminho of listarArquivos(SRC)) {
     if (ehComentario(linha)) return;
 
     for (const regra of REGRAS) {
+      if (regra.escopo === "caminho") continue;
       if (!regra.regex.test(linha)) continue;
       if (temExcecao(rel, regra.id)) continue;
       achados.push({ rel, linha: i + 1, texto: linha.trim().slice(0, 110), regra });

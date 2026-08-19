@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
+import { formatCoordenadas, parseCoordenadas } from "@/features/ordem-servico/coordenadas";
 import { orcamentosStore } from "@/features/orcamentos/orcamentos-store";
 import { proximoNumeroOS } from "@/features/ordem-servico/numero-os";
 import {
@@ -62,6 +63,7 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
     control,
     watch,
     setValue,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<OrdemFormValues>({
     resolver: zodResolver(inicial ? ordemSchema : ordemCriacaoSchema),
@@ -76,6 +78,7 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
       tipo_servico: inicial?.tipo_servico ?? undefined,
       equipamento_previsto_id: inicial?.equipamento_previsto_id ?? undefined,
       inicio_previsto: inicial?.inicio_previsto ?? "",
+      local_coordenadas: formatCoordenadas(inicial?.local_lat ?? null, inicial?.local_lng ?? null),
       orcamento_id: undefined,
     },
   });
@@ -94,6 +97,13 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
     const orcamentoEscolhido =
       values.orcamento_id && values.orcamento_id !== SEM_ORCAMENTO ? values.orcamento_id : null;
     const ehPorMetro = values.modelo_cobranca === "por_metro";
+
+    const coordenadas = parseCoordenadas(values.local_coordenadas);
+    if (!coordenadas.ok) {
+      setError("local_coordenadas", { message: coordenadas.motivo });
+      return;
+    }
+
     const dados = {
       cliente_id: values.cliente_id,
       obra_nome: values.obra_nome,
@@ -105,6 +115,8 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
       tipo_servico: values.tipo_servico ?? null,
       equipamento_previsto_id: equipamentoPrevisto,
       inicio_previsto: values.inicio_previsto?.trim() ? values.inicio_previsto.trim() : null,
+      local_lat: coordenadas.valor?.lat ?? null,
+      local_lng: coordenadas.valor?.lng ?? null,
     };
 
     try {
@@ -178,6 +190,25 @@ export function OrdemForm({ inicial, onSuccess, onCancel }: Props) {
       <div className="space-y-1.5">
         <Label htmlFor="endereco">Endereço</Label>
         <Input id="endereco" placeholder="opcional" {...register("endereco")} />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="local_coordenadas">Localização no mapa</Label>
+        <Input
+          id="local_coordenadas"
+          placeholder="opcional — cole do mapa, ex.: -28.2992, -54.2631"
+          className="font-mono"
+          {...register("local_coordenadas")}
+          aria-invalid={!!errors.local_coordenadas}
+        />
+        {errors.local_coordenadas ? (
+          <p className="text-xs text-destructive">{errors.local_coordenadas.message}</p>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            Posiciona o equipamento no mapa do painel operacional enquanto ele estiver apontando
+            nesta OS.
+          </p>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

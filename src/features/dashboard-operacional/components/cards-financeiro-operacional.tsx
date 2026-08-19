@@ -18,7 +18,7 @@ import {
   serieDiariaFaturamento,
   serieDiariaRecebido,
 } from "@/features/dashboard-operacional/derivacoes";
-import { serieDecorativa } from "@/features/dashboard-operacional/serie-decorativa";
+import { serieSuavizada } from "@/features/dashboard-operacional/serie-suavizada";
 import { MiniSparkline } from "@/features/dashboard-operacional/components/mini-sparkline";
 import { VariacaoBadge } from "@/features/dashboard-operacional/components/variacao-badge";
 import {
@@ -99,7 +99,7 @@ export function CardsFinanceiroOperacional() {
   );
   const serieExecutado = useMemo(
     () =>
-      serieDecorativa(
+      serieSuavizada(
         serieDiariaExecutado(
           ordens,
           apontamentos,
@@ -113,11 +113,11 @@ export function CardsFinanceiroOperacional() {
     [ordens, apontamentos, faturamentos, equipamentos, precosHM, precosFund, referencia],
   );
   const serieFaturado = useMemo(
-    () => serieDecorativa(serieDiariaFaturamento(faturamentos, referencia)),
+    () => serieSuavizada(serieDiariaFaturamento(faturamentos, referencia)),
     [faturamentos, referencia],
   );
   const serieRecebido = useMemo(
-    () => serieDecorativa(serieDiariaRecebido(contasReceber, referencia)),
+    () => serieSuavizada(serieDiariaRecebido(contasReceber, referencia)),
     [contasReceber, referencia],
   );
 
