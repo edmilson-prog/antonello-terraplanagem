@@ -19,9 +19,51 @@ Plataforma de gestão (retaguarda web + app de campo) para uma empresa de terrap
 > ⚠️ **FASE ATUAL:** Fase 4 (Backend) — em andamento
 
 - Schema, RLS e autenticação real já existem no Supabase (PRD-017/018, v0.20.0 "Ignition").
-- A maior parte das features **ainda lê `src/mocks/`** — a conexão mock→real de cada feature
-  acontece incrementalmente, PRD a PRD ("conexão mock→real, por onda").
-- n8n e integrações externas (WhatsApp, gateway de cobrança) seguem mockadas.
+- As stores de domínio saíram de `src/mocks/` (Ondas 17–21). O que ainda não é real está
+  listado, item a item, em [`docs/PENDENCIAS-MOCK.md`](docs/PENDENCIAS-MOCK.md).
+- Integrações externas (WhatsApp/WAHA, gateway de cobrança, IA) dependem de credencial do
+  cliente — o backend delas existe; ver o inventário para o estado de cada uma.
+
+## Diretrizes Permanentes do Projeto
+
+> Estas duas regras valem para **toda** tarefa, em qualquer sessão. Não são negociáveis e não
+> expiram com o fim de um PRD.
+
+### D1 — Nada mockado. Tudo em produção.
+
+**Dado mockado, fabricado, simulado ou hardcoded não é entregável.** Toda feature tem que
+funcionar de verdade, ponta a ponta, contra o banco real.
+
+| Regra | Detalhe |
+|-------|---------|
+| **Sem dado fabricado na tela** | Nenhuma tela pode exibir número, data, nome ou status gerado por `Math.random()`, hash do id, pool de exemplos ou constante inventada. Se o dado não existe, a tela mostra **estado vazio honesto** — nunca um valor plausível de mentira |
+| **Construir o backend faltante** | Se a feature precisa de tabela, coluna, RPC, índice, policy ou Edge Function que ainda não existe, **construir**. Falta de backend não é motivo para mockar — é a tarefa |
+| **Nada suprimido** | Não remover feature, card, coluna ou KPI para "resolver" a falta de dado real. O escopo do que já existe na tela é o piso, não o teto |
+| **Sem loading falso** | Estados de tela (`loading`/`error`/`empty`) vêm do estado real da consulta, nunca de `setTimeout` |
+| **Credencial ausente ≠ mock** | Integração sem credencial do cliente entrega o caminho real (Edge Function, tabela, retry) e falha visível quando a credencial falta. Não simular resposta de provedor |
+
+**Revisão obrigatória de pendências.** Ao receber uma tarefa nova — e **sempre** ao abrir uma
+sessão com contexto zero — antes de codar:
+
+1. Ler [`docs/PENDENCIAS-MOCK.md`](docs/PENDENCIAS-MOCK.md).
+2. Rodar a varredura: `npm run auditar:mocks`.
+3. Conferir se algo ficou para trás em ondas anteriores; se ficou, **entra no escopo desta
+   tarefa** ou é registrado no inventário com o motivo — nunca some silenciosamente.
+4. Ao fechar a tarefa, atualizar o inventário (remover o que virou real, registrar o que surgiu).
+
+### D2 — Todo bump de versão atualiza a `main` local.
+
+Sempre que a versão for incrementada (passo 4 do fluxo de PRDs), **sincronizar a `main` local**
+com o remoto antes de encerrar o trabalho:
+
+```bash
+git fetch origin main
+git checkout main && git merge --ff-only origin/main
+git checkout -   # volta para a branch de trabalho
+```
+
+Regra: a `main` local nunca fica atrás da `origin/main` depois de um bump. Sem force-push,
+sem merge de branch de trabalho direto na `main` — a `main` só avança pelo PR.
 
 ## Os Dois Ambientes (Surfaces)
 
@@ -278,9 +320,12 @@ O projeto mantém um grafo de conhecimento navegável (código + docs + PRDs), �
 2. **Antes de implementar:** explore a estrutura dos dados, planeje cada passo, analise, investigue a fundo, pense e revise tudo.
 3. **Faça perguntas** para esclarecer ambiguidades antes de codar.
 4. **Após implementar:**
-   - Incrementar versão seguindo [SemVer](https://semver.org/).
+   - Incrementar versão seguindo [SemVer](https://semver.org/) — e atualizar `VERSAO_SISTEMA`
+     em `src/features/auth/versao-sistema.ts`.
    - Atualizar `CHANGELOG.md` seguindo [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
    - Gerar codinome em inglês para MINOR/MAJOR (baseado no contexto das mudanças).
+   - **Atualizar a `main` local** (diretriz **D2**).
+   - **Atualizar `docs/PENDENCIAS-MOCK.md`** (diretriz **D1**).
    - Renomear o PRD adicionando `_DONE`.
    - Atualizar o `INDEX-PRDs-antonello.md`.
    - Atualizar o grafo de conhecimento: `graphify . --update`.
