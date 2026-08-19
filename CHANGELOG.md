@@ -5,6 +5,30 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.37.0] - 2026-08-19 - Doorstep
+
+O app de campo é PWA desde a Onda 20: tem manifest, ícone, `display: standalone` e service worker. Faltava a única coisa que faz um PWA sair do navegador — **alguém convidar**. Até aqui o operador só descobria o "adicionar à tela inicial" se estivesse no iPhone, abrisse o Perfil e o Web Push já tivesse falhado por causa disso.
+
+Instalado, o app abre pelo ícone em tela cheia (mais tela útil sob sol, sem a barra do navegador) e, no iPhone, é o que **libera as notificações** da retaguarda.
+
+### Added
+- **Convite de instalação** (`features/instalacao`): banner no topo da aba "Hoje" e cartão fixo no Perfil, com o mesmo componente.
+- Captura do **`beforeinstallprompt`** com `preventDefault()` — o convite é o do projeto, dentro do layout do campo, e não a mini-barra do Chrome. Instalar vira um toque em "Instalar app".
+- **Passo a passo do iOS** (`PassosInstalacaoIOS`), onde o Safari não dispara evento nenhum: Compartilhar → Adicionar à Tela de Início → abrir pelo ícone. Fonte única do texto, usada pelo convite e apontada pelo cartão de avisos.
+- **"Agora não" com prazo crescente**: 7 dias na primeira recusa, 30 na segunda e, na terceira, o convite para de perguntar. Recusar o diálogo do sistema conta como recusa — sem outro evento em mãos, insistir na tela seguinte não instalaria nada.
+- Escuta de **`appinstalled`**: instalou, o convite some da tela na hora e o histórico de recusas é apagado.
+
+### Changed
+- `ehIOS()` e `rodandoInstalado()` saíram de `features/notificacoes/push.ts` para `features/instalacao/deteccao.ts`. A pergunta "este app está instalado?" é da instalação; o push é um dos interessados, não o dono.
+- O cartão de avisos do Perfil, no iPhone, parou de repetir o passo a passo: aponta para o convite que está logo acima, na mesma tela. Dois textos para manter viravam dois cartões dizendo a mesma coisa.
+
+### Notas
+- **O convite não aparece onde não há como instalar.** Sem prompt nativo e fora do iOS (Firefox, Safari de desktop), ele fica oculto: pedir ao operador algo que o navegador dele não faz é pior do que não pedir.
+- Quem decide se o prompt nativo existe é o **navegador** (manifest válido, HTTPS e os critérios dele). O convite reage ao evento quando ele chega; não tenta forçá-lo.
+- O ponto de entrada do Perfil é **persistente** — ignora o "agora não" e não tem botão de dispensar. Quem recusou três vezes ainda precisa de um lugar para instalar quando mudar de ideia.
+- O texto **não promete offline**: `public/sw.js` não tem shell offline por decisão da Onda 20 (cache mal calibrado serve build velha para quem está em campo). O que a instalação entrega é ícone, tela cheia e push no iPhone.
+- Na tela inicial do iOS o armazenamento é **separado** do Safari: o operador entra outra vez com o PIN dentro do app. O passo 3 avisa, em vez de deixar parecer que a sessão se perdeu.
+
 ## [0.36.0] - 2026-08-18 - Uplink
 
 Oito telas do app de campo gravavam **só no localStorage do aparelho**. Checklist de pré-uso, diário de obra, paralisação, viagens de basculante, transporte de prancha, solicitação de manutenção, medição assinada pelo cliente e ciência de segurança nunca chegavam ao escritório — e limpar os dados do navegador ou trocar de celular apagava tudo, assinatura do cliente inclusive.
