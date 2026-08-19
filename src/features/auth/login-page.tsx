@@ -88,8 +88,8 @@ export function LoginPage() {
             Gestão de Terraplanagem
           </p>
           <p className="max-w-sm text-balance text-base leading-relaxed text-sidebar-foreground/90">
-            Horas de máquina, ordens de serviço e faturamento em um só lugar — com a
-            rentabilidade de cada equipamento e cada obra sempre à vista.
+            Horas de máquina, ordens de serviço e faturamento em um só lugar — com a rentabilidade
+            de cada equipamento e cada obra sempre à vista.
           </p>
         </div>
 
