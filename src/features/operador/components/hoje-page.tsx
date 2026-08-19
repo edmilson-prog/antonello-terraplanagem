@@ -22,6 +22,7 @@ import {
   VazioCampo,
 } from "@/features/operador/components/kit";
 import { CabecalhoAba, SeloSincronizacao } from "@/features/operador/components/cabecalho-aba";
+import { ConviteInstalacao } from "@/features/instalacao";
 import { SinoNotificacoes } from "@/features/notificacoes";
 import { useAlertasSeguranca } from "@/features/operador/hooks/use-alertas-seguranca";
 import { usePendenciasSync } from "@/features/operador/hooks/use-pendencias-sync";
@@ -114,6 +115,11 @@ export function HojePage() {
             <Icon icon="lucide:chevron-right" className="h-4 w-4 shrink-0 text-destructive" />
           </Link>
         ) : null}
+
+        {/* Convite para pôr o app na tela inicial — some sozinho quando já
+            instalado, quando o navegador não tem como instalar, ou depois do
+            "agora não" (ver features/instalacao/convite.ts). */}
+        <ConviteInstalacao className="mb-4" />
 
         <SecaoCampo className="mt-0">Em andamento agora</SecaoCampo>
         {emAndamento ? (
