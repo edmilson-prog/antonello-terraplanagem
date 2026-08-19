@@ -6,13 +6,10 @@
  * solicitação de manutenção, medição assinada pelo cliente e ciência de
  * segurança.
  *
- * NENHUM deles tem tabela no Supabase ainda, e o app do operador roda como
- * `anon` — que hoje não enxerga nem `ordens_servico`. Enquanto o acesso por
- * token (padrão já usado por `login_operador` / `operador_do_token`) não cobrir
- * a escrita, estes registros ficam NO APARELHO, que é exatamente o que o
- * ADR-001 define como primeiro estágio: fila offline local, flush idempotente
- * ao reconectar. O contrato abaixo é o mesmo que as tabelas vão implementar —
- * `opId` inclusive, para a deduplicação do flush.
+ * Desde a Onda 22 eles têm tabela (`registros_campo`) e chegam ao escritório.
+ * O aparelho continua sendo o primeiro destino — é o que o ADR-001 define:
+ * fila offline local, flush idempotente ao reconectar, dedup por `op_id`. O
+ * que mudou é que a fila agora tem para onde esvaziar.
  */
 
 export type TipoRegistroCampo =
@@ -84,7 +81,14 @@ export interface DadosSolicitacaoManutencao {
 export interface DadosMedicaoAssinada {
   responsavel: string;
   horas_periodo: number;
-  assinatura: string; // data URL do canvas
+  /*
+   * Data URL do canvas. Obrigatória ao coletar (o botão só libera com o traço
+   * feito, e o CHECK do banco recusa medição sem assinatura), mas NULA depois
+   * de sincronizada: é dado pessoal, então some do aparelho assim que a
+   * central confirma o recebimento, e a RPC de listagem não a traz de volta.
+   * Quem precisa dela é a retaguarda, que lê pela tabela.
+   */
+  assinatura: string | null;
 }
 
 export interface DadosCienciaSeguranca {
@@ -116,6 +120,25 @@ export type RegistroCampo = DadosRegistroCampo & {
 export type NovoRegistroCampo = DadosRegistroCampo & {
   os_id?: string | null;
   equipamento_id?: string | null;
+};
+
+/*
+ * O mesmo registro visto da retaguarda.
+ *
+ * Não tem `pendente_sync` porque, do lado de cá, chegar é a única condição de
+ * existir — uma linha na tabela é um registro que já subiu. Em compensação tem
+ * `assinatura`: a coluna que a RPC do operador não devolve, e que faz do
+ * comprovante de medição um documento de verdade.
+ */
+export type RegistroCampoRecebido = DadosRegistroCampo & {
+  id: string;
+  op_id: string;
+  operador_id: string;
+  os_id: string | null;
+  equipamento_id: string | null;
+  assinatura: string | null;
+  registrado_em: string;
+  created_at: string;
 };
 
 export const ROTULO_REGISTRO: Record<TipoRegistroCampo, string> = {

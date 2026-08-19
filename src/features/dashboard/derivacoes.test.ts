@@ -361,6 +361,7 @@ describe("contagemAlertasManutencao", () => {
         custo: null,
         fornecedor: null,
         observacao: null,
+        origem_registro_campo_id: null,
         realizada_em: null,
         aberta_em: "2026-01-01T00:00:00.000Z",
         created_at: "2026-01-01T00:00:00.000Z",

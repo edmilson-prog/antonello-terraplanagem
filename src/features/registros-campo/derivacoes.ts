@@ -4,13 +4,20 @@ import {
   MOTIVO_PARALISACAO,
   PROBLEMA_MANUTENCAO,
   TIPO_TRANSPORTE,
+  type DadosRegistroCampo,
   type RegistroCampo,
   type TipoRegistroCampo,
 } from "./tipos";
 
-/* Resumo de uma linha para a fila de sincronização e para as listas de
- * "registros anteriores" de cada tela. */
-export function resumoRegistro(registro: RegistroCampo): string {
+/*
+ * Resumo de uma linha para a fila de sincronização e para as listas de
+ * "registros anteriores" de cada tela.
+ *
+ * Aceita só o par (tipo, dados) porque é tudo que ela lê — e assim serve tanto
+ * à fila do operador quanto ao que a retaguarda recebeu, que carregam metadados
+ * diferentes em volta do mesmo conteúdo.
+ */
+export function resumoRegistro(registro: DadosRegistroCampo): string {
   switch (registro.tipo) {
     case "checklist":
       return registro.dados.nao_conformes > 0

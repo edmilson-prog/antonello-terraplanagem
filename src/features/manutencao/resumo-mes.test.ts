@@ -27,6 +27,7 @@ function registro(overrides: Partial<RegistroManutencao> = {}): RegistroManutenc
     aberta_em: "2026-07-05T10:00:00.000Z",
     created_at: "2026-07-05T10:00:00.000Z",
     updated_at: "2026-07-05T10:00:00.000Z",
+    origem_registro_campo_id: null,
     ...overrides,
   };
 }

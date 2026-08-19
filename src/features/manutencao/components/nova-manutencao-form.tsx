@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,8 @@ import {
   TIPO_MANUTENCAO_LABEL,
 } from "@/features/manutencao/labels";
 import { textoParaNumero } from "@/features/parametros/derivacoes";
+import { PROBLEMA_MANUTENCAO } from "@/features/registros-campo/tipos";
+import type { SolicitacaoCampo } from "@/features/registros-campo/retaguarda-derivacoes";
 import type { PrioridadeManutencao, TipoManutencao } from "@/shared/types";
 import { cn } from "@/lib/utils";
 
@@ -35,11 +37,13 @@ import { cn } from "@/lib/utils";
 const TIPOS: TipoManutencao[] = ["preventiva", "corretiva"];
 
 interface Props {
+  /* Chamado do campo que originou a abertura, quando veio de lá. */
+  solicitacao?: SolicitacaoCampo | null;
   onCancel: () => void;
   onSuccess: () => void;
 }
 
-export function NovaManutencaoForm({ onCancel, onSuccess }: Props) {
+export function NovaManutencaoForm({ solicitacao = null, onCancel, onSuccess }: Props) {
   const equipamentos = equipamentosStore.useAll().filter((e) => e.ativo);
   const navigate = useNavigate();
 
@@ -52,6 +56,28 @@ export function NovaManutencaoForm({ onCancel, onSuccess }: Props) {
   const [custo, setCusto] = useState("");
   const [fornecedor, setFornecedor] = useState("");
   const [salvando, setSalvando] = useState(false);
+
+  /*
+   * Preenche a partir do chamado do campo.
+   *
+   * Roda quando a solicitação chega (a store da retaguarda carrega assíncrona,
+   * então ela costuma chegar depois do primeiro render) e só uma vez por
+   * chamado — depois disso o que vale é o que a recepção digitou.
+   */
+  useEffect(() => {
+    if (!solicitacao) return;
+    const { problema, urgencia, observacao, horimetro } = solicitacao.dados;
+    setEquipamentoId(solicitacao.equipamento_id ?? "");
+    setTipo("corretiva");
+    setPrioridade(urgencia === "maquina_parada" ? "alta" : "media");
+    if (horimetro != null) setHorimetro(String(horimetro));
+    // O relato do operador vira a descrição do serviço: é a informação que
+    // ele tinha na frente da máquina, e reescrevê-la de memória no escritório
+    // só perderia detalhe.
+    setDescricao(
+      [PROBLEMA_MANUTENCAO[problema].label, observacao?.trim()].filter(Boolean).join(" — "),
+    );
+  }, [solicitacao]);
 
   const equipamento = equipamentos.find((e) => e.id === equipamentoId);
   const horimetroNum = textoParaNumero(horimetro);
@@ -83,6 +109,7 @@ export function NovaManutencaoForm({ onCancel, onSuccess }: Props) {
         custo: custoNum,
         fornecedor: fornecedor.trim() || null,
         observacao: null,
+        origem_registro_campo_id: solicitacao?.id ?? null,
       });
       toast.success("Manutenção aberta. O equipamento entra como parado até a conclusão.");
       // Leva direto para a conclusão: serviço rápido é aberto e fechado na
