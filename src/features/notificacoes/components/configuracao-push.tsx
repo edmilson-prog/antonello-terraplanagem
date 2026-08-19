@@ -52,21 +52,23 @@ export function ConfiguracaoPush() {
   if (estado === null) return null;
 
   // No iOS o Web Push só existe depois de instalar na tela inicial — instruir
-  // vale mais que esconder o recurso.
+  // vale mais que esconder o recurso. O passo a passo em si vive no convite de
+  // instalação, exibido logo acima nesta mesma tela: repeti-lo aqui daria dois
+  // textos para manter e dois cartões dizendo a mesma coisa.
   if (estado === "indisponivel" && precisaInstalarNaTelaInicial()) {
     return (
       <div className="rounded-xl border bg-card p-4 shadow-sm">
         <div className="flex items-start gap-3">
           <span className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-primary/15 text-primary">
-            <Icon icon="lucide:share" className="h-[18px] w-[18px]" />
+            <Icon icon="lucide:bell-plus" className="h-[18px] w-[18px]" />
           </span>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-card-foreground">
-              Instale o app para receber avisos
+              Avisos liberados depois de instalar
             </p>
             <p className="mt-1 text-[13px] leading-snug text-muted-foreground">
-              No iPhone, toque em <b>Compartilhar</b> e depois em <b>Adicionar à Tela de Início</b>.
-              Abra o app por lá e os avisos ficam disponíveis.
+              No iPhone, a notificação só chega com o app na tela inicial. Use o convite{" "}
+              <b>Instale o app no celular</b>, aqui no Perfil, e depois volte para ligar os avisos.
             </p>
           </div>
         </div>
