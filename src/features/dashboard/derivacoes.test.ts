@@ -55,6 +55,8 @@ function os(over: Partial<OrdemServico> & { id: string }): OrdemServico {
     pendente_sync: over.pendente_sync ?? false,
     created_at: over.created_at ?? "2026-07-02T10:00:00.000Z",
     updated_at: over.updated_at ?? "2026-07-02T10:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   };
 }
 
@@ -115,6 +117,9 @@ function equipamento(over: Partial<Equipamento> & { id: string }): Equipamento {
     propriedade: over.propriedade ?? null,
     created_at: "2026-01-01T00:00:00.000Z",
     updated_at: "2026-01-01T00:00:00.000Z",
+    aquisicao_forma: null,
+    aquisicao_parcelas: null,
+    descricao: null,
   };
 }
 

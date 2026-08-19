@@ -21,6 +21,8 @@ const os: OrdemServico = {
   pendente_sync: false,
   created_at: "2026-07-01T00:00:00.000Z",
   updated_at: "2026-07-02T00:00:00.000Z",
+  local_lat: null,
+  local_lng: null,
 };
 
 const cliente: Cliente = {
@@ -31,6 +33,13 @@ const cliente: Cliente = {
   ativo: true,
   created_at: "2026-01-01T00:00:00.000Z",
   updated_at: "2026-01-01T00:00:00.000Z",
+  nome_fantasia: null,
+  segmento: null,
+  email: null,
+  endereco: null,
+  cidade: null,
+  contato_nome: null,
+  contato_papel: null,
 };
 
 describe("montarMensagemAviso", () => {

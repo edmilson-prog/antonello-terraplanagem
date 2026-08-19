@@ -78,6 +78,8 @@ const OS: OrdemServico = {
   pendente_sync: false,
   created_at: diasAtras(20),
   updated_at: diasAtras(20),
+  local_lat: null,
+  local_lng: null,
 };
 
 function apontamento(over: Partial<Apontamento> = {}): Apontamento {

@@ -54,6 +54,8 @@ function ordem(over: Partial<OrdemServico> = {}): OrdemServico {
     created_at: diasAtras(15),
     updated_at: diasAtras(15),
     ...over,
+    local_lat: null,
+    local_lng: null,
   };
 }
 
