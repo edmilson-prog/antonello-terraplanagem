@@ -322,7 +322,7 @@ Tipos: **Added**, **Changed**, **Deprecated**, **Removed**, **Fixed**, **Securit
 | **Data de Implementação** | 2026-07-02 |
 | **Versão do App** | 0.12.0 "Cockpit" |
 | **Implementado por** | Claude Code via Subagent-Driven Development (5 tasks + revisão final) |
-| **Observações** | Revisão final: 0 Critical, 0 Important, 4 Minor (cosméticos — Error Boundary por widget, estado de erro inalcançável na fase mock, filtro de período não afeta Contas/Alertas por decisão de domínio, área de toque do link "Ver todas" — corrigida). `graphify . --update` não executado nesta sessão (sem API key configurada no ambiente, limitação já conhecida). |
+| **Observações** | Revisão final: 0 Critical, 0 Important, 4 Minor (cosméticos — Error Boundary por widget, estado de erro inalcançável na fase mock, filtro de período não afeta Contas/Alertas por decisão de domínio, área de toque do link "Ver todas" — corrigida). |
 
 ---
 

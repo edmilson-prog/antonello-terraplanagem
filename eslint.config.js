@@ -16,7 +16,6 @@ export default tseslint.config(
       ".serena",
       ".claude",
       ".tanstack",
-      "graphify-out",
       "node_modules",
     ],
   },
