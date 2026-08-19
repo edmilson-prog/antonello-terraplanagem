@@ -1,12 +1,9 @@
 import { Icon } from "@iconify/react";
 import { Sparkline } from "@/shared/components/sparkline";
-import type {
-  EquipamentoKpiItem,
-  EquipamentoShowcaseKpis,
-} from "@/features/equipamentos/equipamento-showcase-data";
+import type { KpiEquipamento, KpisEquipamento } from "@/features/equipamentos/derivacoes";
 
-export function EquipamentoKpis({ kpis }: { kpis: EquipamentoShowcaseKpis }) {
-  const itens: EquipamentoKpiItem[] = [
+export function EquipamentoKpis({ kpis }: { kpis: KpisEquipamento }) {
+  const itens: KpiEquipamento[] = [
     kpis.horimetro,
     kpis.horasMes,
     kpis.disponibilidade,
@@ -21,7 +18,7 @@ export function EquipamentoKpis({ kpis }: { kpis: EquipamentoShowcaseKpis }) {
   );
 }
 
-function KpiCard({ kpi }: { kpi: EquipamentoKpiItem }) {
+function KpiCard({ kpi }: { kpi: KpiEquipamento }) {
   return (
     <div className="relative overflow-hidden rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex items-center justify-between">

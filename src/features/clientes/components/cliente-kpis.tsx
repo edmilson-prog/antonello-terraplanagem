@@ -1,53 +1,16 @@
 import { Icon } from "@iconify/react";
 import { Sparkline } from "@/shared/components/sparkline";
-import { formatBRL } from "@/features/retaguarda/format";
-import type {
-  ClienteKpiItem,
-  ClienteShowcaseKpis,
-} from "@/features/clientes/cliente-showcase-data";
+import type { KpiCliente, KpisCliente } from "@/features/clientes/derivacoes";
 
 export interface ClienteKpisProps {
-  kpis: ClienteShowcaseKpis;
-  osAtivas: number;
-  orcamentosAbertos: number;
-  saldoReceber: number;
-  saldoRodape: string;
+  kpis: KpisCliente;
 }
 
-export function ClienteKpis({
-  kpis,
-  osAtivas,
-  orcamentosAbertos,
-  saldoReceber,
-  saldoRodape,
-}: ClienteKpisProps) {
-  const itens: ClienteKpiItem[] = [
-    kpis.faturado,
-    {
-      ...kpis.saldoReceber,
-      valor: formatBRL(saldoReceber),
-      rodape: saldoRodape,
-      alerta: saldoReceber > 0,
-    },
-    {
-      rotulo: "OS ativas",
-      valor: String(osAtivas),
-      icone: "lucide:clipboard-list",
-      rodape: "em andamento",
-      trendPct: null,
-      trendDir: null,
-      spark: kpis.osAtivasSpark,
-    },
-    {
-      rotulo: "Orçamentos abertos",
-      valor: String(orcamentosAbertos),
-      icone: "lucide:file-text",
-      rodape: kpis.orcamentosValor,
-      trendPct: null,
-      trendDir: null,
-      spark: kpis.orcamentosSpark,
-    },
-  ];
+// Os quatro KPIs já vêm prontos de `montarPainelCliente`. Antes, metade era
+// sorteada e a outra metade chegava por props que sobrescreviam o sorteio —
+// arranjo que existia só para o valor real vencer o de exemplo.
+export function ClienteKpis({ kpis }: ClienteKpisProps) {
+  const itens: KpiCliente[] = [kpis.faturado, kpis.saldoReceber, kpis.osAtivas, kpis.orcamentos];
   return (
     <section className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
       {itens.map((kpi) => (
@@ -57,7 +20,7 @@ export function ClienteKpis({
   );
 }
 
-function KpiCard({ kpi }: { kpi: ClienteKpiItem }) {
+function KpiCard({ kpi }: { kpi: KpiCliente }) {
   return (
     <div className="relative overflow-hidden rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex items-center justify-between">

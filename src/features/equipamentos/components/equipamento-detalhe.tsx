@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
-import { formatHorimetro } from "@/shared/lib/format";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { EquipamentoForm } from "@/features/equipamentos/components/equipamento-form";
 import { EquipamentoHero } from "@/features/equipamentos/components/equipamento-hero";
@@ -16,7 +15,13 @@ import { FichaTecnicaCard } from "@/features/equipamentos/components/ficha-tecni
 import { CustoHoraCard } from "@/features/equipamentos/components/custo-hora-card";
 import { ProximaManutencaoCard } from "@/features/equipamentos/components/proxima-manutencao-card";
 import { UtilizacaoSemanaCard } from "@/features/equipamentos/components/utilizacao-semana-card";
-import { showcaseDoEquipamento } from "@/features/equipamentos/equipamento-showcase-data";
+import { montarPainelEquipamento } from "@/features/equipamentos/derivacoes";
+import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
+import { ordensStore } from "@/features/ordem-servico/ordens-store";
+import { operadoresStore } from "@/features/operadores/operadores-store";
+import { abastecimentosStore } from "@/features/diesel/abastecimentos-store";
+import { registrosManutencaoStore } from "@/features/manutencao/registros-manutencao-store";
+import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
 
 export function EquipamentoDetalhe({ equipamentoId }: { equipamentoId: string }) {
   const equipamento = equipamentosStore.useEquipamento(equipamentoId);
@@ -24,7 +29,36 @@ export function EquipamentoDetalhe({ equipamentoId }: { equipamentoId: string })
   const [editando, setEditando] = useState(false);
   const [inativando, setInativando] = useState(false);
 
-  const showcase = useMemo(() => showcaseDoEquipamento(equipamentoId), [equipamentoId]);
+  const apontamentos = apontamentosStore.useTodos();
+  const ordens = ordensStore.useTodas();
+  const operadores = operadoresStore.useAll();
+  const abastecimentos = abastecimentosStore.useCompletos();
+  const registrosManutencao = registrosManutencaoStore.useCompletos();
+  const faturamentos = faturamentosStore.useTodos();
+
+  const painel = useMemo(
+    () =>
+      equipamento
+        ? montarPainelEquipamento({
+            equipamento,
+            apontamentos,
+            ordens,
+            operadores,
+            abastecimentos,
+            registrosManutencao,
+            faturamentos,
+          })
+        : null,
+    [
+      equipamento,
+      apontamentos,
+      ordens,
+      operadores,
+      abastecimentos,
+      registrosManutencao,
+      faturamentos,
+    ],
+  );
 
   const voltar = (
     <Link
@@ -65,7 +99,7 @@ export function EquipamentoDetalhe({ equipamentoId }: { equipamentoId: string })
     );
   }
 
-  if (!equipamento) {
+  if (!equipamento || !painel) {
     return (
       <div className="space-y-4 text-center">
         <h2 className="font-display text-xl font-bold text-foreground">
@@ -105,11 +139,6 @@ export function EquipamentoDetalhe({ equipamentoId }: { equipamentoId: string })
     setInativando(false);
   };
 
-  const kpis = {
-    ...showcase.kpis,
-    horimetro: { ...showcase.kpis.horimetro, valor: formatHorimetro(equipamento.horimetro_atual) },
-  };
-
   return (
     <div className="space-y-6">
       {voltar}
@@ -129,23 +158,23 @@ export function EquipamentoDetalhe({ equipamentoId }: { equipamentoId: string })
         <div className="space-y-4">
           <EquipamentoHero
             equipamento={equipamento}
-            marcaModelo={showcase.fichaTecnica.marcaModelo}
-            ano={showcase.fichaTecnica.ano}
+            marcaModelo={painel.fichaTecnica.marcaModelo}
+            ano={painel.fichaTecnica.ano}
             onEditar={() => setEditando(true)}
             onInativar={() => setInativando(true)}
             onReativar={reativar}
           />
-          <EquipamentoKpis kpis={kpis} />
+          <EquipamentoKpis kpis={painel.kpis} />
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
             <div className="space-y-4">
-              <LeiturasHorimetroCard leituras={showcase.leiturasHorimetro} />
+              <LeiturasHorimetroCard leituras={painel.leiturasHorimetro} />
               <ManutencoesCard equipamento={equipamento} />
             </div>
             <div className="space-y-4">
-              <FichaTecnicaCard equipamento={equipamento} ficha={showcase.fichaTecnica} />
+              <FichaTecnicaCard equipamento={equipamento} ficha={painel.fichaTecnica} />
               <CustoHoraCard equipamento={equipamento} />
               <ProximaManutencaoCard equipamento={equipamento} />
-              <UtilizacaoSemanaCard semana={showcase.utilizacaoSemana} />
+              <UtilizacaoSemanaCard semana={painel.utilizacaoSemana} />
             </div>
           </div>
           <div className="mt-6 flex items-start gap-2.5 rounded-lg border border-dashed px-4 py-3 text-[12.5px] text-foreground-faint">

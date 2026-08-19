@@ -8,9 +8,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CardSecao } from "@/shared/components/card-secao";
-import type { EquipamentoLeitura } from "@/features/equipamentos/equipamento-showcase-data";
+import type { LeituraHorimetro } from "@/features/equipamentos/derivacoes";
 
-export function LeiturasHorimetroCard({ leituras }: { leituras: EquipamentoLeitura[] }) {
+export function LeiturasHorimetroCard({ leituras }: { leituras: LeituraHorimetro[] }) {
+  if (leituras.length === 0) {
+    return (
+      <CardSecao titulo="Leituras de horímetro" icone="lucide:gauge" bodyClassName="p-6">
+        <p className="text-center text-sm text-muted-foreground">
+          Nenhum apontamento registrado neste equipamento ainda.
+        </p>
+      </CardSecao>
+    );
+  }
+
   return (
     <CardSecao titulo="Leituras de horímetro" icone="lucide:gauge">
       <Table>

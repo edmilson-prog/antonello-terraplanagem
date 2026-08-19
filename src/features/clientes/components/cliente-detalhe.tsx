@@ -5,8 +5,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
-import { formatDataHora } from "@/shared/lib/format";
-import { idMockDoCliente } from "@/shared/lib/cliente-mock-id";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { ClienteForm } from "@/features/clientes/components/cliente-form";
 import { ClienteHero } from "@/features/clientes/components/cliente-hero";
@@ -17,11 +15,12 @@ import { DadosCadastraisClienteCard } from "@/features/clientes/components/dados
 import { OrcamentosClienteCard } from "@/features/clientes/components/orcamentos-cliente-card";
 import { RecebimentosClienteCard } from "@/features/clientes/components/recebimentos-cliente-card";
 import { FaroltiSnapshotCard } from "@/features/clientes/components/farolti-snapshot-card";
-import { showcaseDoCliente } from "@/features/clientes/cliente-showcase-data";
+import { montarPainelCliente } from "@/features/clientes/derivacoes";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { orcamentosStore } from "@/features/orcamentos/orcamentos-store";
 import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
-import { contaVencida } from "@/features/financeiro/derivacoes";
+import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
+import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 
 export function ClienteDetalhe({ clienteId }: { clienteId: string }) {
   const cliente = clientesStore.useCliente(clienteId);
@@ -29,37 +28,35 @@ export function ClienteDetalhe({ clienteId }: { clienteId: string }) {
   const [editando, setEditando] = useState(false);
   const [inativando, setInativando] = useState(false);
 
-  const showcase = useMemo(() => showcaseDoCliente(clienteId), [clienteId]);
+  // Filtra pelo id REAL do cliente. Até a Onda 22 isto passava por
+  // `idMockDoCliente`, tradução de UUID para o id fixture ("cl-001") que fazia
+  // sentido enquanto OS, orçamentos e contas moravam em src/mocks/. Quando
+  // essas stores foram para o Supabase (Onda 21) a tradução deixou de casar
+  // com coisa alguma: a comparação era UUID contra "cl-001", e toda ficha de
+  // cliente abria com zero OS, zero orçamento e zero título.
+  const ordens = ordensStore.useTodas();
+  const orcamentos = orcamentosStore.useTodos();
+  const contasReceber = contasReceberStore.useTodas();
+  const faturamentos = faturamentosStore.useTodos();
+  const apontamentos = apontamentosStore.useTodos();
 
-  const idMock = idMockDoCliente(clienteId);
-  const osDoCliente = ordensStore.useTodas().filter((o) => o.cliente_id === idMock);
-  const orcamentosDoCliente = orcamentosStore.useTodos().filter((o) => o.cliente_id === idMock);
-  const contasDoCliente = contasReceberStore.useTodas().filter((c) => c.cliente_id === idMock);
+  const contasDoCliente = contasReceber.filter((c) => c.cliente_id === clienteId);
+  const orcamentosDoCliente = orcamentos.filter((o) => o.cliente_id === clienteId);
 
-  const osAtivas = osDoCliente.filter((o) => o.status !== "fechada").length;
-  const orcamentosAbertos = orcamentosDoCliente.filter(
-    (o) => o.status !== "aprovado" && o.status !== "recusado",
-  ).length;
-
-  const agoraISO = new Date().toISOString().slice(0, 10);
-  const abertas = contasDoCliente.filter((c) => c.status === "aberta");
-  const saldoReceber = abertas.reduce((s, c) => s + c.valor, 0);
-  const vencidas = abertas.filter((c) => contaVencida(c, agoraISO)).length;
-  const saldoRodape = `${abertas.length} título(s) · ${vencidas} vencido(s)`;
-
-  const ordensView = osDoCliente.map((o, i) => ({
-    id: o.id,
-    numero: o.numero,
-    obraNome: o.obra_nome,
-    status: o.status,
-    ...showcase.porOS[i % showcase.porOS.length],
-  }));
-
-  const ultimaOS = osDoCliente.length
-    ? formatDataHora(
-        [...osDoCliente].sort((a, b) => b.aberta_em.localeCompare(a.aberta_em))[0].aberta_em,
-      )
-    : showcase.ultimaOS;
+  const painel = useMemo(
+    () =>
+      cliente
+        ? montarPainelCliente({
+            cliente,
+            ordens,
+            apontamentos,
+            faturamentos,
+            orcamentos,
+            contasReceber,
+          })
+        : null,
+    [cliente, ordens, apontamentos, faturamentos, orcamentos, contasReceber],
+  );
 
   const voltar = (
     <Link
@@ -104,7 +101,7 @@ export function ClienteDetalhe({ clienteId }: { clienteId: string }) {
     );
   }
 
-  if (!cliente) {
+  if (!cliente || !painel) {
     return (
       <div className="space-y-4 text-center">
         <h2 className="font-display text-xl font-bold text-foreground">Cliente não encontrado</h2>
@@ -157,36 +154,30 @@ export function ClienteDetalhe({ clienteId }: { clienteId: string }) {
         <div className="space-y-4">
           <ClienteHero
             cliente={cliente}
-            recorrente={showcase.recorrente}
-            ultimaOS={ultimaOS}
+            recorrente={painel.recorrente}
+            ultimaOS={painel.ultimaOS}
             onEditar={() => setEditando(true)}
             onInativar={() => setInativando(true)}
             onReativar={reativar}
           />
-          <ClienteKpis
-            kpis={showcase.kpis}
-            osAtivas={osAtivas}
-            orcamentosAbertos={orcamentosAbertos}
-            saldoReceber={saldoReceber}
-            saldoRodape={saldoRodape}
-          />
+          <ClienteKpis kpis={painel.kpis} />
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
             <div className="space-y-4">
-              <OrdensClienteCard ordens={ordensView} />
+              <OrdensClienteCard ordens={painel.ordens} />
               <ContasReceberCard contas={contasDoCliente} />
             </div>
             <div className="space-y-4">
-              <DadosCadastraisClienteCard cliente={cliente} cadastrais={showcase.cadastrais} />
+              <DadosCadastraisClienteCard cliente={cliente} />
               <OrcamentosClienteCard orcamentos={orcamentosDoCliente} />
-              <RecebimentosClienteCard recebimentos={showcase.recebimentos} />
+              <RecebimentosClienteCard recebimentos={painel.recebimentos} />
             </div>
           </div>
-          <FaroltiSnapshotCard cliente={cliente} origemMigracao={showcase.origemMigracao} />
+          <FaroltiSnapshotCard cliente={cliente} origemMigracao={painel.origemMigracao} />
           <div className="mt-2 flex items-start gap-2.5 rounded-lg border border-dashed px-4 py-3 text-[12.5px] text-foreground-faint">
             <Icon icon="lucide:info" className="mt-0.5 h-4 w-4 shrink-0 text-primary/70" />
             <span>
-              O snapshot do ERP legado (FarolTI) é <b>congelado</b> na importação; o restante da
-              página é ao vivo. Recebimentos são dados de exemplo nesta fase.
+              O snapshot do ERP legado (FarolTI) é <b>congelado</b> na importação — é o único bloco
+              desta página que não é recalculado ao vivo.
             </span>
           </div>
         </div>

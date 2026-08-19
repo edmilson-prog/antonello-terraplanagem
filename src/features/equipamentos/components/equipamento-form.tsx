@@ -50,6 +50,9 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
       propriedade: inicial?.propriedade ?? "propria",
       marca: inicial?.marca ?? "",
       ano: inicial?.ano ?? "",
+      aquisicao_forma: inicial?.aquisicao_forma ?? undefined,
+      aquisicao_parcelas: inicial?.aquisicao_parcelas ? String(inicial.aquisicao_parcelas) : "",
+      descricao: inicial?.descricao ?? "",
     },
   });
 
@@ -69,8 +72,38 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
       planoIntervaloHoras = n;
     }
 
+    let parcelas: number | null = null;
+    if (values.aquisicao_parcelas?.trim()) {
+      const n = Number(values.aquisicao_parcelas.trim());
+      if (!Number.isInteger(n) || n <= 0) {
+        setError("aquisicao_parcelas", { message: "Informe um número inteiro de parcelas" });
+        return;
+      }
+      parcelas = n;
+    }
+    // Parcela sem financiamento é dado incoerente — o CHECK do banco recusaria.
+    const forma = values.aquisicao_forma ?? null;
+    if (parcelas !== null && (forma === null || forma === "recursos_proprios")) {
+      setError("aquisicao_parcelas", {
+        message: "Parcelas só valem para FINAME, leasing ou consórcio",
+      });
+      return;
+    }
+
+    const fichaTecnica = {
+      marca: values.marca?.trim() ? values.marca.trim() : null,
+      ano: values.ano?.trim() ? values.ano.trim() : null,
+      propriedade: values.propriedade ?? null,
+      aquisicao_forma: forma,
+      aquisicao_parcelas: parcelas,
+      descricao: values.descricao?.trim() ? values.descricao.trim() : null,
+    };
+
     try {
       if (inicial) {
+        // Antes da Onda 22 a edição gravava só os campos operacionais: marca,
+        // ano e propriedade eram coletados no cadastro e ficavam somente-leitura
+        // para sempre — o mesmo furo que o formulário do operador tinha.
         await equipamentosStore.update(inicial.id, {
           nome: values.nome,
           tipo: values.tipo,
@@ -79,6 +112,7 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
           identificador: values.identificador?.trim() ? values.identificador.trim() : null,
           status: values.status,
           ativo: values.ativo,
+          ...fichaTecnica,
         });
         toast.success("Equipamento atualizado.");
       } else {
@@ -91,9 +125,7 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
             identificador: values.identificador?.trim() ? values.identificador.trim() : null,
             status: "disponivel",
             ativo: values.ativo,
-            marca: values.marca?.trim() ? values.marca.trim() : null,
-            ano: values.ano?.trim() ? values.ano.trim() : null,
-            propriedade: values.propriedade ?? null,
+            ...fichaTecnica,
           },
           { planoIntervaloHoras },
         );
@@ -163,66 +195,110 @@ export function EquipamentoForm({ inicial, onSuccess, onCancel }: Props) {
         </div>
       </div>
 
-      {!inicial ? (
+      <div className="space-y-1.5">
+        <Label>Propriedade</Label>
+        <Controller
+          control={control}
+          name="propriedade"
+          render={({ field }) => (
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              className="justify-stretch"
+              value={field.value ?? "propria"}
+              onValueChange={(v) => v && field.onChange(v)}
+            >
+              <ToggleGroupItem
+                value="propria"
+                className="flex-1 gap-1.5 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/20 data-[state=on]:text-foreground"
+              >
+                <Icon icon="lucide:badge-check" className="h-4 w-4" />
+                Própria
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="locada"
+                className="flex-1 gap-1.5 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/20 data-[state=on]:text-foreground"
+              >
+                <Icon icon="lucide:link" className="h-4 w-4" />
+                Locada
+              </ToggleGroupItem>
+            </ToggleGroup>
+          )}
+        />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label>Propriedade</Label>
+          <Label htmlFor="marca">Marca / modelo *</Label>
+          <Input
+            id="marca"
+            placeholder="Ex.: Caterpillar 320"
+            {...register("marca")}
+            aria-invalid={!!errors.marca}
+          />
+          {errors.marca ? <p className="text-xs text-destructive">{errors.marca.message}</p> : null}
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="ano">Ano</Label>
+          <Input
+            id="ano"
+            inputMode="numeric"
+            placeholder="2019"
+            className="font-mono"
+            {...register("ano")}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="aquisicao_forma">Aquisição</Label>
           <Controller
             control={control}
-            name="propriedade"
+            name="aquisicao_forma"
             render={({ field }) => (
-              <ToggleGroup
-                type="single"
-                variant="outline"
-                className="justify-stretch"
-                value={field.value ?? "propria"}
-                onValueChange={(v) => v && field.onChange(v)}
-              >
-                <ToggleGroupItem
-                  value="propria"
-                  className="flex-1 gap-1.5 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/20 data-[state=on]:text-foreground"
-                >
-                  <Icon icon="lucide:badge-check" className="h-4 w-4" />
-                  Própria
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="locada"
-                  className="flex-1 gap-1.5 data-[state=on]:border-primary/50 data-[state=on]:bg-primary/20 data-[state=on]:text-foreground"
-                >
-                  <Icon icon="lucide:link" className="h-4 w-4" />
-                  Locada
-                </ToggleGroupItem>
-              </ToggleGroup>
+              <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                <SelectTrigger id="aquisicao_forma">
+                  <SelectValue placeholder="Selecione…" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="recursos_proprios">Recursos próprios</SelectItem>
+                  <SelectItem value="finame">FINAME/BNDES</SelectItem>
+                  <SelectItem value="leasing">Leasing</SelectItem>
+                  <SelectItem value="consorcio">Consórcio</SelectItem>
+                </SelectContent>
+              </Select>
             )}
           />
         </div>
-      ) : null}
-
-      {!inicial ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="marca">Marca / modelo *</Label>
-            <Input
-              id="marca"
-              placeholder="Ex.: Caterpillar 320"
-              {...register("marca")}
-              aria-invalid={!!errors.marca}
-            />
-            {errors.marca ? (
-              <p className="text-xs text-destructive">{errors.marca.message}</p>
-            ) : null}
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="ano">Ano</Label>
-            <Input
-              id="ano"
-              inputMode="numeric"
-              placeholder="2019"
-              className="font-mono"
-              {...register("ano")}
-            />
-          </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="aquisicao_parcelas">Parcelas</Label>
+          <Input
+            id="aquisicao_parcelas"
+            inputMode="numeric"
+            placeholder="48"
+            className="font-mono"
+            {...register("aquisicao_parcelas")}
+            aria-invalid={!!errors.aquisicao_parcelas}
+          />
+          {errors.aquisicao_parcelas ? (
+            <p className="text-xs text-destructive">{errors.aquisicao_parcelas.message}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              A parcela entra no custo fixo mensal da máquina.
+            </p>
+          )}
         </div>
-      ) : null}
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="descricao">Descrição</Label>
+        <Input
+          id="descricao"
+          placeholder="opcional — ex.: Uso geral em terraplenagem"
+          {...register("descricao")}
+        />
+      </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">

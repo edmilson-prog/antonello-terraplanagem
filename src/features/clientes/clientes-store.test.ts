@@ -17,10 +17,7 @@ import { clientesStore } from "./clientes-store";
 
 const emitirAuthState = (
   supabaseLib as unknown as {
-    emitirAuthStateParaTeste: (
-      evento: string,
-      session: { user: { id: string } } | null,
-    ) => void;
+    emitirAuthStateParaTeste: (evento: string, session: { user: { id: string } } | null) => void;
   }
 ).emitirAuthStateParaTeste;
 

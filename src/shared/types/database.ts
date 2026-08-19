@@ -204,6 +204,14 @@ export type Database = {
       clientes: {
         Row: {
           ativo: boolean;
+          nome_fantasia: string | null;
+          segmento: string | null;
+          email: string | null;
+          endereco: string | null;
+          cidade: string | null;
+          contato_nome: string | null;
+          contato_papel: string | null;
+          legado_importado_em: string | null;
           cli_codigo_legado: number | null;
           created_at: string;
           documento: string | null;
@@ -222,6 +230,14 @@ export type Database = {
         };
         Insert: {
           ativo?: boolean;
+          nome_fantasia?: string | null;
+          segmento?: string | null;
+          email?: string | null;
+          endereco?: string | null;
+          cidade?: string | null;
+          contato_nome?: string | null;
+          contato_papel?: string | null;
+          legado_importado_em?: string | null;
           cli_codigo_legado?: number | null;
           created_at?: string;
           documento?: string | null;
@@ -240,6 +256,14 @@ export type Database = {
         };
         Update: {
           ativo?: boolean;
+          nome_fantasia?: string | null;
+          segmento?: string | null;
+          email?: string | null;
+          endereco?: string | null;
+          cidade?: string | null;
+          contato_nome?: string | null;
+          contato_papel?: string | null;
+          legado_importado_em?: string | null;
           cli_codigo_legado?: number | null;
           created_at?: string;
           documento?: string | null;
@@ -567,6 +591,9 @@ export type Database = {
       equipamentos: {
         Row: {
           ano: string | null;
+          aquisicao_forma: string | null;
+          aquisicao_parcelas: number | null;
+          descricao: string | null;
           ativo: boolean;
           capacidade: string;
           created_at: string;
@@ -582,6 +609,9 @@ export type Database = {
         };
         Insert: {
           ano?: string | null;
+          aquisicao_forma?: string | null;
+          aquisicao_parcelas?: number | null;
+          descricao?: string | null;
           ativo?: boolean;
           capacidade: string;
           created_at?: string;
@@ -597,6 +627,9 @@ export type Database = {
         };
         Update: {
           ano?: string | null;
+          aquisicao_forma?: string | null;
+          aquisicao_parcelas?: number | null;
+          descricao?: string | null;
           ativo?: boolean;
           capacidade?: string;
           created_at?: string;

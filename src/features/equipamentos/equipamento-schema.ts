@@ -24,6 +24,12 @@ export const equipamentoSchema = z.object({
   propriedade: z.enum(["propria", "locada"]).optional(),
   marca: z.string().trim().optional(),
   ano: z.string().trim().optional(),
+  aquisicao_forma: z.enum(["recursos_proprios", "finame", "leasing", "consorcio"]).optional(),
+  // Texto livre pelo mesmo motivo de plano_intervalo_horas: z.coerce/preprocess
+  // fazem input e output do resolver divergirem do FieldValues único de
+  // useForm<T>. O parse acontece em `onSubmit`.
+  aquisicao_parcelas: z.string().trim().optional(),
+  descricao: z.string().trim().optional(),
   // Texto livre em vez de número: mistura mal com z.coerce/preprocess nos
   // tipos do react-hook-form (input/output do resolver divergem do
   // FieldValues único que useForm<T> espera). O parse e a validação

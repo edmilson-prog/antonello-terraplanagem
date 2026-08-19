@@ -106,6 +106,16 @@ function listarArquivos(dir) {
   return saida;
 }
 
+/*
+ * Heurística de linha, não parser: pega `//`, `*` de bloco e `/*`. Uma string
+ * contendo "//" passaria por comentário — aceitável, porque o custo do erro
+ * aqui é um achado a menos numa varredura que já é complementada por revisão.
+ */
+function ehComentario(linha) {
+  const t = linha.trim();
+  return t.startsWith("//") || t.startsWith("*") || t.startsWith("/*");
+}
+
 function temExcecao(rel, regraId) {
   return EXCECOES.some(
     (e) => rel.split(sep).join("/").startsWith(e.arquivo) && e.regras.includes(regraId),
@@ -120,6 +130,12 @@ for (const caminho of listarArquivos(SRC)) {
 
   const linhas = readFileSync(caminho, "utf8").split("\n");
   linhas.forEach((linha, i) => {
+    // Comentário que cita um padrão pelo nome está explicando o que foi
+    // removido, não fabricando dado. Contar isso como achado obrigaria a
+    // apagar a memória de por que a mudança existe — e o histórico é o que
+    // impede alguém de reintroduzir o mesmo mock daqui a três ondas.
+    if (ehComentario(linha)) return;
+
     for (const regra of REGRAS) {
       if (!regra.regex.test(linha)) continue;
       if (temExcecao(rel, regra.id)) continue;

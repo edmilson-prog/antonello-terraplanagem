@@ -13,7 +13,7 @@ export function FaroltiSnapshotCard({
   origemMigracao,
 }: {
   cliente: Cliente;
-  origemMigracao: string;
+  origemMigracao: string | null;
 }): JSX.Element | null {
   if (cliente.cli_codigo_legado == null) return null;
 
@@ -63,7 +63,7 @@ export function FaroltiSnapshotCard({
             cliente.legado_recencia_dias != null ? `${cliente.legado_recencia_dias} dias` : "—"
           }
         />
-        <Celula rotulo="Origem" valor={origemMigracao} />
+        <Celula rotulo="Origem" valor={origemMigracao ?? "—"} />
       </div>
     </section>
   );

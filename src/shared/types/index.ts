@@ -16,6 +16,8 @@ export type EquipamentoStatus = "disponivel" | "em_uso" | "manutencao";
 
 export type PropriedadeEquipamento = "propria" | "locada";
 
+export type FormaAquisicao = "recursos_proprios" | "finame" | "leasing" | "consorcio";
+
 export interface Equipamento {
   id: string;
   nome: string;
@@ -27,7 +29,10 @@ export interface Equipamento {
   ativo: boolean; // soft-delete / cadastral
   marca: string | null; // marca/modelo (ex.: "Caterpillar 320") — só coletado na criação
   ano: string | null; // ano de fabricação — só coletado na criação
-  propriedade: PropriedadeEquipamento | null; // própria/locada — só coletado na criação
+  propriedade: PropriedadeEquipamento | null; // própria/locada
+  aquisicao_forma: FormaAquisicao | null; // parcela de FINAME/leasing entra no custo fixo (PRD-013)
+  aquisicao_parcelas: number | null; // só com forma financiada
+  descricao: string | null; // observação livre sobre o uso da máquina
   created_at: string;
   updated_at: string;
 }
@@ -57,6 +62,15 @@ export interface Cliente {
   telefone: string | null;
   tipo_pessoa?: "PF" | "PJ" | null;
   ativo: boolean;
+  // Comerciais e de contato — todos opcionais. `contato_nome`/`contato_papel`
+  // e `email` são dados pessoais de terceiro (LGPD: minimização).
+  nome_fantasia: string | null;
+  segmento: string | null;
+  email: string | null;
+  endereco: string | null;
+  cidade: string | null;
+  contato_nome: string | null;
+  contato_papel: string | null;
   created_at: string;
   updated_at: string;
   // Snapshot importado do ERP legado (FarolTI) — congelado no momento da
@@ -70,6 +84,7 @@ export interface Cliente {
   legado_ultima_os?: string | null; // date (YYYY-MM-DD)
   legado_recencia_dias?: number | null;
   legado_curva_abc?: "A" | "B" | "C" | null;
+  legado_importado_em?: string | null; // date — quando o snapshot foi importado
 }
 
 export interface FaturamentoMes {

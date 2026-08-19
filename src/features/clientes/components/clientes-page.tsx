@@ -20,10 +20,8 @@ import { StatusAtivo } from "@/shared/components/status-ativo";
 import { LinhaEntidadeCell } from "@/shared/components/linha-entidade-cell";
 import { formatDocumento, formatTelefone } from "@/shared/lib/format";
 import { formatBRL } from "@/features/retaguarda/format";
-import { idMockDoCliente } from "@/shared/lib/cliente-mock-id";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { ClienteForm } from "@/features/clientes/components/cliente-form";
-import { showcaseDoCliente } from "@/features/clientes/cliente-showcase-data";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
 import type { Cliente } from "@/shared/types";
@@ -81,16 +79,18 @@ export function ClientesPage() {
   const viewsPaginados: ClienteListView[] = useMemo(
     () =>
       listaPaginada.map((cliente) => {
-        const idMock = idMockDoCliente(cliente.id);
-        const osDoCliente = ordens.filter((o) => o.cliente_id === idMock);
-        const contasDoCliente = contas.filter((c) => c.cliente_id === idMock);
-        const osAtivas = osDoCliente.filter((o) => o.status !== "fechada").length;
-        const saldo = contasDoCliente
-          .filter((c) => c.status === "aberta")
+        // Comparação por id REAL. Antes passava por `idMockDoCliente`, que
+        // traduzia o UUID para o id fixture — e desde que as ordens saíram de
+        // src/mocks/ não casava com nada: toda linha mostrava 0 OS e R$ 0,00.
+        const osAtivas = ordens.filter(
+          (o) => o.cliente_id === cliente.id && o.status !== "fechada",
+        ).length;
+        const saldo = contas
+          .filter((c) => c.cliente_id === cliente.id && c.status === "aberta")
           .reduce((s, c) => s + c.valor, 0);
         return {
           cliente,
-          cidade: showcaseDoCliente(cliente.id).cadastrais.cidade,
+          cidade: cliente.cidade ?? "—",
           osAtivas,
           saldo,
         };
