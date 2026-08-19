@@ -22,6 +22,10 @@ Instalado, o app abre pelo ícone em tela cheia (mais tela útil sob sol, sem a 
 - `ehIOS()` e `rodandoInstalado()` saíram de `features/notificacoes/push.ts` para `features/instalacao/deteccao.ts`. A pergunta "este app está instalado?" é da instalação; o push é um dos interessados, não o dono.
 - O cartão de avisos do Perfil, no iPhone, parou de repetir o passo a passo: aponta para o convite que está logo acima, na mesma tela. Dois textos para manter viravam dois cartões dizendo a mesma coisa.
 
+### Fixed
+- **Tema escuro não valia no app de campo.** A classe `.dark` só era aplicada por um `useEffect` dentro do `useTheme()`, e no ambiente do operador o único consumidor do hook era a aba Perfil: recarregar direto em `/app` abria claro mesmo com "escuro" salvo. Agora um script inline no `<head>` aplica a preferência **antes da primeira pintura** — o que de quebra acaba com o flash de tela clara na retaguarda e no site.
+- **`useTheme()` virou store compartilhado** (`useSyncExternalStore`): cada chamada tinha estado próprio e duas instâncias na mesma tela se dessincronizavam. Por isso o login voltou a usar o `<ThemeToggle />`, no lugar do botão inline que existia só para contornar o problema.
+
 ### Notas
 - **O convite não aparece onde não há como instalar.** Sem prompt nativo e fora do iOS (Firefox, Safari de desktop), ele fica oculto: pedir ao operador algo que o navegador dele não faz é pior do que não pedir.
 - Quem decide se o prompt nativo existe é o **navegador** (manifest válido, HTTPS e os critérios dele). O convite reage ao evento quando ele chega; não tenta forçá-lo.
