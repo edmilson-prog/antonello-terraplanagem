@@ -19,8 +19,16 @@ export type EstadoPush =
   | "desligado"
   | "ligado";
 
-/** O padrão Web Push manda a chave como Uint8Array, não como a string base64url. */
-function base64UrlParaUint8Array(base64: string): Uint8Array {
+/*
+ * O padrão Web Push manda a chave como Uint8Array, não como a string base64url.
+ *
+ * O parâmetro de tipo é explícito porque `applicationServerKey` exige
+ * `BufferSource`, que aceita view sobre `ArrayBuffer` mas não sobre
+ * `SharedArrayBuffer`. Sem ele, o `Uint8Array` genérico do TS 5.7+ carrega
+ * `ArrayBufferLike` e o compilador recusa — mesmo o buffer aqui sendo sempre
+ * um `ArrayBuffer` comum, criado logo abaixo.
+ */
+function base64UrlParaUint8Array(base64: string): Uint8Array<ArrayBuffer> {
   const preenchimento = "=".repeat((4 - (base64.length % 4)) % 4);
   const normalizada = (base64 + preenchimento).replace(/-/g, "+").replace(/_/g, "/");
   const bruto = window.atob(normalizada);

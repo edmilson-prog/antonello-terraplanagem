@@ -18,7 +18,13 @@ import { formatHorimetro } from "@/shared/lib/format";
 
 const litrosFormatter = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 1 });
 
-async function tentar(rotulo: string, executar: () => Promise<{ error: unknown }>) {
+/*
+ * `PromiseLike`, e não `Promise`: quem chega aqui é sempre um
+ * `PostgrestFilterBuilder` do supabase-js, que é um thenable — tem `then`, mas
+ * não `catch`, `finally` nem `Symbol.toStringTag`. O `await` abaixo funciona
+ * com qualquer thenable, então só a anotação estava errada.
+ */
+async function tentar(rotulo: string, executar: () => PromiseLike<{ error: unknown }>) {
   try {
     const { error } = await executar();
     if (error) console.warn(`Notificação (${rotulo}) não registrada:`, error);
