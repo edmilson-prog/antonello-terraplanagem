@@ -103,6 +103,22 @@ escrever sozinhos hoje. Ficam **declaradas como exceção** em `scripts/auditar-
   servidor (nunca no bundle), roteando por tarefa; horímetro e cupom por visão.
 - **Bloqueio:** chave de API do provedor de LLM.
 
+## 4-bis. Deriva de schema (achado na validação de 2026-08-19)
+
+As migrações **não reproduziam a produção**: `cli_codigo_legado` e as colunas
+`legado_*` de `clientes` eram lidas pelo código e estavam nos types, mas nenhuma
+migração as criava — foram adicionadas à mão no painel do Supabase.
+
+Corrigido por `20260819122500_clientes_snapshot_farolti.sql`. A lição vale como
+regra: **coluna que o código lê tem que estar numa migração**. Alteração feita
+pelo painel é deriva, e só aparece quando um ambiente novo nasce sem ela.
+
+Verificação disponível sem tocar a produção: subir um Postgres local, aplicar o
+andaime do Supabase (papéis, `auth.users`, `auth.uid()`, pgcrypto, dublês de
+`pg_net`/`pg_cron`) e rodar `supabase/migrations/*.sql` em ordem. As únicas
+falhas esperadas são as duas migrações que dependem de `pg_net`/`pg_cron` — e a
+cascata de uma delas.
+
 ## 5. `src/mocks/`
 
 | Item                             | Estado                                                                                                              |
