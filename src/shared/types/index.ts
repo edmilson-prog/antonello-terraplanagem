@@ -482,11 +482,15 @@ export interface ComponenteCusto {
   updated_at: string;
 }
 
-// Gateway de Cobrança (PRD-008) — MVP mockado, multi-provedor via adapter.
+// Gateway de Cobrança (PRD-008) — multi-provedor via adapter.
 // CobrancaGateway é uma entidade lateral (não altera ContaReceber): referencia
-// conta_receber_id e espelha o valor da conta no momento da emissão. Nunca há
-// chamada de rede real nesta fase — linha_digitavel/pix_copia_cola são
-// strings simuladas geradas localmente (ver features/cobranca-gateway/derivacoes.ts).
+// conta_receber_id e espelha o valor da conta no momento da emissão.
+//
+// PENDÊNCIA ABERTA (docs/PENDENCIAS-MOCK.md): a cobrança é persistida de
+// verdade, mas `linha_digitavel` e `pix_copia_cola` ainda são gerados
+// localmente e o pagamento é confirmado por um "webhook" simulado. Falta a
+// credencial do provedor escolhido pelo cliente — é a última integração sem
+// caminho de rede real no projeto, junto com a suíte de IA.
 export type ProvedorGateway = "mercado_pago" | "asaas";
 export type StatusCobranca = "pendente" | "paga" | "cancelada";
 
@@ -504,12 +508,15 @@ export interface CobrancaGateway {
   updated_at: string;
 }
 
-// Aviso ao Cliente por WhatsApp (PRD-009) — MVP mockado, multi-provedor via adapter.
+// Aviso ao Cliente por WhatsApp (PRD-009) — multi-provedor via adapter.
 // AvisoWhatsApp é uma entidade lateral (não altera OrdemServico nem Cliente):
 // referencia os_id/cliente_id. Disparado ao fechar a OS (ver
-// features/ordem-servico/components/ordem-detalhe-retaguarda.tsx). Nunca há
-// chamada de rede real nesta fase — mensagem_preview é texto simulado,
-// sem valores (ver features/aviso-whatsapp/derivacoes.ts).
+// features/ordem-servico/components/ordem-detalhe-retaguarda.tsx).
+//
+// O envio é REAL: passa pela Edge Function `waha-enviar-texto`, que guarda o
+// segredo no servidor. `mensagem_preview` é o texto efetivamente enviado —
+// gravado só quando o provedor confirma, e nunca cita valor (barreira
+// financeira do PRD-009).
 export type ProvedorWhatsApp =
   | "evolution_api"
   | "evolution_go"

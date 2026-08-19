@@ -8,8 +8,8 @@
 | **Cliente** | Leonardo Antonello |
 | **Repositório** | [a definir — repo único / monorepo] |
 | **Início** | Jun/2026 |
-| **Versão Atual** | 0.20.0 (Ignition) |
-| **Fase Atual** | Fase 4 (Backend) — em andamento |
+| **Versão Atual** | 0.37.0 (Groundtruth) |
+| **Fase Atual** | Fase 4 (Backend) — conexão mock→real **concluída** (v0.37.0). Restam duas integrações bloqueadas por credencial do cliente — ver [`docs/PENDENCIAS-MOCK.md`](../PENDENCIAS-MOCK.md) |
 | **PRDs no Roadmap** | 20 números (PRD-000 a PRD-019) — **21 documentos** ao todo: o número **PRD-019** foi atribuído, por descuido, a dois PRDs distintos (`PRD-019-ret-painel-operacional`, v0.18.0 "Beacon", e `PRD-019-all-ia-suite-embarcada`, v0.19.0 "Copilot") — colisão preservada como histórico real, ver nota em "Decisões Importantes" |
 | **PRDs Documentados** | **21/21 documentados**: roadmap original (PRD-000 a PRD-014) + **PRD-015** (pós-roadmap, home screens) + **PRD-016** (pós-roadmap, dashboard gerencial) + **PRD-017/PRD-018** (pós-roadmap, backend real: auth + schema/migrations/seed — Fase 4) + **PRD-019 ×2** (painel operacional + suíte de IA embarcada) |
 | **PRDs Implementados** | **21/21 (100%)** — roadmap numerado (000–014) 100% implementado + integrações provisórias 008/009 (MVP mockado, Fase 4) + PRD-015 (home screens) + PRD-016 (dashboard gerencial) + **PRD-017/018** (auth real + schema/RLS/seed — primeiro backend real do projeto) + **PRD-019 ×2** (painel operacional e suíte de IA embarcada) também implementados |
@@ -131,6 +131,24 @@ Duas entregas pós-roadmap que, por descuido, dividem o mesmo número **019** (v
 | 019* | `PRD-019-all-ia-suite-embarcada_DONE.md` | Feature (suíte one-shot) | all | Alta | 002, 003, 004, 006, 007, 010, 011, 012, 013, 014, 016 | feature | ✍️ | ✅ |
 
 \* Numeração colidida com a linha acima — ver nota em "Decisões Importantes".
+
+### Pós-Roadmap — conexão mock→real (Ondas 17 a 22)
+
+Trabalho sem PRD numerado: a migração incremental de cada feature de `src/mocks/` para o
+Supabase, onda a onda, mais a auditoria que impede a reintrodução. Fechada na **v0.37.0
+(Groundtruth)**, que tirou da tela os últimos geradores de dado de exemplo — os
+`*-showcase-data.ts`, o `useMockResource` e as coordenadas fixas do mapa.
+
+Estado corrente por item: [`docs/PENDENCIAS-MOCK.md`](../PENDENCIAS-MOCK.md), mantido
+pela diretriz **D1** do `CLAUDE.md` e verificado por `npm run auditar:mocks`.
+
+| Onda | Versão | O que saiu do mock |
+|------|--------|--------------------|
+| 17–19 | 0.31–0.34 | Cadastros, ordens, apontamentos, manutenção, notificações |
+| 20 | 0.34.0 | Preços, componentes de custo, abastecimentos, histórico de preços |
+| 21 | 0.35.0 (Ledgerline) | Cadeia do faturamento: faturamentos, contas, comprovantes, cobranças |
+| 21 | 0.36.0 (Uplink) | Registros de campo — a fila offline ganhou onde esvaziar |
+| 22 | 0.37.0 (Groundtruth) | Telas de detalhe, estados de carregamento, análise de faturamento, mapa operacional |
 
 ---
 
