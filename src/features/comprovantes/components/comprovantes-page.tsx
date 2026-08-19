@@ -10,7 +10,7 @@ import {
   type StatusFilterChipItem,
 } from "@/shared/components/status-filter-chips";
 import { CardPill } from "@/shared/components/card-secao";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { comprovantesStore } from "@/features/comprovantes/comprovantes-store";
 import {
   StatusComprovanteBadge,
@@ -24,7 +24,11 @@ import type { Comprovante, StatusComprovante } from "@/shared/types";
 
 export function ComprovantesPage() {
   const todos = comprovantesStore.useTodos();
-  const { isLoading, error, retry } = useMockResource(todos);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: comprovantesStore.useEstado(), retry: comprovantesStore.retry },
+    { estado: ordensStore.useEstado(), retry: ordensStore.retry },
+    { estado: clientesStore.useEstado(), retry: clientesStore.retry },
+  );
   const [q, setQ] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<StatusComprovante | "todos">("todos");
 

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
@@ -35,7 +35,13 @@ export function TilesOrdensHoras() {
   const faturamentos = faturamentosStore.useTodos();
   const contasReceber = contasReceberStore.useTodas();
   const operadores = operadoresStore.useAll();
-  const { isLoading, error, retry } = useMockResource(ordens);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: ordensStore.useEstado(), retry: ordensStore.retry },
+    { estado: apontamentosStore.useEstado(), retry: apontamentosStore.retry },
+    { estado: faturamentosStore.useEstado(), retry: faturamentosStore.retry },
+    { estado: contasReceberStore.useEstado(), retry: contasReceberStore.retry },
+    { estado: operadoresStore.useEstado(), retry: operadoresStore.retry },
+  );
 
   const dados = useMemo(() => {
     const referencia = dataReferenciaOperacional(ordens, apontamentos, faturamentos, contasReceber);

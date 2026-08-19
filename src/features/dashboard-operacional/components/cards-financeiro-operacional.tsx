@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
@@ -35,7 +35,15 @@ export function CardsFinanceiroOperacional() {
   const equipamentos = equipamentosStore.useAll();
   const precosHM = precoHoraMaquinaStore.useAll();
   const precosFund = precoFundacaoStore.useAll();
-  const { isLoading, error, retry } = useMockResource(faturamentos);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: ordensStore.useEstado(), retry: ordensStore.retry },
+    { estado: apontamentosStore.useEstado(), retry: apontamentosStore.retry },
+    { estado: faturamentosStore.useEstado(), retry: faturamentosStore.retry },
+    { estado: contasReceberStore.useEstado(), retry: contasReceberStore.retry },
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+    { estado: precoHoraMaquinaStore.useEstado(), retry: precoHoraMaquinaStore.retry },
+    { estado: precoFundacaoStore.useEstado(), retry: precoFundacaoStore.retry },
+  );
 
   const referencia = useMemo(
     () => dataReferenciaOperacional(ordens, apontamentos, faturamentos, contasReceber),

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardSecao, CardPill } from "@/shared/components/card-secao";
 import { EmptyState } from "@/shared/components/empty-state";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { contasReceberStore } from "@/features/financeiro/contas-receber-store";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
@@ -29,7 +29,13 @@ export function GraficoContasReceberCliente() {
   const ordens = ordensStore.useTodas();
   const apontamentos = apontamentosStore.useTodos();
   const faturamentos = faturamentosStore.useTodos();
-  const { isLoading, error, retry } = useMockResource(contasReceber);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: contasReceberStore.useEstado(), retry: contasReceberStore.retry },
+    { estado: clientesStore.useEstado(), retry: clientesStore.retry },
+    { estado: ordensStore.useEstado(), retry: ordensStore.retry },
+    { estado: apontamentosStore.useEstado(), retry: apontamentosStore.retry },
+    { estado: faturamentosStore.useEstado(), retry: faturamentosStore.retry },
+  );
 
   const dados = useMemo(() => {
     const referencia = dataReferenciaOperacional(ordens, apontamentos, faturamentos, contasReceber);

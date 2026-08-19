@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import { CardSecao, CardPill } from "@/shared/components/card-secao";
 import { EmptyState } from "@/shared/components/empty-state";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { buscarClima, LOCAL_PADRAO, type Clima } from "@/features/dashboard-operacional/clima";
@@ -21,7 +21,10 @@ const PLACEHOLDER = <div className="h-[360px] animate-pulse bg-muted" />;
 export function MapaCanteiro() {
   const equipamentos = equipamentosStore.useAll();
   const apontamentos = apontamentosStore.useTodos();
-  const { isLoading, error, retry } = useMockResource(equipamentos);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+    { estado: apontamentosStore.useEstado(), retry: apontamentosStore.retry },
+  );
   const [montado, setMontado] = useState(false);
 
   useEffect(() => {

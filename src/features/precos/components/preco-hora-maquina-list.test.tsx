@@ -12,14 +12,20 @@ import type { ComponenteCusto } from "@/shared/types";
 // sem alterar os fixtures compartilhados, dos quais outros testes do repo
 // dependem (custo-hora/derivacoes.test.ts, componente-custo-form.test.tsx).
 vi.mock("@/features/custo-hora/componentes-custo-store", () => ({
-  componentesCustoStore: { useAll: vi.fn() },
+  componentesCustoStore: {
+    useAll: vi.fn(),
+    // A tela combina o estado real das stores que cruza (Onda 22); o dublê
+    // precisa responder pelo contrato inteiro, não só pelos dados.
+    useEstado: () => ({ isLoading: false, error: null }),
+    retry: vi.fn(),
+  },
 }));
 
 describe("PrecoHoraMaquinaList — Custo ref./Margem", () => {
-  // PrecoHoraMaquinaList usa useMockResource (delay simulado de loading) e
-  // equipamentosStore (carregamento assíncrono via Supabase mockado) — por
-  // isso as consultas usam findBy/findAllBy (retry com timeout) em vez de
-  // getBy/getAllBy síncronos.
+  // A tela espera as três stores que cruza (preços, equipamentos e
+  // componentes de custo) chegarem antes de renderizar a tabela — por isso as
+  // consultas usam findBy/findAllBy (retry com timeout) em vez de getBy/getAllBy
+  // síncronos.
 
   beforeEach(() => {
     // Default: mesmos dados do fixture real, para os 3 primeiros testes

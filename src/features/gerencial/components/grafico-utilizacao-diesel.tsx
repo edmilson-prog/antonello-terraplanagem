@@ -3,7 +3,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/shared/components/empty-state";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { abastecimentosStore } from "@/features/diesel/abastecimentos-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
@@ -26,7 +26,11 @@ export function GraficoUtilizacaoDiesel({ periodo }: Props) {
         .map((d) => ({ nome: d.equipamento.nome, consumo: d.consumo_medio_l_h as number })),
     [equipamentos, abastecimentos, apontamentos, periodo],
   );
-  const { isLoading, error, retry } = useMockResource(dados);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+    { estado: abastecimentosStore.useEstado(), retry: abastecimentosStore.retry },
+    { estado: apontamentosStore.useEstado(), retry: apontamentosStore.retry },
+  );
 
   return (
     <section className="rounded-xl border bg-card p-5 shadow-sm">

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { KpiHeroi } from "@/shared/components/kpi-heroi";
 import { CardSecao, CardPill } from "@/shared/components/card-secao";
 import { EmptyState } from "@/shared/components/empty-state";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { abastecimentosStore } from "@/features/diesel/abastecimentos-store";
@@ -94,7 +94,14 @@ export function PainelCustoHora({ periodo }: Props) {
     [abastecimentos, periodo],
   );
 
-  const { isLoading, error, retry } = useMockResource(resultados);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+    { estado: apontamentosStore.useEstado(), retry: apontamentosStore.retry },
+    { estado: abastecimentosStore.useEstado(), retry: abastecimentosStore.retry },
+    { estado: registrosManutencaoStore.useEstado(), retry: registrosManutencaoStore.retry },
+    { estado: precoHoraMaquinaStore.useEstado(), retry: precoHoraMaquinaStore.retry },
+    { estado: componentesCustoStore.useEstado(), retry: componentesCustoStore.retry },
+  );
 
   const nomeDoEquipamento = (equipamentoId: string) =>
     equipamentos.find((e) => e.id === equipamentoId)?.nome ?? "Equipamento";
