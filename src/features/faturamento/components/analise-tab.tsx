@@ -18,6 +18,7 @@ import { Download, TrendingUp, Clock, Receipt, CalendarRange } from "lucide-reac
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -28,75 +29,90 @@ import {
 import { brl, numero } from "@/features/retaguarda/format";
 import { exportarFaturamentoPdf } from "@/features/retaguarda/export-faturamento-pdf";
 import {
-  faturamentoMensal,
-  faturamentoPorEquipamento,
-  faturamentoPorCliente,
-} from "@/mocks/faturamento";
+  porCliente,
+  porEquipamento,
+  rangeDePreset,
+  resumoDoPeriodo,
+  serieMensal,
+  type PeriodoPreset,
+} from "@/features/faturamento/analise";
+import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
+import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
+import { clientesStore } from "@/features/clientes/clientes-store";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
+import type { FaturamentoMes } from "@/shared/types";
 import { cn } from "@/lib/utils";
 
 const CORES = ["#FFB300", "#A2622F", "#717A82", "#C07B43", "#2C2719"];
 
-type PeriodoPreset = "3m" | "6m" | "ytd" | "custom";
-
-const MESES_ORDENADOS = [...faturamentoMensal].sort((a, b) => a.mes.localeCompare(b.mes));
-const PRIMEIRO_MES = MESES_ORDENADOS[0]?.mes ?? "";
-const ULTIMO_MES = MESES_ORDENADOS[MESES_ORDENADOS.length - 1]?.mes ?? "";
-
-function rangeDePreset(preset: PeriodoPreset): { de: string; ate: string } {
-  if (preset === "custom") return { de: PRIMEIRO_MES, ate: ULTIMO_MES };
-  if (preset === "ytd") {
-    const ano = ULTIMO_MES.slice(0, 4);
-    return { de: `${ano}-01`, ate: ULTIMO_MES };
-  }
-  const n = preset === "3m" ? 3 : 6;
-  const fim = MESES_ORDENADOS.length - 1;
-  const inicio = Math.max(0, fim - n + 1);
-  return { de: MESES_ORDENADOS[inicio].mes, ate: MESES_ORDENADOS[fim].mes };
-}
-
 export function AnaliseTab() {
+  const faturamentos = faturamentosStore.useTodos();
+  const equipamentos = equipamentosStore.useAll();
+  const clientes = clientesStore.useAll();
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: faturamentosStore.useEstado(), retry: faturamentosStore.retry },
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+    { estado: clientesStore.useEstado(), retry: clientesStore.retry },
+  );
+
+  const meses = useMemo(() => serieMensal(faturamentos), [faturamentos]);
+
   const [preset, setPreset] = useState<PeriodoPreset>("6m");
-  const [{ de, ate }, setRange] = useState(() => rangeDePreset("6m"));
+  const [rangeManual, setRangeManual] = useState<{ de: string; ate: string } | null>(null);
+
+  // O recorte depende dos meses que EXISTEM na base, e a base chega depois da
+  // primeira renderização. Guardar o range só quando a pessoa mexe nele
+  // (`rangeManual`) evita congelar um intervalo calculado sobre lista vazia.
+  const { de, ate } = rangeManual ?? rangeDePreset(preset, meses);
 
   const aplicarPreset = (p: PeriodoPreset) => {
     setPreset(p);
-    if (p !== "custom") setRange(rangeDePreset(p));
+    setRangeManual(p === "custom" ? rangeDePreset("custom", meses) : null);
   };
 
-  const mesesFiltrados = useMemo(
-    () => MESES_ORDENADOS.filter((m) => m.mes >= de && m.mes <= ate),
-    [de, ate],
-  );
-
-  const totalHorasPeriodo = mesesFiltrados.reduce((s, m) => s + m.horas_faturadas, 0);
-  const totalValorPeriodo = mesesFiltrados.reduce((s, m) => s + m.valor, 0);
-  const totalHorasGeral = MESES_ORDENADOS.reduce((s, m) => s + m.horas_faturadas, 0);
-  const totalValorGeral = MESES_ORDENADOS.reduce((s, m) => s + m.valor, 0);
-  const fatorHoras = totalHorasGeral > 0 ? totalHorasPeriodo / totalHorasGeral : 0;
-  const fatorValor = totalValorGeral > 0 ? totalValorPeriodo / totalValorGeral : 0;
-  const ticketMedio = totalHorasPeriodo > 0 ? totalValorPeriodo / totalHorasPeriodo : 0;
+  const {
+    meses: mesesFiltrados,
+    totalHoras,
+    totalValor,
+    ticketMedio,
+  } = useMemo(() => resumoDoPeriodo(meses, { de, ate }), [meses, de, ate]);
 
   const equipamentosFiltrados = useMemo(
-    () =>
-      faturamentoPorEquipamento
-        .map((e) => ({
-          ...e,
-          horas: Math.round(e.horas * fatorHoras),
-          valor: Math.round(e.valor * fatorValor),
-        }))
-        .filter((e) => e.horas > 0 || e.valor > 0),
-    [fatorHoras, fatorValor],
+    () => porEquipamento(faturamentos, equipamentos, de, ate),
+    [faturamentos, equipamentos, de, ate],
   );
 
   const clientesFiltrados = useMemo(
-    () =>
-      faturamentoPorCliente
-        .map((c) => ({ ...c, valor: Math.round(c.valor * fatorValor) }))
-        .filter((c) => c.valor > 0),
-    [fatorValor],
+    () => porCliente(faturamentos, clientes, de, ate),
+    [faturamentos, clientes, de, ate],
   );
 
+  const totalHorasPeriodo = totalHoras;
+  const totalValorPeriodo = totalValor;
   const semDados = mesesFiltrados.length === 0;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-24 w-full rounded-xl" />
+        <Skeleton className="h-72 w-full rounded-xl" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div
+        role="alert"
+        className="flex flex-col items-center gap-3 rounded-xl border border-dashed bg-card px-6 py-16 text-center"
+      >
+        <p className="text-sm text-muted-foreground">{error.message}</p>
+        <Button variant="outline" onClick={retry}>
+          Tentar novamente
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -136,9 +152,10 @@ export function AnaliseTab() {
               <Label className="text-[11px] font-mono uppercase text-foreground-faint">De</Label>
               <SeletorMes
                 valor={de}
+                meses={meses}
                 aoMudar={(v) => {
                   setPreset("custom");
-                  setRange((r) => ({ de: v, ate: v > r.ate ? v : r.ate }));
+                  setRangeManual({ de: v, ate: v > ate ? v : ate });
                 }}
               />
             </div>
@@ -146,14 +163,23 @@ export function AnaliseTab() {
               <Label className="text-[11px] font-mono uppercase text-foreground-faint">Até</Label>
               <SeletorMes
                 valor={ate}
+                meses={meses}
                 aoMudar={(v) => {
                   setPreset("custom");
-                  setRange((r) => ({ de: v < r.de ? v : r.de, ate: v }));
+                  setRangeManual({ de: v < de ? v : de, ate: v });
                 }}
               />
             </div>
             <Button
-              onClick={exportarFaturamentoPdf}
+              onClick={() =>
+                exportarFaturamentoPdf({
+                  meses: mesesFiltrados,
+                  equipamentos: equipamentosFiltrados,
+                  clientes: clientesFiltrados,
+                  periodo: { de, ate },
+                })
+              }
+              disabled={semDados}
               className="gap-2 bg-primary text-primary-foreground hover:bg-primary-hover"
             >
               <Download className="h-4 w-4" />
@@ -175,7 +201,9 @@ export function AnaliseTab() {
 
       {semDados ? (
         <div className="rounded-xl border border-dashed bg-card p-10 text-center text-sm text-muted-foreground">
-          Sem dados no período selecionado.
+          {meses.length === 0
+            ? "Nenhuma nota faturada ainda — a análise aparece quando a primeira OS for faturada."
+            : "Sem faturamento no período selecionado."}
         </div>
       ) : (
         <>
@@ -323,16 +351,26 @@ export function AnaliseTab() {
   );
 }
 
-function SeletorMes({ valor, aoMudar }: { valor: string; aoMudar: (v: string) => void }) {
+// Só oferece meses que têm faturamento. Listar todo o calendário permitiria
+// escolher um recorte que a base garantidamente não cobre.
+function SeletorMes({
+  valor,
+  meses,
+  aoMudar,
+}: {
+  valor: string;
+  meses: FaturamentoMes[];
+  aoMudar: (v: string) => void;
+}) {
   return (
-    <Select value={valor} onValueChange={aoMudar}>
+    <Select value={valor} onValueChange={aoMudar} disabled={meses.length === 0}>
       <SelectTrigger className="h-9 w-[140px]">
-        <SelectValue />
+        <SelectValue placeholder="—" />
       </SelectTrigger>
       <SelectContent>
-        {MESES_ORDENADOS.map((m) => (
+        {meses.map((m) => (
           <SelectItem key={m.mes} value={m.mes}>
-            {m.rotulo} / {m.mes.slice(0, 4)}
+            {m.rotulo}
           </SelectItem>
         ))}
       </SelectContent>

@@ -3,8 +3,8 @@ import { supabase } from "@/lib/supabase";
 import { assinarCredencial, credencialAtual } from "@/lib/credencial";
 
 /*
- * Store reativo respaldado pelo Supabase, com a MESMA API pública do
- * `createMockStore` — só as escritas viraram assíncronas.
+ * Store reativo respaldado pelo Supabase, com a MESMA API pública do antigo
+ * store mock em memória — só as escritas viraram assíncronas.
  *
  * Nasceu na Onda 20, quando quatro stores precisavam sair do mock ao mesmo
  * tempo (três de preços e componentes de custo) e todas repetiriam o mesmo

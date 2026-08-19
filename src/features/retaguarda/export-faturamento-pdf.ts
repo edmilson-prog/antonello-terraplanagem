@@ -1,11 +1,45 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { brl, numero } from "@/features/retaguarda/format";
-import {
-  faturamentoMensal,
-  faturamentoPorEquipamento,
-  faturamentoPorCliente,
-} from "@/mocks/faturamento";
+import type {
+  FaturamentoMes,
+  FaturamentoPorCliente,
+  FaturamentoPorEquipamento,
+} from "@/shared/types";
+
+/*
+ * O relatório recebe os dados já recortados pela tela, em vez de importar as
+ * constantes de `src/mocks/faturamento.ts` como antes. Além de o conteúdo ser
+ * inventado, o PDF ignorava o período escolhido na tela: o cabeçalho dizia
+ * "últimos 6 meses" enquanto o usuário olhava para "últimos 3".
+ */
+export interface DadosRelatorioFaturamento {
+  meses: FaturamentoMes[];
+  equipamentos: FaturamentoPorEquipamento[];
+  clientes: FaturamentoPorCliente[];
+  periodo: { de: string; ate: string };
+}
+
+const MESES_CURTOS = [
+  "Jan",
+  "Fev",
+  "Mar",
+  "Abr",
+  "Mai",
+  "Jun",
+  "Jul",
+  "Ago",
+  "Set",
+  "Out",
+  "Nov",
+  "Dez",
+];
+
+/** "2026-03" -> "Mar/26". */
+function mesPorExtenso(chave: string): string {
+  const [ano, mes] = chave.split("-");
+  return `${MESES_CURTOS[Number(mes) - 1] ?? mes}/${ano.slice(2)}`;
+}
 
 const AMARELO: [number, number, number] = [255, 179, 0];
 const ASFALTO: [number, number, number] = [22, 20, 15];
@@ -24,7 +58,12 @@ function faixaCanteiro(doc: jsPDF, y: number, altura = 6) {
   }
 }
 
-export function exportarFaturamentoPdf() {
+export function exportarFaturamentoPdf({
+  meses,
+  equipamentos,
+  clientes,
+  periodo,
+}: DadosRelatorioFaturamento) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const margemX = 40;
   const largura = doc.internal.pageSize.getWidth();
@@ -59,13 +98,20 @@ export function exportarFaturamentoPdf() {
   doc.setTextColor(...TINTA);
 
   // Totais
-  const totalValor = faturamentoMensal.reduce((s, m) => s + m.valor, 0);
-  const totalHoras = faturamentoMensal.reduce((s, m) => s + m.horas_faturadas, 0);
-  const ticketMedio = totalValor / totalHoras;
+  const totalValor = meses.reduce((s, m) => s + m.valor, 0);
+  const totalHoras = meses.reduce((s, m) => s + m.horas_faturadas, 0);
+  // Sem hora faturada não há ticket por hora: 0/0 imprimiria "R$ NaN".
+  const ticketMedio = totalHoras > 0 ? totalValor / totalHoras : 0;
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
-  doc.text("Resumo do período (últimos 6 meses)", margemX, y);
+  // O recorte vem da tela, não dos meses presentes: se o usuário pediu Jan–Jun
+  // e só Mar teve nota, o cabeçalho tem que dizer Jan–Jun. Rotular pelo
+  // primeiro e último mês COM faturamento esconderia justamente os meses vazios.
+  const rotuloPeriodo = periodo.de
+    ? `Resumo do período (${mesPorExtenso(periodo.de)} a ${mesPorExtenso(periodo.ate)})`
+    : "Resumo do período (sem faturamento)";
+  doc.text(rotuloPeriodo, margemX, y);
   y += 16;
 
   const cards = [
@@ -94,11 +140,7 @@ export function exportarFaturamentoPdf() {
   autoTable(doc, {
     startY: y,
     head: [["Mês", "Horas faturadas", "Valor (R$)"]],
-    body: faturamentoMensal.map((m) => [
-      m.rotulo,
-      numero.format(m.horas_faturadas),
-      brl.format(m.valor),
-    ]),
+    body: meses.map((m) => [m.rotulo, numero.format(m.horas_faturadas), brl.format(m.valor)]),
     foot: [["Total", numero.format(totalHoras), brl.format(totalValor)]],
     theme: "grid",
     headStyles: { fillColor: ASFALTO, textColor: CONCRETO, fontStyle: "bold" },
@@ -111,7 +153,7 @@ export function exportarFaturamentoPdf() {
   autoTable(doc, {
     startY: (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 24,
     head: [["Equipamento", "Horas", "Valor (R$)"]],
-    body: faturamentoPorEquipamento.map((e) => [
+    body: equipamentos.map((e) => [
       e.equipamento_nome,
       numero.format(e.horas),
       brl.format(e.valor),
@@ -132,7 +174,7 @@ export function exportarFaturamentoPdf() {
   autoTable(doc, {
     startY: (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 24,
     head: [["Cliente", "Valor (R$)"]],
-    body: faturamentoPorCliente.map((c) => [c.cliente_nome, brl.format(c.valor)]),
+    body: clientes.map((c) => [c.cliente_nome, brl.format(c.valor)]),
     theme: "grid",
     headStyles: { fillColor: ASFALTO, textColor: CONCRETO, fontStyle: "bold" },
     styles: { font: "helvetica", fontSize: 10, cellPadding: 6 },
