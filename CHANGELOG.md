@@ -34,6 +34,7 @@ A conexão mock→real das ondas anteriores tirou as _stores_ de `src/mocks/`. O
 - **O mapa nunca desenhou um pin.** Mesma causa: as posições eram chaveadas por `"eq-001"`. E o mapa abria centrado num ponto do Paraná, a 400 km da base em Santo Ângelo/RS.
 - **22 telas escondiam falha de consulta atrás de um loading falso.** `useMockResource` cronometrava 400 ms sobre dados já em memória e declarava "carregado" — sempre, inclusive com a consulta falhada. Sessão expirada e rede caída apareciam como base vazia, e o botão "tentar novamente" só reiniciava o cronômetro. No lugar, `combinarEstados()` cruza o estado real das stores de cada tela.
 - **Editar operador ou equipamento descartava metade do cadastro.** Vínculo, nascimento, CNH, base, habilitações, marca, ano e propriedade eram coletados uma vez e viravam somente-leitura para sempre — um erro de digitação na validade da CNH não tinha conserto pela tela.
+- **`npm run lint` nunca terminava.** `eslint .` varria `docs/`, e o `_ds_bundle.js` exportado pelo design system (626 KB, gerado) prendia a regra `prettier/prettier` em laço: 35 min de CPU a 100% sem sair. `docs/` entra na lista de ignorados do ESLint — é material de referência, não código do projeto — e o lint volta a rodar em 15 s.
 
 ### Security
 
@@ -53,6 +54,7 @@ O app de campo é PWA desde a Onda 20: tem manifest, ícone, `display: standalon
 Instalado, o app abre pelo ícone em tela cheia (mais tela útil sob sol, sem a barra do navegador) e, no iPhone, é o que **libera as notificações** da retaguarda.
 
 ### Added
+
 - **Convite de instalação** (`features/instalacao`): banner no topo da aba "Hoje" e cartão fixo no Perfil, com o mesmo componente.
 - Captura do **`beforeinstallprompt`** com `preventDefault()` — o convite é o do projeto, dentro do layout do campo, e não a mini-barra do Chrome. Instalar vira um toque em "Instalar app".
 - **Passo a passo do iOS** (`PassosInstalacaoIOS`), onde o Safari não dispara evento nenhum: Compartilhar → Adicionar à Tela de Início → abrir pelo ícone. Fonte única do texto, usada pelo convite e apontada pelo cartão de avisos.
@@ -60,14 +62,17 @@ Instalado, o app abre pelo ícone em tela cheia (mais tela útil sob sol, sem a 
 - Escuta de **`appinstalled`**: instalou, o convite some da tela na hora e o histórico de recusas é apagado.
 
 ### Changed
+
 - `ehIOS()` e `rodandoInstalado()` saíram de `features/notificacoes/push.ts` para `features/instalacao/deteccao.ts`. A pergunta "este app está instalado?" é da instalação; o push é um dos interessados, não o dono.
 - O cartão de avisos do Perfil, no iPhone, parou de repetir o passo a passo: aponta para o convite que está logo acima, na mesma tela. Dois textos para manter viravam dois cartões dizendo a mesma coisa.
 
 ### Fixed
+
 - **Tema escuro não valia no app de campo.** A classe `.dark` só era aplicada por um `useEffect` dentro do `useTheme()`, e no ambiente do operador o único consumidor do hook era a aba Perfil: recarregar direto em `/app` abria claro mesmo com "escuro" salvo. Agora um script inline no `<head>` aplica a preferência **antes da primeira pintura** — o que de quebra acaba com o flash de tela clara na retaguarda e no site.
 - **`useTheme()` virou store compartilhado** (`useSyncExternalStore`): cada chamada tinha estado próprio e duas instâncias na mesma tela se dessincronizavam. Por isso o login voltou a usar o `<ThemeToggle />`, no lugar do botão inline que existia só para contornar o problema.
 
 ### Notas
+
 - **O convite não aparece onde não há como instalar.** Sem prompt nativo e fora do iOS (Firefox, Safari de desktop), ele fica oculto: pedir ao operador algo que o navegador dele não faz é pior do que não pedir.
 - Quem decide se o prompt nativo existe é o **navegador** (manifest válido, HTTPS e os critérios dele). O convite reage ao evento quando ele chega; não tenta forçá-lo.
 - O ponto de entrada do Perfil é **persistente** — ignora o "agora não" e não tem botão de dispensar. Quem recusou três vezes ainda precisa de um lugar para instalar quando mudar de ideia.

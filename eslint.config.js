@@ -17,6 +17,9 @@ export default tseslint.config(
       ".claude",
       ".tanstack",
       "node_modules",
+      // Material de referência e exports do design system — não é código do projeto.
+      // O `_ds_bundle.js` (626 KB, gerado) trava o prettier/prettier indefinidamente.
+      "docs",
     ],
   },
   {
