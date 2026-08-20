@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Icon } from "@iconify/react";
-import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { HazardStripe } from "@/shared/components/hazard-stripe";
+import { ThemeToggle } from "@/shared/components/theme-toggle";
 import { CampoComIcone } from "@/shared/components/campo-com-icone";
 import { EsqueciSenhaDialog } from "@/features/auth/esqueci-senha-dialog";
 import { VERSAO_SISTEMA, CODINOME_SISTEMA } from "@/features/auth/versao-sistema";
@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const { theme, toggle } = useTheme();
+  const { theme } = useTheme();
   const invertido = theme === "dark";
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -126,20 +126,10 @@ export function LoginPage() {
             className="h-12 w-auto select-none object-contain md:hidden"
           />
           <div className="ml-auto">
-            {/* Toggle inline (não o componente <ThemeToggle />) para compartilhar a MESMA
-                instância de useTheme() que decide o lado dos painéis — useTheme() é um hook
-                simples (useState por chamada, sem contexto/store compartilhado), então usar o
-                componente aqui criaria uma segunda instância de estado dessincronizada da usada
-                acima para animar aside/formulário, e o clique nunca trocaria os painéis de lado. */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggle}
-              aria-label={invertido ? "Mudar para tema claro" : "Mudar para tema escuro"}
-              className="text-foreground hover:bg-surface"
-            >
-              {invertido ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
+            {/* O <ThemeToggle /> lê o mesmo store de tema que decide o lado dos
+                painéis aqui — antes era um botão inline, porque cada chamada de
+                useTheme() tinha estado próprio e o clique não trocava os painéis. */}
+            <ThemeToggle />
           </div>
         </div>
 

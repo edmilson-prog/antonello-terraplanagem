@@ -224,21 +224,6 @@ npm run lint     # Linter
 | `style:` | Formatação |
 | `test:` | Testes |
 
-## Grafo de Conhecimento (graphify)
-
-O projeto mantém um grafo de conhecimento navegável (código + docs + PRDs), útil para achar conceitos duplicados entre PRDs, rastrear o "porquê" de uma decisão antiga e medir impacto antes de mexer em algo compartilhado (ex.: `cn()`, `Button`, `OrdemServico`).
-
-| Item | Detalhe |
-|------|---------|
-| **Local** | `graphify-out/` — gerado, **não versionado** (`.gitignore`) |
-| **Atualizar** | `graphify . --update` — reextrai só arquivos novos/alterados. Rodar **após fechar cada PRD** (ver passo 4 abaixo), não a cada commit |
-| **Reconstruir do zero** | `graphify .` (sem `--update`) — só quando `--update` não bastar (ex.: renomeação em massa de arquivos) |
-| **Consultar via CLI** | `graphify query "<pergunta>"` (busca ampla), `graphify explain "<nó>"` (conexões de um nó específico — preferir a `query` para rastrear um nó só), `graphify path "A" "B"` (caminho entre dois conceitos) |
-| **Consultar via MCP** | `.mcp.json` (não versionado — caminho do Python varia por instalação `uv tool install`) registra um server local com as tools `query_graph`, `get_node`, `get_neighbors`, `get_community`, `god_nodes`, `graph_stats`, `shortest_path`. Recriar com: `command` = saída de `cat graphify-out/.graphify_python`, `args` = `["-m", "graphify.serve", "<caminho absoluto para graphify-out/graph.json>"]` |
-| **Relatório humano** | `graphify-out/GRAPH_REPORT.md` — God Nodes, comunidades, conexões surpreendentes, hyperedges, ciclos de import |
-
-> Antes de escrever a spec de um PRD novo, vale rodar uma consulta rápida para checar se o conceito já existe em outro PRD — foi assim que se achou a inconsistência do prefixo `I` em interfaces e a duplicação do conceito "barreira financeira" entre PRD-006/007.
-
 ## Fluxo de Trabalho com PRDs
 
 1. PRDs ficam em `docs/prds/`. **Sempre ler o PRD da tarefa antes de implementar.**
@@ -250,4 +235,3 @@ O projeto mantém um grafo de conhecimento navegável (código + docs + PRDs), �
    - Gerar codinome em inglês para MINOR/MAJOR (baseado no contexto das mudanças).
    - Renomear o PRD adicionando `_DONE`.
    - Atualizar o `INDEX-PRDs-antonello.md`.
-   - Atualizar o grafo de conhecimento: `graphify . --update`.

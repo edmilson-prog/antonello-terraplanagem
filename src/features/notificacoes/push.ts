@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { lerSessaoOperador } from "@/features/auth/operador-session";
+import { ehIOS, rodandoInstalado } from "@/features/instalacao/deteccao";
 
 /*
  * Web Push no cliente (PRD-020).
@@ -45,24 +46,7 @@ function arrayBufferParaBase64Url(buffer: ArrayBuffer | null): string {
   return window.btoa(binario).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-export function ehIOS(): boolean {
-  if (typeof navigator === "undefined") return false;
-  // iPadOS 13+ se apresenta como Mac; o toque é o que o denuncia.
-  return (
-    /iphone|ipad|ipod/i.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
-  );
-}
-
 /** No iOS, Web Push só existe se o app tiver sido instalado na tela inicial. */
-export function rodandoInstalado(): boolean {
-  if (typeof window === "undefined") return false;
-  const navegadorIOS = window.navigator as Navigator & { standalone?: boolean };
-  return (
-    window.matchMedia("(display-mode: standalone)").matches || navegadorIOS.standalone === true
-  );
-}
-
 export function precisaInstalarNaTelaInicial(): boolean {
   return ehIOS() && !rodandoInstalado();
 }

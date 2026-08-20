@@ -4,6 +4,7 @@ import { LoginPage } from "./login-page";
 import { CODINOME_SISTEMA, VERSAO_SISTEMA } from "./versao-sistema";
 import { supabase } from "@/lib/supabase";
 import { STORAGE_KEY_LEMBRAR } from "@/lib/supabase-storage";
+import { resetarTemaParaTeste } from "@/shared/hooks/use-theme";
 
 const mockNavigate = vi.fn();
 vi.mock("@tanstack/react-router", () => ({
@@ -14,6 +15,10 @@ vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 describe("LoginPage", () => {
   beforeEach(() => {
     localStorage.clear();
+    // O tema virou store de módulo (uma escolha vale para o app inteiro), então
+    // ele sobrevive entre os testes deste arquivo se ninguém zerar.
+    resetarTemaParaTeste();
+    document.documentElement.classList.remove("dark");
     mockNavigate.mockReset();
     vi.mocked(supabase.auth.signInWithPassword).mockReset();
     vi.mocked(supabase.auth.signInWithPassword).mockResolvedValue({

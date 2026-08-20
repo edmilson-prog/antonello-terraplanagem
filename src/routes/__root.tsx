@@ -10,6 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { SCRIPT_TEMA_INICIAL } from "@/shared/lib/tema-inicial";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -130,6 +131,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
     ],
     scripts: [
+      // Primeiro de todos: aplica a classe `.dark` antes da primeira pintura.
+      // Sem isso a tela nasce clara e escurece depois — e, no app de campo, só
+      // escurecia nas telas que montavam useTheme() (era só o Perfil).
+      { children: SCRIPT_TEMA_INICIAL },
       {
         type: "application/ld+json",
         children: JSON.stringify({

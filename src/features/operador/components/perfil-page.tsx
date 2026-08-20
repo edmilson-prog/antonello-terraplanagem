@@ -9,6 +9,7 @@ import {
   classeBotaoCampo,
 } from "@/features/operador/components/kit";
 import { useAlertasSeguranca } from "@/features/operador/hooks/use-alertas-seguranca";
+import { ConviteInstalacao } from "@/features/instalacao";
 import { ConfiguracaoPush, limparNotificacoesLocais, useNaoLidas } from "@/features/notificacoes";
 import { desativarPush } from "@/features/notificacoes/push";
 import { usePendenciasSync } from "@/features/operador/hooks/use-pendencias-sync";
@@ -115,6 +116,11 @@ export function PerfilPage() {
             <Icon icon="lucide:calendar-clock" className="h-[17px] w-[17px]" />
             Espelho de horas
           </Link>
+          {/* Ponto de entrada permanente da instalação: quem dispensou o
+              banner do "Hoje" ainda instala por aqui (`persistente` ignora o
+              "agora não"). Fica acima do push de propósito — no iPhone, o
+              cartão de avisos aponta para este convite. */}
+          <ConviteInstalacao persistente />
           <ConfiguracaoPush />
           <BotaoCampo variante="ghost" onClick={toggle}>
             <Icon
