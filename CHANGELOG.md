@@ -5,6 +5,16 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.38.1] - 2026-08-22 - Groundtruth
+
+### Fixed
+
+- **`tipo_servico` desaparecia depois de cadastrado.** A Onda 7 (0.19.0) tornou o tipo de serviço (Terraplenagem, Drenagem, Nivelamento, Fundação — estacas, Cascalhamento, Limpeza de terreno) campo obrigatório na criação da OS, mas nenhuma tela de leitura o mostrava depois: nem a lista nem o detalhe da retaguarda, nem a lista nem o detalhe do app de campo. O dado ficava só no banco. Passa a aparecer como selo ao lado do modelo de cobrança (lista e detalhe da retaguarda) e como linha no cabeçalho da OS (lista e detalhe do app de campo) — sempre que a OS tiver o campo preenchido; OS antigas sem o campo continuam sem o selo, sem inventar valor.
+
+### Notas
+
+- Achado ao conferir as páginas de OS contra a fonte da verdade (schema real + formulário de criação), não contra o UI kit — o kit não desenha esse selo, mas o schema exige o campo desde a Onda 7 e a UI simplesmente nunca leu de volta o que o formulário grava.
+
 ## [0.38.0] - 2026-08-20 - Groundtruth
 
 Fecha a última fronteira do mock: **as telas param de inventar o que não sabem**.

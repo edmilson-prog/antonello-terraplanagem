@@ -4,7 +4,11 @@ import { Icon } from "@iconify/react";
 import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/shared/components/empty-state";
 import { SyncBadge } from "@/shared/components/sync-badge";
-import { StatusOSBadge, STATUS_OS_LABEL } from "@/features/ordem-servico/labels";
+import {
+  StatusOSBadge,
+  STATUS_OS_LABEL,
+  TIPO_SERVICO_LABEL,
+} from "@/features/ordem-servico/labels";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { ordensDoOperador, statusEfetivoOS } from "@/features/ordem-servico/derivacoes";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
@@ -108,7 +112,10 @@ export function OrdensOperadorPage() {
                     <div className="truncate font-display text-base font-bold text-card-foreground">
                       {cliente?.nome ?? "Cliente"}
                     </div>
-                    <div className="truncate text-xs text-muted-foreground">{o.obra_nome}</div>
+                    <div className="truncate text-xs text-muted-foreground">
+                      {o.obra_nome}
+                      {o.tipo_servico ? ` · ${TIPO_SERVICO_LABEL[o.tipo_servico]}` : ""}
+                    </div>
                     {o.pendente_sync ? <SyncBadge /> : null}
                   </div>
                   <Icon

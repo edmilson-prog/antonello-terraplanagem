@@ -7,7 +7,7 @@
 > Varredura automática: `npm run auditar:mocks` (falha com código 1 se achar algo fora
 > das exceções declaradas em `scripts/auditar-mocks.mjs`).
 
-**Última revisão:** 2026-08-20 · **Versão:** 0.38.0 (Groundtruth)
+**Última revisão:** 2026-08-22 · **Versão:** 0.38.1 (Groundtruth)
 
 ---
 
