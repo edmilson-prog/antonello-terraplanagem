@@ -20,6 +20,7 @@ const APARENCIA: Record<TipoNotificacao, AparenciaNotificacao> = {
   os_concluida: { icone: "lucide:check", tom: "padrao" },
   // Único que pede correção de algo que o operador já fez — por isso destoa.
   correcao_solicitada: { icone: "lucide:circle-alert", tom: "alerta" },
+  medicao_assinada: { icone: "lucide:pencil", tom: "padrao" },
   // Frota
   manutencao_agendada: { icone: "lucide:wrench", tom: "padrao" },
   manutencao_vencida: { icone: "lucide:wrench", tom: "alerta" },

@@ -64,6 +64,10 @@ export const EVENTO_LABEL: Record<TipoNotificacao, { nome: string; detalhe: stri
   apontamento_aprovado: { nome: "Apontamento aprovado", detalhe: "confirmação das horas" },
   lembrete_apontamento: { nome: "Lembrete de apontamento", detalhe: "às 17:00, se ficou aberto" },
   correcao_solicitada: { nome: "Correção solicitada", detalhe: "quando a retaguarda devolve" },
+  medicao_assinada: {
+    nome: "Medição assinada pelo cliente",
+    detalhe: "assinatura no app de campo",
+  },
   manutencao_vencida: { nome: "Plano de manutenção vencido", detalhe: "varredura diária" },
   manutencao_agendada: { nome: "Plano a vencer", detalhe: "antecedência definida em Parâmetros" },
   consumo_anomalo: { nome: "Consumo de diesel fora do padrão", detalhe: "desvio acima de 20%" },
@@ -86,6 +90,7 @@ export const EVENTOS_POR_CATEGORIA: Record<CategoriaNotificacao, TipoNotificacao
     "apontamento_aprovado",
     "lembrete_apontamento",
     "correcao_solicitada",
+    "medicao_assinada",
   ],
   frota: [
     "manutencao_vencida",

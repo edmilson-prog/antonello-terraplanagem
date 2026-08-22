@@ -554,6 +554,7 @@ export type TipoNotificacao =
   | "os_sem_apontamento"
   | "os_concluida"
   | "correcao_solicitada"
+  | "medicao_assinada"
   // Frota
   | "manutencao_agendada"
   | "manutencao_vencida"

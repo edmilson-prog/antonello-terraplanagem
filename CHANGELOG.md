@@ -5,6 +5,44 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.39.0] - 2026-08-22 - Signoff
+
+Fecha um gap entre duas ondas do mesmo dia: a matriz de preferências (Onda 19,
+v0.33.0) desenhou "Medição assinada pelo cliente" a partir do UI kit, mas
+`registros_campo` — a tabela que faz esse evento existir de verdade — só
+nasceu na Onda 22, depois da matriz já fechada. Ninguém voltou para ligar os
+dois, e o evento ficou real no banco sem nunca virar notificação.
+
+### Added
+
+- **`medicao_assinada` como tipo de notificação.** Gatilho imediato em
+  `registros_campo` (`tg_notificar_medicao_assinada`), no mesmo padrão de
+  `tg_notificar_comprovante_recebido`: quando o operador coleta a assinatura
+  do cliente em campo, a retaguarda inteira recebe o aviso — responsável e
+  horas do período, com link para a OS. Entra na categoria Operação da matriz
+  de preferências, com os canais do kit (in-app + e-mail, sem crítico).
+
+### Notas
+
+- Achado ao conferir `screen-notificacoes-prefs.html` contra a fonte da
+  verdade: o design mostra 17 eventos, o produto tinha 18 — mistura de
+  divergências já resolvidas na Onda 19 (eventos legados do PRD-020 que o kit
+  não desenha, como `os_atribuida`/`apontamento_aprovado`) com três conceitos
+  do kit sem contraparte real (`horímetro divergente`, `falha de
+  sincronização do app`, `NF emitida` — este último é a mesma divergência de
+  produto já registrada na linha 15 do
+  [roadmap do UI kit](docs/prds/ROADMAP-ui-kit-retaguarda.md): não existe
+  emissão manual de NF). Só `medicao_assinada` tinha lastro real (assinatura
+  já gravada em `registros_campo.assinatura`) sem estar exposto — os outros
+  três ficam de fora por não terem feature nenhuma por trás, e criá-las não
+  era o escopo desta conferência.
+- Verificado localmente antes de subir: Postgres 16 + andaime mínimo do
+  Supabase (papéis, `auth.users`, `auth.uid()`, pgcrypto), migrations
+  aplicadas em ordem (as únicas falhas são as já esperadas por dependerem de
+  `pg_net`/`pg_cron`, ausentes fora do projeto real), gatilho testado com
+  inserção real em `registros_campo` — confirma fan-out para a retaguarda,
+  categoria/prioridade/mensagem corretas e uma notificação por medição.
+
 ## [0.38.1] - 2026-08-22 - Groundtruth
 
 ### Fixed
