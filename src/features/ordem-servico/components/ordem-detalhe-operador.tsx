@@ -33,7 +33,7 @@ import {
   statusEfetivoOS,
   totalHorasOS,
 } from "@/features/ordem-servico/derivacoes";
-import { STATUS_OS_LABEL } from "@/features/ordem-servico/labels";
+import { STATUS_OS_LABEL, TIPO_SERVICO_LABEL } from "@/features/ordem-servico/labels";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { somarHoras } from "@/features/apontamento/resumo-horas";
 import { getOperadorLogadoId } from "@/features/auth/operador-session";
@@ -138,6 +138,12 @@ export function OrdemDetalheOperador({ ordemId }: { ordemId: string }) {
               <span className="inline-flex items-center gap-1.5">
                 <Icon icon="lucide:map-pin" className="h-3 w-3 shrink-0" />
                 {ordem.endereco}
+              </span>
+            ) : null}
+            {ordem.tipo_servico ? (
+              <span className="inline-flex items-center gap-1.5">
+                <Icon icon="lucide:hammer" className="h-3 w-3 shrink-0" />
+                {TIPO_SERVICO_LABEL[ordem.tipo_servico]}
               </span>
             ) : null}
             <span className="inline-flex items-center gap-1.5">

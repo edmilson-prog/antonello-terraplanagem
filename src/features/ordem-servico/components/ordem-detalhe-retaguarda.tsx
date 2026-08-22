@@ -25,7 +25,12 @@ import {
   totalHorasOS,
   totalMetragemOS,
 } from "@/features/ordem-servico/derivacoes";
-import { StatusOSBadge, MODELO_LABEL, STATUS_OS_LABEL } from "@/features/ordem-servico/labels";
+import {
+  StatusOSBadge,
+  MODELO_LABEL,
+  STATUS_OS_LABEL,
+  TIPO_SERVICO_LABEL,
+} from "@/features/ordem-servico/labels";
 import { formatDataHora, formatHorimetro } from "@/shared/lib/format";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { notificarHorasConfirmadas } from "@/features/notificacoes/eventos";
@@ -329,6 +334,11 @@ export function OrdemDetalheRetaguarda({ ordemId }: { ordemId: string }) {
             <span className="rounded-full border bg-surface px-2.5 py-1 font-mono text-[11px] font-semibold text-muted-foreground">
               {MODELO_LABEL[ordem.modelo_cobranca]}
             </span>
+            {ordem.tipo_servico ? (
+              <span className="rounded-full border bg-surface px-2.5 py-1 font-mono text-[11px] font-semibold text-muted-foreground">
+                {TIPO_SERVICO_LABEL[ordem.tipo_servico]}
+              </span>
+            ) : null}
             {ordem.pendente_sync ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-steel/40 bg-surface px-2.5 py-1 text-[11px] font-semibold text-muted-foreground">
                 <Icon icon="lucide:refresh-cw" className="h-3 w-3" />

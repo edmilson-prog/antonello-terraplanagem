@@ -18,7 +18,7 @@ import {
   totalHorasOS,
   totalMetragemOS,
 } from "@/features/ordem-servico/derivacoes";
-import { StatusOSBadge, MODELO_LABEL } from "@/features/ordem-servico/labels";
+import { StatusOSBadge, MODELO_LABEL, TIPO_SERVICO_LABEL } from "@/features/ordem-servico/labels";
 import { clientesStore } from "@/features/clientes/clientes-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { operadoresStore } from "@/features/operadores/operadores-store";
@@ -119,6 +119,15 @@ export function OrdensRetaguardaPage({ statusInicial }: { statusInicial?: Status
       ),
     },
     { header: "Obra", cell: (o) => <span className="text-muted-foreground">{o.obra_nome}</span> },
+    {
+      header: "Tipo",
+      cell: (o) =>
+        o.tipo_servico ? (
+          <CardPill>{TIPO_SERVICO_LABEL[o.tipo_servico]}</CardPill>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        ),
+    },
     {
       header: "Equipamento",
       cell: (o) => {
@@ -228,7 +237,8 @@ export function OrdensRetaguardaPage({ statusInicial }: { statusInicial?: Status
         </div>
         <div className="text-xs text-muted-foreground">{o.obra_nome}</div>
         <div className="mt-2 font-mono text-xs text-foreground">
-          {MODELO_LABEL[o.modelo_cobranca]} ·{" "}
+          {MODELO_LABEL[o.modelo_cobranca]}
+          {o.tipo_servico ? ` · ${TIPO_SERVICO_LABEL[o.tipo_servico]}` : ""} ·{" "}
           {o.modelo_cobranca === "hora_maquina"
             ? formatHorimetro(totalHorasOS(o.id, apontamentos))
             : totalMetragemOS(o.id, apontamentos) > 0
