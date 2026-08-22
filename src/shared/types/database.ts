@@ -204,6 +204,14 @@ export type Database = {
       clientes: {
         Row: {
           ativo: boolean;
+          nome_fantasia: string | null;
+          segmento: string | null;
+          email: string | null;
+          endereco: string | null;
+          cidade: string | null;
+          contato_nome: string | null;
+          contato_papel: string | null;
+          legado_importado_em: string | null;
           cli_codigo_legado: number | null;
           created_at: string;
           documento: string | null;
@@ -222,6 +230,14 @@ export type Database = {
         };
         Insert: {
           ativo?: boolean;
+          nome_fantasia?: string | null;
+          segmento?: string | null;
+          email?: string | null;
+          endereco?: string | null;
+          cidade?: string | null;
+          contato_nome?: string | null;
+          contato_papel?: string | null;
+          legado_importado_em?: string | null;
           cli_codigo_legado?: number | null;
           created_at?: string;
           documento?: string | null;
@@ -240,6 +256,14 @@ export type Database = {
         };
         Update: {
           ativo?: boolean;
+          nome_fantasia?: string | null;
+          segmento?: string | null;
+          email?: string | null;
+          endereco?: string | null;
+          cidade?: string | null;
+          contato_nome?: string | null;
+          contato_papel?: string | null;
+          legado_importado_em?: string | null;
           cli_codigo_legado?: number | null;
           created_at?: string;
           documento?: string | null;
@@ -567,6 +591,9 @@ export type Database = {
       equipamentos: {
         Row: {
           ano: string | null;
+          aquisicao_forma: string | null;
+          aquisicao_parcelas: number | null;
+          descricao: string | null;
           ativo: boolean;
           capacidade: string;
           created_at: string;
@@ -582,6 +609,9 @@ export type Database = {
         };
         Insert: {
           ano?: string | null;
+          aquisicao_forma?: string | null;
+          aquisicao_parcelas?: number | null;
+          descricao?: string | null;
           ativo?: boolean;
           capacidade: string;
           created_at?: string;
@@ -597,6 +627,9 @@ export type Database = {
         };
         Update: {
           ano?: string | null;
+          aquisicao_forma?: string | null;
+          aquisicao_parcelas?: number | null;
+          descricao?: string | null;
           ativo?: boolean;
           capacidade?: string;
           created_at?: string;
@@ -936,25 +969,34 @@ export type Database = {
       };
       operador_sessoes: {
         Row: {
+          app_versao: string | null;
           criado_em: string;
+          dispositivo: string | null;
           expira_em: string;
           operador_id: string;
           revogado: boolean;
           token: string;
+          ultimo_uso_em: string | null;
         };
         Insert: {
+          app_versao?: string | null;
           criado_em?: string;
+          dispositivo?: string | null;
           expira_em: string;
           operador_id: string;
           revogado?: boolean;
           token?: string;
+          ultimo_uso_em?: string | null;
         };
         Update: {
+          app_versao?: string | null;
           criado_em?: string;
+          dispositivo?: string | null;
           expira_em?: string;
           operador_id?: string;
           revogado?: boolean;
           token?: string;
+          ultimo_uso_em?: string | null;
         };
         Relationships: [
           {
@@ -968,6 +1010,7 @@ export type Database = {
       };
       operadores: {
         Row: {
+          admissao: string | null;
           ativo: boolean;
           base: string | null;
           bloqueado_ate: string | null;
@@ -985,6 +1028,7 @@ export type Database = {
           vinculo: string | null;
         };
         Insert: {
+          admissao?: string | null;
           ativo?: boolean;
           base?: string | null;
           bloqueado_ate?: string | null;
@@ -1002,6 +1046,7 @@ export type Database = {
           vinculo?: string | null;
         };
         Update: {
+          admissao?: string | null;
           ativo?: boolean;
           base?: string | null;
           bloqueado_ate?: string | null;
@@ -1177,6 +1222,8 @@ export type Database = {
           fechada_em: string | null;
           id: string;
           inicio_previsto: string | null;
+          local_lat: number | null;
+          local_lng: number | null;
           modelo_cobranca: string;
           numero: string;
           obra_nome: string;
@@ -1197,6 +1244,8 @@ export type Database = {
           fechada_em?: string | null;
           id?: string;
           inicio_previsto?: string | null;
+          local_lat?: number | null;
+          local_lng?: number | null;
           modelo_cobranca: string;
           numero: string;
           obra_nome: string;
@@ -1217,6 +1266,8 @@ export type Database = {
           fechada_em?: string | null;
           id?: string;
           inicio_previsto?: string | null;
+          local_lat?: number | null;
+          local_lng?: number | null;
           modelo_cobranca?: string;
           numero?: string;
           obra_nome?: string;
@@ -1888,6 +1939,7 @@ export type Database = {
       };
       criar_operador: {
         Args: {
+          p_admissao?: string;
           p_ativo?: boolean;
           p_base?: string;
           p_cnh_categoria?: string;
@@ -2135,10 +2187,37 @@ export type Database = {
         }[];
       };
       login_operador: {
-        Args: { p_operador_id: string; p_pin: string };
+        Args: {
+          p_operador_id: string;
+          p_pin: string;
+          p_dispositivo?: string;
+          p_app_versao?: string;
+        };
         Returns: Json;
       };
       logout_operador: { Args: { p_token: string }; Returns: undefined };
+      tocar_sessao_operador: {
+        Args: { p_token: string; p_dispositivo?: string; p_app_versao?: string };
+        Returns: undefined;
+      };
+      acesso_app_operador: {
+        Args: { p_operador_id: string };
+        Returns: Json;
+      };
+      acesso_app_operadores: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          operador_id: string;
+          liberado: boolean;
+          ultimo_acesso: string | null;
+          dispositivo: string | null;
+          app_versao: string | null;
+        }[];
+      };
+      definir_equipamentos_operador: {
+        Args: { p_operador_id: string; p_equipamentos_ids: string[] };
+        Returns: undefined;
+      };
       marcar_notificacoes_lidas: {
         Args: { p_ids?: string[]; p_token: string };
         Returns: number;

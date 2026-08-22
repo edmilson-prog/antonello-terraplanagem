@@ -3,7 +3,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/shared/components/empty-state";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { horasPorEquipamentoNoPeriodo } from "@/features/gerencial/derivacoes";
@@ -23,7 +23,10 @@ export function GraficoHorasEquipamento({ periodo }: Props) {
       horasPorEquipamentoNoPeriodo(equipamentos, apontamentos, periodo).filter((d) => d.horas > 0),
     [equipamentos, apontamentos, periodo],
   );
-  const { isLoading, error, retry } = useMockResource(dados);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+    { estado: apontamentosStore.useEstado(), retry: apontamentosStore.retry },
+  );
 
   return (
     <section className="rounded-xl border bg-card p-5 shadow-sm">

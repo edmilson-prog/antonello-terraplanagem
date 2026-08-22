@@ -1,7 +1,7 @@
 {
   "name": "tanstack_start_ts",
   "private": true,
-  "version": "0.37.0",
+  "version": "0.38.0",
   "sideEffects": false,
   "type": "module",
   "scripts": {
@@ -10,6 +10,7 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
+    "auditar:mocks": "node scripts/auditar-mocks.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write ."

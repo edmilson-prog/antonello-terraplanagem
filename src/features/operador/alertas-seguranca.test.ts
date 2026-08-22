@@ -21,6 +21,9 @@ function equipamento(over: Partial<Equipamento> = {}): Equipamento {
     created_at: AGORA,
     updated_at: AGORA,
     ...over,
+    aquisicao_forma: null,
+    aquisicao_parcelas: null,
+    descricao: null,
   };
 }
 
@@ -45,6 +48,8 @@ function ordem(over: Partial<OrdemServico> = {}): OrdemServico {
     created_at: AGORA,
     updated_at: AGORA,
     ...over,
+    local_lat: null,
+    local_lng: null,
   };
 }
 

@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/shared/components/empty-state";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { abastecimentosStore } from "@/features/diesel/abastecimentos-store";
@@ -112,7 +112,16 @@ export function RankingMargem({ tipo, periodo }: Props) {
           onVerDetalhe: () => navigate({ to: "/admin/rentabilidade" }),
         }));
 
-  const { isLoading, error, retry } = useMockResource(linhas);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+    { estado: apontamentosStore.useEstado(), retry: apontamentosStore.retry },
+    { estado: abastecimentosStore.useEstado(), retry: abastecimentosStore.retry },
+    { estado: registrosManutencaoStore.useEstado(), retry: registrosManutencaoStore.retry },
+    { estado: precoHoraMaquinaStore.useEstado(), retry: precoHoraMaquinaStore.retry },
+    { estado: componentesCustoStore.useEstado(), retry: componentesCustoStore.retry },
+    { estado: faturamentosStore.useEstado(), retry: faturamentosStore.retry },
+    { estado: ordensStore.useEstado(), retry: ordensStore.retry },
+  );
   const titulo = tipo === "equipamento" ? "Margem por equipamento" : "Margem por obra";
 
   return (

@@ -1,7 +1,19 @@
 import { CardSecao } from "@/shared/components/card-secao";
-import type { ShowcaseSemana } from "@/features/operadores/operador-showcase-data";
+import type { SemanaOperador } from "@/features/operadores/derivacoes";
 
-export function HorasSemanaCard({ semana }: { semana: ShowcaseSemana }) {
+export function HorasSemanaCard({ semana }: { semana: SemanaOperador }) {
+  // Sem hora apontada em nenhuma das semanas, o gráfico seria seis barras
+  // zeradas com "Média 0,0 h" embaixo — ruído que parece dado.
+  if (!semana.temDados) {
+    return (
+      <CardSecao titulo="Horas por semana" icone="lucide:bar-chart-3" bodyClassName="p-6">
+        <p className="text-center text-sm text-muted-foreground">
+          Sem horas apontadas nas últimas 6 semanas.
+        </p>
+      </CardSecao>
+    );
+  }
+
   const picoPct = Math.max(...semana.barras.map((b) => b.pct));
   return (
     <CardSecao titulo="Horas por semana" icone="lucide:bar-chart-3" bodyClassName="p-4">
@@ -10,6 +22,7 @@ export function HorasSemanaCard({ semana }: { semana: ShowcaseSemana }) {
           <div
             key={b.label}
             className="flex h-full flex-1 flex-col items-center justify-end gap-1.5"
+            title={`${b.label}: ${b.horas} h`}
           >
             <div
               className={

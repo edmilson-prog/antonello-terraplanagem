@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
@@ -18,7 +18,7 @@ import {
   serieDiariaFaturamento,
   serieDiariaRecebido,
 } from "@/features/dashboard-operacional/derivacoes";
-import { serieDecorativa } from "@/features/dashboard-operacional/serie-decorativa";
+import { serieSuavizada } from "@/features/dashboard-operacional/serie-suavizada";
 import { MiniSparkline } from "@/features/dashboard-operacional/components/mini-sparkline";
 import { VariacaoBadge } from "@/features/dashboard-operacional/components/variacao-badge";
 import {
@@ -35,7 +35,15 @@ export function CardsFinanceiroOperacional() {
   const equipamentos = equipamentosStore.useAll();
   const precosHM = precoHoraMaquinaStore.useAll();
   const precosFund = precoFundacaoStore.useAll();
-  const { isLoading, error, retry } = useMockResource(faturamentos);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: ordensStore.useEstado(), retry: ordensStore.retry },
+    { estado: apontamentosStore.useEstado(), retry: apontamentosStore.retry },
+    { estado: faturamentosStore.useEstado(), retry: faturamentosStore.retry },
+    { estado: contasReceberStore.useEstado(), retry: contasReceberStore.retry },
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+    { estado: precoHoraMaquinaStore.useEstado(), retry: precoHoraMaquinaStore.retry },
+    { estado: precoFundacaoStore.useEstado(), retry: precoFundacaoStore.retry },
+  );
 
   const referencia = useMemo(
     () => dataReferenciaOperacional(ordens, apontamentos, faturamentos, contasReceber),
@@ -91,7 +99,7 @@ export function CardsFinanceiroOperacional() {
   );
   const serieExecutado = useMemo(
     () =>
-      serieDecorativa(
+      serieSuavizada(
         serieDiariaExecutado(
           ordens,
           apontamentos,
@@ -105,11 +113,11 @@ export function CardsFinanceiroOperacional() {
     [ordens, apontamentos, faturamentos, equipamentos, precosHM, precosFund, referencia],
   );
   const serieFaturado = useMemo(
-    () => serieDecorativa(serieDiariaFaturamento(faturamentos, referencia)),
+    () => serieSuavizada(serieDiariaFaturamento(faturamentos, referencia)),
     [faturamentos, referencia],
   );
   const serieRecebido = useMemo(
-    () => serieDecorativa(serieDiariaRecebido(contasReceber, referencia)),
+    () => serieSuavizada(serieDiariaRecebido(contasReceber, referencia)),
     [contasReceber, referencia],
   );
 

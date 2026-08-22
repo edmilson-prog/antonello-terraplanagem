@@ -8,13 +8,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CardSecao } from "@/shared/components/card-secao";
-import type { ShowcaseApontamento } from "@/features/operadores/operador-showcase-data";
+import type { LinhaApontamento } from "@/features/operadores/derivacoes";
 
-export function ApontamentosRecentesCard({
-  apontamentos,
-}: {
-  apontamentos: ShowcaseApontamento[];
-}) {
+export function ApontamentosRecentesCard({ apontamentos }: { apontamentos: LinhaApontamento[] }) {
+  if (apontamentos.length === 0) {
+    return (
+      <CardSecao titulo="Apontamentos recentes" icone="lucide:timer" bodyClassName="p-6">
+        <p className="text-center text-sm text-muted-foreground">
+          Nenhuma hora apontada por este operador ainda.
+        </p>
+      </CardSecao>
+    );
+  }
+
   return (
     <CardSecao titulo="Apontamentos recentes" icone="lucide:timer">
       <Table>

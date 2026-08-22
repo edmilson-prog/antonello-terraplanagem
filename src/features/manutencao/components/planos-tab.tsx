@@ -6,7 +6,7 @@ import { DataList, type Column } from "@/shared/components/data-list";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { StatusAtivo } from "@/shared/components/status-ativo";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { planosManutencaoStore } from "@/features/manutencao/planos-manutencao-store";
 import { PlanoManutencaoForm } from "@/features/manutencao/components/plano-manutencao-form";
 import { descreverVinculoPlano } from "@/features/manutencao/labels";
@@ -19,7 +19,10 @@ interface PlanosTabProps {
 }
 
 export function PlanosTab({ planos, equipamentos }: PlanosTabProps) {
-  const { isLoading, error, retry } = useMockResource(planos);
+  const { isLoading, error, retry } = combinarEstados({
+    estado: planosManutencaoStore.useEstado(),
+    retry: planosManutencaoStore.retry,
+  });
 
   const [formAberto, setFormAberto] = useState(false);
   const [editando, setEditando] = useState<PlanoManutencao | null>(null);

@@ -1,9 +1,19 @@
 import { Icon } from "@iconify/react";
 import { CardPill, CardSecao } from "@/shared/components/card-secao";
 import { StatusOSBadge } from "@/features/ordem-servico/labels";
-import type { ShowcaseOrdem } from "@/features/operadores/operador-showcase-data";
+import type { LinhaOrdem } from "@/features/operadores/derivacoes";
 
-export function OrdensVinculadasCard({ ordens }: { ordens: ShowcaseOrdem[] }) {
+export function OrdensVinculadasCard({ ordens }: { ordens: LinhaOrdem[] }) {
+  if (ordens.length === 0) {
+    return (
+      <CardSecao titulo="Ordens de Serviço" icone="lucide:clipboard-list" bodyClassName="p-6">
+        <p className="text-center text-sm text-muted-foreground">
+          Este operador não é responsável por nenhuma OS nem apontou horas em uma.
+        </p>
+      </CardSecao>
+    );
+  }
+
   return (
     <CardSecao
       titulo="Ordens de Serviço"

@@ -17,6 +17,8 @@ describe("responderChatbotCliente", () => {
       tipo_servico: null,
       equipamento_previsto_id: null,
       inicio_previsto: null,
+      local_lat: null,
+      local_lng: null,
       numero: "OS-TESTE-D11",
     });
     const resposta = await responderChatbotCliente("qual o status da minha obra?", cliente.id, {

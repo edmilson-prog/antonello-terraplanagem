@@ -6,7 +6,7 @@ import { DataList, type Column } from "@/shared/components/data-list";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { StatusAtivo } from "@/shared/components/status-ativo";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { formatBRL } from "@/features/retaguarda/format";
 import { precoMobilizacaoStore } from "@/features/precos/precos-mobilizacao-store";
 import { PrecoMobilizacaoForm } from "@/features/precos/components/preco-mobilizacao-form";
@@ -15,7 +15,10 @@ import { cn } from "@/lib/utils";
 
 export function PrecoMobilizacaoList() {
   const todos = precoMobilizacaoStore.useAll();
-  const { isLoading, error, retry } = useMockResource(todos);
+  const { isLoading, error, retry } = combinarEstados({
+    estado: precoMobilizacaoStore.useEstado(),
+    retry: precoMobilizacaoStore.retry,
+  });
 
   const [mostrarInativos, setMostrarInativos] = useState(true);
   const [formAberto, setFormAberto] = useState(false);

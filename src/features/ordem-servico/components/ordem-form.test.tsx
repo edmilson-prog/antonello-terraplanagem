@@ -51,6 +51,8 @@ function ordemExistente(over: Partial<OrdemServico> = {}): OrdemServico {
     created_at: "2026-06-01T00:00:00.000Z",
     updated_at: "2026-06-01T00:00:00.000Z",
     ...over,
+    local_lat: null,
+    local_lng: null,
   };
 }
 

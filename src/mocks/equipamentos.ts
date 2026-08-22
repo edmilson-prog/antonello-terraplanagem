@@ -17,6 +17,9 @@ export const equipamentos: Equipamento[] = [
     propriedade: null,
     created_at: "2024-01-10T12:00:00.000Z",
     updated_at: "2025-11-02T09:30:00.000Z",
+    aquisicao_forma: null,
+    aquisicao_parcelas: null,
+    descricao: null,
   },
   {
     id: "eq-002",
@@ -32,6 +35,9 @@ export const equipamentos: Equipamento[] = [
     propriedade: null,
     created_at: "2024-02-15T12:00:00.000Z",
     updated_at: "2025-10-20T14:00:00.000Z",
+    aquisicao_forma: null,
+    aquisicao_parcelas: null,
+    descricao: null,
   },
   {
     id: "eq-003",
@@ -47,6 +53,9 @@ export const equipamentos: Equipamento[] = [
     propriedade: null,
     created_at: "2024-03-01T12:00:00.000Z",
     updated_at: "2025-09-12T08:15:00.000Z",
+    aquisicao_forma: null,
+    aquisicao_parcelas: null,
+    descricao: null,
   },
   {
     id: "eq-004",
@@ -62,6 +71,9 @@ export const equipamentos: Equipamento[] = [
     propriedade: null,
     created_at: "2024-01-22T12:00:00.000Z",
     updated_at: "2026-05-30T16:45:00.000Z",
+    aquisicao_forma: null,
+    aquisicao_parcelas: null,
+    descricao: null,
   },
   {
     id: "eq-005",
@@ -77,6 +89,9 @@ export const equipamentos: Equipamento[] = [
     propriedade: null,
     created_at: "2023-11-05T12:00:00.000Z",
     updated_at: "2026-06-01T10:00:00.000Z",
+    aquisicao_forma: null,
+    aquisicao_parcelas: null,
+    descricao: null,
   },
   {
     id: "eq-006",
@@ -92,6 +107,9 @@ export const equipamentos: Equipamento[] = [
     propriedade: null,
     created_at: "2024-04-18T12:00:00.000Z",
     updated_at: "2025-12-01T11:20:00.000Z",
+    aquisicao_forma: null,
+    aquisicao_parcelas: null,
+    descricao: null,
   },
   {
     id: "eq-007",
@@ -107,6 +125,9 @@ export const equipamentos: Equipamento[] = [
     propriedade: null,
     created_at: "2024-05-09T12:00:00.000Z",
     updated_at: "2026-04-15T13:30:00.000Z",
+    aquisicao_forma: null,
+    aquisicao_parcelas: null,
+    descricao: null,
   },
   {
     id: "eq-008",
@@ -122,5 +143,8 @@ export const equipamentos: Equipamento[] = [
     propriedade: null,
     created_at: "2021-07-30T12:00:00.000Z",
     updated_at: "2025-08-10T09:00:00.000Z",
+    aquisicao_forma: null,
+    aquisicao_parcelas: null,
+    descricao: null,
   },
 ];

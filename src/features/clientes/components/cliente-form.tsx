@@ -30,15 +30,31 @@ export function ClienteForm({ inicial, onSuccess, onCancel }: Props) {
       documento: inicial?.documento ?? "",
       telefone: inicial?.telefone ?? "",
       ativo: inicial?.ativo ?? true,
+      nome_fantasia: inicial?.nome_fantasia ?? "",
+      segmento: inicial?.segmento ?? "",
+      email: inicial?.email ?? "",
+      endereco: inicial?.endereco ?? "",
+      cidade: inicial?.cidade ?? "",
+      contato_nome: inicial?.contato_nome ?? "",
+      contato_papel: inicial?.contato_papel ?? "",
     },
   });
 
   const onSubmit = async (values: ClienteFormValues) => {
+    const texto = (v: string | undefined) => (v?.trim() ? v.trim() : null);
+
     const payload = {
       nome: values.nome,
       documento: values.documento?.trim() ? values.documento.replace(/\D/g, "") : null,
-      telefone: values.telefone?.trim() ? values.telefone.trim() : null,
+      telefone: texto(values.telefone),
       ativo: values.ativo,
+      nome_fantasia: texto(values.nome_fantasia),
+      segmento: texto(values.segmento),
+      email: texto(values.email),
+      endereco: texto(values.endereco),
+      cidade: texto(values.cidade),
+      contato_nome: texto(values.contato_nome),
+      contato_papel: texto(values.contato_papel),
     };
     try {
       if (inicial) {
@@ -98,6 +114,67 @@ export function ClienteForm({ inicial, onSuccess, onCancel }: Props) {
           className="font-mono"
           {...register("telefone")}
         />
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="nome_fantasia">Nome fantasia</Label>
+          <Input id="nome_fantasia" placeholder="opcional" {...register("nome_fantasia")} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="segmento">Segmento</Label>
+          <Input
+            id="segmento"
+            placeholder="opcional — ex.: Construção civil"
+            {...register("segmento")}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="email">E-mail</Label>
+        <Input
+          id="email"
+          type="email"
+          placeholder="opcional"
+          {...register("email")}
+          aria-invalid={!!errors.email}
+        />
+        {errors.email ? <p className="text-xs text-destructive">{errors.email.message}</p> : null}
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="endereco">Endereço</Label>
+          <Input
+            id="endereco"
+            placeholder="opcional — ex.: Rua das Palmeiras, 120"
+            {...register("endereco")}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="cidade">Cidade</Label>
+          <Input
+            id="cidade"
+            placeholder="opcional — ex.: Santo Ângelo — RS"
+            {...register("cidade")}
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="contato_nome">Contato</Label>
+          <Input id="contato_nome" placeholder="opcional" {...register("contato_nome")} />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="contato_papel">Papel do contato</Label>
+          <Input
+            id="contato_papel"
+            placeholder="opcional — ex.: Engenheiro responsável"
+            {...register("contato_papel")}
+          />
+        </div>
       </div>
 
       <Controller

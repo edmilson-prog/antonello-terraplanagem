@@ -7,7 +7,7 @@ import { DataList, type Column } from "@/shared/components/data-list";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { StatusAtivo } from "@/shared/components/status-ativo";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { formatBRL } from "@/features/retaguarda/format";
 import { componentesCustoStore } from "@/features/custo-hora/componentes-custo-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
@@ -19,7 +19,10 @@ import { cn } from "@/lib/utils";
 export function ComponenteCustoList() {
   const todos = componentesCustoStore.useAll();
   const equipamentos = equipamentosStore.useAll();
-  const { isLoading, error, retry } = useMockResource(todos);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: componentesCustoStore.useEstado(), retry: componentesCustoStore.retry },
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+  );
 
   const [mostrarInativos, setMostrarInativos] = useState(true);
   const [formAberto, setFormAberto] = useState(false);

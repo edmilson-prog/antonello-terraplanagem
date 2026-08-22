@@ -15,7 +15,7 @@ import { Icon } from "@iconify/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
 import { serieMensalFaturamento } from "@/features/gerencial/derivacoes";
 import { metaMensalStore } from "@/features/gerencial/meta-mensal-store";
@@ -32,7 +32,10 @@ export function GraficoEvolucaoFaturamento({ meses }: Props) {
   const [rascunhoMeta, setRascunhoMeta] = useState(String(meta));
 
   const serie = useMemo(() => serieMensalFaturamento(meses, faturamentos), [meses, faturamentos]);
-  const { isLoading, error, retry } = useMockResource(serie);
+  const { isLoading, error, retry } = combinarEstados({
+    estado: faturamentosStore.useEstado(),
+    retry: faturamentosStore.retry,
+  });
 
   const salvarMeta = () => {
     const valor = Number(rascunhoMeta);

@@ -10,7 +10,8 @@ import type { Operador } from "@/shared/types";
 
 export interface OperadorHeroProps {
   operador: Operador;
-  ultimaAtividade: string;
+  /** `null` quando o operador nunca entrou no app — não há atividade a exibir. */
+  ultimaAtividade: string | null;
   onEditar: () => void;
   onInativar: () => void;
   onReativar: () => void;
@@ -71,17 +72,26 @@ export function OperadorHero({
               <Icon icon="lucide:hard-hat" className="h-3.5 w-3.5" />
               Operador
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-steel/40 bg-steel/15 px-2.5 py-1 text-xs font-semibold text-foreground">
-              <Icon icon="lucide:smartphone" className="h-3.5 w-3.5" />
-              Acesso ao app
-            </span>
+            {/* O selo dizia "Acesso ao app" para todo operador, tivesse ele
+                entrado ou não. Agora ele reflete a sessão real. */}
+            {ultimaAtividade ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-steel/40 bg-steel/15 px-2.5 py-1 text-xs font-semibold text-foreground">
+                <Icon icon="lucide:smartphone" className="h-3.5 w-3.5" />
+                Acesso ao app
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-dashed px-2.5 py-1 text-xs font-semibold text-muted-foreground">
+                <Icon icon="lucide:smartphone-nfc" className="h-3.5 w-3.5" />
+                Sem acesso ao app
+              </span>
+            )}
           </div>
 
           <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
             <Quickfact rotulo="CPF" valor={formatDocumento(operador.cpf)} mono />
             <Quickfact rotulo="Telefone" valor={formatTelefone(operador.telefone)} mono />
             <Quickfact rotulo="Operador desde" valor={formatDataHora(operador.created_at)} />
-            <Quickfact rotulo="Última atividade" valor={ultimaAtividade} />
+            <Quickfact rotulo="Última atividade" valor={ultimaAtividade ?? "—"} />
           </dl>
         </div>
 

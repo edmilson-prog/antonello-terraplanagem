@@ -105,6 +105,9 @@ function equipamento(id: string): Equipamento {
     propriedade: null,
     created_at: "2026-01-01T00:00:00.000Z",
     updated_at: "2026-01-01T00:00:00.000Z",
+    aquisicao_forma: null,
+    aquisicao_parcelas: null,
+    descricao: null,
   };
 }
 
@@ -164,6 +167,13 @@ function cliente(id: string, nome: string): Cliente {
     documento: null,
     telefone: null,
     ativo: true,
+    nome_fantasia: null,
+    segmento: null,
+    email: null,
+    endereco: null,
+    cidade: null,
+    contato_nome: null,
+    contato_papel: null,
     created_at: "2026-01-01T00:00:00.000Z",
     updated_at: "2026-01-01T00:00:00.000Z",
   };

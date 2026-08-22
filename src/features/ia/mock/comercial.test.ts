@@ -43,6 +43,8 @@ describe("sugerirOrcamento", () => {
       tipo_servico: null,
       equipamento_previsto_id: null,
       inicio_previsto: null,
+      local_lat: null,
+      local_lng: null,
       numero: "OS-TESTE-C9",
     });
     // A OS nasce com este operador como responsável para que ela entre em
@@ -87,6 +89,8 @@ describe("gerarTexto", () => {
       tipo_servico: null,
       equipamento_previsto_id: null,
       inicio_previsto: null,
+      local_lat: null,
+      local_lng: null,
       aberta_em: "2026-06-01T00:00:00.000Z",
       fechada_em: null,
       pendente_sync: false,

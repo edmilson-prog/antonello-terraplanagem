@@ -16,6 +16,8 @@ export type EquipamentoStatus = "disponivel" | "em_uso" | "manutencao";
 
 export type PropriedadeEquipamento = "propria" | "locada";
 
+export type FormaAquisicao = "recursos_proprios" | "finame" | "leasing" | "consorcio";
+
 export interface Equipamento {
   id: string;
   nome: string;
@@ -27,7 +29,10 @@ export interface Equipamento {
   ativo: boolean; // soft-delete / cadastral
   marca: string | null; // marca/modelo (ex.: "Caterpillar 320") — só coletado na criação
   ano: string | null; // ano de fabricação — só coletado na criação
-  propriedade: PropriedadeEquipamento | null; // própria/locada — só coletado na criação
+  propriedade: PropriedadeEquipamento | null; // própria/locada
+  aquisicao_forma: FormaAquisicao | null; // parcela de FINAME/leasing entra no custo fixo (PRD-013)
+  aquisicao_parcelas: number | null; // só com forma financiada
+  descricao: string | null; // observação livre sobre o uso da máquina
   created_at: string;
   updated_at: string;
 }
@@ -45,6 +50,7 @@ export interface Operador {
   cnh_categoria: string | null;
   cnh_validade: string | null; // "YYYY-MM-DD"
   base: string | null;
+  admissao: string | null; // "YYYY-MM-DD" — data de admissão, ≠ created_at (cadastro)
   created_at: string;
   updated_at: string;
 }
@@ -56,6 +62,15 @@ export interface Cliente {
   telefone: string | null;
   tipo_pessoa?: "PF" | "PJ" | null;
   ativo: boolean;
+  // Comerciais e de contato — todos opcionais. `contato_nome`/`contato_papel`
+  // e `email` são dados pessoais de terceiro (LGPD: minimização).
+  nome_fantasia: string | null;
+  segmento: string | null;
+  email: string | null;
+  endereco: string | null;
+  cidade: string | null;
+  contato_nome: string | null;
+  contato_papel: string | null;
   created_at: string;
   updated_at: string;
   // Snapshot importado do ERP legado (FarolTI) — congelado no momento da
@@ -69,6 +84,7 @@ export interface Cliente {
   legado_ultima_os?: string | null; // date (YYYY-MM-DD)
   legado_recencia_dias?: number | null;
   legado_curva_abc?: "A" | "B" | "C" | null;
+  legado_importado_em?: string | null; // date — quando o snapshot foi importado
 }
 
 export interface FaturamentoMes {
@@ -187,6 +203,11 @@ export interface OrdemServico {
   tipo_servico: TipoServico | null;
   equipamento_previsto_id: string | null; // FK → Equipamento; informativo, ver ADR-001
   inicio_previsto: string | null; // "YYYY-MM-DD"
+  // Coordenada do CANTEIRO (informada no cadastro da OS), não do aparelho do
+  // operador — o sistema não rastreia GPS de pessoa (RF-003, LGPD). Ambas
+  // nulas ou ambas preenchidas.
+  local_lat: number | null;
+  local_lng: number | null;
   aberta_em: string; // ISO 8601
   fechada_em: string | null;
   pendente_sync: boolean;
@@ -461,11 +482,15 @@ export interface ComponenteCusto {
   updated_at: string;
 }
 
-// Gateway de Cobrança (PRD-008) — MVP mockado, multi-provedor via adapter.
+// Gateway de Cobrança (PRD-008) — multi-provedor via adapter.
 // CobrancaGateway é uma entidade lateral (não altera ContaReceber): referencia
-// conta_receber_id e espelha o valor da conta no momento da emissão. Nunca há
-// chamada de rede real nesta fase — linha_digitavel/pix_copia_cola são
-// strings simuladas geradas localmente (ver features/cobranca-gateway/derivacoes.ts).
+// conta_receber_id e espelha o valor da conta no momento da emissão.
+//
+// PENDÊNCIA ABERTA (docs/PENDENCIAS-MOCK.md): a cobrança é persistida de
+// verdade, mas `linha_digitavel` e `pix_copia_cola` ainda são gerados
+// localmente e o pagamento é confirmado por um "webhook" simulado. Falta a
+// credencial do provedor escolhido pelo cliente — é a última integração sem
+// caminho de rede real no projeto, junto com a suíte de IA.
 export type ProvedorGateway = "mercado_pago" | "asaas";
 export type StatusCobranca = "pendente" | "paga" | "cancelada";
 
@@ -483,12 +508,15 @@ export interface CobrancaGateway {
   updated_at: string;
 }
 
-// Aviso ao Cliente por WhatsApp (PRD-009) — MVP mockado, multi-provedor via adapter.
+// Aviso ao Cliente por WhatsApp (PRD-009) — multi-provedor via adapter.
 // AvisoWhatsApp é uma entidade lateral (não altera OrdemServico nem Cliente):
 // referencia os_id/cliente_id. Disparado ao fechar a OS (ver
-// features/ordem-servico/components/ordem-detalhe-retaguarda.tsx). Nunca há
-// chamada de rede real nesta fase — mensagem_preview é texto simulado,
-// sem valores (ver features/aviso-whatsapp/derivacoes.ts).
+// features/ordem-servico/components/ordem-detalhe-retaguarda.tsx).
+//
+// O envio é REAL: passa pela Edge Function `waha-enviar-texto`, que guarda o
+// segredo no servidor. `mensagem_preview` é o texto efetivamente enviado —
+// gravado só quando o provedor confirma, e nunca cita valor (barreira
+// financeira do PRD-009).
 export type ProvedorWhatsApp =
   | "evolution_api"
   | "evolution_go"

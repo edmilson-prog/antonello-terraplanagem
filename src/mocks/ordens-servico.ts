@@ -28,6 +28,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-06-24T07:15:00.000Z",
     updated_at: "2026-06-27T07:15:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-002",
@@ -48,6 +50,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: true,
     created_at: "2026-06-24T13:00:00.000Z",
     updated_at: "2026-06-24T13:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-003",
@@ -68,6 +72,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-06-23T07:00:00.000Z",
     updated_at: "2026-06-23T17:30:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-004",
@@ -88,6 +94,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-06-21T07:30:00.000Z",
     updated_at: "2026-06-21T16:50:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-005",
@@ -108,6 +116,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-06-25T08:00:00.000Z",
     updated_at: "2026-06-26T17:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-006",
@@ -128,6 +138,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-06-24T09:00:00.000Z",
     updated_at: "2026-06-24T09:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-007",
@@ -148,6 +160,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-06-18T07:00:00.000Z",
     updated_at: "2026-06-19T17:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-008",
@@ -168,6 +182,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-06-17T07:00:00.000Z",
     updated_at: "2026-06-17T16:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-009",
@@ -188,6 +204,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-06-16T08:00:00.000Z",
     updated_at: "2026-06-16T17:30:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-010",
@@ -208,6 +226,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-06-15T07:30:00.000Z",
     updated_at: "2026-06-15T15:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-011",
@@ -228,6 +248,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-06-29T07:00:00.000Z",
     updated_at: "2026-06-29T12:30:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   // os-012 sem responsável ainda atribuído (aberta pela recepção, aguardando
   // escala). os-013 usa op-003 (operador ainda sem OS no mock) + pendente_sync.
@@ -253,6 +275,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-07-01T07:30:00.000Z",
     updated_at: "2026-07-01T07:30:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-013",
@@ -273,6 +297,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: true,
     created_at: "2026-07-02T08:00:00.000Z",
     updated_at: "2026-07-02T08:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-014",
@@ -295,6 +321,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-06-10T07:00:00.000Z",
     updated_at: "2026-06-12T17:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-015",
@@ -315,6 +343,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-07-03T07:00:00.000Z",
     updated_at: "2026-07-03T13:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-016",
@@ -335,6 +365,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-07-04T08:00:00.000Z",
     updated_at: "2026-07-04T08:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   // Histórico Jan–Mai/2026 para o Dashboard Gerencial (PRD-016): 2 OS por mês
   // (eq-001 e eq-002, ambos com custo/hora completo), cliente cl-001, todas
@@ -359,6 +391,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-01-20T07:00:00.000Z",
     updated_at: "2026-01-20T18:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-h01b",
@@ -379,6 +413,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-01-20T07:00:00.000Z",
     updated_at: "2026-01-20T18:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-h02a",
@@ -399,6 +435,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-02-20T07:00:00.000Z",
     updated_at: "2026-02-20T18:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-h02b",
@@ -419,6 +457,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-02-20T07:00:00.000Z",
     updated_at: "2026-02-20T18:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-h03a",
@@ -439,6 +479,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-03-20T07:00:00.000Z",
     updated_at: "2026-03-20T18:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-h03b",
@@ -459,6 +501,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-03-20T07:00:00.000Z",
     updated_at: "2026-03-20T18:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-h04a",
@@ -479,6 +523,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-04-20T07:00:00.000Z",
     updated_at: "2026-04-20T18:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-h04b",
@@ -499,6 +545,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-04-20T07:00:00.000Z",
     updated_at: "2026-04-20T18:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-h05a",
@@ -519,6 +567,8 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-05-20T07:00:00.000Z",
     updated_at: "2026-05-20T18:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
   {
     id: "os-h05b",
@@ -539,5 +589,7 @@ export const ordensServico: OrdemServico[] = [
     pendente_sync: false,
     created_at: "2026-05-20T07:00:00.000Z",
     updated_at: "2026-05-20T18:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   },
 ];

@@ -1,7 +1,18 @@
 import { CardSecao } from "@/shared/components/card-secao";
-import type { EquipamentoSemana } from "@/features/equipamentos/equipamento-showcase-data";
+import type { SemanaEquipamento } from "@/features/equipamentos/derivacoes";
 
-export function UtilizacaoSemanaCard({ semana }: { semana: EquipamentoSemana }) {
+export function UtilizacaoSemanaCard({ semana }: { semana: SemanaEquipamento }) {
+  // Oito barras zeradas com "Média 0 h" embaixo parecem dado. Não são.
+  if (!semana.temDados) {
+    return (
+      <CardSecao titulo="Utilização por semana" icone="lucide:bar-chart-3" bodyClassName="p-6">
+        <p className="text-center text-sm text-muted-foreground">
+          Sem horas apontadas nas últimas 8 semanas.
+        </p>
+      </CardSecao>
+    );
+  }
+
   const picoPct = Math.max(...semana.barras.map((b) => b.pct));
   return (
     <CardSecao titulo="Utilização por semana" icone="lucide:bar-chart-3" bodyClassName="p-4">
@@ -10,6 +21,7 @@ export function UtilizacaoSemanaCard({ semana }: { semana: EquipamentoSemana }) 
           <div
             key={b.label}
             className="flex h-full flex-1 flex-col items-center justify-end gap-1.5"
+            title={`${b.label}: ${b.horas} h`}
           >
             <div
               className={

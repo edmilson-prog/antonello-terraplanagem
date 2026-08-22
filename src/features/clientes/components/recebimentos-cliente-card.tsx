@@ -1,8 +1,18 @@
 import { Icon } from "@iconify/react";
 import { CardSecao } from "@/shared/components/card-secao";
-import type { ClienteRecebimento } from "@/features/clientes/cliente-showcase-data";
+import type { RecebimentoCliente } from "@/features/clientes/derivacoes";
 
-export function RecebimentosClienteCard({ recebimentos }: { recebimentos: ClienteRecebimento[] }) {
+export function RecebimentosClienteCard({ recebimentos }: { recebimentos: RecebimentoCliente[] }) {
+  if (recebimentos.length === 0) {
+    return (
+      <CardSecao titulo="Recebimentos" icone="lucide:banknote" bodyClassName="p-6">
+        <p className="text-center text-sm text-muted-foreground">
+          Nenhum título recebido deste cliente ainda.
+        </p>
+      </CardSecao>
+    );
+  }
+
   return (
     <CardSecao titulo="Recebimentos" icone="lucide:banknote" bodyClassName="p-2">
       <ul>

@@ -8,7 +8,8 @@ import type { Cliente } from "@/shared/types";
 export interface ClienteHeroProps {
   cliente: Cliente;
   recorrente: boolean;
-  ultimaOS: string;
+  /** `null` quando o cliente ainda não tem nenhuma OS. */
+  ultimaOS: string | null;
   onEditar: () => void;
   onInativar: () => void;
   onReativar: () => void;
@@ -68,7 +69,7 @@ export function ClienteHero({
             <Quickfact rotulo="Documento" valor={formatDocumento(cliente.documento)} mono />
             <Quickfact rotulo="Telefone" valor={formatTelefone(cliente.telefone)} mono />
             <Quickfact rotulo="Cliente desde" valor={formatDataHora(cliente.created_at)} />
-            <Quickfact rotulo="Última OS" valor={ultimaOS} />
+            <Quickfact rotulo="Última OS" valor={ultimaOS ?? "—"} />
           </dl>
         </div>
 

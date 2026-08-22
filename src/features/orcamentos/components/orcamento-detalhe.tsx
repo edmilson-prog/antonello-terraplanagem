@@ -108,6 +108,8 @@ export function OrcamentoDetalhe({ orcamentoId }: { orcamentoId: string }) {
         tipo_servico: null,
         equipamento_previsto_id: null,
         inicio_previsto: null,
+        local_lat: null,
+        local_lng: null,
       });
       await orcamentosStore.vincularOS(orc.id, nova.id);
       toast.success(`OS ${nova.numero} criada a partir do orçamento.`);

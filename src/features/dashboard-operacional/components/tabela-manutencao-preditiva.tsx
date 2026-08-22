@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardSecao } from "@/shared/components/card-secao";
 import { EmptyState } from "@/shared/components/empty-state";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
 import { planosManutencaoStore } from "@/features/manutencao/planos-manutencao-store";
 import { registrosManutencaoStore } from "@/features/manutencao/registros-manutencao-store";
@@ -24,7 +24,11 @@ export function TabelaManutencaoPreditiva() {
   const equipamentos = equipamentosStore.useAll();
   const planos = planosManutencaoStore.useAll();
   const registros = registrosManutencaoStore.useCompletos();
-  const { isLoading, error, retry } = useMockResource(equipamentos);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+    { estado: planosManutencaoStore.useEstado(), retry: planosManutencaoStore.retry },
+    { estado: registrosManutencaoStore.useEstado(), retry: registrosManutencaoStore.retry },
+  );
 
   const linhas = useMemo(
     () => manutencaoPreditiva(equipamentos, planos, registros, 6),

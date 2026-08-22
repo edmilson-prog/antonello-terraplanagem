@@ -10,7 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DataList, type Column } from "@/shared/components/data-list";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import {
   StatusFaturamentoBadge,
   STATUS_FATURAMENTO,
@@ -22,7 +23,11 @@ import { formatBRL } from "@/features/retaguarda/format";
 import type { Faturamento, StatusFaturamento } from "@/shared/types";
 
 export function FaturasList({ faturamentos }: { faturamentos: Faturamento[] }) {
-  const { isLoading, error, retry } = useMockResource(faturamentos);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: clientesStore.useEstado(), retry: clientesStore.retry },
+    { estado: ordensStore.useEstado(), retry: ordensStore.retry },
+    { estado: faturamentosStore.useEstado(), retry: faturamentosStore.retry },
+  );
   const [q, setQ] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<StatusFaturamento | "todos">("todos");
 

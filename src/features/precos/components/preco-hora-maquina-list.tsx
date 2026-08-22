@@ -6,7 +6,7 @@ import { DataList, type Column } from "@/shared/components/data-list";
 import { FormDialog } from "@/shared/components/form-dialog";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
 import { StatusAtivo } from "@/shared/components/status-ativo";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { formatBRL } from "@/features/retaguarda/format";
 import { precoHoraMaquinaStore } from "@/features/precos/precos-hora-maquina-store";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
@@ -22,7 +22,11 @@ export function PrecoHoraMaquinaList() {
   const todos = precoHoraMaquinaStore.useAll();
   const equipamentos = equipamentosStore.useAll();
   const componentes = componentesCustoStore.useAll();
-  const { isLoading, error, retry } = useMockResource(todos);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: precoHoraMaquinaStore.useEstado(), retry: precoHoraMaquinaStore.retry },
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+    { estado: componentesCustoStore.useEstado(), retry: componentesCustoStore.retry },
+  );
 
   // Limiar e destaque vêm de Parâmetros; MARGEM_MINIMA_PADRAO segue como
   // fallback enquanto a store não carregou.

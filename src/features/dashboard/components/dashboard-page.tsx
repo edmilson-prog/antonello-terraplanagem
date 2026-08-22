@@ -14,7 +14,7 @@ import { CardFrota } from "@/features/dashboard/components/card-frota";
 import { CardVencimentos } from "@/features/dashboard/components/card-vencimentos";
 import { CardHorasSemana } from "@/features/dashboard/components/card-horas-semana";
 import { PainelOperacional } from "@/features/dashboard-operacional";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
@@ -66,7 +66,20 @@ export function AdminDashboardPage() {
   const precosFund = precoFundacaoStore.useAll();
   const planos = planosManutencaoStore.useAll();
   const registros = registrosManutencaoStore.useCompletos();
-  const { isLoading, error, retry } = useMockResource(ordens);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: ordensStore.useEstado(), retry: ordensStore.retry },
+    { estado: apontamentosStore.useEstado(), retry: apontamentosStore.retry },
+    { estado: faturamentosStore.useEstado(), retry: faturamentosStore.retry },
+    { estado: contasReceberStore.useEstado(), retry: contasReceberStore.retry },
+    { estado: contasPagarStore.useEstado(), retry: contasPagarStore.retry },
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+    { estado: operadoresStore.useEstado(), retry: operadoresStore.retry },
+    { estado: clientesStore.useEstado(), retry: clientesStore.retry },
+    { estado: precoHoraMaquinaStore.useEstado(), retry: precoHoraMaquinaStore.retry },
+    { estado: precoFundacaoStore.useEstado(), retry: precoFundacaoStore.retry },
+    { estado: planosManutencaoStore.useEstado(), retry: planosManutencaoStore.retry },
+    { estado: registrosManutencaoStore.useEstado(), retry: registrosManutencaoStore.retry },
+  );
 
   const agora = useMemo(() => new Date(), []);
   const agoraISO = useMemo(() => agora.toISOString().slice(0, 10), [agora]);

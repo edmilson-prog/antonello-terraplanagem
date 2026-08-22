@@ -27,6 +27,11 @@ export const ordemSchema = z
     equipamento_previsto_id: z.string().optional(),
     inicio_previsto: z.string().optional(),
     orcamento_id: z.string().optional(),
+    // Texto livre: o par entra como "−28.2992, −54.2631" colado do mapa. O
+    // parse e a validação de faixa acontecem em `onSubmit`, pelo mesmo motivo
+    // de `diametro_broca_mm` não usar z.coerce (input/output do resolver
+    // divergiriam do FieldValues único de useForm<T>).
+    local_coordenadas: z.string().trim().optional(),
   })
   .superRefine((val, ctx) => {
     if (val.modelo_cobranca === "por_metro" && !val.diametro_broca_mm) {

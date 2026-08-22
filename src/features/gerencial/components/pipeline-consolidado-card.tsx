@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMockResource } from "@/shared/hooks/use-mock-resource";
+import { combinarEstados } from "@/shared/hooks/use-estado-consulta";
 import { ordensStore } from "@/features/ordem-servico/ordens-store";
 import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
 import { faturamentosStore } from "@/features/faturamento/faturamentos-store";
@@ -51,7 +51,15 @@ export function PipelineConsolidadoCard({ periodo }: Props) {
       periodo,
     ],
   );
-  const { isLoading, error, retry } = useMockResource(pipeline);
+  const { isLoading, error, retry } = combinarEstados(
+    { estado: ordensStore.useEstado(), retry: ordensStore.retry },
+    { estado: apontamentosStore.useEstado(), retry: apontamentosStore.retry },
+    { estado: faturamentosStore.useEstado(), retry: faturamentosStore.retry },
+    { estado: contasReceberStore.useEstado(), retry: contasReceberStore.retry },
+    { estado: equipamentosStore.useEstado(), retry: equipamentosStore.retry },
+    { estado: precoHoraMaquinaStore.useEstado(), retry: precoHoraMaquinaStore.retry },
+    { estado: precoFundacaoStore.useEstado(), retry: precoFundacaoStore.retry },
+  );
 
   return (
     <section className="rounded-xl border bg-card p-5 shadow-sm">

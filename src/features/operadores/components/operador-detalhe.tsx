@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmDialog } from "@/shared/components/confirm-dialog";
+import { formatAcessoRelativo } from "@/shared/lib/format";
 import { operadoresStore } from "@/features/operadores/operadores-store";
 import { AcessoAppCard } from "@/features/operadores/components/acesso-app-card";
 import { ApontamentosRecentesCard } from "@/features/operadores/components/apontamentos-recentes-card";
@@ -15,7 +16,13 @@ import { OperadorForm } from "@/features/operadores/components/operador-form";
 import { OperadorHero } from "@/features/operadores/components/operador-hero";
 import { OperadorKpis } from "@/features/operadores/components/operador-kpis";
 import { OrdensVinculadasCard } from "@/features/operadores/components/ordens-vinculadas-card";
-import { showcaseDoOperador } from "@/features/operadores/operador-showcase-data";
+import { montarPainelOperador } from "@/features/operadores/derivacoes";
+import { acessoAppStore } from "@/features/operadores/acesso-app-store";
+import { habilitacoesStore } from "@/features/operadores/habilitacoes-store";
+import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
+import { ordensStore } from "@/features/ordem-servico/ordens-store";
+import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
+import { clientesStore } from "@/features/clientes/clientes-store";
 
 export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
   const operador = operadoresStore.useOperador(operadorId);
@@ -23,7 +30,30 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
   const [editando, setEditando] = useState(false);
   const [inativando, setInativando] = useState(false);
 
-  const showcase = useMemo(() => showcaseDoOperador(operadorId), [operadorId]);
+  // Tudo que o painel mostra vem destas listas — a retaguarda já as lê por RLS,
+  // então derivar aqui evita uma RPC de agregação por card.
+  const apontamentos = apontamentosStore.useTodos();
+  const ordens = ordensStore.useTodas();
+  const equipamentos = equipamentosStore.useAll();
+  const clientes = clientesStore.useAll();
+  const habilitadosIds = habilitacoesStore.useDoOperador(operadorId);
+  const acesso = acessoAppStore.useDoOperador(operadorId);
+  const { isLoading: carregandoAcesso } = acessoAppStore.useEstado();
+
+  const painel = useMemo(
+    () =>
+      operador
+        ? montarPainelOperador({
+            operador,
+            apontamentos,
+            ordens,
+            equipamentos,
+            clientes,
+            equipamentosHabilitadosIds: habilitadosIds,
+          })
+        : null,
+    [operador, apontamentos, ordens, equipamentos, clientes, habilitadosIds],
+  );
 
   const voltar = (
     <Link
@@ -66,7 +96,7 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
     );
   }
 
-  if (!operador) {
+  if (!operador || !painel) {
     return (
       <div className="space-y-4 text-center">
         <h2 className="font-display text-xl font-bold text-foreground">Operador não encontrado</h2>
@@ -119,22 +149,26 @@ export function OperadorDetalhe({ operadorId }: { operadorId: string }) {
         <div className="space-y-4">
           <OperadorHero
             operador={operador}
-            ultimaAtividade={showcase.acessoApp.ultimoAcesso}
+            ultimaAtividade={acesso ? formatAcessoRelativo(acesso.ultimoAcesso) : null}
             onEditar={() => setEditando(true)}
             onInativar={() => setInativando(true)}
             onReativar={reativar}
           />
-          <OperadorKpis kpis={showcase.kpis} />
+          <OperadorKpis kpis={painel.kpis} />
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr]">
             <div className="space-y-4">
-              <ApontamentosRecentesCard apontamentos={showcase.apontamentos} />
-              <OrdensVinculadasCard ordens={showcase.ordens} />
+              <ApontamentosRecentesCard apontamentos={painel.apontamentos} />
+              <OrdensVinculadasCard ordens={painel.ordens} />
             </div>
             <div className="space-y-4">
-              <DadosCadastraisCard cadastrais={showcase.cadastrais} telefone={operador.telefone} />
-              <HorasSemanaCard semana={showcase.horasSemana} />
-              <EquipamentosHabilitadosCard equipamentos={showcase.equipamentos} />
-              <AcessoAppCard acesso={showcase.acessoApp} />
+              <DadosCadastraisCard cadastrais={painel.cadastrais} telefone={operador.telefone} />
+              <HorasSemanaCard semana={painel.horasSemana} />
+              <EquipamentosHabilitadosCard equipamentos={painel.equipamentos} />
+              <AcessoAppCard
+                acesso={acesso}
+                isLoading={carregandoAcesso}
+                temApontamentos={painel.totalApontamentos > 0}
+              />
             </div>
           </div>
           <div className="mt-6 flex items-start gap-2.5 rounded-lg border border-dashed px-4 py-3 text-[12.5px] text-foreground-faint">

@@ -29,7 +29,9 @@ import {
   STATUS_LABEL,
 } from "@/features/equipamentos/labels";
 import { EquipamentoForm } from "@/features/equipamentos/components/equipamento-form";
-import { showcaseDoEquipamento } from "@/features/equipamentos/equipamento-showcase-data";
+import { apontamentosStore } from "@/features/apontamento/apontamentos-store";
+import { abastecimentosStore } from "@/features/diesel/abastecimentos-store";
+import { consumoMedioLh, totalHoras, totalLitros } from "@/features/diesel/derivacoes";
 import { planosManutencaoStore } from "@/features/manutencao/planos-manutencao-store";
 import { registrosManutencaoStore } from "@/features/manutencao/registros-manutencao-store";
 import { resumoProximaManutencao } from "@/features/manutencao/derivacoes";
@@ -47,6 +49,9 @@ const STATUS_FILTRO_ITENS: FiltroChipItem[] = [
   ...STATUS.map((s) => ({ id: s, label: STATUS_LABEL[s], tone: STATUS_TONE[s] })),
 ];
 
+const TRACO = "—";
+const DIAS_DA_JANELA = 30;
+
 interface EquipamentoListView {
   equipamento: Equipamento;
   horasMes: string;
@@ -60,6 +65,8 @@ export function EquipamentosPage() {
   const { isLoading, error } = equipamentosStore.useEstado();
   const retry = equipamentosStore.retry;
   const planos = planosManutencaoStore.useAll();
+  const apontamentos = apontamentosStore.useTodos();
+  const abastecimentos = abastecimentosStore.useTodos();
   const registros = registrosManutencaoStore.useCompletos();
 
   const [q, setQ] = useState("");
@@ -103,27 +110,43 @@ export function EquipamentosPage() {
     return listaAntesDoStatus.filter((e) => e.ativo && e.status === filtroStatus);
   }, [listaAntesDoStatus, filtroStatus]);
 
-  const views: EquipamentoListView[] = useMemo(
-    () =>
-      lista.map((equipamento) => {
-        const showcase = showcaseDoEquipamento(equipamento.id);
-        const resumo = resumoProximaManutencao(equipamento, planos, registros);
-        const manutencaoVencida = resumo?.status === "vencida";
-        const manutencaoTexto = !resumo
-          ? "—"
-          : manutencaoVencida
-            ? "vencida"
-            : `em ${formatHorimetro(resumo.restantes)}`;
-        return {
-          equipamento,
-          horasMes: showcase.kpis.horasMes.valor,
-          dieselMedio: showcase.dieselMedioLh,
-          manutencaoTexto,
-          manutencaoVencida,
-        };
-      }),
-    [lista, planos, registros],
-  );
+  const views: EquipamentoListView[] = useMemo(() => {
+    const corte = Date.now() - DIAS_DA_JANELA * 24 * 60 * 60 * 1000;
+
+    return lista.map((equipamento) => {
+      const resumo = resumoProximaManutencao(equipamento, planos, registros);
+      const manutencaoVencida = resumo?.status === "vencida";
+      const manutencaoTexto = !resumo
+        ? TRACO
+        : manutencaoVencida
+          ? "vencida"
+          : `em ${formatHorimetro(resumo.restantes)}`;
+
+      const horasDaJanela = apontamentos.filter(
+        (a) =>
+          a.equipamento_id === equipamento.id &&
+          new Date(a.iniciado_em ?? a.created_at).getTime() >= corte,
+      );
+      const abastecidos = abastecimentos.filter(
+        (a) => a.equipamento_id === equipamento.id && new Date(a.abastecido_em).getTime() >= corte,
+      );
+      // null = sem abastecimento ou sem hora no período. A coluna mostra o
+      // traço; um "0,0 L/h" leria como máquina que roda sem consumir diesel.
+      const consumo = consumoMedioLh(
+        totalLitros(abastecidos),
+        totalHoras(horasDaJanela),
+        abastecidos.length,
+      );
+
+      return {
+        equipamento,
+        horasMes: formatHorimetro(totalHoras(horasDaJanela)),
+        dieselMedio: consumo === null ? TRACO : `${consumo.toFixed(1).replace(".", ",")} L/h`,
+        manutencaoTexto,
+        manutencaoVencida,
+      };
+    });
+  }, [lista, planos, registros, apontamentos, abastecimentos]);
 
   const abrirEdicao = (e: Equipamento) => {
     setEditando(e);

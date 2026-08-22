@@ -7,8 +7,8 @@ import type { Equipamento } from "@/shared/types";
 
 export interface EquipamentoHeroProps {
   equipamento: Equipamento;
-  marcaModelo: string;
-  ano: string;
+  marcaModelo: string | null;
+  ano: string | null;
   onEditar: () => void;
   onInativar: () => void;
   onReativar: () => void;
@@ -68,8 +68,8 @@ export function EquipamentoHero({
               valor={formatHorimetro(equipamento.horimetro_atual)}
               mono
             />
-            <Quickfact rotulo="Marca/Modelo" valor={marcaModelo} />
-            <Quickfact rotulo="Ano" valor={ano} mono />
+            <Quickfact rotulo="Marca/Modelo" valor={marcaModelo ?? "—"} />
+            <Quickfact rotulo="Ano" valor={ano ?? "—"} mono />
             <Quickfact rotulo="Na frota desde" valor={formatDataHora(equipamento.created_at)} />
           </dl>
         </div>

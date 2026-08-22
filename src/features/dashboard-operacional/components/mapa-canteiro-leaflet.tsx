@@ -1,9 +1,8 @@
-import { useMemo } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { posicoesEquipamentos } from "@/features/dashboard-operacional/mock-posicoes-equipamentos";
-import type { Equipamento, EquipamentoStatus } from "@/shared/types";
+import type { PinEquipamento } from "@/features/dashboard-operacional/posicoes";
+import type { EquipamentoStatus } from "@/shared/types";
 
 const COR_STATUS: Record<EquipamentoStatus, string> = {
   em_uso: "#FFB300",
@@ -30,33 +29,20 @@ function iconePin(status: EquipamentoStatus): L.DivIcon {
 }
 
 interface MapaCanteiroLeafletProps {
-  equipamentosAtivos: Equipamento[];
+  pins: PinEquipamento[];
+  centro: { lat: number; lng: number };
 }
 
-// Posições fictícias (RF-003) plotadas num mapa real (Leaflet + OpenStreetMap),
-// num ponto genérico sem vínculo com um endereço real da empresa.
-export function MapaCanteiroLeaflet({ equipamentosAtivos }: MapaCanteiroLeafletProps) {
-  const pins = useMemo(
-    () =>
-      posicoesEquipamentos
-        .map((pos) => ({
-          pos,
-          equipamento: equipamentosAtivos.find((e) => e.id === pos.equipamento_id),
-        }))
-        .filter(
-          (p): p is { pos: typeof p.pos; equipamento: NonNullable<typeof p.equipamento> } =>
-            p.equipamento !== undefined,
-        ),
-    [equipamentosAtivos],
-  );
-
-  const primeiraPosicao = pins[0]?.pos ?? posicoesEquipamentos[0];
-  const centro: [number, number] = [primeiraPosicao.lat, primeiraPosicao.lng];
-
+// Pins e centro chegam prontos de `posicoesDaFrota` — este componente só
+// desenha. Antes ele importava um arquivo de coordenadas fixas e fazia a
+// junção aqui, que desde a migração para o Supabase não casava com nada.
+export function MapaCanteiroLeaflet({ pins, centro }: MapaCanteiroLeafletProps) {
   return (
     <MapContainer
-      center={centro}
-      zoom={16}
+      center={[centro.lat, centro.lng]}
+      // Obras diferentes ficam a quilômetros umas das outras; um zoom de
+      // canteiro (16) só enquadraria uma delas.
+      zoom={pins.length > 1 ? 11 : 15}
       scrollWheelZoom={false}
       className="h-[360px] w-full rounded-xl border"
     >
@@ -64,16 +50,18 @@ export function MapaCanteiroLeaflet({ equipamentosAtivos }: MapaCanteiroLeafletP
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {pins.map(({ pos, equipamento }) => (
+      {pins.map((pin) => (
         <Marker
-          key={equipamento.id}
-          position={[pos.lat, pos.lng]}
-          icon={iconePin(equipamento.status)}
+          key={pin.equipamento.id}
+          position={[pin.lat, pin.lng]}
+          icon={iconePin(pin.equipamento.status)}
         >
           <Popup>
-            <strong>{equipamento.nome}</strong>
+            <strong>{pin.equipamento.nome}</strong>
             <br />
-            {ROTULO_STATUS[equipamento.status]}
+            {ROTULO_STATUS[pin.equipamento.status]}
+            <br />
+            {pin.osNumero} · {pin.obraNome}
           </Popup>
         </Marker>
       ))}

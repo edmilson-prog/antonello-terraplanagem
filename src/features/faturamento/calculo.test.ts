@@ -73,6 +73,8 @@ function osHora(id: string): OrdemServico {
     pendente_sync: false,
     created_at: "2026-06-20T07:00:00.000Z",
     updated_at: "2026-06-20T17:00:00.000Z",
+    local_lat: null,
+    local_lng: null,
   };
 }
 

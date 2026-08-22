@@ -17,10 +17,14 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { operadoresStore } from "@/features/operadores/operadores-store";
 import { operadorSchema, type OperadorFormValues } from "@/features/operadores/operador-schema";
 import { equipamentosStore } from "@/features/equipamentos/equipamentos-store";
+import { habilitacoesStore } from "@/features/operadores/habilitacoes-store";
 import { ResumoNovoOperador } from "@/features/operadores/components/resumo-novo-operador";
 import type { Operador, Equipamento } from "@/shared/types";
 
 const CNH_CATEGORIAS = ["A", "B", "C", "D", "E"];
+
+/** Campo de texto vazio é ausência de dado, não string vazia no banco. */
+const textoOuNulo = (v: string | undefined): string | null => (v?.trim() ? v.trim() : null);
 
 interface Props {
   inicial: Operador | null;
@@ -30,6 +34,9 @@ interface Props {
 
 export function OperadorForm({ inicial, onSuccess, onCancel }: Props) {
   const equipamentosAtivos = equipamentosStore.useAll().filter((e) => e.ativo);
+  // Habilitações atuais do operador em edição — sem isso os checkboxes abririam
+  // desmarcados e "salvar" apagaria silenciosamente o que já estava lá.
+  const habilitadosAtuais = habilitacoesStore.useDoOperador(inicial?.id ?? "");
   const {
     register,
     handleSubmit,
@@ -47,19 +54,31 @@ export function OperadorForm({ inicial, onSuccess, onCancel }: Props) {
       cnh_categoria: inicial?.cnh_categoria ?? "",
       cnh_validade: inicial?.cnh_validade ?? "",
       base: inicial?.base ?? "",
-      equipamentos_ids: [],
+      admissao: inicial?.admissao ?? "",
+      equipamentos_ids: habilitadosAtuais,
     },
   });
 
   const onSubmit = async (values: OperadorFormValues) => {
     try {
       if (inicial) {
+        // Até a Onda 22 a edição gravava só nome/CPF/telefone/ativo: vínculo,
+        // nascimento, CNH, base e habilitações eram coletados no cadastro e
+        // depois viravam campos somente-leitura para sempre. Um erro de
+        // digitação na validade da CNH não tinha conserto pela tela.
         await operadoresStore.update(inicial.id, {
           nome: values.nome,
           cpf: values.cpf.replace(/\D/g, ""),
           telefone: values.telefone?.trim() ? values.telefone.trim() : null,
           ativo: values.ativo,
+          vinculo: values.vinculo ?? null,
+          data_nascimento: textoOuNulo(values.data_nascimento),
+          cnh_categoria: textoOuNulo(values.cnh_categoria),
+          cnh_validade: textoOuNulo(values.cnh_validade),
+          base: textoOuNulo(values.base),
+          admissao: textoOuNulo(values.admissao),
         });
+        await habilitacoesStore.definir(inicial.id, values.equipamentos_ids ?? []);
         toast.success("Operador atualizado.");
       } else {
         await operadoresStore.create({
@@ -68,10 +87,11 @@ export function OperadorForm({ inicial, onSuccess, onCancel }: Props) {
           telefone: values.telefone?.trim() ? values.telefone.trim() : null,
           ativo: values.ativo,
           vinculo: values.vinculo ?? null,
-          data_nascimento: values.data_nascimento?.trim() ? values.data_nascimento.trim() : null,
-          cnh_categoria: values.cnh_categoria?.trim() ? values.cnh_categoria.trim() : null,
-          cnh_validade: values.cnh_validade?.trim() ? values.cnh_validade.trim() : null,
-          base: values.base?.trim() ? values.base.trim() : null,
+          data_nascimento: textoOuNulo(values.data_nascimento),
+          cnh_categoria: textoOuNulo(values.cnh_categoria),
+          cnh_validade: textoOuNulo(values.cnh_validade),
+          base: textoOuNulo(values.base),
+          admissao: textoOuNulo(values.admissao),
           equipamentos_ids: values.equipamentos_ids,
         });
         toast.success("Operador cadastrado.");
@@ -102,26 +122,24 @@ export function OperadorForm({ inicial, onSuccess, onCancel }: Props) {
         {errors.nome ? <p className="text-xs text-destructive">{errors.nome.message}</p> : null}
       </div>
 
-      {!inicial ? (
-        <div className="space-y-1.5">
-          <Label htmlFor="vinculo">Vínculo</Label>
-          <Controller
-            control={control}
-            name="vinculo"
-            render={({ field }) => (
-              <Select value={field.value ?? "CLT"} onValueChange={field.onChange}>
-                <SelectTrigger id="vinculo">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="CLT">CLT</SelectItem>
-                  <SelectItem value="PJ">PJ</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-          />
-        </div>
-      ) : null}
+      <div className="space-y-1.5">
+        <Label htmlFor="vinculo">Vínculo</Label>
+        <Controller
+          control={control}
+          name="vinculo"
+          render={({ field }) => (
+            <Select value={field.value ?? "CLT"} onValueChange={field.onChange}>
+              <SelectTrigger id="vinculo">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="CLT">CLT</SelectItem>
+                <SelectItem value="PJ">PJ</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
+      </div>
 
       <div className="space-y-1.5">
         <Label htmlFor="cpf">CPF *</Label>
@@ -153,89 +171,88 @@ export function OperadorForm({ inicial, onSuccess, onCancel }: Props) {
         />
       </div>
 
-      {!inicial ? (
-        <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="data_nascimento">Nascimento</Label>
-              <Input
-                id="data_nascimento"
-                type="date"
-                className="font-mono"
-                {...register("data_nascimento")}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="base">Base</Label>
-              <Input id="base" placeholder="Santo Ângelo — RS" {...register("base")} />
-            </div>
-          </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="data_nascimento">Nascimento</Label>
+          <Input
+            id="data_nascimento"
+            type="date"
+            className="font-mono"
+            {...register("data_nascimento")}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="admissao">Admissão</Label>
+          <Input id="admissao" type="date" className="font-mono" {...register("admissao")} />
+        </div>
+      </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="cnh_categoria">CNH — categoria</Label>
-              <Controller
-                control={control}
-                name="cnh_categoria"
-                render={({ field }) => (
-                  <Select value={field.value ?? ""} onValueChange={field.onChange}>
-                    <SelectTrigger id="cnh_categoria">
-                      <SelectValue placeholder="Selecione…" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CNH_CATEGORIAS.map((c) => (
-                        <SelectItem key={c} value={c}>
-                          Categoria {c}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="cnh_validade">CNH — validade</Label>
-              <Input
-                id="cnh_validade"
-                type="date"
-                className="font-mono"
-                {...register("cnh_validade")}
-              />
-            </div>
-          </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="cnh_categoria">CNH — categoria</Label>
+          <Controller
+            control={control}
+            name="cnh_categoria"
+            render={({ field }) => (
+              <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                <SelectTrigger id="cnh_categoria">
+                  <SelectValue placeholder="Selecione…" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CNH_CATEGORIAS.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      Categoria {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="cnh_validade">CNH — validade</Label>
+          <Input
+            id="cnh_validade"
+            type="date"
+            className="font-mono"
+            {...register("cnh_validade")}
+          />
+        </div>
+      </div>
 
-          <div className="space-y-1.5">
-            <span className="text-sm font-medium leading-none">Equipamentos habilitados</span>
-            <Controller
-              control={control}
-              name="equipamentos_ids"
-              render={({ field }) => (
-                <div className="grid grid-cols-1 gap-2 rounded-lg border p-3 sm:grid-cols-2">
-                  {equipamentosAtivos.map((e) => {
-                    const selecionados = field.value ?? [];
-                    const marcado = selecionados.includes(e.id);
-                    return (
-                      <label key={e.id} className="flex items-center gap-2 text-sm">
-                        <Checkbox
-                          checked={marcado}
-                          onCheckedChange={(v) =>
-                            field.onChange(
-                              v
-                                ? [...selecionados, e.id]
-                                : selecionados.filter((id) => id !== e.id),
-                            )
-                          }
-                        />
-                        {e.nome}
-                      </label>
-                    );
-                  })}
-                </div>
-              )}
-            />
-          </div>
-        </>
-      ) : null}
+      <div className="space-y-1.5">
+        <Label htmlFor="base">Base</Label>
+        <Input id="base" placeholder="Santo Ângelo — RS" {...register("base")} />
+      </div>
+
+      <div className="space-y-1.5">
+        <span className="text-sm font-medium leading-none">Equipamentos habilitados</span>
+        <Controller
+          control={control}
+          name="equipamentos_ids"
+          render={({ field }) => (
+            <div className="grid grid-cols-1 gap-2 rounded-lg border p-3 sm:grid-cols-2">
+              {equipamentosAtivos.map((e) => {
+                const selecionados = field.value ?? [];
+                const marcado = selecionados.includes(e.id);
+                return (
+                  <label key={e.id} className="flex items-center gap-2 text-sm">
+                    <Checkbox
+                      checked={marcado}
+                      onCheckedChange={(v) =>
+                        field.onChange(
+                          v ? [...selecionados, e.id] : selecionados.filter((id) => id !== e.id),
+                        )
+                      }
+                    />
+                    {e.nome}
+                  </label>
+                );
+              })}
+            </div>
+          )}
+        />
+      </div>
 
       <Controller
         control={control}

@@ -5,6 +5,48 @@ Todas as mudanças notáveis deste projeto são documentadas aqui.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/)
 e o projeto adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [0.38.0] - 2026-08-20 - Groundtruth
+
+Fecha a última fronteira do mock: **as telas param de inventar o que não sabem**.
+
+A conexão mock→real das ondas anteriores tirou as _stores_ de `src/mocks/`. O que ficou foi mais discreto — geradores determinísticos por `id`, que produziam números plausíveis e **estáveis entre renders**, o que os fazia parecer dado real. O card "Acesso ao app" dizia "App liberado · Hoje, 07:32 · Android · Redmi 12" para um operador cadastrado cinco minutos antes que nunca tinha aberto o app.
+
+### Added
+
+- **Diretrizes permanentes do projeto** no `CLAUDE.md`. **D1** — nada mockado chega em produção: dado fabricado não é entregável, falta de backend é a tarefa (não a desculpa), nada é suprimido para contornar a falta de dado real, e credencial ausente não autoriza simular resposta de provedor. **D2** — todo bump de versão sincroniza a `main` local.
+- **`npm run auditar:mocks`** — varredura que dá dente à D1. Nove regras sobre os padrões que já produziram dado falso neste projeto; sai com código 1 fora das exceções declaradas.
+- **[`docs/PENDENCIAS-MOCK.md`](docs/PENDENCIAS-MOCK.md)** — inventário auditável do que é real, do que espera credencial e do que ainda mente. É o primeiro arquivo a ler numa sessão de contexto zero.
+- Colunas que faltavam para os dados existirem: `operador_sessoes.dispositivo/app_versao/ultimo_uso_em`, `operadores.admissao`, `equipamentos.aquisicao_forma/aquisicao_parcelas/descricao`, `clientes.nome_fantasia/segmento/email/endereco/cidade/contato_nome/contato_papel/legado_importado_em`, `ordens_servico.local_lat/local_lng`.
+- RPCs `acesso_app_operador`, `acesso_app_operadores`, `tocar_sessao_operador` e `definir_equipamentos_operador`.
+
+### Changed
+
+- **Detalhe do operador, do equipamento e do cliente** passam a derivar de `apontamentos`, `ordens_servico`, `registros_manutencao`, `abastecimentos`, `faturamento_itens` e `contas_receber`. Os três `*-showcase-data.ts` saíram do repositório.
+- **Aba Análise do faturamento** deixa de ser um bloco de constantes. O filtro de período agora filtra: antes escalava os totais fixos por uma razão, de modo que trocar o recorte mexia nos números — o que dava a impressão de que funcionava.
+- **PDF de faturamento** recebe o recorte da tela. Antes o cabeçalho dizia "últimos 6 meses" enquanto a pessoa olhava para "últimos 3".
+- **Mapa do painel operacional** planta cada máquina na obra em que ela está apontando. Continua sem GPS de pessoa (RF-003): a coordenada é do canteiro, digitada uma vez no cadastro da OS.
+- **Mini-tendências dos cards** deixam de somar uma senoide ao traçado. A suavização fica; a linha volta a subir só onde o dado sobe.
+- **Onde não há dado, a tela mostra o vazio.** Operador sem hora apontada não ganha gráfico de seis barras zeradas com "Média 0 h" embaixo; campo cadastral em branco vira travessão; OS não faturada mostra "—" em vez de "R$ 0,00", que leria como serviço prestado de graça.
+
+### Fixed
+
+- **Ficha de cliente abria vazia para todo mundo.** OS, orçamentos e contas eram filtrados por `idMockDoCliente()`, tradutor de UUID para o id fixture `"cl-001"`. Quando essas stores foram para o Supabase (Onda 21) a comparação passou a ser UUID contra `"cl-001"`: zero OS, zero orçamento e zero título — no detalhe e na listagem.
+- **O mapa nunca desenhou um pin.** Mesma causa: as posições eram chaveadas por `"eq-001"`. E o mapa abria centrado num ponto do Paraná, a 400 km da base em Santo Ângelo/RS.
+- **22 telas escondiam falha de consulta atrás de um loading falso.** `useMockResource` cronometrava 400 ms sobre dados já em memória e declarava "carregado" — sempre, inclusive com a consulta falhada. Sessão expirada e rede caída apareciam como base vazia, e o botão "tentar novamente" só reiniciava o cronômetro. No lugar, `combinarEstados()` cruza o estado real das stores de cada tela.
+- **Editar operador ou equipamento descartava metade do cadastro.** Vínculo, nascimento, CNH, base, habilitações, marca, ano e propriedade eram coletados uma vez e viravam somente-leitura para sempre — um erro de digitação na validade da CNH não tinha conserto pela tela.
+- **`npm run lint` nunca terminava.** `eslint .` varria `docs/`, e o `_ds_bundle.js` exportado pelo design system (626 KB, gerado) prendia a regra `prettier/prettier` em laço: 35 min de CPU a 100% sem sair. `docs/` entra na lista de ignorados do ESLint — é material de referência, não código do projeto — e o lint volta a rodar em 15 s.
+
+### Security
+
+- `dispositivo` é rótulo grosso ("Android · Redmi 12"), montado no cliente e truncado no servidor. Nada de user-agent inteiro, IMEI ou IP: o escritório precisa saber de que tipo de aparelho o operador aponta, não rastrear qual é o aparelho.
+- `operador_sessoes` continua sem policy de RLS. A leitura do card passa por função `SECURITY DEFINER` que checa `is_retaguarda()` e devolve quatro campos — **o token nunca atravessa essa fronteira**.
+- `contato_nome`, `contato_papel` e `email` do cliente são dados pessoais de terceiro: opcionais por minimização, sob a RLS da tabela, e fora do recorte que o app de campo enxerga.
+
+### Notas
+
+- Restam **duas** entradas 🔴 no inventário — gateway de cobrança e suíte de IA. Ambas dependem de credencial do cliente, não de código nosso, e estão declaradas como exceção na varredura para ficarem visíveis em vez de escondidas.
+- Três regras da varredura nasceram desta onda: nome de arquivo que se declara exemplo, pool de valores sorteado e coordenada escrita à mão. As duas coisas que passaram por várias ondas sem serem vistas seriam pegas por elas.
+
 ## [0.37.0] - 2026-08-19 - Doorstep
 
 O app de campo é PWA desde a Onda 20: tem manifest, ícone, `display: standalone` e service worker. Faltava a única coisa que faz um PWA sair do navegador — **alguém convidar**. Até aqui o operador só descobria o "adicionar à tela inicial" se estivesse no iPhone, abrisse o Perfil e o Web Push já tivesse falhado por causa disso.
@@ -12,6 +54,7 @@ O app de campo é PWA desde a Onda 20: tem manifest, ícone, `display: standalon
 Instalado, o app abre pelo ícone em tela cheia (mais tela útil sob sol, sem a barra do navegador) e, no iPhone, é o que **libera as notificações** da retaguarda.
 
 ### Added
+
 - **Convite de instalação** (`features/instalacao`): banner no topo da aba "Hoje" e cartão fixo no Perfil, com o mesmo componente.
 - Captura do **`beforeinstallprompt`** com `preventDefault()` — o convite é o do projeto, dentro do layout do campo, e não a mini-barra do Chrome. Instalar vira um toque em "Instalar app".
 - **Passo a passo do iOS** (`PassosInstalacaoIOS`), onde o Safari não dispara evento nenhum: Compartilhar → Adicionar à Tela de Início → abrir pelo ícone. Fonte única do texto, usada pelo convite e apontada pelo cartão de avisos.
@@ -19,14 +62,17 @@ Instalado, o app abre pelo ícone em tela cheia (mais tela útil sob sol, sem a 
 - Escuta de **`appinstalled`**: instalou, o convite some da tela na hora e o histórico de recusas é apagado.
 
 ### Changed
+
 - `ehIOS()` e `rodandoInstalado()` saíram de `features/notificacoes/push.ts` para `features/instalacao/deteccao.ts`. A pergunta "este app está instalado?" é da instalação; o push é um dos interessados, não o dono.
 - O cartão de avisos do Perfil, no iPhone, parou de repetir o passo a passo: aponta para o convite que está logo acima, na mesma tela. Dois textos para manter viravam dois cartões dizendo a mesma coisa.
 
 ### Fixed
+
 - **Tema escuro não valia no app de campo.** A classe `.dark` só era aplicada por um `useEffect` dentro do `useTheme()`, e no ambiente do operador o único consumidor do hook era a aba Perfil: recarregar direto em `/app` abria claro mesmo com "escuro" salvo. Agora um script inline no `<head>` aplica a preferência **antes da primeira pintura** — o que de quebra acaba com o flash de tela clara na retaguarda e no site.
 - **`useTheme()` virou store compartilhado** (`useSyncExternalStore`): cada chamada tinha estado próprio e duas instâncias na mesma tela se dessincronizavam. Por isso o login voltou a usar o `<ThemeToggle />`, no lugar do botão inline que existia só para contornar o problema.
 
 ### Notas
+
 - **O convite não aparece onde não há como instalar.** Sem prompt nativo e fora do iOS (Firefox, Safari de desktop), ele fica oculto: pedir ao operador algo que o navegador dele não faz é pior do que não pedir.
 - Quem decide se o prompt nativo existe é o **navegador** (manifest válido, HTTPS e os critérios dele). O convite reage ao evento quando ele chega; não tenta forçá-lo.
 - O ponto de entrada do Perfil é **persistente** — ignora o "agora não" e não tem botão de dispensar. Quem recusou três vezes ainda precisa de um lugar para instalar quando mudar de ideia.
@@ -40,6 +86,7 @@ Oito telas do app de campo gravavam **só no localStorage do aparelho**. Checkli
 O comentário no código era honesto sobre isso ("NENHUM deles tem tabela no Supabase ainda"). Esta onda dá à fila offline para onde esvaziar.
 
 ### Added
+
 - Tabela **`registros_campo`**, espelhando a união discriminada de `DadosRegistroCampo` como `tipo` + `dados jsonb`, com CHECK por tipo exigindo as mesmas chaves que o TypeScript exige. `op_id` único é a chave de idempotência do ADR-001.
 - RPCs **`registrar_registro_campo`** e **`listar_registros_campo_operador`**, com o token opaco da sessão por PIN. `operador_id` vem sempre do token, nunca do cliente.
 - **Motor de flush** da fila offline: envia os pendentes um a um, marca só o que a central confirmou, e dispara ao registrar, ao reconectar (evento `online`) e no "Sincronizar agora".
@@ -48,15 +95,18 @@ O comentário no código era honesto sobre isso ("NENHUM deles tem tabela no Sup
 - Seção **"Registros de campo"** no detalhe da OS, com a assinatura do cliente quando houver.
 
 ### Changed
+
 - `registrar()` continua **síncrono**, de propósito: em campo a tela confirma sem esperar rede. O envio é consequência, não pré-requisito.
 - `registrado_em` guarda a hora do **fato**, não a da sincronização — o diário preenchido às 8h no canteiro sem sinal não é carimbado com as 17h do caminhão de volta.
 - A tela de Sincronização parou de listar pendências que nunca saíam dali: "Sincronizar agora" esvazia a fila antes de recarregar as bases de leitura.
 - `resumoRegistro` passou a aceitar só o par `(tipo, dados)`, servindo à fila do operador e ao que a retaguarda recebeu.
 
 ### Security
+
 - A **assinatura do cliente** (dado pessoal, LGPD) fica em coluna própria, fora do `jsonb`: permite retenção e anonimização isoladas, e não é arrastada por toda listagem. A RPC do operador **não a devolve** — no app ela é write-only — e ela é apagada do aparelho assim que a central confirma o recebimento.
 
 ### Notas
+
 - O que falha no envio **continua pendente e não some**: perder a rede não pode perder o registro. É a regra que os testes protegem.
 - "Chamado pendente" é **derivado** da ausência de ordem apontando para ele. Não há status a atualizar à mão, e portanto não há como a lista mentir por esquecimento.
 - A `medicao_assinada` já era o PRD-011 construído na tela do operador; faltava onde pousar. Agora a assinatura coletada em campo chega ao escritório.
@@ -66,16 +116,19 @@ O comentário no código era honesto sobre isso ("NENHUM deles tem tabela no Sup
 Fecha a dívida de mock do projeto: **as últimas cinco stores saíram de `src/mocks/`**. O pipeline Executado → Faturado → Recebido passa a viver no banco.
 
 ### Added
+
 - **Semente da cadeia de faturamento**, derivada das OS reais: dois faturamentos (um com título já vencido, outro a vencer), suas contas a receber e dois comprovantes — um assinado, um pendente. Duas OS foram fechadas para permitir faturar; uma delas fica de propósito sem faturamento, para exercitar "Aguardando faturamento" com dado real.
 - Isso acendeu a categoria **Financeiro** da central de notificações, que a Onda 19 deixou ligada e muda: a varredura diária passou a produzir "Título vencido" (crítico) e "Título a vencer".
 
 ### Changed
+
 - `faturamentos` + `faturamento_itens` (tabela filha, como orçamentos), `contas_receber`, `comprovantes` e `cobrancas_gateway` passam a ler e escrever no Supabase.
 - `gerarDeOS`, `atualizar`, `confirmar`, `darBaixaReceber`, `gerar`, `assinar`, `recusar`, `emitirCobranca` e `simularWebhookPago` viraram assíncronas; todos os chamadores foram ajustados.
 - `cobrancas-store` deixou de ser factory com a store de contas injetada — as duas falam com o banco agora.
 - No pagamento simulado, a **baixa da conta vem antes** de marcar a cobrança como paga: se ela falhar, nada é gravado. A ordem inversa deixaria cobrança paga com conta em aberto. Mesmo critério da compra de diesel (Onda 17).
 
 ### Notas
+
 - **`apontamentos` continua vazio, de propósito.** A coluna `operador_id` é obrigatória e os 15 operadores do banco são funcionários reais da Antonello; criar jornada de trabalho inventada no nome deles seria pior do que uma tela vazia — decisão do usuário. A tabela enche quando o primeiro operador usar o app de campo.
 - Por consequência, os faturamentos semeados são compostos só de **mobilização**, que é preço fechado por transporte e não depende de horas. Faturar horas sem apontamento por trás seria um número inventado dentro de uma tela financeira. Quando houver apontamento, o "Gerar faturamento" monta os itens de hora com a lógica que já existe e é testada.
 - Rentabilidade e Custo da Hora seguem sem horas pelo mesmo motivo.
@@ -86,25 +139,30 @@ Fecha a dívida de mock do projeto: **as últimas cinco stores saíram de `src/m
 Onda de saneamento, não de tela: **seis stores saíram do mock**. Cinco delas liam `src/mocks/` enquanto a tabela correspondente já estava semeada no Supabase com exatamente as mesmas linhas desde o PRD-017 — divergência silenciosa, do tipo que não aparece em nenhum teste e some no primeiro F5.
 
 ### Fixed
+
 - **O saldo do tanque de diesel misturava dois mundos.** A Onda 17 criou `compras_diesel` lendo o banco, mas os abastecimentos ficaram no mock — então o cálculo cruzava compra real com abastecimento fictício. O cálculo estava certo; as entradas é que vinham de lugares diferentes.
 - **O abastecimento lançado pelo operador em campo evaporava.** Ia para uma lista em memória e sumia no reload; ninguém no escritório jamais viu um.
 - **Editar preço não mudava nada no banco.** As três tabelas de preço eram lidas do mock, então o valor que o Faturamento aplicava vinha de um lugar que a tela não conseguia alterar.
 - **Cadastrar componente de custo mudava o custo/hora só da sessão.**
 
 ### Added
+
 - `createSupabaseStore`: mesmo contrato do `createMockStore`, com escrita assíncrona. Evita repetir o mesmo arquivo de 100 linhas em cada migração de CRUD puro.
 - **RPCs de abastecimento para o app de campo** (`listar_abastecimentos_operador`, `registrar_abastecimento_operador`), no padrão de OS, apontamento e manutenção: `SECURITY DEFINER` com token opaco, idempotente pelo id gerado no cliente.
 - **`precos_historico`** com trigger nas três tabelas de preço. O card "Tabelas anteriores" (Onda 9) existia, mas o histórico vivia em memória e o F5 apagava.
 
 ### Changed
+
 - `precos_hora_maquina` (6 linhas), `precos_fundacao` (3), `precos_mobilizacao` (2), `componentes_custo` (9) e `abastecimentos` (8) passam a ler e escrever no banco.
 - `abastecimentosStore.registrar` virou assíncrona; os três chamadores foram ajustados.
 - O histórico de preços virou **só-leitura**: os formulários não registram mais, quem grava é o trigger. Alteração feita por SQL ou importação entra no histórico do mesmo jeito.
 
 ### Security
+
 - A RPC do operador não devolve `preco_litro` nem `custo_total`, com as colunas listadas uma a uma. O espelho no TypeScript é `AbastecimentoOperador`, recebido pelas derivações de consumo — o compilador prova que a conta de L/h não alcança dado financeiro.
 
 ### Notas
+
 - A semente de `abastecimentos` estava incompleta: 4 das 8 linhas, só as que têm `local`. As 4 que faltavam ficaram com `operador_id` nulo — no mock elas apontam para operadores fictícios, e a tabela real tem os 15 funcionários importados do ERP.
 - Restam 5 stores em mock, todas da cadeia de faturamento (faturamentos, itens, contas a receber, comprovantes e cobranças). Essas têm tabela **vazia** e vêm na onda seguinte.
 
@@ -115,6 +173,7 @@ Fecha as três telas de Notificações na retaguarda (linhas 35–37 do [roadmap
 O PRD-020 tinha construído a notificação como coisa **do operador**: `operador_id` NOT NULL, seis tipos, todos de campo. As categorias Financeiro e Comercial que o kit desenha são assunto do escritório, e não havia ninguém para recebê-las.
 
 ### Added
+
 - **Caixa da retaguarda.** `notificacoes` passou a aceitar destinatário de escritório (`usuario_id`) além de operador — exatamente um dos dois, garantido por check. Uma linha por pessoa: `lida_em` é da linha, então ninguém apaga o aviso do colega ao ler o seu.
 - **Categoria, prioridade, ação no app e agendamento** nas notificações. Os tipos foram de 6 para 18, um por evento da matriz do kit.
 - **`notificacoes_entregas`** — uma linha por canal, e por aparelho no caso do push. É a origem de todos os KPIs de entrega, que antes não tinham de onde sair.
@@ -127,15 +186,18 @@ O PRD-020 tinha construído a notificação como coisa **do operador**: `operado
 - **`marcar_push_aberto`** — RPC que o service worker chama ao tocar na notificação. É o que alimenta "Abertos" e "Tempo médio até abrir".
 
 ### Changed
+
 - O trigger de push virou `processar_entrega_notificacao`, que decide canal a canal: respeita a matriz de preferências, o horário silencioso e o teto por hora, e registra CADA decisão. Crítico fura silêncio e teto.
 - `enviar-push` passou a fechar a linha de entrega de cada aparelho como entregue ou falhou, em vez de disparar e esquecer.
 - Três cron jobs novos: liberar agendadas (5 em 5 min), varredura da retaguarda (07:00) e limpeza pela retenção configurada.
 
 ### Security
+
 - Todas as funções novas nascem com `search_path` fixo e `EXECUTE` revogado de `public, anon, authenticated`. A única exposta a `anon` é `marcar_push_aberto`, que valida o token do operador e só marca entrega dele.
 - O e-mail do destinatário é resolvido dentro da função, a partir de `auth.users` — nunca trafega pelo cliente.
 
 ### Notas
+
 - **A categoria Financeiro fica ligada mas silenciosa por ora**: `contas_receber` tem tabela e zero linhas — o pipeline Executado → Faturado → Recebido inteiro ainda lê `src/mocks/` no front. É a próxima onda.
 - `suprimido` é status separado de `falhou` de propósito. Horário silencioso não é erro de entrega, e misturar os dois faria o KPI de falhas mentir.
 - WhatsApp aparece na matriz desabilitado, como no próprio kit: o WAHA que já existe no projeto atende o cliente, não o operador.
@@ -147,6 +209,7 @@ Segunda versão seguida a **reverter uma decisão da 0.24.0 (Onda 10)** por esco
 Fecha a última tela 🔧 do [roadmap do UI kit](docs/prds/ROADMAP-ui-kit-retaguarda.md).
 
 ### Added
+
 - **Manutenção corretiva.** `registros_manutencao` ganhou `tipo`, `descricao` própria, `prioridade`, `fornecedor`, `horimetro_abertura` e `aberta_em`, mais a situação **em andamento** — a máquina parada na oficina, entre a abertura e a conclusão. É ela que alimenta o KPI "Em manutenção".
 - **Nova manutenção** em `/admin/manutencao/nova`, com resumo ao vivo: equipamento, tipo, prioridade, horímetro, custo estimado e oficina. Abre a ordem já em andamento e leva direto para a conclusão — serviço rápido é aberto e fechado na mesma sentada.
 - **Preventiva avulsa**: serviço preventivo fora de plano, que antes não tinha como ser lançado. O check `registros_manutencao_forma_check` é quem separa as duas formas — com plano é preventiva e tem marca de horímetro; sem plano, precisa descrever a si mesma.
@@ -154,16 +217,19 @@ Fecha a última tela 🔧 do [roadmap do UI kit](docs/prds/ROADMAP-ui-kit-retagu
 - **RPCs de manutenção para o app de campo** (`listar_planos_manutencao_operador`, `listar_registros_manutencao_operador`), no mesmo padrão de OS e apontamento: `SECURITY DEFINER` com token opaco da sessão por PIN.
 
 ### Changed
+
 - **`planos_manutencao` e `registros_manutencao` saíram do mock em memória para o Supabase.** Era pré-requisito: uma ordem corretiva que some no primeiro F5 não serve para nada. Fechou de quebra um buraco antigo — `equipamentosStore.create` já gravava o plano preventivo no banco, mas a lista vinha do mock, então o plano nascia invisível.
 - A tela passou a ter as abas **Manutenção** (o kit), **Planos** (o cadastro, intacto) e **Consumo (IA)** (intacta). A aba "Alertas" saiu: o card "Planos por horímetro" mostra os mesmos ciclos com a mesma ação, e ainda os que estão em dia.
 - `RegistrarManutencaoPage` atende os dois fluxos — fechar ciclo de plano (reinicia o ciclo) e concluir ordem avulsa (sem sucessora).
 - `planosManutencaoStore.create/update/setAtivo` e `registrosManutencaoStore.criarPrevista/registrarRealizada` viraram assíncronas; os chamadores foram ajustados.
 
 ### Security
+
 - A RPC do operador **não devolve `custo`** — nem para o cliente descartar depois. `fornecedor` e `observacao` também ficam de fora, por minimização. As colunas são listadas uma a uma na função, de propósito: `select r.*` passaria a vazar qualquer coluna financeira futura no dia em que ela fosse criada.
 - O espelho disso no TypeScript é `RegistroManutencaoOperador`, o tipo que as derivações de manutenção passaram a receber. Com isso o compilador prova que a cadeia `statusEquipamento → statusPlano` não alcança dado financeiro — e ela roda em 4 telas de `/app/*`.
 
 ### Notas
+
 - Os 5 registros que já existiam são preventivos de plano e tiveram `aberta_em` preenchido com o `created_at`.
 - Duas ordens corretivas de demonstração foram semeadas (uma em andamento, uma concluída), porque sem elas a tela abriria com todos os KPIs zerados. Podem ser apagadas quando a operação real começar a lançar as suas.
 - Ordem concluída não é clicável na tabela: não há o que fazer nela.
@@ -171,10 +237,12 @@ Fecha a última tela 🔧 do [roadmap do UI kit](docs/prds/ROADMAP-ui-kit-retagu
 ## [0.31.1] - 2026-08-17 - Cistern
 
 ### Changed
+
 - **Faturamento e Financeiro passam a usar o `KpiHeroi` compartilhado**, fechando a extração começada na 0.28.0 — os dois eram os últimos a manter cada um a sua cópia do tile de KPI e da função de escala do sparkline. Com isso, todas as telas de indicador-herói (Dashboard, Custo da Hora, Rentabilidade, Painel Gerencial, Diesel, Faturamento e Financeiro) renderizam o mesmo componente, e `escalar0a100` passa a existir num lugar só. Nada muda na tela: os tiles locais batiam classe a classe com o compartilhado.
 - As séries passam a entrar nos KPIs em valores absolutos — o `KpiHeroi` escala internamente, então nem o import de `escalar0a100` sobra nas features.
 
 ### Notas
+
 - Única diferença de comportamento, e em série que não ocorre em produção: o tile compartilhado só desenha o sparkline com dois pontos ou mais, enquanto as cópias locais desenhavam uma linha reta com um ponto só. As séries de Faturamento e Financeiro vêm sempre com os 6 meses do agregado mensal.
 
 ## [0.31.0] - 2026-08-17 - Cistern
@@ -182,6 +250,7 @@ Fecha a última tela 🔧 do [roadmap do UI kit](docs/prds/ROADMAP-ui-kit-retagu
 Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita do usuário: o controle de estoque do tanque interno, que na época foi removido do formulário por não existir no produto, agora existe de verdade.
 
 ### Added
+
 - **Estoque do tanque interno de diesel.** Compras entram, abastecimentos com origem "tanque" saem, e o saldo é derivado — nunca persistido. Corrigir uma compra lançada errada corrige o histórico inteiro sozinho.
 - **Custo por média móvel ponderada**: cada compra recalcula o custo médio do que está no tanque, e cada saída baixa por esse médio. É o que faz o Custo da Hora refletir o que foi realmente pago — comprar barato e o mercado subir não encarece a máquina que queimou o diesel antigo.
 - **Compra de diesel** em `/admin/diesel/compra`, com resumo ao vivo do saldo resultante e aviso quando a compra passaria da capacidade do tanque.
@@ -190,10 +259,12 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Campo **Origem do diesel** de volta no formulário de abastecimento — agora com lastro: escolher "tanque interno" dá baixa no estoque.
 
 ### Changed
+
 - **`contas_pagar` saiu do mock em memória para o Supabase.** Era pré-requisito: uma conta gerada automaticamente que some no primeiro F5 não serve para nada. A tabela também estava três colunas atrás do contrato — `documento`, `forma_pagamento` e `observacao` entraram em `ContaPagar` na 0.19.0 mas só no mock.
 - `contasPagarStore.criar` e `.darBaixaPagar` viraram assíncronas; os dois chamadores foram ajustados.
 
 ### Notas
+
 - Abastecimentos já registrados ficaram como origem "externo". Marcá-los como tanque criaria baixas retroativas de um estoque que não existia.
 - O saldo pode ficar negativo, e a tela avisa em vez de esconder: quase sempre significa abastecimento marcado como tanque sem a compra correspondente lançada.
 - A conta a pagar é criada **antes** da compra. Se ela falhar, nada é gravado; o contrário deixaria uma conta órfã no Financeiro, pior de desfazer do que repetir o lançamento.
@@ -201,46 +272,55 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 ## [0.30.0] - 2026-08-17 - Bridge
 
 ### Added
+
 - **Painel Gerencial conforme o design system**, em duas abas. **Visão executiva** é o desenho do kit por inteiro: 4 KPIs-herói (receita, resultado, margem média, horas apontadas) com sparkline, "Resultado por mês" em barras com média e pico, "Top clientes", "Curva ABC de clientes" e "Utilização da frota". **Análises** guarda, intactos, os 7 blocos do PRD-016 que o kit não desenha — insight por IA, gráficos de evolução e de receita×custo×margem, horas por equipamento, utilização de diesel, os dois rankings de margem, pipeline consolidado e previsão de caixa.
 - **Curva ABC de clientes** com corte clássico de Pareto (A concentra até 80% da receita, B até 95%, C o resto). O cliente que cruza o corte fecha a faixa que ele completa — senão o corte nunca seria atingido e um cliente único cairia em C.
 - **Utilização da frota**: horas apontadas ÷ horas disponíveis, por equipamento. Deixa passar de 100% em vez de truncar — hora extra e sábado existem, e esconder isso apagaria a informação mais útil do card.
 
 ### Changed
+
 - **`jornada_horas` e `dias_uteis` saíram do selo "só cadastro"**: a Utilização da Frota é o primeiro lugar do sistema que os consulta, para calcular as horas disponíveis do período. No app do operador a jornada segue no valor fixo — lá a tabela de parâmetros não é legível (RLS de retaguarda).
 - `LinhaBarra` (rótulo + valor + barra de proporção) foi para `shared/components`, na quarta vez que o padrão apareceu. Os cards de composição de custo e de margem por cliente ainda usam a versão local deles.
 
 ### Notas
+
 - O cálculo de dias úteis **não desconta feriados** — o sistema não tem calendário deles, e inventar um daria precisão falsa. O card diz isso no rodapé.
 - `dias_uteis` com valor "personalizado" cai em segunda a sexta: não há onde configurar quais dias seriam.
 
 ## [0.29.0] - 2026-08-17 - Compass
 
 ### Added
+
 - **Rentabilidade conforme o design system.** As duas abas ganharam os 4 KPIs-herói do kit — margem média, resultado no mês, receita e custo total — com sparkline dos últimos 6 meses e variação vs. mês anterior, mais faixa preservando o indicador de itens no prejuízo que a tela já tinha.
 - Card **"Margem por cliente"** na aba de obras, ao lado da tabela: consolida as obras de cada cliente e ordena da maior margem para a menor, com barra proporcional. O recorte é o **ano até o mês selecionado**, não o mês — como indica o mock, e porque a margem de um cliente num mês isolado diz pouco quando ele tem uma ou duas obras faturadas.
 - **Exportar em CSV**, seguindo o padrão da 0.28.0. Exporta a aba aberta: as colunas de obras e de equipamentos são diferentes, então não há um CSV único.
 
 ### Changed
+
 - A margem do período passou a ser a **margem do agregado** (resultado ÷ receita), não a média das margens individuais. Uma obra de R$ 100 com 90% não pode pesar igual a uma de R$ 100.000 com 10%.
 - A mecânica do CSV (separador, decimal, BOM, escape) foi para `shared/lib/exportar-csv`, em vez de ficar só no Custo da Hora — agora são duas telas exportando.
 
 ### Notas
+
 - A nota de rodapé sobre particionamento financeiro diz o que é verdade hoje: os valores não aparecem no app de campo porque estas telas não existem lá, mas o parâmetro ainda **não separa perfis dentro da retaguarda** — recepção e proprietário veem o mesmo. O mock sugeria uma separação por perfil que o sistema não tem.
 - As duas abas foram mantidas: o kit desenha só a visão por OS, mas rentabilidade por equipamento é metade do PRD-014 ("por máquina e por obra").
 
 ## [0.28.0] - 2026-08-17 - Ledger
 
 ### Added
+
 - **Custo da Hora conforme o design system.** 4 KPIs-herói (custo médio da hora, horas apontadas, diesel no mês, margem média) com sparkline dos últimos 6 meses e variação vs. mês anterior, e grid de duas colunas: tabela clicável de custo por equipamento à esquerda, composição do custo e preço de tabela à direita.
 - **Composição do custo em barras**, no lugar do diálogo de detalhamento. Escolher um equipamento na tabela mostra para onde o custo vai, com percentual e valor por hora de cada item. Diferença deliberada em relação ao mock: as linhas são os componentes realmente cadastrados, pelo nome que o usuário deu ("Parcela FINAME", "Material rodante"), mais Diesel e Manutenção, que são derivados — em vez das 4 categorias fixas do desenho.
 - Card **"Preço de tabela"** com o preço praticado do equipamento e selo de margem saudável ou apertada. O limiar é o mesmo de Preços, lido de Parâmetros.
 - **Exportar em CSV** a tabela de custo do mês, em convenção pt-BR (ponto e vírgula, vírgula decimal, BOM) para abrir direto no Excel.
 
 ### Changed
+
 - O campo "Horas/mês de referência" do formulário de componente de custo passa a partir do valor definido em Parâmetros, com link para lá — antes era um `160` fixo no código. Continua valendo só para a simulação daquela tela; o que mudou é de onde vem o padrão. Fecha o laço aberto na 0.27.0.
 - `KpiHeroi` (o tile do UI kit, com trend e sparkline) e `escalar0a100` foram para `shared`, em vez de virarem a quarta cópia. Dashboard já usa a versão compartilhada; Faturamento e Financeiro ainda têm as suas.
 
 ### Notas
+
 - O botão **"Recalcular custos"** do kit ficou visível e desabilitado, com a explicação no hover: o custo da hora é sempre derivado na leitura, nunca persistido (PRD-013), então não existe o que recalcular. Decisão do usuário entre omitir, renomear ou manter inerte.
 - As duas abas (Custo por Equipamento e Componentes de Custo) foram mantidas — o mock desenha só a primeira, mas o cadastro de componentes é feature real, sem outra porta de entrada.
 - Corrigido de passagem: `CODINOME_SISTEMA` tinha ficado em "Handshake" na 0.27.0, que deveria ser "Levers". O rodapé do login mostrava o codinome errado.
@@ -248,53 +328,63 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 ## [0.27.0] - 2026-08-16 - Levers
 
 ### Added
+
 - **Parâmetros da plataforma, as duas telas do UI kit.** `/admin/parametros` mostra os parâmetros em cards de leitura; `/admin/parametros/editar` edita, com navegação por seção, contador de campos alterados por seção, diff "antes → depois" antes de salvar e card de registro (última alteração, autor, versão). Fecham as linhas 33–34 do roadmap do UI kit.
 - Tabela `parametros` (linha única, garantida por índice) com as 6 seções do kit: Empresa, Operação, Custos & preços, Faturamento, Integrações e Acesso & segurança. Os defaults seguem o comportamento real do sistema, não os valores ilustrativos do mock — criar a tabela não muda o comportamento de nada.
 - Histórico de alterações (`parametros_historico` + diálogo agrupado por versão): quem mudou o quê, de qual valor para qual. As linhas são gravadas por trigger no banco, então nenhuma alteração escapa do registro — inclusive as feitas fora da tela.
 - Selo **"só cadastro"** nos parâmetros que o kit desenha mas o produto ainda não consulta. Mesma postura do selo "Posições ilustrativas" do Painel Operacional (0.23.0): quando o mock promete um controle que não existe, a tela diz isso em vez de copiar o rótulo.
 
 ### Changed
+
 - **Quatro parâmetros deixaram de ser constante hardcodada e passaram a valer de verdade:** antecedência do alerta de manutenção (era `ANTECEDENCIA_HORAS_PADRAO = 20`), margem mínima e o alerta de margem baixa em Preços (era `MARGEM_MINIMA_PADRAO = 0.3`), horas/mês de referência do rateio de custo fixo (era o `160` embutido em `custoEstimadoHoraEquipamento`) e a forma de recebimento padrão do diálogo de baixa. Cada leitura mantém a constante antiga como fallback, para o intervalo antes da store carregar.
 - **`/admin/integracoes` foi absorvida pela seção Integrações de Parâmetros** e saiu da sidebar, que ganhou "Parâmetros" no lugar. Os provedores de gateway e de WhatsApp e o painel de conexão WAHA continuam funcionando como antes — mudou o lugar onde aparecem, não a lógica.
 - `DataRow` (linha ícone + rótulo + valor dos cards de leitura) foi para `shared/components`, em vez de mais uma cópia local por feature. As três cópias que ainda existiam — Dados cadastrais do cliente, Dados cadastrais do operador e Ficha técnica do equipamento — passaram a usar a versão compartilhada. Nas três telas o resultado é idêntico ao anterior; o que muda é que um valor longo demais para a coluna agora quebra dentro do card em vez de vazar para fora dele.
 
 ### Security
+
 - As três funções novas do banco nascem com `search_path` fixo e sem `EXECUTE` para `anon`/`authenticated` — revogado também de `PUBLIC`, que é o que faltava nas trigger functions de versões anteriores. Auditado com `has_function_privilege` antes e depois.
 - `parametros_historico` é somente leitura para a retaguarda: as linhas vêm do trigger `SECURITY DEFINER`, nunca do cliente.
 
 ### Notas
+
 - `jornada_horas` fica marcada como "só cadastro": ela só é usada no app do operador (pré-preenche o horímetro final), e o app não enxerga a tabela `parametros` — a RLS é de retaguarda. Ligá-la exige expor o valor por uma RPC de operador.
 - A "Chave de API" do mock não virou campo: sem uma API real para autenticar, o input só serviria para alguém colar um segredo em texto claro numa tabela que toda a retaguarda lê.
 
 ## [0.26.0] - 2026-08-12 - Handshake
 
 ### Added
+
 - **O App de Campo passa a enxergar e gravar dados reais.** Quatro RPCs `SECURITY DEFINER` que recebem o token da sessão por PIN — `listar_ordens_operador`, `listar_apontamentos_operador`, `iniciar_apontamento` e `finalizar_apontamento` — no mesmo contrato já usado pelo login e pelas notificações (PRD-020). Nenhuma policy de escrita foi aberta para `anon` em tabela de negócio.
 - Índices `idx_apontamentos_operador_id`, `idx_apontamentos_os_id` e `idx_ordens_servico_responsavel_id`, que sustentam os filtros dessas funções.
 - Idempotência de apontamento conforme o ADR-001: o id é gerado no cliente e serve de `opId`. Reenviar a abertura não duplica horas; refechar com o mesmo horímetro é no-op bem-sucedido, e com horímetro diferente é recusado como conflito de leitura.
 
 ### Changed
+
 - **`apontamentos` deixa de ser mock e passa a viver no banco** — foi o último store do fluxo de campo ainda alimentado por `src/mocks/`. O store ganhou dois caminhos por trás da mesma API: a retaguarda lê a tabela sob a sessão do Supabase Auth; o app de campo lê e escreve pelas RPCs por token. `ordensStore` seguiu o mesmo desenho na leitura.
 - Abrir e encerrar apontamento agora são operações assíncronas contra o servidor, com estado de "Encerrando…" no botão e erro na tela em vez de sucesso presumido.
 - `pendente_sync` passa a dizer a verdade: o que o servidor aceitou volta marcado como sincronizado.
 - Entrar e sair recarregam OS e apontamentos. O aparelho é compartilhado — ao sair, o cache esvazia, e o operador seguinte não herda as OS de quem usou antes.
 
 ### Fixed
+
 - **O operador via zero OS em produção.** `ordens_servico` e `apontamentos` só tinham policy para `authenticated`; como o app roda com a anon key e RLS sem policy que case devolve lista vazia em vez de erro, as telas de campo apareciam vazias sem nenhum sinal de erro.
 - A metragem executada e as fotos do apontamento, que antes só existiam em memória, agora persistem.
 - **"permission denied for table ordens_servico" ao trocar de tela, que só sumia com F5.** Os stores disparavam a carga no import do módulo, e o bundle não tem code-splitting: todos rodavam no boot de qualquer rota — inclusive a landing pública, a tela de login e o app de campo, onde não há sessão da retaguarda. Sem sessão, o supabase-js manda a anon key, e as tabelas de negócio só têm GRANT SELECT para `authenticated`: 42501, que o PostgREST devolve como 401. Como nenhum login recarrega a página, o erro ficava congelado na tela até o usuário recarregar. A carga passa a ser condicionada à credencial e refeita quando ela muda (`src/lib/credencial.ts`).
 - A landing pública deixa de disparar seis consultas a tabelas de negócio a cada visita.
 
 ### Security
+
 - **As funções internas do banco não estavam protegidas de verdade.** As migrations usavam `revoke all on function ... from public`, que no Supabase não tem efeito: o projeto vem com `alter default privileges ... grant all on functions to anon, authenticated`, então toda função em `public` nasce com EXECUTE concedido explicitamente a essas roles, e revogar de PUBLIC não mexe nisso. Na prática, qualquer visitante com a anon key podia chamar `criar_operador` (criar operador com CPF, sem autenticação), `criar_notificacao_interna` (notificar qualquer operador, pulando a checagem de `criar_notificacao`) e as rotinas agendadas. Revogado explicitamente de `anon` e `authenticated`.
 - A superfície que a role `anon` alcança passa a ser exatamente a API do app de campo: 11 funções, das quais 10 exigem e validam o token da sessão, mais `login_operador` (que exige operador e PIN). Verificado executando como `anon`: as RPCs públicas respondem, as internas devolvem `permission denied`.
 
 ### Notes
+
 - As telas da retaguarda que somam horas (Dashboard, Rentabilidade, Faturamento, Painel Gerencial, Custo da Hora) passam a refletir a tabela real, hoje vazia — os ~30 apontamentos que apareciam ali eram do mock e referenciavam equipamentos e OS que não existem no banco. Os números voltam a crescer conforme os operadores apontam.
 
 ## [0.25.0] - 2026-08-11 - Toolbelt
 
 ### Added
+
 - **App de Campo (`/app/*`) inteiro portado para o UI kit oficial** (`ui_kits/app-campo` do Claude Design, lido via DesignSync): as 23 telas do protótipo, em três ondas. A tela de login saiu antes, sozinha, pelo PR #19.
 - Primitivas do kit como componentes tipados em `features/operador/components/kit` (superfície, ações, formulário e estados de tela) — as classes `ac-*`/`atp-*` do protótipo deixam de ser copiadas tela a tela.
 - Telas novas: **Sincronização**, **Minha escala**, **Espelho de horas**, **Ficha do equipamento**, **Mapa da obra**, **Segurança**, **Checklist de pré-uso**, **Diário de obra (RDO)**, **Paralisação**, **Viagens de basculante**, **Mobilização / prancha**, **Solicitar manutenção** (lado operador) e **Assinatura da medição** em campo.
@@ -304,6 +394,7 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Tokens `surface-2`, `border-soft`, `primary-deep`, `primary-dim`, `success` e `info` nos três escopos de tema.
 
 ### Changed
+
 - **Notificações (PRD-020, 0.23.0) ganham a roupa do kit sem trocar de motor:** a tela e o store continuam sendo os do PRD-020 (tabela `notificacoes` + RPCs por token + Web Push). O que mudou é onde o sino mora — agora no cabeçalho da aba "Hoje", como no protótipo. O ciclo de vida (service worker, reinscrição de push, reconsulta periódica) foi extraído para `useCicloNotificacoes` e montado no shell, para continuar vivo em todas as telas mesmo com o sino fora do cabeçalho global.
 - **Bottom nav do app do operador passa a seguir o kit:** `Hoje · Minhas OS · Abastecer · Perfil` (era `Início · Apontamento · Minhas OS · Perfil`). A barra some nas sub-telas, que ocupam a tela inteira e voltam pelo cabeçalho — como no protótipo.
 - Cabeçalho global do app sai do shell: cada tela desenha o seu (`ac-head` nas abas, `ac-form-head` nas sub-telas). O toggle de tema, obrigatório pelo CLAUDE.md, passa a viver no Perfil.
@@ -312,14 +403,18 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Abastecer vira aba, com o equipamento do apontamento em andamento pré-selecionado; o diálogo com OCR de cupom continua acessível de dentro do apontamento.
 
 ### Removed
+
 - Aba "Apontamento" e a lista `ApontamentosPage`: `/app/apontamento` redireciona para o Histórico, que passou a mostrar também o apontamento em aberto. Nada de funcionalidade foi perdido.
 
 ### Notes
+
 - Os oito registros de campo ainda **não têm tabela no Supabase**. O app do operador roda como `anon`, que hoje não enxerga nem `ordens_servico` — o acesso do operador depende de RPCs por token (padrão de `login_operador` / `operador_do_token`), ainda não escritas para leitura de OS nem para escrita de registros. Até lá os registros ficam no aparelho, e o contrato em `features/registros-campo/tipos.ts` é o que as tabelas vão implementar.
 - Onde o kit depende de dado que o sistema não tem, a tela mostra o limite em vez de inventar: o mapa da obra cai no fallback previsto pelo próprio kit (sem lat/lon na OS) mas abre a rota no GPS pelo endereço; as viagens não exibem trajeto/jazida; e o DDS aparece com estado vazio, explicando que a retaguarda ainda não publica o tema do dia.
+
 ## [0.24.0] - 2026-08-09 - Watchtower
 
 ### Added
+
 - Painel Operacional (aba "Operacional" do dashboard) refeito conforme o design system oficial (`ui_kits/retaguarda/DashboardOperacional`): grid de duas colunas — mapa do canteiro e manutenção preditiva à esquerda; ordens/horas, financeiro, contas a receber e atalhos à direita.
 - Faixa de condições sobre o mapa com o clima da base da operação (Santo Ângelo/RS), consultado em runtime na Open-Meteo — API pública, sem chave, que recebe apenas coordenadas fixas. Falha de rede não derruba o mapa: a faixa só omite a parte de clima.
 - Contagem de operadores em campo (apontamentos em andamento) na faixa do mapa.
@@ -329,17 +424,20 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Novas derivações puras (`manutencaoPreditiva`, `percentualCiclo`, `contasReceberPorClienteFaixas`) e o serviço de clima, com 17 testes novos.
 
 ### Changed
+
 - Os cards de OS e horas viraram três tiles no formato do kit: **Abertas** (com as novas OS dos últimos 7 dias em barras), **Em andamento** (com a quebra em andamento/abertas/concluídas no mês) e **Horas apontadas** (com os apontamentos do último dia com movimento, por OS e operador).
 - Cards financeiros (Executado, Faturado, Recebido) adotaram o mesmo tile, com a variação percentual ao lado do rótulo de comparação.
 - O selo do mapa diz **"Posições ilustrativas"** em vez do "Ao vivo" do mock: as coordenadas dos equipamentos são fictícias (PRD-019 RF-003) e o selo original prometeria um rastreamento por GPS que o produto não tem.
 - As barras de "novas OS por dia" passaram a usar a série real em vez da série decorativa — barras discretas rotuladas por dia devem bater com o dado; os sparklines financeiros seguem decorativos, como decidido no PRD-016.
 
 ### Removed
+
 - `CardOsAbertas` e `CardHorasApontadas`, substituídos pelos três tiles de "Ordens e horas".
 
 ## [0.23.0] - 2026-08-09 - Klaxon
 
 ### Added
+
 - **Central de notificações no app de campo** (`/app/notificacoes`, PRD-020), fiel ao kit `ui_kits/app-campo` (tela `notif`): sino com badge no cabeçalho, lista agrupada por Hoje / Ontem / data, ícone-tile por tipo de aviso, ponto de não lida, "Marcar lidas" e deep link para a OS quando houver.
 - **Web Push**: o celular do operador avisa mesmo com o app fechado. Tabela `push_subscriptions` (uma linha por aparelho), trigger em `notificacoes` que chama a Edge Function `enviar-push` via `pg_net`, e assinatura VAPID na função — que ainda remove inscrições mortas (404/410).
 - **PWA do app de campo**: `manifest.webmanifest`, service worker estático em `public/sw.js` (só push e clique na notificação — não intercepta `fetch`) e ícones gerados por `scripts/gerar-icones-pwa.js`. Feito sem `vite-plugin-pwa`, porque o `vite.config.ts` proíbe plugins manuais.
@@ -349,14 +447,17 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Controle de avisos no Perfil, com atalho para a central e instrução específica para iPhone (no iOS, Web Push exige instalar o app na tela inicial).
 
 ### Changed
+
 - Sair do app agora remove a inscrição de push e apaga o cache local de notificações — aparelho de campo é compartilhado, e o próximo operador não pode receber aviso nem ver histórico do anterior.
 
 ### Security
+
 - `registrar_notificacao_propria` deriva o destinatário do token e restringe o tipo a `abastecimento_registrado`: sem isso, a chave `anon` (que é pública) permitiria disparar notificação arbitrária para qualquer operador.
 
 ## [0.22.0] - 2026-08-09 - Lookout
 
 ### Added
+
 - Dashboard da retaguarda (aba "Visão geral") refeito conforme o design system oficial (`ui_kits/retaguarda/screen-dashboard`): 4 KPIs-herói (Faturamento, Horas apontadas, OS em andamento, Saldo a receber) com variação vs. período anterior e sparkline, sobre um grid de dois blocos.
 - Cards novos no dashboard, todos com dado real: **OS em andamento** (número, obra, cliente, horas acumuladas, data de abertura e status), **Apontamentos do dia** (operador, equipamento, horímetro inicial → final, horas e OS), **Frota** (situação operacional dos equipamentos ativos), **Vencimentos próximos** (contas a receber em aberto, vencidas no topo) e **Horas por semana** (barras das últimas 8 janelas de 7 dias, com média e pico).
 - Faixa compacta de indicadores logo abaixo dos KPIs, preservando os números que o dashboard já mostrava e que não existem no novo desenho: Executado, Recebido, OS abertas, Fechadas no período, Contas vencidas/a vencer e Alertas de manutenção.
@@ -364,15 +465,18 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Novas derivações puras em `features/dashboard/derivacoes.ts` (`intervaloAnterior`, `serieEmBuckets`, `serieSemanalHoras`, `osAtivas`, `apontamentosDoDiaMaisRecente`, `vencimentosProximos`, `saldoAReceber`, entre outras), com 16 testes novos.
 
 ### Changed
+
 - O filtro de período (hoje/semana/mês) saiu do corpo da página para o cabeçalho, no lugar da pílula estática do mock, e passou a alimentar também a variação percentual dos KPIs (comparando com a janela imediatamente anterior, de mesma duração).
 - Blocos que não seguem o filtro de período (apontamentos do dia e horas por semana) são ancorados no apontamento finalizado mais recente, e rotulam a data exibida — evita card vazio quando a base não tem movimento recente.
 
 ### Removed
+
 - Widgets antigos do dashboard (`WidgetOsPorStatus`, `WidgetHorasPeriodo`, `WidgetPipelineFinanceiro`, `WidgetContas`, `WidgetAlertasManutencao`, `WidgetAtalhos`), substituídos pelos KPIs e pela faixa de indicadores. Nenhum indicador foi perdido.
 
 ## [0.21.0] - 2026-07-10 - Ledger
 
 ### Added
+
 - Importação completa dos 1066 clientes reais extraídos do ERP legado (FarolTI/`Gerencial.fdb`) para o Supabase, incluindo o histórico comercial (LTV, ticket médio, frequência de OS, curva ABC, primeira/última OS, recência) em novas colunas `legado_*` de `clientes` — snapshot congelado do legado, não recalculado ao vivo.
 - Página de detalhe do cliente (`/admin/clientes/:id`), acessível clicando no nome na listagem: dados básicos, histórico do ERP legado (quando existir) e edição inline (sem modal).
 - Paginação na listagem de Clientes, com seletor de itens por página (20/50/100).
@@ -380,34 +484,41 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Tela de login em split-screen, com as duas variações do logo (fundo escuro/claro) e painel do formulário sempre no tema claro.
 
 ### Changed
+
 - Store de `clientes` migrada de mock para Supabase real (mesmo padrão já aplicado a `equipamentos`), incluindo leitura anônima restrita a `id, nome` para o app do operador exibir o cliente na OS.
 - Nomes de clientes, equipamentos e operadores normalizados para uppercase — no banco (dado existente) e ao digitar nos formulários de cadastro.
 - Sidebar da retaguarda fixa (não rola mais junto com o conteúdo da página) e sem barra de rolagem visível.
 
 ### Security
+
 - Nova policy `clientes_anon_select_ativos` + grant de coluna restrito a `id, nome` para o papel `anon` em `clientes` (mesma defesa em profundidade já usada em `operadores`) — CPF/CNPJ e telefone continuam fora do alcance do app do operador.
 
 ## [0.20.0] - 2026-07-08 - Ignition
 
 ### Added
+
 - Backend real no Supabase: schema completo (23 tabelas) espelhando `src/shared/types/index.ts`, com RLS habilitada em todas.
 - Autenticação da retaguarda (recepção/proprietário) via Supabase Auth (e-mail+senha), com perfil em `usuarios_retaguarda` e guarda de rota em `/admin/*`.
 - Autenticação do operador por PIN (4 primeiros dígitos do CPF), sem passar pelo Supabase Auth — token opaco validado por função Postgres `SECURITY DEFINER` (`login_operador`/`logout_operador`), com guarda de rota dedicada em `/app/entrar`.
 - Script `scripts/mocks-to-seed.ts` que gera `supabase/seed.sql` a partir dos mocks existentes — os dados mockados agora também populam o banco real.
 
 ### Changed
+
 - `OPERADOR_LOGADO_ID` (placeholder hardcoded desde a Fase 2) substituído pela sessão real do operador em 7 arquivos.
 - `CLAUDE.md`: fase do projeto sai de "Frontend First (mockado)" para Fase 4 (backend real).
 
 ### Security
+
 - Migration `20260708100009_security_hardening.sql`: revoga o grant padrão de `SELECT` de `anon` nas 22 tabelas de `public` que não são `operadores` (defesa-em-profundidade — a RLS já bloqueava a leitura) e adiciona `alter default privileges` para blindar tabelas futuras contra o mesmo grant.
 
 ### Removed
+
 - `src/shared/hooks/use-mock-session.ts` e o tipo `SessaoMock` — substituídos pela sessão real (Supabase Auth para retaguarda, token opaco para operador).
 
 ## [0.19.0] - 2026-07-07 - Copilot
 
 ### Added
+
 - Suíte de IA Embarcada (PRD-019): camada de IA plugável (`src/features/ia/`) com providers mockados e determinísticos, cobrindo as 12 features do PRD em 4 grupos
 - Captura inteligente em campo: OCR do horímetro consolidado na camada de IA (A1), detecção de anomalias em apontamentos com badge e confirmação na retaguarda (A2), apontamento por voz no fluxo de iniciar/finalizar (A3), OCR de cupom de abastecimento respeitando a barreira financeira (A4)
 - Inteligência analítica: card de insight em linguagem natural no painel gerencial (B5), alerta de manutenção preditiva por anomalia de consumo de diesel (B6), barra "Perguntar à IA" no header da retaguarda com 9 perguntas de exemplo (B7), previsão de caixa 30/60/90 dias e risco de inadimplência por cliente em Financeiro e Gerencial (B8)
@@ -418,6 +529,7 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 ## [0.18.0] - 2026-07-07 - Beacon
 
 ### Added
+
 - Painel Operacional (PRD-019): segunda aba no Dashboard (`/admin`), ao lado da "Visão geral" existente (inalterada) — visão "comando central" com mapa real (Leaflet + OpenStreetMap, coordenadas fictícias dos equipamentos, cor por status), cards de OS abertas/horas apontadas/executado/faturado/recebido com mini-gráfico de tendência dos últimos 7 dias, gráfico de contas a receber por cliente (vencida × a vencer) e tabela de manutenção preditiva (horas restantes por horímetro)
 - Atalhos rápidos na aba Operacional: Nova O.S., Novo cliente, Gerar relatório de rentabilidade
 - Badge de variação % (vs mês anterior) nos 3 cards financeiros, reaproveitando `variacaoPercentual` (PRD-016)
@@ -425,11 +537,13 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Tudo derivado das funções já existentes (002/004/007/010/015) — nenhuma regra de custo, margem ou faturamento nova
 
 ### Changed
+
 - `/admin` (Dashboard) reorganizado em abas ("Visão geral" / "Operacional"); comportamento e visual da Visão geral permanecem idênticos ao PRD-015
 
 ## [0.17.0] - 2026-07-06 - Radar
 
 ### Added
+
 - Dashboard Gerencial (PRD-016): painel retaguarda-only em `/admin/gerencial` que consolida evolução de faturamento (com meta mensal de referência), receita × custo × margem, horas e utilização/consumo por equipamento, rankings de margem (equipamentos e obras, com prejuízo destacado) e pipeline executado → faturado → recebido, tudo derivado dos services existentes (004/007/012/013/014), sem nenhuma regra de custo/margem nova
 - Filtro de período (mês / trimestre / ano / personalizado), com últimos 12 meses como padrão de abertura, e comparativo de variação % contra o período anterior
 - Dois KPIs de topo comparados contra o período anterior: "Faturado no período" e "Margem no período (hora-máquina)", ambos com variação %
@@ -437,12 +551,14 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Item "Painel Gerencial" na sidebar da retaguarda, no grupo Financeiro
 
 ### Changed
+
 - Sidebar da retaguarda reorganizada em grupos (Operação, Cadastros, Comercial, Financeiro, Frota), conforme sempre previsto no `CLAUDE.md` — antes era uma lista plana de 15 itens
 - Mocks de ordens de serviço, apontamentos e faturamentos enriquecidos com histórico de Jan a Mai/2026 (eq-001 e eq-002), necessário para o gráfico de evolução mensal
 
 ## [0.16.0] - 2026-07-05 - Messenger
 
 ### Added
+
 - Aviso ao Cliente por WhatsApp (PRD-009): MVP mockado, multi-provedor (Evolution API, Evolution GO, WhatsApp Cloud API/Meta, OpenWA) — dispara um aviso simulado ao cliente quando uma Ordem de Serviço é fechada na retaguarda
 - Nova entidade `AvisoWhatsApp` (lateral, não altera `OrdemServico`/`Cliente`), idempotente: no máximo um aviso por OS, validação de telefone do cliente antes do disparo
 - Nova seção na tela de detalhe da OS (retaguarda) exibindo o status do aviso (enviado / falha por telefone inválido), provedor usado e preview da mensagem
@@ -452,6 +568,7 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 ## [0.15.0] - 2026-07-05 - Gateway
 
 ### Added
+
 - Gateway de Cobrança (PRD-008): MVP mockado, multi-provedor (Mercado Pago + Asaas) — emissão simulada de cobrança (boleto/PIX) a partir de uma Conta a Receber (PRD-007) e simulação do webhook de pagamento, com baixa automática reaproveitando `contasReceberStore.darBaixaReceber`
 - Nova entidade `CobrancaGateway` (lateral, não altera `ContaReceber`), idempotente: sem duas cobranças pendentes simultâneas por conta, sem repagamento de cobrança já paga/cancelada
 - Nova aba "Cobrança" em Financeiro → A Receber: badge de status + provedor, botão "Emitir Cobrança" (sem cobrança ainda) ou "Simular Pagamento" (cobrança pendente)
@@ -462,6 +579,7 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 ## [0.14.0] - 2026-07-03 - Compass
 
 ### Added
+
 - Rentabilidade por Equipamento e Obra (PRD-014): painel retaguarda-only em `/admin/rentabilidade` — o topo da pirâmide analítica, cruza receita (Faturamento, PRD-004) com custo (custo/hora, PRD-013) em dois recortes
 - Recorte **por equipamento**: receita atribuída via itens `hora_maquina` do faturamento (por equipamento), custo via `custoHoraEquipamento` (PRD-013), margem em R$ e %, ranking por margem, gráfico de barras e diálogo de detalhamento (composição de receita e custo)
 - Recorte **por obra/OS**: receita = valor total do(s) faturamento(s) da OS, custo = soma do custo de cada equipamento usado na obra (custo/hora da companhia × horas específicas daquela OS), margem em R$ e %, ranking com destaque de prejuízo, gráfico e diálogo de detalhamento
@@ -469,11 +587,13 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Item "Rentabilidade" na sidebar da retaguarda, após "Custo da Hora" — último item do roadmap numerado (PRD-000 a PRD-014)
 
 ### Changed
+
 - Seletor de mês (`SeletorMes`, `periodo-mensal.ts`) movido de `src/features/custo-hora/` para `src/shared/` — agora reaproveitado por `custo-hora` e `rentabilidade`
 
 ## [0.13.0] - 2026-07-02 - Meter
 
 ### Added
+
 - Custo Real da Hora-Máquina (PRD-013): painel retaguarda-only em `/admin/custo-hora` que calcula o custo por hora de cada equipamento — fixos mensais (parcela FINAME, seguro) + variáveis por hora (material rodante, operador) + diesel (PRD-012) + manutenção (PRD-010), tudo dividido pelas horas trabalhadas no mês
 - Detalhamento do custo por componente (sempre as 4 categorias, mesmo com valor zero) e comparação com o preço praticado (PRD-005), com a margem em R$ por hora
 - Configuração de componentes de custo por equipamento (fixo mensal ou variável por hora), com CRUD completo (cadastrar, editar, inativar, reativar)
@@ -484,31 +604,37 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 ## [0.12.0] - 2026-07-02 - Cockpit
 
 ### Added
+
 - Dashboard da retaguarda (`/admin`, PRD-015): widgets de OS por status (com navegação filtrada), horas apontadas no período, pipeline financeiro (executado → faturado → recebido, em R$), contas a vencer/vencidas, alertas de manutenção e atalhos (nova OS, novo orçamento)
 - Filtro de período no dashboard (Hoje / Semana / Mês) — aplica-se aos widgets de OS, horas e pipeline financeiro; contas e alertas de manutenção são sempre a situação atual
 - Início do operador (`/app`): apontamento em andamento em destaque (retomar/finalizar) ou CTA "Iniciar apontamento", lista de OS ativas, indicador agregado de itens pendentes de sincronização, atalho para registrar abastecimento — sem nenhum valor financeiro
 - `apontamentoEmAndamentoDoOperador` deriva o apontamento em andamento de um operador a partir da lista de apontamentos, espelhando o padrão de `apontamentosDoOperador`
 
 ### Changed
+
 - Ambas as home screens (`/admin` e `/app`) deixam de ser placeholders "em construção" — todos os dados são derivados dos services já existentes (PRD-002/003/004/007/010/012), sem contrato persistido novo
 
 ## [0.11.0] - 2026-07-02 - Retrofit
 
 ### Added
+
 - `Apontamento` ganha `modalidade` ("seca" | "operada"), capturada ao iniciar o apontamento quando a OS vinculada não é `por_metro`, e `metros_executados`, capturado (obrigatório) ao finalizar quando a OS vinculada é `por_metro`
 - `totalMetragemOS` deriva a metragem executada de uma OS a partir dos apontamentos finalizados vinculados, espelhando `totalHorasOS`
 
 ### Changed
+
 - `OrdemServico.metragem_executada` deixa de ser um campo armazenado no cabeçalho — passa a ser **derivado** (soma de `apontamentos.metros_executados`), evitando o conflito multi-operador de um campo de header mutável
 - Faturamento (`gerarItens`) agrupa horas de uma OS `hora_maquina` por **equipamento + modalidade** (lendo `modalidade` do apontamento) em vez de assumir sempre "operada"; um mesmo equipamento pode gerar dois itens (seca e operada) quando ambos ocorreram na mesma OS
 - Geração de OS a partir de um orçamento não copia mais a metragem estimada para o cabeçalho da nova OS (o campo não existe mais); a estimativa continua visível no orçamento de origem
 
 ### Fixed
+
 - Consolida os deltas pós-implementação registrados nos patches dos PRD-002, PRD-003 e PRD-004
 
 ## [0.10.0] - 2026-07-02 - Fuel
 
 ### Added
+
 - Gestão de Diesel e Utilização (PRD-012): registro de abastecimentos (equipamento, litros, horímetro) com custo opcional (R$/litro ou total) — retaguarda-only
 - Indicadores derivados de consumo médio (litros/hora) e utilização (horas trabalhadas no período) por equipamento, cruzando abastecimentos com apontamentos
 - Nova rota `/admin/diesel` com KPIs, gráfico de consumo por equipamento e histórico de abastecimentos; item "Diesel" na sidebar da retaguarda, logo após "Manutenção"
@@ -518,6 +644,7 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 ## [0.9.0] - 2026-07-01 - Seal
 
 ### Added
+
 - Comprovante Assinado pelo Cliente (PRD-011): geração de comprovante a partir de uma OS fechada, com resumo do serviço (obra, período, equipamentos, horas ou metragem) — sem valores
 - Captura de assinatura do cliente em tela (canvas, mouse/toque/caneta) com nome do assinante, ou registro de recusa com motivo
 - Ciclo de status `pendente → assinado / recusado`; no máximo um comprovante por OS
@@ -528,6 +655,7 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 ## [0.8.0] - 2026-07-01 - Wrench
 
 ### Added
+
 - Manutenção Preventiva por Horímetro (PRD-010): planos de manutenção por equipamento ou por tipo, com intervalo em horas
 - Cálculo de status derivado do horímetro atual (`em_dia` / `proxima` / `vencida`), com antecedência de 20h para "próxima"
 - Painel de alertas em `/admin/manutencao` listando equipamentos com manutenção próxima ou vencida
@@ -539,6 +667,7 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 ## [0.7.0] - 2026-06-30 - Cashflow
 
 ### Added
+
 - Contas a Receber: geradas a partir dos faturamentos confirmados; dar baixa com data e forma de recebimento
 - Contas a Pagar: registro manual com descrição, fornecedor, categoria, valor e vencimento; dar baixa com data
 - Visão de Caixa: resumo de total a receber × total a pagar × saldo previsto
@@ -547,12 +676,14 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Coluna "Recebido" do pipeline de faturamento exibe dados reais de recebimentos liquidados
 
 ### Changed
+
 - Pipeline executado → faturado → **recebido** completo com dados ao vivo
 - Sidebar da retaguarda: novo item "Financeiro" após "Faturamento"
 
 ## [0.6.0] - 2026-06-29 - Quote
 
 ### Added
+
 - Orçamentos na retaguarda (`/admin/orcamentos`, PRD-006): CRUD mockado de orçamentos montados a partir das tabelas de preço (PRD-005) — hora-máquina (operada/seca), por metro (estaca) e mobilização.
 - Editor de rascunho: adicionar/remover itens, ajustar quantidade estimada e valor unitário (override de negociação), desconto e observação; cálculo do total em R$.
 - Ciclo de status `rascunho → enviado → aprovado/recusado` com guardas (envio bloqueado em orçamento vazio; decisão só a partir de enviado) e validade (default +30 dias, sinalização de vencida).
@@ -563,14 +694,16 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 ## [0.5.0] - 2026-06-29 - Invoice
 
 ### Added
+
 - Faturamento ao fechar OS (PRD-004): geração de fatura em rascunho a partir de OS fechada, aplicando preços (hora-máquina operada/seca e por metro) às horas/metros apontados.
-- Aba **Faturas** em `/admin/faturamento`: pipeline executado → faturado → recebido*, lista "Aguardando faturamento" com geração e lista de faturas com filtros.
+- Aba **Faturas** em `/admin/faturamento`: pipeline executado → faturado → recebido\*, lista "Aguardando faturamento" com geração e lista de faturas com filtros.
 - Editor de rascunho: ajuste de itens (quantidade, valor, seca/operada), inclusão de mobilização, desconto e observação; confirmação `rascunho → faturado` com aviso de pendência.
 - Detalhe da fatura em `/admin/faturamento/$faturamentoId`.
 - Sinalização de item "sem preço" (tarifa inativa/ausente) sem bloquear o restante do rascunho.
 - `types` `Faturamento`, `FaturamentoItem`, `StatusFaturamento`, `TipoItemFaturamento`; mocks coerentes com OS/apontamentos/preços.
 
 ### Changed
+
 - `/admin/faturamento` reorganizado em abas: **Faturas** (operacional) e **Análise** (o dashboard de gráficos, agora aba).
 
 \* "recebido" é estágio futuro (PRD-007).
@@ -578,6 +711,7 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 ## [0.4.0] - 2026-06-29 - Worksite
 
 ### Added
+
 - Ordem de Serviço colaborativa nos dois ambientes: lista + detalhe do operador
   ("Minhas OS", apontamentos dos colegas, "Apontar nesta OS") e retaguarda (lista,
   criar, detalhar, fechar, editar).
@@ -586,17 +720,20 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Regra de fechamento: exclusivo da retaguarda, bloqueado com apontamento em andamento.
 
 ### Changed
+
 - Modelo de OS migrado de `OrdemServicoOperador` (turno único por operador) para
   `OrdemServico` colaborativa; apontamentos (PRD-002) passam a vincular às novas OS,
   e o seletor de OS do apontamento aceita pré-preenchimento via `?os=`.
 
 ### Removed
+
 - Modelo de OS legado (`OrdemServicoOperador`, store e mock do operador) e fluxo de
   "Iniciar turno / Finalizar OS" com horímetro direto na OS.
 
 ## [0.3.0] - 2026-06-28 - Tariff
 
 ### Added
+
 - Tabela de preços na retaguarda (`/admin/precos`) com três abas: hora-máquina
   (valor seca/operada, vínculo por equipamento ou por tipo), por metro (fundação,
   por diâmetro de broca) e mobilização/transporte.
@@ -607,12 +744,14 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
   positivos.
 
 ### Security
+
 - Barreira financeira: nada de `features/precos` é importado pelo ambiente do
   operador (`/app/*`); valores de preço nunca são carregados no app de campo.
 
 ## [0.2.0] - 2026-06-28 - Tally
 
 ### Added
+
 - Apontamento de horímetro no app do operador (`/app/apontamento`): iniciar
   (seleção de equipamento + horímetro inicial), finalizar (horímetro final com
   cálculo automático de horas) e lista "Meus apontamentos" (em andamento +
@@ -626,12 +765,14 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
   OCR simulado e sanidade dos mocks.
 
 ### Changed
+
 - Contrato de `types` estendido com `Apontamento` e `StatusApontamento`.
 - Formatador compartilhado `formatDataHora` adicionado.
 
 ## [0.1.0] - 2026-06-28 - Registry
 
 ### Added
+
 - Cadastro de Equipamentos com busca, filtros por tipo e status operacional,
   criação/edição e inativação (soft-delete) — PRD-001.
 - Cadastro de Operadores com busca e inativação.
@@ -643,10 +784,12 @@ Esta versão **reverte uma decisão da 0.24.0 (Onda 10)** por escolha explícita
 - Ícones de aplicação via Iconify e toasts via sonner.
 
 ### Changed
+
 - Contrato de `types` estendido (Equipamento/Operador/Cliente) com status de
   ciclo de vida (`ativo`) separado do status operacional, documento, telefone
   e timestamps de auditoria. Mocks atualizados com edge cases.
 
 ### Fixed
+
 - Links de "voltar" do app do operador passam os parâmetros de busca exigidos
   pela rota (type-check).
